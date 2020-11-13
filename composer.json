@@ -1,0 +1,17 @@
+{
+    "name": "anibalealvarezs/projectbuilder",
+    "description": "Package to add usefull libraries for new projects",
+    "type": "project",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Aníbal Álvarez",
+            "email": "anibalealvarezs@gmail.com"
+        }
+    ],
+    "minimum-stability": "dev",
+    "require": {
+        "laravel/framework": "^8.0",
+        "spatie/laravel-permission": "^3.17"
+    }
+}
