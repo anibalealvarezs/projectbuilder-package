@@ -9,6 +9,7 @@
             "email": "anibalealvarezs@gmail.com"
         }
     ],
+    "version": "1.0.0",
     "minimum-stability": "dev",
     "require": {
         "laravel/framework": "^8.0",

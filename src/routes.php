@@ -6,3 +6,8 @@ Route::get('welcome', function(){
 
 Route::get('add/{a}/{b}', 'Anibalealvarezs\ProjectBuilder\ProjectBuilderController@add');
 Route::get('substract/{a}/{b}', 'Anibalealvarezs\ProjectBuilder\ProjectBuilderController@subtract');
+
+Route::get('/clear-cache', function() {
+    Artisan::call('cache:clear');
+    return "Cache is cleared";
+});
