@@ -1,33 +1,33 @@
 {
     "name": "anibalealvarezs/projectbuilder",
     "description": "Package to add usefull libraries for new projects",
-    "type": "project",
     "license": "MIT",
     "authors": [
         {
             "name": "Aníbal Álvarez",
-            "email": "anibalealvarezs@gmail.com"
+            "email": "anibalealvarezs@gmail.com",
+            "homepage": "https://anibalalvarez.com",
+            "role": "Developer"
         }
     ],
     "version": "1.0.2",
     "minimum-stability": "dev",
+    "prefer-stable": true,
     "require": {
+        "php" : "^7.3",
         "laravel/framework": "^8.0",
         "spatie/laravel-permission": "^3.17"
     },
     "autoload": {
         "psr-4": {
-            "Anibalealvarezs\\ProjectBuilder\\": "/vendor/anibalealvarezs/projectbuilder/src"
+            "Anibalealvarezs\\ProjectBuilder\\": "src"
         }
     },
     "extra": {
         "laravel": {
             "providers": [
                 "Anibalealvarezs\\ProjectBuilder\\ProjectBuilderServiceProvider"
-            ],
-            "aliases": {
-                "ProjectBuilder": "Anibalealvarezs\\ProjectBuilder\\Facade"
-            }
+            ]
         }
     }
 }
