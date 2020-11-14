@@ -20,13 +20,13 @@
     },
     "autoload": {
         "psr-4": {
-            "Anibalealvarezs\\ProjectBuilder\\": "src/"
+            "Anibalealvarezs\\Projectbuilder\\": "src"
         }
     },
     "extra": {
         "laravel": {
             "providers": [
-                "Anibalealvarezs\\ProjectBuilder\\ProjectBuilderServiceProvider"
+                "Anibalealvarezs\\Projectbuilder\\ProjectbuilderServiceProvider"
             ]
         }
     }

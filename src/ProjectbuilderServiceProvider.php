@@ -1,10 +1,10 @@
 <?php
 
-namespace Anibalealvarezs\ProjectBuilder;
+namespace Anibalealvarezs\Projectbuilder;
 
 use Illuminate\Support\ServiceProvider;
 
-class ProjectBuilderServiceProvider extends ServiceProvider
+class ProjectbuilderServiceProvider extends ServiceProvider
 {
     /**
      * Bootstrap the application services.
@@ -23,7 +23,7 @@ class ProjectBuilderServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        $this->app->make('Anibalealvarezs\ProjectBuilder\ProjectBuilderController');
+        $this->app->make('Anibalealvarezs\Projectbuilder\ProjectbuilderController');
         $this->loadViewsFrom(__DIR__.'/views', 'builder');
     }
 }
