@@ -19,7 +19,7 @@
     },
     "autoload": {
         "psr-4": {
-            "Anibalealvarezs\\Projectbuilder\\": "src"
+            "Anibalealvarezs\\ProjectBuilder\\": "vendor/anibalealvarezs/projectbuilder/src"
         }
     },
     "extra": {
