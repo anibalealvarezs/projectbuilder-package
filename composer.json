@@ -14,5 +14,15 @@
     "require": {
         "laravel/framework": "^8.0",
         "spatie/laravel-permission": "^3.17"
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Anibalealvarezs\\ProjectBuilder\\ProjectBuilderServiceProvider"
+            ],
+            "aliases": {
+                "ProjectBuilder": "Anibalealvarezs\\ProjectBuilder\\Facade"
+            }
+        }
     }
 }
