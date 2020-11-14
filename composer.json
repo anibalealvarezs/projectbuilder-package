@@ -20,7 +20,7 @@
     },
     "autoload": {
         "psr-4": {
-            "Anibalealvarezs\\ProjectBuilder\\": "src"
+            "Anibalealvarezs\\ProjectBuilder\\": "src/"
         }
     },
     "extra": {
