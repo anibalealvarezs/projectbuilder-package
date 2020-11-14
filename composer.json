@@ -9,11 +9,16 @@
             "email": "anibalealvarezs@gmail.com"
         }
     ],
-    "version": "1.0.1",
+    "version": "1.0.2",
     "minimum-stability": "dev",
     "require": {
         "laravel/framework": "^8.0",
         "spatie/laravel-permission": "^3.17"
+    },
+    "autoload": {
+        "psr-4": {
+            "Anibalealvarezs\\ProjectBuilder\\": "/vendor/anibalealvarezs/projectbuilder/src"
+        }
     },
     "extra": {
         "laravel": {
