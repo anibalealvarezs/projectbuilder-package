@@ -50,7 +50,7 @@ php artisan config:clear
 
 4. Migrate the DB
 ```
-php artisan migrate
+php artisan migrate:refresh --seeds
 ```
 
 5. Publish Project Builder's Seeders
