@@ -11,7 +11,7 @@ class PbUser extends Authenticatable
     use Notifiable;
     use HasRoles;
 
-    protected $table = 'user';
+    protected $table = 'users';
 
     /**
      * The attributes that are mass assignable.
