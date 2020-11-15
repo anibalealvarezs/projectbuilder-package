@@ -19,19 +19,19 @@ class PbSpatieSeeder extends Seeder
         app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
 
         // create permissions
-        Permission::create(['name' => 'crud super-admin']);
-        Permission::create(['name' => 'create users']);
-        Permission::create(['name' => 'read users']);
-        Permission::create(['name' => 'update users']);
-        Permission::create(['name' => 'delete users']);
+        Permission::create(['guard_name' => 'admin', 'name' => 'crud super-admin']);
+        Permission::create(['guard_name' => 'admin', 'name' => 'create users']);
+        Permission::create(['guard_name' => 'admin', 'name' => 'read users']);
+        Permission::create(['guard_name' => 'admin', 'name' => 'update users']);
+        Permission::create(['guard_name' => 'admin', 'name' => 'delete users']);
 
         // create roles and assign created permissions
 
         // this can be done as separate statements
-        Role::create(['name' => 'admin'])
+        Role::create(['guard_name' => 'admin', 'name' => 'admin'])
             ->givePermissionTo(['create users', 'read users', 'update users', 'delete users']);
 
-        Role::create(['name' => 'super-admin'])
+        Role::create(['guard_name' => 'admin', 'name' => 'super-admin'])
             ->givePermissionTo(Permission::all());
     }
 }
