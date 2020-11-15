@@ -11,6 +11,8 @@ class PbUser extends Authenticatable
     use Notifiable;
     use HasRoles;
 
+    protected $guard_name = 'admin';
+
     protected $table = 'users';
 
     /**

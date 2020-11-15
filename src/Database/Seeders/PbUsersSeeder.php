@@ -13,8 +13,6 @@ use Session;
 
 class PbUsersSeeder extends Seeder
 {
-    protected $guard_name = 'admin';
-
     /**
      * Run the database seeds.
      *
