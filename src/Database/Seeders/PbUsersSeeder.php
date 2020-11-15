@@ -13,6 +13,8 @@ use Session;
 
 class PbUsersSeeder extends Seeder
 {
+    protected $guard_name = 'admin';
+
     /**
      * Run the database seeds.
      *
@@ -24,7 +26,7 @@ class PbUsersSeeder extends Seeder
         $user = new User();
         $user->password = Hash::make('NoEntiendo2321');
         $user->email = 'anibalealvarezs@gmail.com';
-        $user->name = 'My Name';
+        $user->name = 'Aníbal Álvarez';
         $user->save();
         // SuperAdmin
         $user->assignRole('super-admin');
