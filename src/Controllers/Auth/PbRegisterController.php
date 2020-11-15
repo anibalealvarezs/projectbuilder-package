@@ -5,7 +5,7 @@ namespace Anibalealvarezs\Projectbuilder\Controllers\Auth;
 use Anibalealvarezs\Projectbuilder\Models\PbUser as User;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Validator;
-use Illuminate\Foundation\Auth\RegistersUsers;
+// use Illuminate\Foundation\Auth\RegistersUsers;
 
 class PbRegisterController extends Controller
 {
@@ -20,7 +20,7 @@ class PbRegisterController extends Controller
     |
     */
 
-    use RegistersUsers;
+    // use RegistersUsers;
 
     /**
      * Where to redirect users after registration.
