@@ -50,11 +50,15 @@ php artisan config:clear
 
 4. Migrate the DB
 ```
+php artisan migrate
+```
+or, in case of migration failure,
+```
 php artisan migrate:refresh --seeds
 ```
 
 5. Publish Project Builder's Seeders
 ```
-php artisan db:seed --class="Anibalealvarezs\Projectbuilder\PbSpatieSeeder"
-php artisan db:seed --class="Anibalealvarezs\Projectbuilder\PbUsersSeeder"
+php artisan db:seed --class="Anibalealvarezs\Projectbuilder\Database\Seeders\PbSpatieSeeder"
+php artisan db:seed --class="Anibalealvarezs\Projectbuilder\Database\Seeders\PbUsersSeeder"
 ```
