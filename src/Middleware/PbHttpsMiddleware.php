@@ -5,7 +5,7 @@ namespace Anibalealvarezs\Projectbuilder\Middleware;
 use Closure;
 use Illuminate\Http\Request;
 
-class ProjectbuilderHttpsMiddleware
+class PbHttpsMiddleware
 {
     /**
      * Handle an incoming request.

@@ -2,7 +2,7 @@
 
 ### Instructions for installation:
 
-Add the following lines to composer.json:
+1. Add the following lines to composer.json:
 
 ```
 "repositories":[
@@ -10,7 +10,7 @@ Add the following lines to composer.json:
         "type": "package",
         "package": {
             "name": "anibalealvarezs/projectbuilder-package",
-            "version": "1.0.6",
+            "version": "1.0.8",
             "source": {
                 "url": "git@github.com:anibalealvarezs/projectbuilder-package.git",
                 "type": "git",
@@ -28,11 +28,33 @@ Add the following lines to composer.json:
             "extra": {
                 "laravel": {
                     "providers": [
-                        "Anibalealvarezs\\Projectbuilder\\ProjectbuilderServiceProvider"
+                        "Anibalealvarezs\\Projectbuilder\\PbServiceProvider"
                     ]
                 }
             }
         }
     }
 ],
+```
+
+2. Publish Spatie's Migration
+
+```
+php artisan vendor:publish --provider="Spatie\Permission\PermissionServiceProvider"
+```
+
+3. Clear config cache
+```
+php artisan config:clear
+```
+
+4. Migrate the DB
+```
+php artisan migrate
+```
+
+5. Publish Project Builder's Seeders
+```
+php artisan db:seed --class="Anibalealvarezs\Projectbuilder\PbSpatieSeeder"
+php artisan db:seed --class="Anibalealvarezs\Projectbuilder\PbUsersSeeder"
 ```

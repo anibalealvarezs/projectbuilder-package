@@ -9,7 +9,7 @@
     ],
     "homepage": "https://anibalalvarez.com",
     "license": "MIT",
-    "version" : "1.0.5",
+    "version" : "1.0.8",
     "type" : "package",
     "authors": [
         {
@@ -32,7 +32,7 @@
     "extra": {
         "laravel": {
             "providers": [
-                "Anibalealvarezs\\Projectbuilder\\ProjectbuilderServiceProvider"
+                "Anibalealvarezs\\Projectbuilder\\PbServiceProvider"
             ]
         }
     },

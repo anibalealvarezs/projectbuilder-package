@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
 
-class ProjectbuilderController extends Controller
+class PbController extends Controller
 {
     //
     public function add($a, $b){
