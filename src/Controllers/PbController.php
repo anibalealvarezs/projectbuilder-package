@@ -14,7 +14,7 @@ class PbController extends Controller
         return view('builder::add', compact('result'));
     }
 
-    public function subtract($a, $b){
+    public function substract($a, $b){
         $result = $a - $b;
         return view('builder::substract', compact('result'));
     }
