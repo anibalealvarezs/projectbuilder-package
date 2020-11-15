@@ -3,6 +3,7 @@
 namespace Anibalealvarezs\Projectbuilder;
 
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Routing\UrlGenerator;
 
 class ProjectbuilderServiceProvider extends ServiceProvider
 {
@@ -11,9 +12,15 @@ class ProjectbuilderServiceProvider extends ServiceProvider
      *
      * @return void
      */
-    public function boot()
+    public function boot(\Illuminate\Contracts\Http\Kernel $kernel)
     {
-        include __DIR__.'/routes.php';
+        //global middleware
+        $kernel->prependMiddleware(Middleware\ProjectbuilderHttpsMiddleware::class);
+        $kernel->pushMiddleware(Middleware\ProjectbuilderHttpsMiddleware::class);
+        //router middleware
+        $router = $this->app['router'];
+        $router->pushMiddlewareToGroup('web', Middleware\ProjectbuilderHttpsMiddleware::class);
+        include __DIR__ . '/routes.php';
     }
 
     /**
@@ -23,7 +30,8 @@ class ProjectbuilderServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        $this->app->make('Anibalealvarezs\Projectbuilder\ProjectbuilderController');
+        $this->app->make('Anibalealvarezs\Projectbuilder\Controllers\ProjectbuilderController');
+        $this->app->make('Anibalealvarezs\Projectbuilder\Middleware\ProjectbuilderHttpsMiddleware');
         $this->loadViewsFrom(__DIR__.'/views', 'builder');
     }
 }

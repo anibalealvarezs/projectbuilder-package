@@ -1,6 +1,6 @@
 <?php
 
-use Anibalealvarezs\Projectbuilder\ProjectbuilderController as Projectbuilder;
+use Anibalealvarezs\Projectbuilder\Controllers\ProjectbuilderController as Projectbuilder;
 
 Route::get('welcome', function(){
     echo 'Hello from the calculator package!';

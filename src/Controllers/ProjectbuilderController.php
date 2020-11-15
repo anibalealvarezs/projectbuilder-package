@@ -1,6 +1,6 @@
 <?php
 
-namespace Anibalealvarezs\Projectbuilder;
+namespace Anibalealvarezs\Projectbuilder\Controllers;
 
 use Illuminate\Http\Request;
 use App\Http\Requests;
