@@ -2,7 +2,7 @@
 namespace Anibalealvarezs\Projectbuilder\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Foundation\Auth\ResetsPasswords;
+// use Illuminate\Foundation\Auth\ResetsPasswords;
 
 class PbResetPasswordController extends Controller
 {
@@ -17,7 +17,7 @@ class PbResetPasswordController extends Controller
     |
     */
 
-    use ResetsPasswords;
+    // use ResetsPasswords;
 
     /**
      * Where to redirect users after resetting their password.
