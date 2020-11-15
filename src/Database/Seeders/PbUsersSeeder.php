@@ -6,6 +6,7 @@ use Illuminate\Database\Seeder;
 use Anibalealvarezs\Projectbuilder\Models\PbUser as User;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
+use Illuminate\Support\Facades\Hash;
 
 //Enables us to output flash messaging
 use Session;
