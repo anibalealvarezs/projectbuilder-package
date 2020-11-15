@@ -6,10 +6,12 @@ use Illuminate\Notifications\Notifiable;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Spatie\Permission\Traits\HasRoles;
 
-class User extends Authenticatable
+class PbUser extends Authenticatable
 {
     use Notifiable;
     use HasRoles;
+
+    protected $table = 'user';
 
     /**
      * The attributes that are mass assignable.
