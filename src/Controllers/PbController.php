@@ -11,11 +11,11 @@ class PbController extends Controller
     //
     public function add($a, $b){
         $result = $a + $b;
-        return view('builder::add', compact('result'));
+        return view('builder::modules.calculator.add', compact('result'));
     }
 
     public function substract($a, $b){
         $result = $a - $b;
-        return view('builder::substract', compact('result'));
+        return view('builder::modules.calculator.substract', compact('result'));
     }
 }
