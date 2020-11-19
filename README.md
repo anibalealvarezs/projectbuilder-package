@@ -3,7 +3,6 @@
 ### Instructions for installation:
 
 #### 1. Add the following lines to composer.json:
-
 ```
 "repositories":[
     {
@@ -44,7 +43,6 @@
 ```
 
 #### 2. Publish Spatie's Migration
-
 ```
 php artisan vendor:publish --provider="Spatie\Permission\PermissionServiceProvider"
 ```
@@ -67,11 +65,13 @@ php artisan migrate:refresh --seeds
 ```
 php artisan db:seed --class="Anibalealvarezs\Projectbuilder\Database\Seeders\PbSpatieSeeder"
 php artisan db:seed --class="Anibalealvarezs\Projectbuilder\Database\Seeders\PbUsersSeeder"
-
-#### 6. Wipe out all caches
 ```
-php artisan db:seed --class="Anibalealvarezs\Projectbuilder\Database\Seeders\PbSpatieSeeder"
-php artisan db:seed --class="Anibalealvarezs\Projectbuilder\Database\Seeders\PbUsersSeeder"
+
+#### 6. Add "pbstorage" link to "app/filesystems.php"
+```
+'links' => [
+        public_path('pbstorage') => app_path('packages/anibalealvarezs/projectbuilder/src/assets'),
+    ],
 ```
 
 #### 7. Create default "storage" and "pbstorage" links
