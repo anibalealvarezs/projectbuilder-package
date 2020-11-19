@@ -1,6 +1,4 @@
 @foreach($styles as $style)
-    @push('scripts')
-        <!-- {{$style['comment']}} -->
-        <link rel="stylesheet" href="{{$script['src']}}">
-    @endpush
+    <!-- {{$style['comment']}} -->
+    <link rel="stylesheet" href="{{$style['href']}}">
 @endforeach

@@ -1,6 +1,4 @@
 @foreach($scripts as $script)
-    @push('scripts')
-        <!-- {{$script['comment']}} -->
-        <script src="{{$script['src']}}"></script>
-    @endpush
+    <!-- {{$script['comment']}} -->
+    <script src="{{$script['src']}}"></script>
 @endforeach

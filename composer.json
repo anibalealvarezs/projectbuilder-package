@@ -32,7 +32,12 @@
     "extra": {
         "laravel": {
             "providers": [
-                "Anibalealvarezs\\Projectbuilder\\PbServiceProvider"
+                "Anibalealvarezs\\Projectbuilder\\Providers\\PbComposerServiceProvider",
+                "Anibalealvarezs\\Projectbuilder\\Providers\\PbControllerServiceProvider",
+                "Anibalealvarezs\\Projectbuilder\\Providers\\PbMiddlewareServiceProvider",
+                "Anibalealvarezs\\Projectbuilder\\Providers\\PbMigrationServiceProvider",
+                "Anibalealvarezs\\Projectbuilder\\Providers\\PbRouteServiceProvider",
+                "Anibalealvarezs\\Projectbuilder\\Providers\\PbViewServiceProvider"
             ]
         }
     },

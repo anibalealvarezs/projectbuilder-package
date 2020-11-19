@@ -1,11 +1,12 @@
 <?php
 
-namespace Anibalealvarezs\Projectbuilder;
+namespace Anibalealvarezs\Projectbuilder\Providers;
 
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Routing\UrlGenerator;
+use Illuminate\Support\Facades\View;
 
-class PbServiceProvider extends ServiceProvider
+class PbMiddlewareServiceProvider extends ServiceProvider
 {
     /**
      * Bootstrap the application services.
@@ -15,30 +16,13 @@ class PbServiceProvider extends ServiceProvider
     public function boot(\Illuminate\Contracts\Http\Kernel $kernel)
     {
         //global middleware
-        $kernel->prependMiddleware(Middleware\PbHttpsMiddleware::class);
-        $kernel->pushMiddleware(Middleware\PbHttpsMiddleware::class);
-        $kernel->prependMiddleware(Middleware\PbSingleSession::class);
-        $kernel->pushMiddleware(Middleware\PbSingleSession::class);
+        $kernel->prependMiddleware('Anibalealvarezs\Projectbuilder\Middleware\PbHttpsMiddleware');
+        $kernel->pushMiddleware('Anibalealvarezs\Projectbuilder\Middleware\PbHttpsMiddleware');
+        $kernel->prependMiddleware('Anibalealvarezs\Projectbuilder\Middleware\PbSingleSession');
+        $kernel->pushMiddleware('Anibalealvarezs\Projectbuilder\Middleware\PbSingleSession');
         //router middleware
         $router = $this->app['router'];
-        $router->pushMiddlewareToGroup('web', Middleware\PbHttpsMiddleware::class);
-        // Routes
-        include __DIR__ . '/routes.php';
-        // Migrations
-        $this->loadMigrationsFrom(__DIR__.'/Database/Migrations');
-        // Views
-        $views = __DIR__.'/views';
-        $this->loadViewsFrom($views, 'builder');
-        // View Composers
-        View::composers([
-            'Anibalealvarezs\Projectbuilder\ViewComposers\ScriptsComposer' => ['builder::layouts.front.resources.scripts'],
-            'Anibalealvarezs\Projectbuilder\ViewComposers\StylesComposer' => ['builder::layouts.front.resources.styles']
-        ]);
-        // Move assets folder to the public disk
-        $storage = storage_path();
-        $assets = __DIR__.'/assets';
-        shell_exec("mv -v ".$assets." ".$storage."/public/");
-
+        $router->pushMiddlewareToGroup('web', 'Anibalealvarezs\Projectbuilder\Middleware\PbHttpsMiddleware');
     }
 
     /**
