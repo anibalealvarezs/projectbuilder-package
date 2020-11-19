@@ -70,7 +70,7 @@ php artisan db:seed --class="Anibalealvarezs\Projectbuilder\Database\Seeders\PbU
 #### 6. Add "pbstorage" link to "app/filesystems.php"
 ```
 'links' => [
-        public_path('pbstorage') => app_path('packages/anibalealvarezs/projectbuilder/src/assets'),
+        public_path('pbstorage') => app_path('vendor/anibalealvarezs/projectbuilder-package/src/assets'),
     ],
 ```
 
@@ -80,5 +80,5 @@ php artisan storage:link
 ```
 if "pbstorage" links show error, navigate to "public folder", manually delete the link, and create a newone with the following command:
 ```
-ln -s ../packages/anibalealvarezs/projectbuilder/src/assets pbstorage
+ln -s ../vendor/anibalealvarezs/projectbuilder-package/src/assets pbstorage
 ```
