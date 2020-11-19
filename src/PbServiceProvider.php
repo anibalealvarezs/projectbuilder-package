@@ -29,6 +29,11 @@ class PbServiceProvider extends ServiceProvider
         // Views
         $views = __DIR__.'/views';
         $this->loadViewsFrom($views, 'builder');
+        // View Composers
+        View::composers([
+            'Anibalealvarezs\Projectbuilder\ViewComposers\ScriptsComposer' => ['builder::layouts.front.resources.scripts'],
+            'Anibalealvarezs\Projectbuilder\ViewComposers\StylesComposer' => ['builder::layouts.front.resources.styles']
+        ]);
         // Move assets folder to the public disk
         $storage = storage_path();
         $assets = __DIR__.'/assets';
