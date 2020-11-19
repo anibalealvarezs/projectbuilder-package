@@ -33,7 +33,8 @@
                         "Anibalealvarezs\\Projectbuilder\\Providers\\PbMiddlewareServiceProvider",
                         "Anibalealvarezs\\Projectbuilder\\Providers\\PbMigrationServiceProvider",
                         "Anibalealvarezs\\Projectbuilder\\Providers\\PbRouteServiceProvider",
-                        "Anibalealvarezs\\Projectbuilder\\Providers\\PbViewServiceProvider"
+                        "Anibalealvarezs\\Projectbuilder\\Providers\\PbViewServiceProvider",
+                        "Anibalealvarezs\\Projectbuilder\\Providers\\PbConfigServiceProvider"
                     ]
                 }
             }
@@ -71,4 +72,13 @@ php artisan db:seed --class="Anibalealvarezs\Projectbuilder\Database\Seeders\PbU
 ```
 php artisan db:seed --class="Anibalealvarezs\Projectbuilder\Database\Seeders\PbSpatieSeeder"
 php artisan db:seed --class="Anibalealvarezs\Projectbuilder\Database\Seeders\PbUsersSeeder"
+```
+
+#### 7. Create default "storage" and "pbstorage" links
+```
+php artisan storage:link
+```
+if "pbstorage" links show error, navigate to "public folder", manually delete the link, and create a newone with the following command:
+```
+ln -s ../packages/anibalealvarezs/projectbuilder/src/assets pbstorage
 ```

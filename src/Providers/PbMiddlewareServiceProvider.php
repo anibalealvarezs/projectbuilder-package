@@ -32,14 +32,6 @@ class PbMiddlewareServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        $this->app->make('Anibalealvarezs\Projectbuilder\Controllers\Calculator\PbCalculatorController');
-        $this->app->make('Anibalealvarezs\Projectbuilder\Controllers\Permission\PbPermissionController');
-        $this->app->make('Anibalealvarezs\Projectbuilder\Controllers\Permission\PbRoleController');
-        $this->app->make('Anibalealvarezs\Projectbuilder\Controllers\User\PbUserController');
-        $this->app->make('Anibalealvarezs\Projectbuilder\Controllers\Auth\PbForgotPasswordController');
-        $this->app->make('Anibalealvarezs\Projectbuilder\Controllers\Auth\PbLoginController');
-        $this->app->make('Anibalealvarezs\Projectbuilder\Controllers\Auth\PbRegisterController');
-        $this->app->make('Anibalealvarezs\Projectbuilder\Controllers\Auth\PbResetPasswordController');
         $this->app->make('Anibalealvarezs\Projectbuilder\Middleware\PbHttpsMiddleware');
     }
 }

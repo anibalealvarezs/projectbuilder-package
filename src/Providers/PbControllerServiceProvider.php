@@ -15,10 +15,7 @@ class PbControllerServiceProvider extends ServiceProvider
      */
     public function boot(\Illuminate\Contracts\Http\Kernel $kernel)
     {
-        // Move assets folder to the public disk
-        /* $storage = storage_path();
-        $assets = __DIR__.'/assets';
-        shell_exec("mv -v ".$assets." ".$storage."/public/"); */
+        //
     }
 
     /**
@@ -36,6 +33,5 @@ class PbControllerServiceProvider extends ServiceProvider
         $this->app->make('Anibalealvarezs\Projectbuilder\Controllers\Auth\PbLoginController');
         $this->app->make('Anibalealvarezs\Projectbuilder\Controllers\Auth\PbRegisterController');
         $this->app->make('Anibalealvarezs\Projectbuilder\Controllers\Auth\PbResetPasswordController');
-        $this->app->make('Anibalealvarezs\Projectbuilder\Middleware\PbHttpsMiddleware');
     }
 }
