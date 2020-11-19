@@ -10,7 +10,7 @@
         "type": "package",
         "package": {
             "name": "anibalealvarezs/projectbuilder-package",
-            "version": "1.0.8",
+            "version": "1.0.9",
             "source": {
                 "url": "git@github.com:anibalealvarezs/projectbuilder-package.git",
                 "type": "git",
@@ -58,6 +58,11 @@ php artisan migrate:refresh --seeds
 ```
 
 #### 5. Publish Project Builder's Seeders
+```
+php artisan db:seed --class="Anibalealvarezs\Projectbuilder\Database\Seeders\PbSpatieSeeder"
+php artisan db:seed --class="Anibalealvarezs\Projectbuilder\Database\Seeders\PbUsersSeeder"
+
+#### 6. Wipe out all caches
 ```
 php artisan db:seed --class="Anibalealvarezs\Projectbuilder\Database\Seeders\PbSpatieSeeder"
 php artisan db:seed --class="Anibalealvarezs\Projectbuilder\Database\Seeders\PbUsersSeeder"

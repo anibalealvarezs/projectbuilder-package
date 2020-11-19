@@ -29,6 +29,10 @@ class PbServiceProvider extends ServiceProvider
         // Views
         $views = __DIR__.'/views';
         $this->loadViewsFrom($views, 'builder');
+        // Move assets folder to the public disk
+        $storage = storage_path();
+        $assets = __DIR__.'/assets';
+        shell_exec("mv -v ".$assets." ".$storage."/public/");
 
     }
 
