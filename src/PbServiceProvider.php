@@ -27,7 +27,7 @@ class PbServiceProvider extends ServiceProvider
         // Migrations
         $this->loadMigrationsFrom(__DIR__.'/Database/Migrations');
         // Views
-        $views = resource_path(__DIR__.'/views');
+        $views = __DIR__.'/views';
         $this->loadViewsFrom($views, 'builder');
 
     }
