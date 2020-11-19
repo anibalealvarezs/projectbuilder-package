@@ -1,6 +1,6 @@
 <?php
 
-use Anibalealvarezs\Projectbuilder\Controllers\PbCalculatorController as Calculator;
+use Anibalealvarezs\Projectbuilder\Controllers\Calculator\PbCalculatorController as Calculator;
 
 Route::namespace('Auth')->group(function () {
     Route::get('/login','LoginController@show_login_form')->name('login');
