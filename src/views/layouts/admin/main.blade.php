@@ -5,26 +5,30 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>App Name - @yield('title')</title>
 
-    @yield('styles')
+    @include('builder::layouts.admin.resources.styles')
+    @stack('style_file')
+    @stack('style_custom')
 
 </head>
 <body class="hold-transition sidebar-mini layout-fixed">
 <div class="wrapper">
 
-    @yield('navbar')
+    @include('builder::layouts.admin.sections.navbar')
 
-    @yield('sidebar')
+    @include('builder::layouts.admin.sections.sidebar')
 
     @yield('content')
 
-    @yield('footer')
+    @include('builder::layouts.admin.sections.footer')
 
-    @yield('miscbar')
+    @include('builder::layouts.admin.sections.miscbar')
 
 </div>
 <!-- ./wrapper -->
 
-@yield('scripts')
+@include('builder::layouts.admin.resources.scripts')
+@stack('script_file')
+@stack('script_custom')
 
 </body>
 </html>

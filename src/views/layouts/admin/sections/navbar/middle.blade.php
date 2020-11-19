@@ -1,5 +1,3 @@
-@extends('layouts.admin.sections.navbar')
-@section('middle')
 <!-- SEARCH FORM -->
 <form class="form-inline ml-3">
     <div class="input-group input-group-sm">
@@ -11,4 +9,3 @@
         </div>
     </div>
 </form>
-@endsection

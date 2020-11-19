@@ -1,10 +1,3 @@
-@extends('layouts.admin.main')
-@section('scripts')
-
-        @stack('script_file')
-
-        @stack('script_custom')
-
 <!-- jQuery -->
 <script src="plugins/jquery/jquery.min.js"></script>
 <!-- jQuery UI 1.11.4 -->
@@ -39,4 +32,3 @@
 <script src="dist/js/demo.js"></script>
 <!-- AdminLTE dashboard demo (This is only for demo purposes) -->
 <script src="dist/js/pages/dashboard.js"></script>
-@endsection

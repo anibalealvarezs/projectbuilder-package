@@ -1,13 +1,10 @@
-@extends('layouts.admin.main')
-@section('navbar')
 <!-- Navbar -->
 <nav class="main-header navbar navbar-expand navbar-white navbar-light">
 
-    @yield('left')
+    @include('builder::layouts.admin.sections.navbar.left')
 
-    @yield('middle')
+    @include('builder::layouts.admin.sections.navbar.middle')
 
-    @yield('right')
+    @include('builder::layouts.admin.sections.navbar.right')
 </nav>
 <!-- /.navbar -->
-@endsection

@@ -1,9 +1,9 @@
-@extends('layouts.admin.main')
+@extends('builder::layouts.admin.main')
 @section('content')
 <!-- Content Wrapper. Contains page content -->
 <div class="content-wrapper">
 
-    @yield('header')
+    @include('builder::layouts.admin.sections.content.header')
 
     @yield('main')
 </div>

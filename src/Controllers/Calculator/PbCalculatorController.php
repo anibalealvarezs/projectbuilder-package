@@ -1,12 +1,12 @@
 <?php
 
-namespace Anibalealvarezs\Projectbuilder\Controllers;
+namespace Anibalealvarezs\Projectbuilder\Controllers\Calculator;
 
 use Illuminate\Http\Request;
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
 
-class PbController extends Controller
+class PbCalculatorController extends Controller
 {
     //
     public function add($a, $b){

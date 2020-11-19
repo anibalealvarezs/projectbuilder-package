@@ -1,4 +1,4 @@
-@extends('layouts.front.main')
+@extends('builder::layouts.front.main')
 @section('content')
 
     @yield('content')

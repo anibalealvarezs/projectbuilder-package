@@ -1,4 +1,4 @@
-@extends('layouts.front.main')
+@extends('builder::layouts.front.sections.content')
 @section('content')
 <h1 style="text-align:center">
     Your Result

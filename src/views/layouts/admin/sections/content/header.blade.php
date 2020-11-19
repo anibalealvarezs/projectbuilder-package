@@ -1,5 +1,3 @@
-@extends('layouts.admin.sections.content')
-@section('header')
 <!-- Content Header (Page header) -->
 <div class="content-header">
     <div class="container-fluid">
@@ -17,4 +15,3 @@
     </div><!-- /.container-fluid -->
 </div>
 <!-- /.content-header -->
-@endsection

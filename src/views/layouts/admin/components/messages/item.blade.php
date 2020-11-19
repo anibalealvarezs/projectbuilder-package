@@ -1,4 +1,4 @@
-@push('item')
+@push('message_item')
 <a href="#" class="dropdown-item">
     <!-- Message Start -->
     <div class="media">

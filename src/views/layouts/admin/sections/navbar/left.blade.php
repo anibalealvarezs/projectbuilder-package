@@ -1,5 +1,3 @@
-@extends('layouts.admin.sections.navbar')
-@section('left')
 <!-- Left navbar links -->
 <ul class="navbar-nav">
     <li class="nav-item">
@@ -12,4 +10,3 @@
         <a href="#" class="nav-link">Contact</a>
     </li>
 </ul>
-@endsection

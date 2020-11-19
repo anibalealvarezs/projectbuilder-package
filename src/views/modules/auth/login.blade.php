@@ -1,3 +1,4 @@
+@extends('builder::layouts.front.sections.content')
 @section('login')
 <div class="login-box">
     <div class="login-logo">

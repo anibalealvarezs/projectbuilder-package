@@ -1,11 +1,8 @@
-@extends('layouts.admin.sections.navbar')
-@section('right')
 <!-- Right navbar links -->
 <ul class="navbar-nav ml-auto">
 
-    @yield('messages')
+    @include('messages')
 
-    @yield('notifications')
+    @include('notifications')
 
 </ul>
-@endsection
