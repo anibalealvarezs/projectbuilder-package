@@ -22,6 +22,10 @@
     "require": {
         "php" : "^7.3",
         "laravel/framework": "^8.0",
+        "laravel/jetstream": "^1.6",
+        "laravel/sanctum": "^2.6",
+        "laravel/tinker": "^2.0",
+        "livewire/livewire": "^2.0",
         "spatie/laravel-permission": "^3.17"
     },
     "autoload": {
@@ -33,6 +37,7 @@
         "laravel": {
             "providers": [
                 "Anibalealvarezs\\Projectbuilder\\Providers\\PbComposerServiceProvider",
+                "Anibalealvarezs\\Projectbuilder\\Providers\\PbConfigServiceProvider",
                 "Anibalealvarezs\\Projectbuilder\\Providers\\PbControllerServiceProvider",
                 "Anibalealvarezs\\Projectbuilder\\Providers\\PbMiddlewareServiceProvider",
                 "Anibalealvarezs\\Projectbuilder\\Providers\\PbMigrationServiceProvider",
