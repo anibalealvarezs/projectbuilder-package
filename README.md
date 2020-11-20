@@ -107,3 +107,7 @@ php artisan clear-compiled
 composer dump-autoload
 php artisan optimize
 ```
+
+### Developing Suite
+
+Clone the <a href="https://github.com/anibalealvarezs/builderdev">BuilderDev repository</a> in order to continue this package developing
