@@ -42,22 +42,28 @@
 ],
 ```
 
-#### 2. If not installed, let's install livewire
+#### 2. If not installed, let's requiere jetstream and install livewire
 ```
+composer require laravel/jetstream
 php artisan jetstream:install livewire
 ```
 
-#### 3. Publish Spatie's Migration
+#### 3. Require the package
+```
+composer require anibalealvarezs/projectbuilder-package --no-cache
+```
+
+#### 4. Publish Spatie's Migration
 ```
 php artisan vendor:publish --provider="Spatie\Permission\PermissionServiceProvider"
 ```
 
-#### 4. Clear config cache
+#### 5. Clear config cache
 ```
 php artisan config:clear
 ```
 
-#### 5. Migrate the DB
+#### 6. Migrate the DB
 ```
 php artisan migrate
 ```
