@@ -9,7 +9,7 @@
         "type": "package",
         "package": {
             "name": "anibalealvarezs/projectbuilder-package",
-            "version": "1.0.9",
+            "version": "1.0.10",
             "source": {
                 "url": "git@github.com:anibalealvarezs/projectbuilder-package.git",
                 "type": "git",
@@ -42,17 +42,22 @@
 ],
 ```
 
-#### 2. Publish Spatie's Migration
+#### 2. If not installed, let's install livewire
+```
+php artisan jetstream:install livewire
+```
+
+#### 3. Publish Spatie's Migration
 ```
 php artisan vendor:publish --provider="Spatie\Permission\PermissionServiceProvider"
 ```
 
-#### 3. Clear config cache
+#### 4. Clear config cache
 ```
 php artisan config:clear
 ```
 
-#### 4. Migrate the DB
+#### 5. Migrate the DB
 ```
 php artisan migrate
 ```
@@ -61,24 +66,38 @@ or, in case of migration failure,
 php artisan migrate:refresh --seeds
 ```
 
-#### 5. Publish Project Builder's Seeders
+#### 6. Publish Project Builder's Seeders
 ```
 php artisan db:seed --class="Anibalealvarezs\Projectbuilder\Database\Seeders\PbSpatieSeeder"
 php artisan db:seed --class="Anibalealvarezs\Projectbuilder\Database\Seeders\PbUsersSeeder"
 ```
 
-#### 6. Add "pbstorage" link to "app/filesystems.php"
+#### 7. Add "pbstorage" link to "app/filesystems.php"
 ```
 'links' => [
         public_path('pbstorage') => app_path('vendor/anibalealvarezs/projectbuilder-package/src/assets'),
     ],
 ```
 
-#### 7. Create default "storage" and "pbstorage" links
+#### 8. Create default "storage" and "pbstorage" links
 ```
 php artisan storage:link
 ```
-if "pbstorage" links show error, navigate to "public folder", manually delete the link, and create a newone with the following command:
+if "pbstorage" links show error, navigate to "public folder", manually delete the link, and create a new one with the following command:
 ```
 ln -s ../vendor/anibalealvarezs/projectbuilder-package/src/assets pbstorage
+```
+
+### Useful Commands:
+
+```
+php artisan cache:clear
+php artisan route:clear
+php artisan config:clear
+php artisan view:clear
+php artisan view:cache
+
+php artisan clear-compiled
+composer dump-autoload
+php artisan optimize
 ```
