@@ -76,6 +76,7 @@ php artisan migrate:refresh --seeds
 ```
 php artisan db:seed --class="Anibalealvarezs\Projectbuilder\Database\Seeders\PbSpatieSeeder"
 php artisan db:seed --class="Anibalealvarezs\Projectbuilder\Database\Seeders\PbUsersSeeder"
+php artisan db:seed --class="Anibalealvarezs\Projectbuilder\Database\Seeders\PbLoggerSeeder"
 ```
 
 #### 7. Add "pbstorage" link to "app/filesystems.php"
