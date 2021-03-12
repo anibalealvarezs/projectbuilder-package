@@ -14,7 +14,7 @@ class PbLoggerSeeder extends Seeder
      */
     public function run()
     {
-        // anibalealvarezs
+        // First Log Message
         Logger::create(['message' => 'App Created']);
     }
 }
