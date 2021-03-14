@@ -2,10 +2,6 @@
 
 ### Instructions for installation:
 
-#### 0. Pre-installation check:
-
-If you already installed Jetstream, jump to the [3rd step](https://github.com/anibalealvarezs/restaurant-menu-package#3-require-the-package)
-
 #### 1. Add the following lines to composer.json:
 ```
 "repositories":[
@@ -14,7 +10,7 @@ If you already installed Jetstream, jump to the [3rd step](https://github.com/an
 ],
 ```
 
-#### 2. If not installed, let's requiere jetstream and install livewire
+#### 2. If ***NOT*** installed, let's requiere jetstream and install livewire
 ```
 composer require laravel/jetstream
 php artisan jetstream:install livewire
@@ -41,10 +37,15 @@ php artisan migrate
 ```
 or, in case of migration failure (***NOT FOR RUNNING PROJECTS SINCE DB WILL BE WIPED OUT***),
 ```
-php artisan migrate:refresh --seeds
+php artisan migrate:refresh --seed
 ```
 
 #### 7. Publish Project Builder's Seeders
+(***ONLY IF INSTALLING FOR THE VERY FIRST TIME SINCE SEEDS COULD GET DUPLICATED***)
+```
+php artisan db:seed
+```
+If not, install these seeds manually
 ```
 php artisan db:seed --class="Anibalealvarezs\Projectbuilder\Database\Seeders\PbSpatieSeeder"
 php artisan db:seed --class="Anibalealvarezs\Projectbuilder\Database\Seeders\PbUsersSeeder"
