@@ -8,6 +8,8 @@ class PbConfig extends Model
 {
     protected $table = 'config';
 
+    public $timestamps = false;
+
     /**
      * The attributes that are mass assignable.
      *

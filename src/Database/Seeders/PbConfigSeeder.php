@@ -1,6 +1,6 @@
 <?php
 
-namespace Database\Seeders;
+namespace Anibalealvarezs\Projectbuilder\Database\Seeders;
 
 use Anibalealvarezs\Projectbuilder\Models\PbConfig;
 use Illuminate\Database\Seeder;

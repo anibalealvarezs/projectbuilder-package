@@ -9,7 +9,7 @@
     ],
     "homepage": "https://anibalalvarez.com",
     "license": "MIT",
-    "version" : "1.0.11",
+    "version" : "1.0.12",
     "type" : "package",
     "authors": [
         {
@@ -43,7 +43,8 @@
                 "Anibalealvarezs\\Projectbuilder\\Providers\\PbMiddlewareServiceProvider",
                 "Anibalealvarezs\\Projectbuilder\\Providers\\PbMigrationServiceProvider",
                 "Anibalealvarezs\\Projectbuilder\\Providers\\PbRouteServiceProvider",
-                "Anibalealvarezs\\Projectbuilder\\Providers\\PbViewServiceProvider"
+                "Anibalealvarezs\\Projectbuilder\\Providers\\PbViewServiceProvider",
+                "Anibalealvarezs\\Projectbuilder\\Providers\\PbSeederServiceProvider"
             ]
         }
     },
