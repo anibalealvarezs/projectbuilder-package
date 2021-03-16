@@ -2,7 +2,7 @@
 
 namespace Anibalealvarezs\Projectbuilder\Database\Seeders;
 
-use Anibalealvarezs\Projectbuilder\Models\PbConfig;
+use Anibalealvarezs\Projectbuilder\Models\PbConfig as Config;
 use Illuminate\Database\Seeder;
 
 class PbConfigSeeder extends Seeder
@@ -15,7 +15,7 @@ class PbConfigSeeder extends Seeder
     public function run()
     {
         // Default Config
-        PbConfig::create(['key' => '_APP_NAME_', 'value' => 'Builder']);
-        PbConfig::create(['key' => '_FORCE_HTTPS_', 'value' => false]);
+        Config::create(['key' => '_APP_NAME_', 'value' => 'Builder']);
+        Config::create(['key' => '_FORCE_HTTPS_', 'value' => false]);
     }
 }
