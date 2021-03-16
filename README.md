@@ -10,10 +10,10 @@
 ],
 ```
 
-#### 2. If ***NOT*** installed, let's requiere jetstream and install livewire
+#### 2. If ***NOT*** installed, let's requiere jetstream and install inertia
 ```
 composer require laravel/jetstream
-php artisan jetstream:install livewire
+php artisan jetstream:install inertia --teams
 ```
 
 #### 3. Require the package
@@ -49,6 +49,7 @@ If not, install these seeds manually
 ```
 php artisan db:seed --class="Anibalealvarezs\Projectbuilder\Database\Seeders\PbSpatieSeeder"
 php artisan db:seed --class="Anibalealvarezs\Projectbuilder\Database\Seeders\PbUsersSeeder"
+php artisan db:seed --class="Anibalealvarezs\Projectbuilder\Database\Seeders\PbTeamSeeder"
 php artisan db:seed --class="Anibalealvarezs\Projectbuilder\Database\Seeders\PbLoggerSeeder"
 php artisan db:seed --class="Anibalealvarezs\Projectbuilder\Database\Seeders\PbConfigSeeder"
 ```

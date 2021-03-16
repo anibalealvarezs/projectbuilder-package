@@ -11,10 +11,6 @@ use Anibalealvarezs\Projectbuilder\Models\PbUser;
 use Auth;
 use DB;
 
-//Importing laravel-permission models
-use Spatie\Permission\Models\Role;
-use Spatie\Permission\Models\Permission;
-
 //Enables us to output flash messaging
 use Session;
 
@@ -27,7 +23,10 @@ class PbUserController extends Controller
      */
     public function index()
     {
-        //
+        $users = PbUser::latest()->paginate(5);
+
+        return view('builder::modules.users.index', compact('users'))
+            ->with('i', (request()->input('page', 1) - 1) * 5);
     }
 
     /**
@@ -37,7 +36,7 @@ class PbUserController extends Controller
      */
     public function create()
     {
-        //
+        return view('builder::modules.users.create');
     }
 
     /**
@@ -48,7 +47,16 @@ class PbUserController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'name' => 'required',
+            'email' => 'required',
+            'password' => 'required'
+        ]);
+
+        PbUser::create($request->all());
+
+        return redirect()->route('builder::modules.users.index')
+            ->with('success', 'User created successfully.');
     }
 
     /**
@@ -57,9 +65,9 @@ class PbUserController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show($user)
     {
-        //
+        return view('builder::modules.users.show', compact('user'));
     }
 
     /**
@@ -68,9 +76,9 @@ class PbUserController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+    public function edit($user)
     {
-        //
+        return view('builder::modules.users.edit', compact('user'));
     }
 
     /**
@@ -80,9 +88,17 @@ class PbUserController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, $user)
     {
-        //
+        $request->validate([
+            'name' => 'required',
+            'email' => 'required',
+            'password' => 'required'
+        ]);
+        $user->update($request->all());
+
+        return redirect()->route('builder::modules.users.index')
+            ->with('success', 'User updated successfully');
     }
 
     /**
@@ -91,8 +107,11 @@ class PbUserController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy($user)
     {
-        //
+        $user->delete();
+
+        return redirect()->route('builder::modules.users.index')
+            ->with('success', 'User deleted successfully');
     }
 }

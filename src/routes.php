@@ -1,9 +1,8 @@
 <?php
 
-use Anibalealvarezs\Projectbuilder\Controllers\Calculator\PbCalculatorController as Calculator;
+use Anibalealvarezs\Projectbuilder\Controllers\User\PbUserController as UserController;
 
-Route::get('add/{a}/{b}', [Calculator::class, 'add'])->where(['a' => '[-0-9]+', 'b' => '[0-9]+']);
-Route::get('substract/{a}/{b}', [Calculator::class, 'substract'])->where(['a' => '[-0-9]+', 'b' => '[0-9]+']);
+Route::resource('users', UserController::class)->name('*', 'users');
 
 Route::get('/clear-cache', function() {
     Artisan::call('cache:clear');
