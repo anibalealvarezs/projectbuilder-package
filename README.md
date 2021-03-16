@@ -4,9 +4,11 @@
 
 #### 1. Add the following lines to composer.json:
 ```
-"repositories":[
-    {"type": "composer", "url": "https://repo.packagist.com/anibal-alvarez/"},
-    {"packagist.org": false}
+"repositories": [
+    {
+        "type": "composer",
+        "url": "https://satis.anibalalvarez.com"
+    }
 ],
 ```
 
