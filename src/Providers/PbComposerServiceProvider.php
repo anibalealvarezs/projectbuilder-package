@@ -17,8 +17,7 @@ class PbComposerServiceProvider extends ServiceProvider
     {
         // View Composers
         View::composers([
-            'Anibalealvarezs\Projectbuilder\ViewComposers\ScriptsComposer' => ['builder::layouts.front.resources.scripts'],
-            'Anibalealvarezs\Projectbuilder\ViewComposers\StylesComposer' => ['builder::layouts.front.resources.styles']
+            // 'Anibalealvarezs\Projectbuilder\ViewComposers\ScriptsComposer' => ['builder::layouts.front.resources.scripts']
         ]);
     }
 
