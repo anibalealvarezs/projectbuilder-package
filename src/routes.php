@@ -1,8 +1,10 @@
 <?php
 
 use Anibalealvarezs\Projectbuilder\Controllers\User\PbUserController as UserController;
+use Anibalealvarezs\Projectbuilder\Controllers\Config\PbConfigController as ConfigController;
 
-Route::resource('users', UserController::class)->name('*', 'users');
+Route::resource('users', UserController::class)->middleware('web')->name('*', 'users');
+Route::resource('configs', ConfigController::class)->middleware('web')->name('*', 'configs');
 
 Route::get('/clear-cache', function() {
     Artisan::call('cache:clear');

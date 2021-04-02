@@ -2,6 +2,7 @@
 
 namespace Anibalealvarezs\Projectbuilder\Providers;
 
+use Anibalealvarezs\Projectbuilder\Helpers\AeasHelpers as AeasHelpers;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Routing\UrlGenerator;
 use Illuminate\Support\Facades\View;
@@ -25,14 +26,16 @@ class PbControllerServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        $this->app->make('Anibalealvarezs\Projectbuilder\Controllers\Auth\PbForgotPasswordController');
-        $this->app->make('Anibalealvarezs\Projectbuilder\Controllers\Auth\PbLoginController');
-        $this->app->make('Anibalealvarezs\Projectbuilder\Controllers\Auth\PbRegisterController');
-        $this->app->make('Anibalealvarezs\Projectbuilder\Controllers\Auth\PbResetPasswordController');
-        $this->app->make('Anibalealvarezs\Projectbuilder\Controllers\Config\PbConfigController');
-        $this->app->make('Anibalealvarezs\Projectbuilder\Controllers\Logger\PbLoggerController');
-        $this->app->make('Anibalealvarezs\Projectbuilder\Controllers\Permission\PbPermissionController');
-        $this->app->make('Anibalealvarezs\Projectbuilder\Controllers\Permission\PbRoleController');
-        $this->app->make('Anibalealvarezs\Projectbuilder\Controllers\User\PbUserController');
+        $aeas = new AeasHelpers();
+        $this->app->make($aeas->vendor.'\\'.$aeas->package.'\Controllers\Auth\\'.$aeas->prefix.'ForgotPasswordController');
+        $this->app->make($aeas->vendor.'\\'.$aeas->package.'\Controllers\Auth\\'.$aeas->prefix.'LoginController');
+        $this->app->make($aeas->vendor.'\\'.$aeas->package.'\Controllers\Auth\\'.$aeas->prefix.'RegisterController');
+        $this->app->make($aeas->vendor.'\\'.$aeas->package.'\Controllers\Auth\\'.$aeas->prefix.'ResetPasswordController');
+        $this->app->make($aeas->vendor.'\\'.$aeas->package.'\Controllers\Config\\'.$aeas->prefix.'ConfigController');
+        $this->app->make($aeas->vendor.'\\'.$aeas->package.'\Controllers\Logger\\'.$aeas->prefix.'LoggerController');
+        $this->app->make($aeas->vendor.'\\'.$aeas->package.'\Controllers\Permission\\'.$aeas->prefix.'PermissionController');
+        $this->app->make($aeas->vendor.'\\'.$aeas->package.'\Controllers\Permission\\'.$aeas->prefix.'RoleController');
+        $this->app->make($aeas->vendor.'\\'.$aeas->package.'\Controllers\User\\'.$aeas->prefix.'UserController');
+        $this->app->make($aeas->vendor.'\\'.$aeas->package.'\Controllers\Config\\'.$aeas->prefix.'ConfigController');
     }
 }

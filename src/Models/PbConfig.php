@@ -3,6 +3,7 @@
 namespace Anibalealvarezs\Projectbuilder\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 
 class PbConfig extends Model
 {
@@ -16,6 +17,18 @@ class PbConfig extends Model
      * @var array
      */
     protected $fillable = [
-        'key', 'values'
+        'configkey', 'configvalue', 'name', 'description'
     ];
+
+    public static function findByKey($key)
+    {
+        $config = DB::table('config')
+                ->select('id')
+                ->where('configkey', $key)
+                ->first();
+        if ($config->id) {
+            return self::find($config->id);
+        }
+        return null;
+    }
 }

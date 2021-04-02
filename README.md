@@ -71,6 +71,30 @@ if "pbstorage" links show error, navigate to "public folder", manually delete th
 ```
 ln -s ../vendor/anibalealvarezs/projectbuilder-package/src/assets pbstorage
 ```
+================================================================================
+
+(Pasos 10 al 12 desactivados por los momentos)
+
+### 10. Publish Vue components
+```
+php artisan vendor:publish --provider="Anibalealvarezs\Projectbuilder\Providers\PbViewServiceProvider" --tag="builder-components"
+```
+
+### 11. Recompile app.js
+```
+npm run dev
+```
+
+### 12. Require package's app.js in main app.js (/resources/js/app.js)
+```
+require('./../../assets/Projectbuilder/js/app')
+```
+=================================================================================
+
+### 13. Add "Sweetalert2" to /webpack.mix.js
+```
+mix.js('node_modules/sweetalert2/dist/sweetalert2.js', 'public/js');
+```
 
 ### Useful Commands:
 
