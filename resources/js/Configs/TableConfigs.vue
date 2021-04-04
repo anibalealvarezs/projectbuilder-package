@@ -8,12 +8,12 @@
             </Header>
             <Body>
                 <slot>
-                    <TrBody v-for="config in configs" :item="config" :fields="fields" :hiddenid="buildHiddenId" @clicked-edit-item="onConfigClicked" />
+                    <TrBody v-for="config in configs" :item="config" :fields="fields" :hiddenid="buildHiddenId" @clicked-edit-item="onItemClicked" />
                 </slot>
             </Body>
         </slot>
-        <div v-if="existsFormButton" :id="buildHiddenId" class="infinite-hidden">>
-            <ConfigForm :data="data" :key="itemFormKey" />
+        <div v-if="existsFormButton" :id="buildHiddenId" class="infinite-hidden">
+            <ConfigForm :data="data" :keyid="generateRandom" :key="itemFormKey" />
         </div>
     </Container>
 </template>
@@ -25,6 +25,7 @@ import Body from "@/Pages/Projectbuilder/Tables/Body"
 import TrHead from "@/Pages/Projectbuilder/Tables/TrHead"
 import TrBody from "@/Pages/Projectbuilder/Tables/TrBody"
 import ConfigForm from "@/Pages/Projectbuilder/Configs/ConfigForm"
+import { TableFields as Table } from "../../../../../public/js/Projectbuilder/projectbuilder"
 
 export default {
     name: "TableConfigs",
@@ -39,130 +40,66 @@ export default {
         Header,
         Body
     },
+    setup() {
+        const table = new Table
+        table.customField(
+            "name",
+            "Name"
+        )
+        table.customField(
+            "configkey",
+            "Key"
+        )
+        table.customField(
+            "configvalue",
+            "Value"
+        )
+        table.customField(
+            "description",
+            "Description"
+        )
+        table.pushActions({
+            "update": {
+                route: "configs.edit",
+                formitem: "config",
+                altforuser: {}
+            },
+            "delete": {
+                route: "configs.destroy",
+                formitem: "config",
+                altforuser: {}
+            }
+        })
+        let fields = table.fields
+        return { fields }
+    },
     data() {
         return {
-            fields: {
-                "item" : {
-                    name: "#",
-                    style: {
-                        centered: true,
-                        bold: true,
-                        width: "w-20",
-                    },
-                    buttons: [],
-                    href: {}
-                },
-                "name" : {
-                    name: "Name",
-                    style: {
-                        centered: false,
-                        bold: false,
-                        width: "",
-                    },
-                    buttons: [],
-                    href: {}
-                },
-                "configkey" : {
-                    name: "Key",
-                    style: {
-                        centered: false,
-                        bold: false,
-                        width: "",
-                    },
-                    buttons: [],
-                    href: {}
-                },
-                "configvalue" : {
-                    name: "Value",
-                    style: {
-                        centered: false,
-                        bold: false,
-                        width: "",
-                    },
-                    buttons: [],
-                    href: {}
-                },
-                "description" : {
-                    name: "Description",
-                    style: {
-                        centered: false,
-                        bold: false,
-                        width: "",
-                    },
-                    buttons: [],
-                    href: {}
-                },
-                "actions" : {
-                    name: "Actions",
-                    style: {
-                        centered: true,
-                        bold: false,
-                        width: "w-60",
-                    },
-                    buttons: [
-                        {
-                            text: "Update",
-                            route: "configs.edit",
-                            id: true,
-                            callback: null,
-                            style: "secondary",
-                            type: "form",
-                            formitem: "config",
-                            method: "PUT"
-                        },
-                        {
-                            text: "Delete",
-                            route: "configs.destroy",
-                            id: true,
-                            callback: null,
-                            style: "danger",
-                            type: "form",
-                            formitem: "config",
-                            method: "DELETE"
-                        }
-                    ],
-                    href: {}
-                }
-            },
             data: {},
             itemFormKey: 0
         }
     },
     methods: {
-        onConfigClicked(value) {
-            for(let i in value) {
-                if (i == "id") {
-                    this.data['item'] = value[i]
-                } else {
-                    this.data[i] = value[i]
-                }
-            }
-            this.itemFormKey += 1
+        onItemClicked(value) {
+            let result = Table.onItemClicked(value, this.data, this.itemFormKey)
+            this.data = result.data
+            this.itemFormKey = result.key
         }
     },
     computed: {
         existsFormButton() {
-            let b = this.fields.actions.buttons;
-            if (b) {
-                return b.some((e) => {
-                    return e.type === "form"
-                });
-            }
-            return false
+            return Table.existsFormButton(this.fields.actions.buttons)
         },
         buildHiddenId() {
-            return (this.existsFormButton ?
-                    'hidden-form-' + Math.floor((Math.random() * 999999999) + 1) :
-                        "")
+            return Table.buildHiddenId()
+        },
+        generateRandom() {
+            return Table.generateRandom()
         }
     }
 }
 </script>
 
 <style scoped>
-    .infinite-hidden {
-        position: fixed;
-        top: 999999px;
-        letf: 999999px;
-    }
+
 </style>

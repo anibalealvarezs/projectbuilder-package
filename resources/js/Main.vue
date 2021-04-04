@@ -10,15 +10,10 @@
 
 <script>
 export default {
-    name: "Main",
-    setup() {
-        let projectBuilder = document.createElement('script');
-        projectBuilder.setAttribute('src',"/js/projectbuilder.js");
-        document.head.appendChild(projectBuilder);
-    },
+    name: "Main"
 }
 </script>
 
 <style scoped>
-
+    @import "../../../../public/css/Projectbuilder/projectbuilder.css";
 </style>

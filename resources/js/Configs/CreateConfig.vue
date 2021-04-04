@@ -9,7 +9,7 @@
         <Main>
             <slot>
                 <div class="p-12 sm:px-20 bg-white border-b border-gray-200">
-                    <ConfigForm :data="{}" key="" />
+                    <ConfigForm :data="{}" />
                 </div>
             </slot>
         </Main>

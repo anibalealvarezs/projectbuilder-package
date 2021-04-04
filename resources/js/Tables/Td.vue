@@ -2,10 +2,12 @@
     <td scope="row"
         :class="buildTdClasses()">
         <div v-for="(button, i) in field.buttons" :key="i" class="float-left">
+            <!-- BUTTON HREF -->
             <inertia-link
                 v-if="button.type == 'link'"
                 :href="buildRoute(button.route, item.id)"
             >
+                <!-- Primary Button -->
                 <Button
                     v-if="button.style == 'primary'"
                     type="button"
@@ -13,6 +15,7 @@
                 >
                     {{ button.text }}
                 </Button>
+                <!-- Secondary Button -->
                 <SecondaryButton
                     v-if="button.style == 'secondary'"
                     type="button"
@@ -20,6 +23,7 @@
                 >
                     {{ button.text }}
                 </SecondaryButton>
+                <!-- Danger Button -->
                 <DangerButton
                     v-if="button.style == 'danger'"
                     type="button"
@@ -28,11 +32,13 @@
                     {{ button.text }}
                 </DangerButton>
             </inertia-link>
+            <!-- BUTTON FORM -->
             <form
                 v-if="button.type == 'form'"
                 :action="buildRoute(button.route, item.id)"
                 method="post"
             >
+                <!-- Primary Button -->
                 <Button
                     v-if="button.style == 'primary'"
                     @click="processAction(button, item)"
@@ -41,6 +47,7 @@
                 >
                     {{ button.text }}
                 </Button>
+                <!-- Secondary Button -->
                 <SecondaryButton
                     v-if="button.style == 'secondary'"
                     @click="processAction(button, item)"
@@ -49,6 +56,7 @@
                 >
                     {{ button.text }}
                 </SecondaryButton>
+                <!-- Danger Button -->
                 <DangerButton
                     v-if="button.style == 'danger'"
                     @click="processAction(button, item)"
@@ -59,16 +67,19 @@
                 </DangerButton>
             </form>
         </div>
+        <!-- HREF -->
         <inertia-link
             v-if="field.href.hasOwnProperty('route')"
             :href="buildRoute(field.href.route, item.id)"
         >
+            <!-- HREF CONTENT -->
             <span
                 :class="buildSpanClasses()"
             >
                 {{ cellValue }}
             </span>
         </inertia-link>
+        <!-- NO HREF CONTENT -->
         <span
             v-if="!field.href.hasOwnProperty('route')"
             :class="buildSpanClasses()"
@@ -86,6 +97,7 @@ import Swal from "sweetalert2"
 import UserForm from "@/Pages/Projectbuilder/Users/UserForm"
 import { computed } from 'vue'
 import { usePage } from '@inertiajs/inertia-vue3'
+import { TableFields as Table } from "../../../../../public/js/Projectbuilder/projectbuilder"
 
 export default {
     name: "Td",
@@ -111,42 +123,24 @@ export default {
     },
     computed: {
         fixKey() {
-            if (this.index == "item") {
-                return "id"
-            }
-            return this.index
+            return Table.fixKey(this.index)
         },
         cellValue() {
             return this.item[this.fixKey]
         }
     },
     methods: {
-        buildUserForm() {
-
-        },
         buildSpanClasses() {
-            let clase = ""
-            clase += this.isBold()
-            clase += this.isCentered()
-            return clase
+            return Table.buildSpanClasses(this.field.style.bold, this.field.style.centered)
         },
         buildTdClasses() {
-            let clase = "border px-4 py-2"
-            clase += this.isCentered()
-            return clase
+            return Table.buildTdClasses(this.field.style.centered)
         },
         isBold() {
-            if (this.field.style.bold) {
-                return " font-semibold";
-            }
-            return ""
+            return Table.isBold(this.field.style.bold)
         },
         isCentered() {
-            let ret = "";
-            if (this.field.style.centered) {
-                ret += " text-center"
-            }
-            return ret
+            return Table.isCentered(this.field.style.centered)
         },
         buildRoute(r, id) {
             if (id) {
@@ -154,69 +148,53 @@ export default {
             }
             return route(r)
         },
-        buildButtonClasses(color) {
+        buildButtonClasses() {
             return "mx-1"
         },
-        processAction(b, u) {
+        processAction(b, i) {
             switch(b.text) {
                 case "Create":
                 case "Update":
                     let action = true;
                     if (b.altforuser.hasOwnProperty('altroute')) {
-                        if (u[b.altforuser.key] == this.user[b.altforuser.key]) {
+                        if (i[b.altforuser.key] == this.user[b.altforuser.key]) {
                             action = false;
                             window.location.href = route(b.altforuser.altroute);
                         }
                     }
                     if (action) {
-                        this.loadForm(b, u)
+                        this.loadForm(b, i)
                     }
                     break
                 case "Delete":
-                    this.confirmAndSubmit(b, u.id)
+                    this.confirmAndSubmit(b, i.id)
                     break
                 default:
                     break
             }
         },
         loadForm(b, i) {
-            Swal.fire({
-                title: b.text + ' ' + b.formitem,
-                html: '<div id="formmodal" class="p-12 sm:px-20 bg-white border-b border-gray-200"></div>',
-                confirmButtonText: b.text,
-                showCloseButton: true,
-                showCancelButton: false,
-                showConfirmButton: false,
-                width: 800,
-                didOpen: () => {
-                    let hidden = document.getElementById(this.hiddenid);
-                    let formodal = document.getElementById('formmodal');
-                    formodal.append(hidden.childNodes[0]);
-                    this.$emit('clicked-edit-item', i);
-                },
-                willClose: () => {
-                    let hidden = document.getElementById(this.hiddenid);
-                    let formodal = document.getElementById('formmodal');
-                    hidden.append(formodal.childNodes[0]);
-                    this.$emit('clicked-edit-item', {});
-                }
-            });
+            let swalConfig = Table.buildSwalLoadFormConfig(b)
+            swalConfig['didOpen'] = () => {
+                Table.appendToSwal(this.hiddenid)
+                this.$emit('clicked-edit-item', i)
+            }
+            swalConfig['willClose'] = () => {
+                Table.removeFromSwal(this.hiddenid)
+                this.$emit('clicked-edit-item', {})
+            }
+            Swal.fire(swalConfig);
         },
         confirmAndSubmit(b, i) {
-            let data = {
-                id: i
-            }
-            Swal.fire({
-                title: b.text + ' ' + b.formitem,
-                text: 'Are you sure you want to proceed?',
-                icon: 'warning',
-                confirmButtonText: b.text
-            }).then((result) => {
-                if (result['isConfirmed']){
-                    data._method = b.method;
-                    this.$inertia.post(this.buildRoute(b.route, i), data)
-                }
-            })
+            let data = { id: i }
+            let swalConfig = Table.buildSwalConfirmAndSubmitConfig(b)
+            Swal.fire(swalConfig)
+                .then((result) => {
+                    if (result['isConfirmed']){
+                        data._method = b.method;
+                        this.$inertia.post(this.buildRoute(b.route, i), data)
+                    }
+                })
         }
     },
     setup() {

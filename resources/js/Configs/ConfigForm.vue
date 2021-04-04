@@ -1,41 +1,74 @@
 <template>
-    <form :action="getAction" method="POST" class="w-full max-w-lg">
-        <input type="hidden" name="_method" :value="getMethod">
-        <input type="hidden" name="_token" :value="csrf">
+    <form @submit.prevent="submit" class="w-full max-w-lg">
         <div class="flex flex-wrap -mx-3 mb-6">
             <!-- name -->
             <div class="w-full px-3 mb-6 md:mb-0">
-                <label class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2" for="grid-name">
+                <label class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2" :for="'grid-name-' + keyid">
                     Name
                 </label>
-                <input id="grid-name" name="name" type="text" :value="data.name" placeholder="Name" class="appearance-none block w-full bg-gray-200 text-gray-700 border border-red-500 rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white">
+                <input
+                    v-model="form.name"
+                    :id="'grid-name-' + keyid"
+                    name="name"
+                    type="text"
+                    placeholder="Name"
+                    class="appearance-none block w-full bg-gray-200 text-gray-700 border border-red-500 rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white"
+                    readonly="readonly"
+                    @mouseover="disableReadonly"
+                >
             </div>
             <!-- key -->
             <div class="w-full px-3">
-                <label class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2" for="grid-key">
+                <label class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2" :for="'grid-key-' + keyid">
                     Key
                 </label>
-                <input id="grid-key" name="configkey" type="text" :value="data.configkey" placeholder="Key" :readonly="readonly" class="appearance-none block w-full bg-gray-200 text-gray-700 border border-red-500 rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white">
+                <input
+                    v-model="form.configkey"
+                    :id="'grid-key-' + keyid"
+                    name="configkey"
+                    type="text"
+                    placeholder="Key"
+                    class="appearance-none block w-full bg-gray-200 text-gray-700 border border-red-500 rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white"
+                    :readonly="readonly"
+                >
             </div>
             <!-- value -->
             <div class="w-full px-3">
-                <label class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2" for="grid-value">
+                <label class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2" :for="'grid-value-' + keyid">
                     Value
                 </label>
-                <input id="grid-value" name="configvalue" type="text" :value="data.configvalue" placeholder="Value" class="appearance-none block w-full bg-gray-200 text-gray-700 border border-red-500 rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white">
+                <input
+                    v-model="form.configvalue"
+                    :id="'grid-value-' + keyid"
+                    name="configvalue"
+                    type="text"
+                    placeholder="Value"
+                    class="appearance-none block w-full bg-gray-200 text-gray-700 border border-red-500 rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white"
+                    readonly="readonly"
+                    @mouseover="disableReadonly"
+                >
             </div>
             <!-- description -->
             <div class="w-full px-3">
-                <label class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2" for="grid-description">
+                <label class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2" :for="'grid-description-' + keyid">
                     Description
                 </label>
-                <textarea id="grid-description" name="description" placeholder="description" class="appearance-none block w-full bg-gray-200 text-gray-700 border border-red-500 rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white">{{ data.description }}</textarea>
+                <textarea
+                    v-model="form.description"
+                    :id="'grid-description-' + keyid"
+                    name="description"
+                    placeholder="description"
+                    class="appearance-none block w-full bg-gray-200 text-gray-700 border border-red-500 rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white"
+                    readonly="readonly"
+                    @mouseover="disableReadonly"
+                >
+                </textarea>
             </div>
         </div>
         <div class="flex flex-wrap -mx-3 mb-2 items-center justify-between">
             <!-- submit -->
             <div class="w-full md:w-1/2 px-3">
-                <Button type="submit">{{ buttontext }}</Button>
+                <Button type="submit" :disabled="form.processing">{{ buttontext }}</Button>
             </div>
         </div>
     </form>
@@ -43,11 +76,15 @@
 
 <script>
 import Button from "@/Jetstream/Button"
+import { reactive } from 'vue'
+import { Inertia } from '@inertiajs/inertia'
+import Swal from "sweetalert2"
 
 export default {
     name: "ConfigForm",
     props: {
         data: Object,
+        keyid: String
     },
     components: {
         Button
@@ -58,21 +95,38 @@ export default {
         }
     },
     methods: {
-        /* */
+        disableReadonly(event) {
+            document.getElementById(event.toElement.id).readOnly = false
+        }
     },
     computed: {
-        getAction() {
-            return (this.data.item ? "/configs/"+ this.data.item : "/configs")
-        },
-        getMethod() {
-            return (this.data.item ? "PUT" : "POST")
-        },
-        csrf() {
-            return document.querySelector('meta[name="csrf-token"]').getAttribute('content');
-        },
         readonly() {
             return this.data.hasOwnProperty('item')
         }
+    },
+    setup (props) {
+        const form = reactive({
+            name: props.data.name,
+            configkey: props.data.configkey,
+            configvalue: props.data.configvalue,
+            description: props.data.description
+        })
+
+        function submit() {
+            if (props.data.hasOwnProperty('item')) {
+                Inertia.put("/configs/"+ props.data.item, form, {
+                    preserveScroll: true,
+                    onSuccess: () => Swal.close()
+                })
+            } else {
+                Inertia.post("/configs", form, {
+                    preserveScroll: true,
+                    onSuccess: () => Swal.close()
+                })
+            }
+        }
+
+        return { form, submit }
     }
 }
 </script>

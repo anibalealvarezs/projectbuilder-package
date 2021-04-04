@@ -86,17 +86,21 @@ php artisan vendor:publish --provider="Anibalealvarezs\Projectbuilder\Providers\
 ### 11. Add resources to /webpack.mix.js
 ```
 mix.js('node_modules/sweetalert2/dist/sweetalert2.js', 'public/js');
-mix.js('vendor/anibalealvarezs/projectbuilder-package/src/assets/js/projectbuilder.js', 'public/js');
 ```
 
-### 12. Recompile app.js
+### 12. Install new resources as dependencies
+```
+npm i sweetalert2
+```
+
+### 13. Recompile app.js
 For production:
 ```
 npm run prod
 ```
 For developing:
 ```
-npm run dev
+npm run watch
 ```
 
 ### Useful Commands:

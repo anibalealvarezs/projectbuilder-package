@@ -242,7 +242,7 @@
     import JetDropdownLink from '@/Jetstream/DropdownLink'
     import JetNavLink from '@/Jetstream/NavLink'
     import JetResponsiveNavLink from '@/Jetstream/ResponsiveNavLink'
-    import {Helpers} from "../../../../../../public/js/Projectbuilder/projectbuilder";
+    import { Helpers } from "../../../public/js/Projectbuilder/projectbuilder";
 
     export default {
         components: {

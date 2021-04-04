@@ -8,12 +8,12 @@
             </Header>
             <Body>
                 <slot>
-                    <TrBody v-for="user in users" :item="user" :fields="fields" :hiddenid="buildHiddenId" @clicked-edit-item="onUserClicked" />
+                    <TrBody v-for="user in users" :item="user" :fields="fields" :hiddenid="buildHiddenId" @clicked-edit-item="onItemClicked" />
                 </slot>
             </Body>
         </slot>
         <div v-if="existsFormButton" :id="buildHiddenId" class="infinite-hidden">
-            <UserForm :data="data" :key="itemFormKey" />
+            <UserForm :data="data" :keyid="generateRandom" :key="itemFormKey" />
         </div>
     </Container>
 </template>
@@ -25,18 +25,7 @@ import Body from "@/Pages/Projectbuilder/Tables/Body"
 import TrHead from "@/Pages/Projectbuilder/Tables/TrHead"
 import TrBody from "@/Pages/Projectbuilder/Tables/TrBody"
 import UserForm from "@/Pages/Projectbuilder/Users/UserForm"
-import ProjectBuilder from "../../../../../public/js/Projectbuilder/projectbuilder"
-// import { ProjectBuilder } from "../../../../../public/js/projectbuilder"
-// import * as _ProjectBuilder from "../../../../../public/js/projectbuilder"
-// import { customField, pushActions } from "../../../../../public/js/projectbuilder"
-// const {defineFields, customField} = require("../../../../../public/js/projectbuilder")
-// const { ProjectBuilder } = require("../../../../../public/js/projectbuilder")
-// const ProjectBuilder = require("../../../../../public/js/projectbuilder").default
-// import defineFields from "../../../../../public/js/projectbuilder"
-// var ProjectBuilder = require('../../../../../public/js/projectbuilder');
-
-// import {defineFields, customField, pushActions} from "../../../../../packages/anibalealvarezs/projectbuilder-package/src/assets/js/projectbuilder"
-// import ProjectBuilder from "../../../../../packages/anibalealvarezs/projectbuilder-package/src/assets/js/projectbuilder"
+import { TableFields as Table } from "../../../../../public/js/Projectbuilder/projectbuilder"
 
 export default {
     name: "TableUsers",
@@ -52,28 +41,27 @@ export default {
         Body
     },
     setup() {
-        const projectbuilder = new ProjectBuilder
-        console.log(projectbuilder.fields)
-        projectbuilder.customField(
+        const table = new Table
+        table.customField(
             "name",
             "Name",
             {},
             {},
             {route: "users.show", id: true}
         )
-        projectbuilder.customField(
+        table.customField(
             "email",
             "Email"
         )
-        projectbuilder.customField(
+        table.customField(
             "last_session",
             "Last Session"
         )
-        projectbuilder.customField(
+        table.customField(
             "created_at",
             "Created at"
         )
-        projectbuilder.pushActions({
+        table.pushActions({
             "update": {
                 route: "users.edit",
                 formitem: "user",
@@ -88,8 +76,7 @@ export default {
                 altforuser: {}
             }
         })
-        let fields = projectbuilder.fields
-        console.log(fields)
+        let fields = table.fields
         return { fields }
     },
     data() {
@@ -99,42 +86,26 @@ export default {
         }
     },
     methods: {
-        onUserClicked(value) {
-            for(let i in value) {
-                if (i == "id") {
-                    this.data['item'] = value[i]
-                } else {
-                    this.data[i] = value[i]
-                }
-            }
-            this.itemFormKey += 1
+        onItemClicked(value) {
+            let result = Table.onItemClicked(value, this.data, this.itemFormKey)
+            this.data = result.data
+            this.itemFormKey = result.key
         }
     },
     computed: {
         existsFormButton() {
-            let b = this.fields.actions.buttons;
-            if (b) {
-                for (const [k, v] of Object.entries(b)) {
-                    if ( v.enabled && (v.type === "form")) {
-                        return true
-                    }
-                }
-            }
-            return false
+            return Table.existsFormButton(this.fields.actions.buttons)
         },
         buildHiddenId() {
-            return (this.existsFormButton ?
-                    'hidden-form-' + Math.floor((Math.random() * 999999999) + 1) :
-                        "")
+            return Table.buildHiddenId()
+        },
+        generateRandom() {
+            return Table.generateRandom()
         }
     }
 }
 </script>
 
 <style scoped>
-    .infinite-hidden {
-        position: fixed;
-        top: 999999px;
-        letf: 999999px;
-    }
+
 </style>
