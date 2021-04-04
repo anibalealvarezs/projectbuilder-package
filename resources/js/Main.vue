@@ -10,7 +10,12 @@
 
 <script>
 export default {
-    name: "Main"
+    name: "Main",
+    setup() {
+        let projectBuilder = document.createElement('script');
+        projectBuilder.setAttribute('src',"/js/projectbuilder.js");
+        document.head.appendChild(projectBuilder);
+    },
 }
 </script>
 

@@ -84,6 +84,8 @@ import SecondaryButton from "@/Jetstream/SecondaryButton"
 import DangerButton from "@/Jetstream/DangerButton"
 import Swal from "sweetalert2"
 import UserForm from "@/Pages/Projectbuilder/Users/UserForm"
+import { computed } from 'vue'
+import { usePage } from '@inertiajs/inertia-vue3'
 
 export default {
     name: "Td",
@@ -159,7 +161,16 @@ export default {
             switch(b.text) {
                 case "Create":
                 case "Update":
-                    this.loadForm(b, u)
+                    let action = true;
+                    if (b.altforuser.hasOwnProperty('altroute')) {
+                        if (u[b.altforuser.key] == this.user[b.altforuser.key]) {
+                            action = false;
+                            window.location.href = route(b.altforuser.altroute);
+                        }
+                    }
+                    if (action) {
+                        this.loadForm(b, u)
+                    }
                     break
                 case "Delete":
                     this.confirmAndSubmit(b, u.id)
@@ -173,7 +184,7 @@ export default {
                 title: b.text + ' ' + b.formitem,
                 html: '<div id="formmodal" class="p-12 sm:px-20 bg-white border-b border-gray-200"></div>',
                 confirmButtonText: b.text,
-                showCloseButton: false,
+                showCloseButton: true,
                 showCancelButton: false,
                 showConfirmButton: false,
                 width: 800,
@@ -207,6 +218,10 @@ export default {
                 }
             })
         }
+    },
+    setup() {
+        const user = computed(() => usePage().props.value.auth.user)
+        return { user }
     }
 }
 </script>

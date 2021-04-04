@@ -20,9 +20,22 @@ class PbViewServiceProvider extends ServiceProvider
         // Views
         $views = __DIR__ . '/../../resources/js';
         $this->loadViewsFrom($views, $aeas->prefix);
+        // Core Relacement
+        $this->publishes([
+            __DIR__ . '/../../resources/core' => resource_path('js'),
+        ], $aeas->name.'-core');
+        // Components
         $this->publishes([
             __DIR__ . '/../../resources/js' => resource_path('js/Pages/'.$aeas->package),
         ], $aeas->name.'-components');
+        // Helpers
+        $this->publishes([
+            __DIR__ . '/../../src/assets/js' => public_path('js/'.$aeas->package),
+        ], $aeas->name.'-js');
+        // CSS
+        $this->publishes([
+            __DIR__ . '/../../src/assets/css' => public_path('css/'.$aeas->package),
+        ], $aeas->name.'-css');
     }
 
     /**

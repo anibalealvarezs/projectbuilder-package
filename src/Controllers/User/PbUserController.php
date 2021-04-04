@@ -2,8 +2,8 @@
 
 namespace Anibalealvarezs\Projectbuilder\Controllers\User;
 
-use Anibalealvarezs\Projectbuilder\Models\PbUser;
 use Anibalealvarezs\Projectbuilder\Helpers\AeasHelpers as AeasHelpers;
+use Anibalealvarezs\Projectbuilder\Models\PbUser;
 
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
@@ -12,7 +12,6 @@ use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
-use Illuminate\Validation\ValidationException;
 
 use Auth;
 use DB;
@@ -24,10 +23,15 @@ use Inertia\Response as InertiaResponse;
 class PbUserController extends Controller
 {
     protected $aeas;
+    protected $name;
+    protected $table;
 
     function __construct()
     {
         $this->aeas = new AeasHelpers();
+        $this->name = "users";
+        $User = new PbUser();
+        $this->table = $User->getTable();
     }
 
     /**
@@ -69,28 +73,40 @@ class PbUserController extends Controller
      *
      * @param Request $request
      * @return RedirectResponse
-     * @throws ValidationException
      */
     public function store(Request $request): RedirectResponse
     {
-        Validator::make($request->all(), [
+        $validator = Validator::make($request->all(), [
             'name' => ['required', 'max:190'],
-            'email' => ['required', 'max:50', 'email', Rule::unique('users')],
+            'email' => ['required', 'max:50', 'email', Rule::unique($this->table)],
             'password' => ['required'],
-        ])->validate();
+        ]);
 
-        try {
-            $user = PbUser::create($request->all());
-
-            $request->session()->flash('flash.banner', 'User Created Successfully!');
-            $request->session()->flash('flash.bannerStyle', 'success');
-
-            return redirect()->route('users.show', $user);
-        } catch (Exception $e) {
-            $request->session()->flash('flash.banner', 'User couldn\'t be created!');
+        if ($validator->fails()) {
+            $errors = $validator->errors();
+            $current = "";
+            foreach ($errors->all() as $message) {
+                $current = $message;
+            }
+            $request->session()->flash('flash.banner', $current);
             $request->session()->flash('flash.bannerStyle', 'danger');
 
-            return redirect()->route('users.create');
+            return redirect()->back()->withInput();
+        } else {
+
+            try {
+                PbUser::create($request->all());
+
+                $request->session()->flash('flash.banner', 'User Created Successfully!');
+                $request->session()->flash('flash.bannerStyle', 'success');
+
+                return redirect()->route($this->name.'.index');
+            } catch (Exception $e) {
+                $request->session()->flash('flash.banner', 'User could not be created!');
+                $request->session()->flash('flash.bannerStyle', 'danger');
+
+                return redirect()->back()->withInput();
+            }
         }
     }
 
@@ -129,27 +145,41 @@ class PbUserController extends Controller
      * @param Request $request
      * @param int $id
      * @return RedirectResponse
-     * @throws ValidationException
      */
     public function update(Request $request, int $id): RedirectResponse
     {
-        Validator::make($request->all(), [
+        $validator = Validator::make($request->all(), [
             'name' => ['required', 'max:190'],
             'email' => ['required', 'max:50', 'email', Rule::unique('users')->ignore($id)],
-        ])->validate();
+        ]);
 
-        $user = PbUser::find($id);
-        try {
-            $user->update($request->all());
-
-            $request->session()->flash('flash.banner', 'User Created Successfully!');
-            $request->session()->flash('flash.bannerStyle', 'success');
-        } catch (Exception $e) {
-            $request->session()->flash('flash.banner', 'User couldn\'t be updated!');
+        if ($validator->fails()) {
+            $errors = $validator->errors();
+            $current = "";
+            foreach ($errors->all() as $message) {
+                $current = $message;
+            }
+            $request->session()->flash('flash.banner', $current);
             $request->session()->flash('flash.bannerStyle', 'danger');
-        }
 
-        return redirect()->route('users.show', $id);
+            return redirect()->back()->withInput();
+        } else {
+
+            $user = PbUser::find($id);
+            try {
+                $user->update($request->all());
+
+                $request->session()->flash('flash.banner', 'User Created Successfully!');
+                $request->session()->flash('flash.bannerStyle', 'success');
+
+                return redirect()->route($this->name.'.index');
+            } catch (Exception $e) {
+                $request->session()->flash('flash.banner', 'User could not be updated!');
+                $request->session()->flash('flash.bannerStyle', 'danger');
+
+                return redirect()->back()->withInput();
+            }
+        }
     }
 
     /**
@@ -167,11 +197,13 @@ class PbUserController extends Controller
 
             $request->session()->flash('flash.banner', 'User deleted successfully!');
             $request->session()->flash('flash.bannerStyle', 'success');
-        } catch (Exception $e) {
-            $request->session()->flash('flash.banner', 'User couldn\'t be deleted!');
-            $request->session()->flash('flash.bannerStyle', 'danger');
-        }
 
-        return redirect()->route('users.index');
+            return redirect()->route($this->name.'.index')->withInput();
+        } catch (Exception $e) {
+            $request->session()->flash('flash.banner', 'User could not be deleted!');
+            $request->session()->flash('flash.bannerStyle', 'danger');
+
+            return redirect()->back()->withInput();
+        }
     }
 }

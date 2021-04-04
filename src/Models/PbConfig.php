@@ -2,11 +2,14 @@
 
 namespace Anibalealvarezs\Projectbuilder\Models;
 
+use Anibalealvarezs\Projectbuilder\Helpers\ModelTrait;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 
 class PbConfig extends Model
 {
+    use ModelTrait;
+
     protected $table = 'config';
 
     public $timestamps = false;

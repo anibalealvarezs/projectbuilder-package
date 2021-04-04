@@ -2,6 +2,7 @@
 
 namespace Anibalealvarezs\Projectbuilder\Models;
 
+use Anibalealvarezs\Projectbuilder\Helpers\ModelTrait;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Spatie\Permission\Traits\HasRoles;
@@ -10,6 +11,7 @@ class PbUser extends Authenticatable
 {
     use Notifiable;
     use HasRoles;
+    use ModelTrait;
 
     protected $guard_name = 'admin';
 

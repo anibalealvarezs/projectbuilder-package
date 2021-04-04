@@ -54,6 +54,8 @@ php artisan db:seed --class="Anibalealvarezs\Projectbuilder\Database\Seeders\PbU
 php artisan db:seed --class="Anibalealvarezs\Projectbuilder\Database\Seeders\PbTeamSeeder"
 php artisan db:seed --class="Anibalealvarezs\Projectbuilder\Database\Seeders\PbLoggerSeeder"
 php artisan db:seed --class="Anibalealvarezs\Projectbuilder\Database\Seeders\PbConfigSeeder"
+1.1.2
+php artisan db:seed --class="Anibalealvarezs\Projectbuilder\Database\Seeders\PbNavigationSeeder"
 ```
 
 #### 8. Add "pbstorage" link to "app/filesystems.php"
@@ -71,29 +73,30 @@ if "pbstorage" links show error, navigate to "public folder", manually delete th
 ```
 ln -s ../vendor/anibalealvarezs/projectbuilder-package/src/assets pbstorage
 ```
-================================================================================
 
-(Pasos 10 al 12 desactivados por los momentos)
-
-### 10. Publish Vue components
+### 10. Publish Vue components and libraries
 ```
-php artisan vendor:publish --provider="Anibalealvarezs\Projectbuilder\Providers\PbViewServiceProvider" --tag="builder-components"
-```
-
-### 11. Recompile app.js
-```
-npm run dev
+php artisan vendor:publish --provider="Anibalealvarezs\Projectbuilder\Providers\PbViewServiceProvider" --tag="builder-components" --force
+1.1.2
+php artisan vendor:publish --provider="Anibalealvarezs\Projectbuilder\Providers\PbViewServiceProvider" --tag="builder-js" --force
+php artisan vendor:publish --provider="Anibalealvarezs\Projectbuilder\Providers\PbViewServiceProvider" --tag="builder-css" --force
+php artisan vendor:publish --provider="Anibalealvarezs\Projectbuilder\Providers\PbViewServiceProvider" --tag="builder-core" --force
 ```
 
-### 12. Require package's app.js in main app.js (/resources/js/app.js)
-```
-require('./../../assets/Projectbuilder/js/app')
-```
-=================================================================================
-
-### 13. Add "Sweetalert2" to /webpack.mix.js
+### 11. Add resources to /webpack.mix.js
 ```
 mix.js('node_modules/sweetalert2/dist/sweetalert2.js', 'public/js');
+mix.js('vendor/anibalealvarezs/projectbuilder-package/src/assets/js/projectbuilder.js', 'public/js');
+```
+
+### 12. Recompile app.js
+For production:
+```
+npm run prod
+```
+For developing:
+```
+npm run dev
 ```
 
 ### Useful Commands:

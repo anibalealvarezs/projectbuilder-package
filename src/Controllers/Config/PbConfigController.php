@@ -8,11 +8,14 @@ use Anibalealvarezs\Projectbuilder\Models\PbConfig;
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
 
-use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
-use Illuminate\Validation\ValidationException;
+
+use Auth;
+use DB;
+use Session;
 
 use Inertia\Inertia;
 use Inertia\Response as InertiaResponse;
@@ -20,10 +23,15 @@ use Inertia\Response as InertiaResponse;
 class PbConfigController extends Controller
 {
     protected $aeas;
+    protected $name;
+    protected $table;
 
     function __construct()
     {
         $this->aeas = new AeasHelpers();
+        $this->name = "configs";
+        $Config = new PbConfig();
+        $this->table = $Config->getTable();
     }
 
     /**
@@ -59,23 +67,36 @@ class PbConfigController extends Controller
      */
     public function store(Request $request): RedirectResponse
     {
-        Validator::make($request->all(), [
+        $validator = Validator::make($request->all(), [
             'name' => ['required', 'max:190'],
-            'configkey' => ['required', 'max:50', Rule::unique('config')],
-        ])->validate();
+            'configkey' => ['required', 'max:50', Rule::unique($this->table)],
+        ]);
 
-        try {
-            $config = PbConfig::create($request->all());
-
-            $request->session()->flash('flash.banner', 'Config Created Successfully!');
-            $request->session()->flash('flash.bannerStyle', 'success');
-
-            return redirect()->route('configs.show', $config);
-        } catch (Exception $e) {
-            $request->session()->flash('flash.banner', 'Config couldn\'t be created!');
+        if ($validator->fails()) {
+            $errors = $validator->errors();
+            $current = "";
+            foreach ($errors->all() as $message) {
+                $current = $message;
+            }
+            $request->session()->flash('flash.banner', $current);
             $request->session()->flash('flash.bannerStyle', 'danger');
 
-            return redirect()->route('configs.create');
+            return redirect()->back()->withInput();
+        } else {
+
+            try {
+                PbConfig::create($request->all());
+
+                $request->session()->flash('flash.banner', 'User Created Successfully!');
+                $request->session()->flash('flash.bannerStyle', 'success');
+
+                return redirect()->route($this->name.'.index');
+            } catch (Exception $e) {
+                $request->session()->flash('flash.banner', 'User could not be created!');
+                $request->session()->flash('flash.bannerStyle', 'danger');
+
+                return redirect()->back()->withInput();
+            }
         }
     }
 
@@ -114,27 +135,41 @@ class PbConfigController extends Controller
      * @param Request $request
      * @param int $id
      * @return RedirectResponse
-     * @throws ValidationException
      */
     public function update(Request $request, int $id): RedirectResponse
     {
-        Validator::make($request->all(), [
+        $validator = Validator::make($request->all(), [
             'name' => ['required', 'max:190'],
             'configkey' => ['required', 'max:50', Rule::unique('config')->ignore($id)],
-        ])->validate();
+        ]);
 
-        $config = PbConfig::find($id);
-        try {
-            $config->update($request->all());
-
-            $request->session()->flash('flash.banner', 'Config Created Successfully!');
-            $request->session()->flash('flash.bannerStyle', 'success');
-        } catch (Exception $e) {
-            $request->session()->flash('flash.banner', 'Config couldn\'t be updated!');
+        if ($validator->fails()) {
+            $errors = $validator->errors();
+            $current = "";
+            foreach ($errors->all() as $message) {
+                $current = $message;
+            }
+            $request->session()->flash('flash.banner', $current);
             $request->session()->flash('flash.bannerStyle', 'danger');
-        }
 
-        return redirect()->route('configs.show', $id);
+            return redirect()->back()->withInput();
+        } else {
+
+            $config = PbConfig::find($id);
+            try {
+                $config->update($request->all());
+
+                $request->session()->flash('flash.banner', 'Config Created Successfully!');
+                $request->session()->flash('flash.bannerStyle', 'success');
+
+                return redirect()->route($this->name.'.index');
+            } catch (Exception $e) {
+                $request->session()->flash('flash.banner', 'Config couldn\'t be updated!');
+                $request->session()->flash('flash.bannerStyle', 'danger');
+
+                return redirect()->back()->withInput();
+            }
+        }
     }
 
     /**
@@ -152,11 +187,13 @@ class PbConfigController extends Controller
 
             $request->session()->flash('flash.banner', 'Config deleted successfully!');
             $request->session()->flash('flash.bannerStyle', 'success');
+
+            return redirect()->route($this->name.'.index');
         } catch (Exception $e) {
             $request->session()->flash('flash.banner', 'Config couldn\'t be deleted!');
             $request->session()->flash('flash.bannerStyle', 'danger');
-        }
 
-        return redirect()->route('configs.index');
+            return redirect()->back()->withInput();
+        }
     }
 }

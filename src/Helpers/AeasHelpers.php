@@ -1,6 +1,5 @@
 <?php
 
-
 namespace Anibalealvarezs\Projectbuilder\Helpers;
 
 use Carbon\Carbon;
