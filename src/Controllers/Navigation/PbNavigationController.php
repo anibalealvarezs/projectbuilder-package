@@ -1,9 +1,9 @@
 <?php
 
-namespace Anibalealvarezs\Projectbuilder\Controllers\Config;
+namespace Anibalealvarezs\Projectbuilder\Controllers\Navigation;
 
 use Anibalealvarezs\Projectbuilder\Helpers\AeasHelpers as AeasHelpers;
-use Anibalealvarezs\Projectbuilder\Models\PbConfig;
+use Anibalealvarezs\Projectbuilder\Models\PbNavigation;
 
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
@@ -20,7 +20,7 @@ use Session;
 use Inertia\Inertia;
 use Inertia\Response as InertiaResponse;
 
-class PbConfigController extends Controller
+class PbNavigationController extends Controller
 {
     protected $aeas;
     protected $name;
@@ -29,9 +29,9 @@ class PbConfigController extends Controller
     function __construct()
     {
         $this->aeas = new AeasHelpers();
-        $this->name = "configs";
-        $Config = new PbConfig();
-        $this->table = $Config->getTable();
+        $this->name = "navigations";
+        $Navigation = new PbNavigation();
+        $this->table = $Navigation->getTable();
     }
 
     /**
@@ -41,10 +41,10 @@ class PbConfigController extends Controller
      */
     public function index(): InertiaResponse
     {
-        $configs = PbConfig::all();
+        $navigations =  PbNavigation::all();
 
-        return Inertia::render($this->aeas->package . '/Configs/Configs', [
-            'pbconfigs' => $configs,
+        return Inertia::render($this->aeas->package . '/Navigations/Navigations', [
+            'pbnavigations' => $navigations,
         ]);
     }
 
@@ -55,7 +55,7 @@ class PbConfigController extends Controller
      */
     public function create(): InertiaResponse
     {
-        return Inertia::render($this->aeas->package . '/Configs/CreateConfig');
+        return Inertia::render($this->aeas->package . '/Navigations/CreateNavigation');
     }
 
     /**
@@ -69,7 +69,9 @@ class PbConfigController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'name' => ['required', 'max:190'],
-            'configkey' => ['required', 'max:50', Rule::unique($this->table)],
+            'destiny' => ['required', 'max:254'],
+            'type' => ['required', 'max:254', Rule::in(['route', 'path', 'custom'])],
+            'parent' => ['required', 'integer'],
         ]);
 
         if ($validator->fails()) {
@@ -85,14 +87,14 @@ class PbConfigController extends Controller
         } else {
 
             try {
-                PbConfig::create($request->all());
+                 PbNavigation::create($request->all());
 
-                $request->session()->flash('flash.banner', 'Config Created Successfully!');
+                $request->session()->flash('flash.banner', 'Navigation Created Successfully!');
                 $request->session()->flash('flash.bannerStyle', 'success');
 
                 return redirect()->route($this->name.'.index');
             } catch (Exception $e) {
-                $request->session()->flash('flash.banner', 'Config could not be created!');
+                $request->session()->flash('flash.banner', 'Navigation could not be created!');
                 $request->session()->flash('flash.bannerStyle', 'danger');
 
                 return redirect()->back()->withInput();
@@ -108,10 +110,10 @@ class PbConfigController extends Controller
      */
     public function show(int $id): InertiaResponse
     {
-        $config = PbConfig::find($id);
+        $navigation =  PbNavigation::find($id);
 
-        return Inertia::render($this->aeas->package . '/Configs/ShowConfig', [
-            'pbconfig' => $config,
+        return Inertia::render($this->aeas->package . '/Navigations/ShowNavigation', [
+            'pbnavigation' => $navigation,
         ]);
     }
 
@@ -123,9 +125,9 @@ class PbConfigController extends Controller
      */
     public function edit(int $id): InertiaResponse
     {
-        $config = PbConfig::find($id);
-        return Inertia::render($this->aeas->package . '/Configs/EditConfig', [
-            'pbconfig' => $config,
+        $navigation =  PbNavigation::find($id);
+        return Inertia::render($this->aeas->package . '/Navigations/EditNavigation', [
+            'pbnavigation' => $navigation,
         ]);
     }
 
@@ -140,7 +142,9 @@ class PbConfigController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'name' => ['required', 'max:190'],
-            'configkey' => ['required', 'max:50', Rule::unique('config')->ignore($id)],
+            'destiny' => ['required', 'max:254'],
+            'type' => ['required', 'max:254', Rule::in(['route', 'path', 'custom'])],
+            'parent' => ['required', 'integer'],
         ]);
 
         if ($validator->fails()) {
@@ -155,16 +159,16 @@ class PbConfigController extends Controller
             return redirect()->back()->withInput();
         } else {
 
-            $config = PbConfig::find($id);
+            $navigation =  PbNavigation::find($id);
             try {
-                $config->update($request->all());
+                $navigation->update($request->all());
 
-                $request->session()->flash('flash.banner', 'Config Created Successfully!');
+                $request->session()->flash('flash.banner', 'Navigation Created Successfully!');
                 $request->session()->flash('flash.bannerStyle', 'success');
 
                 return redirect()->route($this->name.'.index');
             } catch (Exception $e) {
-                $request->session()->flash('flash.banner', 'Config couldn\'t be updated!');
+                $request->session()->flash('flash.banner', 'Navigation couldn\'t be updated!');
                 $request->session()->flash('flash.bannerStyle', 'danger');
 
                 return redirect()->back()->withInput();
@@ -181,16 +185,16 @@ class PbConfigController extends Controller
      */
     public function destroy(Request $request, int $id): RedirectResponse
     {
-        $config = PbConfig::find($id);
+        $navigation =  PbNavigation::find($id);
         try {
-            $config->delete();
+            $navigation->delete();
 
-            $request->session()->flash('flash.banner', 'Config deleted successfully!');
+            $request->session()->flash('flash.banner', 'Navigation deleted successfully!');
             $request->session()->flash('flash.bannerStyle', 'success');
 
             return redirect()->route($this->name.'.index');
         } catch (Exception $e) {
-            $request->session()->flash('flash.banner', 'Config couldn\'t be deleted!');
+            $request->session()->flash('flash.banner', 'Navigation couldn\'t be deleted!');
             $request->session()->flash('flash.bannerStyle', 'danger');
 
             return redirect()->back()->withInput();

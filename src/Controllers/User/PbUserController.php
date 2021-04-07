@@ -30,8 +30,8 @@ class PbUserController extends Controller
     {
         $this->aeas = new AeasHelpers();
         $this->name = "users";
-        $User = new PbUser();
-        $this->table = $User->getTable();
+        $user = new PbUser();
+        $this->table = $user->getTable();
     }
 
     /**
@@ -41,9 +41,9 @@ class PbUserController extends Controller
      */
     public function index(): InertiaResponse
     {
-        $users = PbUser::latest()->paginate(5);
+        $users = PbUser::with('country', 'city', 'lang')->latest()->paginate(5);
         $filtered = $users->map(function ($user) {
-            return $user->only(['id', 'name', 'email', 'last_session', 'created_at']);
+            return $user->only(['id', 'name', 'email', 'last_session', 'created_at', 'country', 'city', 'lang']);
         })->sortByDesc(['name', 'email']);
 
         $filtered = $this->aeas->setCollectionAttributeDatetimeFormat(
@@ -95,7 +95,11 @@ class PbUserController extends Controller
         } else {
 
             try {
-                PbUser::create($request->all());
+                if ($user = PbUser::create($request->all())) {
+                    $user->language_id = $request->input('lang');
+                    $user->country_id = $request->input('country');
+                    $user->save();
+                }
 
                 $request->session()->flash('flash.banner', 'User Created Successfully!');
                 $request->session()->flash('flash.bannerStyle', 'success');
@@ -118,7 +122,7 @@ class PbUserController extends Controller
      */
     public function show(int $id): InertiaResponse
     {
-        $user = PbUser::find($id);
+        $user = PbUser::with('country', 'city', 'lang')->find($id);
 
         return Inertia::render($this->aeas->package . '/Users/ShowUser', [
             'pbuser' => $user,
@@ -133,7 +137,7 @@ class PbUserController extends Controller
      */
     public function edit(int $id): InertiaResponse
     {
-        $user = PbUser::find($id);
+        $user = PbUser::with('country', 'city', 'lang')->find($id);
         return Inertia::render($this->aeas->package . '/Users/EditUser', [
             'pbuser' => $user,
         ]);
@@ -167,7 +171,14 @@ class PbUserController extends Controller
 
             $user = PbUser::find($id);
             try {
-                $user->update($request->all());
+                if ($request->input('password') == "") {
+                    unset($user->password);
+                }
+                $user->language_id = $request->input('lang');
+                $user->country_id = $request->input('country');
+                $user->name = $request->input('name');
+                $user->email = $request->input('email');
+                $user->save();
 
                 $request->session()->flash('flash.banner', 'User Created Successfully!');
                 $request->session()->flash('flash.bannerStyle', 'success');

@@ -52,6 +52,7 @@
                 >
             </div>
         </div>
+        <SelectCountries :options="data" />
         <div class="flex flex-wrap -mx-3 mb-2 items-center justify-between">
             <!-- submit -->
             <div class="w-full md:w-1/2 px-3">
@@ -66,6 +67,7 @@ import Button from "@/Jetstream/Button"
 import { reactive } from 'vue'
 import { Inertia } from '@inertiajs/inertia'
 import Swal from "sweetalert2"
+import SelectCountries from "@/Pages/Projectbuilder/Countries/SelectCountries";
 
 export default {
     name: "UserForm",
@@ -74,6 +76,7 @@ export default {
         keyid: String
     },
     components: {
+        SelectCountries,
         Button
     },
     data() {

@@ -4,13 +4,18 @@ namespace Anibalealvarezs\Projectbuilder\Models;
 
 use Anibalealvarezs\Projectbuilder\Helpers\ModelTrait;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Illuminate\Support\Facades\DB;
+use Spatie\Translatable\HasTranslations;
 
 class PbConfig extends Model
 {
     use ModelTrait;
+    use HasTranslations;
 
     protected $table = 'config';
+
+    public $translatable = ['name', 'description'];
 
     public $timestamps = false;
 
@@ -22,6 +27,22 @@ class PbConfig extends Model
     protected $fillable = [
         'configkey', 'configvalue', 'name', 'description'
     ];
+
+    public function getNameAttribute($value)
+    {
+        if (json_decode($value)) {
+            return json_decode($value)->{app()->getLocale()};
+        }
+        return $value;
+    }
+
+    public function getDescriptionAttribute($value)
+    {
+        if (json_decode($value)) {
+            return json_decode($value)->{app()->getLocale()};
+        }
+        return $value;
+    }
 
     public static function findByKey($key)
     {

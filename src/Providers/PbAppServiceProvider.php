@@ -2,6 +2,9 @@
 
 namespace Anibalealvarezs\Projectbuilder\Providers;
 
+use Anibalealvarezs\Projectbuilder\Helpers\AeasHelpers as AeasHelpers;
+use Anibalealvarezs\Projectbuilder\Models\PbCountry;
+use Anibalealvarezs\Projectbuilder\Models\PbLanguage;
 use Anibalealvarezs\Projectbuilder\Models\PbNavigation;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Session;
@@ -17,6 +20,8 @@ class PbAppServiceProvider extends ServiceProvider
      */
     public function boot(\Illuminate\Contracts\Http\Kernel $kernel)
     {
+        $aeas = new AeasHelpers();
+
         Inertia::share([
             'errors' => function () {
                 return Session::get('errors')
@@ -31,17 +36,31 @@ class PbAppServiceProvider extends ServiceProvider
                     ] : null,
                 ];
             },
+            'flash' => function (Request $request) {
+                return [
+                    'message' => Session::get('message')
+                ];
+            },
+            'navigations' => function () {
+                return PbNavigation::with(['ascendant', 'descendants'])->where('parent', 0)->get();
+            },
+            'navigationsfull' => function () {
+                return PbNavigation::all();
+            },
+            'locale' => function () use ($aeas) {
+                $customLocale = $aeas->getCustomLocale();
+                if ($customLocale) {
+                    return $customLocale;
+                }
+                return app()->getLocale();
+            },
+            'languages' => function () {
+                return PbLanguage::getEnabled()->get();
+            },
+            'countries' => function () {
+                return PbCountry::all();
+            }
         ]);
-
-        Inertia::share('flash', function () {
-            return [
-                'message' => Session::get('message'),
-            ];
-        });
-
-        Inertia::share('navigations', function () {
-            return PbNavigation::all();
-        });
     }
 
     /**

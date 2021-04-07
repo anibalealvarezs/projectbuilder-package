@@ -2,7 +2,9 @@
 
 namespace Anibalealvarezs\Projectbuilder\Helpers;
 
+use Anibalealvarezs\Projectbuilder\Models\PbUser;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Auth;
 
 class AeasHelpers
 {
@@ -38,5 +40,14 @@ class AeasHelpers
             return $array;
         });
         return $collection;
+    }
+
+    public function getCustomLocale()
+    {
+        if (Auth::check()) {
+            $user = PbUser::find(Auth::user()->id);
+            return $user->getLocale();
+        }
+        return "";
     }
 }

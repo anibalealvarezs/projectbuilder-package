@@ -41,6 +41,7 @@ or, in case of migration failure (***NOT FOR RUNNING PROJECTS SINCE DB WILL BE W
 ```
 php artisan migrate:refresh --seed
 ```
+os, in case of failing when turning columns to JSON, ***check manually the tables and transform to json object, and then re-seed***
 
 #### 7. Publish Project Builder's Seeders
 (***ONLY IF INSTALLING FOR THE VERY FIRST TIME SINCE SEEDS COULD GET DUPLICATED***)
@@ -56,6 +57,9 @@ php artisan db:seed --class="Anibalealvarezs\Projectbuilder\Database\Seeders\PbL
 php artisan db:seed --class="Anibalealvarezs\Projectbuilder\Database\Seeders\PbConfigSeeder"
 1.1.2
 php artisan db:seed --class="Anibalealvarezs\Projectbuilder\Database\Seeders\PbNavigationSeeder"
+php artisan db:seed --class="Anibalealvarezs\Projectbuilder\Database\Seeders\PbCitiesSeeder"
+php artisan db:seed --class="Anibalealvarezs\Projectbuilder\Database\Seeders\PbCountriesSeeder"
+php artisan db:seed --class="Anibalealvarezs\Projectbuilder\Database\Seeders\PbLanguagesSeeder"
 ```
 
 #### 8. Add "pbstorage" link to "app/filesystems.php"
@@ -91,9 +95,16 @@ mix.js('node_modules/sweetalert2/dist/sweetalert2.js', 'public/js');
 ### 12. Install new resources as dependencies
 ```
 npm i sweetalert2
+npm install vue-tailwind --save
+npm install @tailwindcss/forms
 ```
 
-### 13. Recompile app.js
+### 13. Require Tailwind Plugins in tailwind.config.js
+```
+require('@tailwindcss/forms')
+```
+
+### 14. Recompile app.js
 For production:
 ```
 npm run prod

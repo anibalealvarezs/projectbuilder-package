@@ -21,6 +21,14 @@ class PbLogger extends Model
      * @var array
      */
     protected $fillable = [
-        'severity', 'code', 'message', 'object_type', 'object_id', 'id_user'
+        'severity', 'code', 'message', 'object_type', 'object_id', 'user_id'
     ];
+
+    public function getMessageAttribute($value)
+    {
+        if (json_decode($value)) {
+            return json_decode($value)->{app()->getLocale()};
+        }
+        return $value;
+    }
 }
