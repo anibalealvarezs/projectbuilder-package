@@ -25,7 +25,7 @@ import Body from "@/Pages/Projectbuilder/Tables/Body"
 import TrHead from "@/Pages/Projectbuilder/Tables/TrHead"
 import TrBody from "@/Pages/Projectbuilder/Tables/TrBody"
 import ConfigForm from "@/Pages/Projectbuilder/Configs/ConfigForm"
-import { TableFields as Table } from "../../../../../public/js/Projectbuilder/projectbuilder"
+import { TableFields as Table } from "Pub/js/Projectbuilder/projectbuilder"
 
 export default {
     name: "TableConfigs",

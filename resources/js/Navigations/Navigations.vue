@@ -2,27 +2,27 @@
     <AppLayout>
         <template #header>
             <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                Configs
+                Navigations
             </h2>
         </template>
 
         <Main>
             <slot>
                 <!-- <div>
-                    {{ pbconfigs }}
+                    {{ pbnavigations }}
                 </div> -->
                 <div class="p-12 sm:px-20 bg-white border-b border-gray-200">
                     <Button
                         @click="loadForm"
                         type="button"
                     >
-                        <slot>Create Config</slot>
+                        <slot>Create Navigation</slot>
                     </Button>
-                    <TableConfigs :configs="pbconfigs"/>
+                    <TableNavigations :navigations="pbnavigations"/>
                 </div>
             </slot>
             <div :id="buildHiddenId" class="infinite-hidden">
-                <ConfigForm :data="{}" />
+                <NavigationForm :data="{}" />
             </div>
         </Main>
     </AppLayout>
@@ -30,24 +30,24 @@
 
 <script>
     import AppLayout from '@/Pages/Projectbuilder/AppLayout'
-    import TableConfigs from "@/Pages/Projectbuilder/Configs/TableConfigs"
+    import TableNavigations from "@/Pages/Projectbuilder/Navigations/TableNavigations"
     import Button from "@/Jetstream/Button"
     import Main from "@/Pages/Projectbuilder/Main"
     import {TableFields as Table} from "Pub/js/Projectbuilder/projectbuilder";
     import Swal from "sweetalert2";
-    import ConfigForm from "@/Pages/Projectbuilder/Configs/ConfigForm"
+    import NavigationForm from "@/Pages/Projectbuilder/Navigations/NavigationForm"
 
     export default {
-        name: "Configs",
+        name: "Navigations",
         props: {
-            pbconfigs: Object
+            pbnavigations: Object
         },
         components: {
             Button,
             AppLayout,
-            TableConfigs,
+            TableNavigations,
             Main,
-            ConfigForm
+            NavigationForm
         },
         data() {
             return {
@@ -56,14 +56,14 @@
         },
         methods: {
             loadForm() {
-                let swalConfig = Table.buildSwalLoadFormConfig({text: "Create", formitem: "config"})
-                swalConfig['didOpen'] = () => {
+                let swalNavigation = Table.buildSwalLoadFormConfig({text: "Create", formitem: "navigation"})
+                swalNavigation['didOpen'] = () => {
                     Table.appendToSwal(this.hiddenid)
                 }
-                swalConfig['willClose'] = () => {
+                swalNavigation['willClose'] = () => {
                     Table.removeFromSwal(this.hiddenid)
                 }
-                Swal.fire(swalConfig);
+                Swal.fire(swalNavigation);
             }
         },
         computed: {

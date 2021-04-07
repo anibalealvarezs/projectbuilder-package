@@ -1,5 +1,5 @@
 <template>
-    <app-layout>
+    <AppLayout>
         <template #header>
             <h2 class="font-semibold text-xl text-gray-800 leading-tight">
                 Users
@@ -8,6 +8,9 @@
 
         <Main>
             <slot>
+                <!-- <div>
+                    {{ pbusers }}
+                </div> -->
                 <div class="p-12 sm:px-20 bg-white border-b border-gray-200">
                     <Button
                         @click="loadForm"
@@ -22,19 +25,20 @@
                 <UserForm :data="{}" />
             </div>
         </Main>
-    </app-layout>
+    </AppLayout>
 </template>
 
 <script>
-    import AppLayout from '@/Layouts/AppLayout'
+    import AppLayout from '@/Pages/Projectbuilder/AppLayout'
     import TableUsers from "@/Pages/Projectbuilder/Users/TableUsers"
     import Button from "@/Jetstream/Button"
     import Main from "@/Pages/Projectbuilder/Main"
-    import {TableFields as Table} from "../../../../../public/js/Projectbuilder/projectbuilder";
+    import {TableFields as Table} from "Pub/js/Projectbuilder/projectbuilder";
     import Swal from "sweetalert2";
     import UserForm from "@/Pages/Projectbuilder/Users/UserForm"
 
     export default {
+        name: "Users",
         props: {
             pbusers: Object
         },

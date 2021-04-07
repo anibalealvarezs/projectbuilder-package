@@ -52,7 +52,44 @@
                 >
             </div>
         </div>
-        <SelectCountries :options="data" />
+        <div class="flex flex-wrap -mx-3 mb-6">
+            <!-- country -->
+            <div class="w-full px-3">
+                <label class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2" :for="'grid-country-' + keyid">
+                    Country
+                </label>
+                <select
+                    v-model="form.country"
+                    :id="'grid-country-' + keyid"
+                    name="country"
+                    class="appearance-none w-full md:w-1/1 px-4 py-3 mb-3 block rounded bg-gray-200 text-gray-700 border border-gray-200 overflow-hidden leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
+                    placeholder="Select country"
+                >
+                    <option v-for="country in countries" :value="country.id">
+                        {{ country.name }}
+                    </option>
+                </select>
+            </div>
+        </div>
+        <div class="flex flex-wrap -mx-3 mb-6">
+            <!-- language -->
+            <div class="w-full px-3">
+                <label class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2" :for="'grid-language-' + keyid">
+                    Language
+                </label>
+                <select
+                    v-model="form.lang"
+                    :id="'grid-language-' + keyid"
+                    name="lang"
+                    class="appearance-none w-full md:w-1/1 px-4 py-3 mb-3 block rounded bg-gray-200 text-gray-700 border border-gray-200 overflow-hidden leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
+                    placeholder="Select language"
+                >
+                    <option v-for="language in languages" :value="language.id">
+                        {{ language.name }}
+                    </option>
+                </select>
+            </div>
+        </div>
         <div class="flex flex-wrap -mx-3 mb-2 items-center justify-between">
             <!-- submit -->
             <div class="w-full md:w-1/2 px-3">
@@ -64,10 +101,10 @@
 
 <script>
 import Button from "@/Jetstream/Button"
-import { reactive } from 'vue'
+import {computed, reactive} from 'vue'
 import { Inertia } from '@inertiajs/inertia'
 import Swal from "sweetalert2"
-import SelectCountries from "@/Pages/Projectbuilder/Countries/SelectCountries";
+import {usePage} from "@inertiajs/inertia-vue3";
 
 export default {
     name: "UserForm",
@@ -76,7 +113,6 @@ export default {
         keyid: String
     },
     components: {
-        SelectCountries,
         Button
     },
     data() {
@@ -98,6 +134,8 @@ export default {
         const form = reactive({
             name: props.data.name,
             email: props.data.email,
+            lang: (props.data.lang ? props.data.lang.id : 0),
+            country: (props.data.country ? props.data.country.id : 0),
             password: ""
         })
 
@@ -115,7 +153,10 @@ export default {
             }
         }
 
-        return { form, submit }
+        const languages = computed(() => usePage().props.value.languages)
+        const countries = computed(() => usePage().props.value.countries)
+
+        return { form, submit, languages, countries }
     }
 }
 </script>

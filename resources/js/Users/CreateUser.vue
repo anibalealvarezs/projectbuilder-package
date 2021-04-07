@@ -1,5 +1,5 @@
 <template>
-    <app-layout>
+    <AppLayout>
         <template #header>
             <h2 class="font-semibold text-xl text-gray-800 leading-tight">
                 Create User
@@ -13,11 +13,11 @@
                 </div>
             </slot>
         </Main>
-    </app-layout>
+    </AppLayout>
 </template>
 
 <script>
-    import AppLayout from '@/Layouts/AppLayout'
+    import AppLayout from '@/Pages/Projectbuilder/AppLayout'
     import Main from "@/Pages/Projectbuilder/Main"
     import UserForm from "@/Pages/Projectbuilder/Users/UserForm"
 

@@ -94,18 +94,16 @@ import Button from "@/Jetstream/Button"
 import SecondaryButton from "@/Jetstream/SecondaryButton"
 import DangerButton from "@/Jetstream/DangerButton"
 import Swal from "sweetalert2"
-import UserForm from "@/Pages/Projectbuilder/Users/UserForm"
 import { computed } from 'vue'
 import { usePage } from '@inertiajs/inertia-vue3'
-import { TableFields as Table } from "../../../../../public/js/Projectbuilder/projectbuilder"
+import { TableFields as Table } from "Pub/js/Projectbuilder/projectbuilder"
 
 export default {
     name: "Td",
     components: {
         DangerButton,
         SecondaryButton,
-        Button,
-        UserForm
+        Button
     },
     props: {
         item: Object,
@@ -126,6 +124,10 @@ export default {
             return Table.fixKey(this.index)
         },
         cellValue() {
+            if (this.field.arrval.hasOwnProperty('key')) {
+                let obj = Object.assign({}, this.item[this.fixKey]);
+                return obj[this.field.arrval.key]
+            }
             return this.item[this.fixKey]
         }
     },
@@ -192,6 +194,7 @@ export default {
                 .then((result) => {
                     if (result['isConfirmed']){
                         data._method = b.method;
+                        // Aquí deberé modificar para recargar pantalla en edición de navigations
                         this.$inertia.post(this.buildRoute(b.route, i), data)
                     }
                 })

@@ -2,14 +2,14 @@
     <AppLayout>
         <template #header>
             <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                Edit Config: {{ pbconfig.name }}
+                Edit Navigation: {{ pbnavigation.name }}
             </h2>
         </template>
 
         <Main>
             <slot>
                 <div class="p-12 sm:px-20 bg-white border-b border-gray-200">
-                    <ConfigForm :name="pbconfig.name" :description="pbconfig.description" :config="pbconfig.config_id" :configkey="pbconfig.configkey" :configvalue="pbconfig.configvalue" />
+                    <NavigationForm :name="pbnavigation.name" :destiny="pbnavigation.destiny" :navigation="pbnavigation.navigation_id" :type="pbnavigation.type" :parent="pbnavigation.parent" :module="pbnavigation.module" />
                 </div>
             </slot>
         </Main>
@@ -19,16 +19,16 @@
 <script>
     import AppLayout from '@/Pages/Projectbuilder/AppLayout'
     import Main from "@/Pages/Projectbuilder/Main"
-    import ConfigForm from "@/Pages/Projectbuilder/Configs/ConfigForm"
+    import NavigationForm from "@/Pages/Projectbuilder/Navigations/NavigationForm"
 
     export default {
-        name: "ShowConfig",
+        name: "ShowNavigation",
         props: {
-            pbconfig: Object,
+            pbnavigation: Object,
             page: Object
         },
         components: {
-            ConfigForm,
+            NavigationForm,
             AppLayout,
             Main
         }

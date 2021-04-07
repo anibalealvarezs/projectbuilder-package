@@ -12,12 +12,13 @@ class TableFields {
                     width: "w-20",
                 },
                 buttons: [],
-                href: {}
+                href: {},
+                arrval: {}
             }
         }
     }
 
-    customField(key, name, style = {}, buttons = {}, href = {}) {
+    customField(key, name, arrval = {}, style = {}, buttons = {}, href = {}) {
         /* Style */
         if (!style.hasOwnProperty('centered')) {
             style['centered'] = false
@@ -38,7 +39,8 @@ class TableFields {
             name: name,
             style: style,
             buttons: buttons,
-            href: href
+            href: href,
+            arrval: arrval
         }
     }
 
@@ -132,7 +134,8 @@ class TableFields {
                     altforuser: buttons.delete.altforuser
                 }
             },
-            href: {}
+            href: {},
+            arrval: {}
         }
     }
 
@@ -244,6 +247,11 @@ class Helpers {
     static refineURL(url)
     {
         return url.split("?")[0];
+    }
+
+    static proxyToObject(proxy)
+    {
+        return Object.assign({}, proxy);
     }
 }
 

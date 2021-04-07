@@ -8,12 +8,12 @@
             </Header>
             <Body>
                 <slot>
-                    <TrBody v-for="user in users" :item="user" :fields="fields" :hiddenid="buildHiddenId" @clicked-edit-item="onItemClicked" />
+                    <TrBody v-for="navigation in navigations" :item="navigation" :fields="fields" :hiddenid="buildHiddenId" @clicked-edit-item="onItemClicked" />
                 </slot>
             </Body>
         </slot>
         <div v-if="existsFormButton" :id="buildHiddenId" class="infinite-hidden">
-            <UserForm :data="data" :keyid="generateRandom" :key="itemFormKey" />
+            <NavigationForm :data="data" :keyid="generateRandom" :key="itemFormKey" />
         </div>
     </Container>
 </template>
@@ -24,16 +24,16 @@ import Header from "@/Pages/Projectbuilder/Tables/Header"
 import Body from "@/Pages/Projectbuilder/Tables/Body"
 import TrHead from "@/Pages/Projectbuilder/Tables/TrHead"
 import TrBody from "@/Pages/Projectbuilder/Tables/TrBody"
-import UserForm from "@/Pages/Projectbuilder/Users/UserForm"
+import NavigationForm from "@/Pages/Projectbuilder/Navigations/NavigationForm"
 import { TableFields as Table } from "Pub/js/Projectbuilder/projectbuilder"
 
 export default {
-    name: "TableUsers",
+    name: "TableNavigations",
     props: {
-        users: Object
+        navigations: Object
     },
     components: {
-        UserForm,
+        NavigationForm,
         TrBody,
         TrHead,
         Container,
@@ -44,46 +44,33 @@ export default {
         const table = new Table
         table.customField(
             "name",
-            "Name",
-            {},
-            {},
-            {},
-            {route: "users.show", id: true}
+            "Name"
         )
         table.customField(
-            "email",
-            "Email"
+            "destiny",
+            "Destiny"
         )
         table.customField(
-            "last_session",
-            "Last Session"
+            "type",
+            "Type"
         )
         table.customField(
-            "created_at",
-            "Created at"
+            "parent",
+            "Parent"
         )
         table.customField(
-            "country",
-            "Country",
-            {key: "name"}
-        )
-        table.customField(
-            "lang",
-            "Language",
-            {key: "name"}
+            "module",
+            "Module"
         )
         table.pushActions({
             "update": {
-                route: "users.edit",
-                formitem: "user",
-                altforuser: {
-                    key: 'id',
-                    altroute: "profile.show"
-                }
+                route: "navigations.edit",
+                formitem: "navigation",
+                altforuser: {}
             },
             "delete": {
-                route: "users.destroy",
-                formitem: "user",
+                route: "navigations.destroy",
+                formitem: "navigation",
                 altforuser: {}
             }
         })

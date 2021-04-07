@@ -3,3 +3,7 @@
     top: 999999px;
     letf: 999999px;
 }
+
+.dropdown:hover .dropdown-menu {
+    display: block;
+}

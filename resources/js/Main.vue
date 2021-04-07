@@ -15,5 +15,5 @@ export default {
 </script>
 
 <style scoped>
-    @import "../../../../public/css/Projectbuilder/projectbuilder.css";
+    @import "Pub/css/Projectbuilder/projectbuilder.css";
 </style>
