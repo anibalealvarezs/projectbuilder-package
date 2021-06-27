@@ -15,7 +15,7 @@ class PbConfigSeeder extends Seeder
     public function run()
     {
         // Default Config
-        Config::create(['configkey' => '_APP_NAME_', 'value' => 'Builder', 'name' => 'App Name', 'description' => 'App Description']);
-        Config::create(['configkey' => '_FORCE_HTTPS_', 'value' => false, 'name' => 'Force HTTPS', 'description' => 'Force HTTPS']);
+        Config::create(['configkey' => '_APP_NAME_', 'configvalue' => 'Builder', 'name' => 'App Name', 'description' => 'App Description']);
+        Config::create(['configkey' => '_FORCE_HTTPS_', 'configvalue' => false, 'name' => 'Force HTTPS', 'description' => 'Force HTTPS']);
     }
 }
