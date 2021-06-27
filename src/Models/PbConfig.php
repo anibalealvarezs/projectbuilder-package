@@ -4,7 +4,6 @@ namespace Anibalealvarezs\Projectbuilder\Models;
 
 use Anibalealvarezs\Projectbuilder\Helpers\ModelTrait;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Illuminate\Support\Facades\DB;
 use Spatie\Translatable\HasTranslations;
 

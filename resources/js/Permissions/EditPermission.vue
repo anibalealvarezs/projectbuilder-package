@@ -2,14 +2,14 @@
     <AppLayout>
         <template #header>
             <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                Edit User: {{ pbuser.name }}
+                Edit Permission: {{ pbpermission.name }}
             </h2>
         </template>
 
         <Main>
             <slot>
                 <div class="p-12 sm:px-20 bg-white border-b border-gray-200">
-                    <UserForm :data="setItem" />
+                    <PermissionForm :data="setItem" :currentroles="currentroles" />
                 </div>
             </slot>
         </Main>
@@ -19,24 +19,24 @@
 <script>
     import AppLayout from '@/Pages/Projectbuilder/AppLayout'
     import Main from "@/Pages/Projectbuilder/Main"
-    import UserForm from "@/Pages/Projectbuilder/Users/UserForm"
-    import {TableFields as Table} from "Pub/js/Projectbuilder/projectbuilder";
+    import PermissionForm from "@/Pages/Projectbuilder/Permissions/PermissionForm"
 
     export default {
-        name: "ShowUser",
+        name: "ShowPermission",
         props: {
-            pbuser: Object,
+            pbpermission: Object,
             page: Object,
+            currentroles: Object
         },
         components: {
-            UserForm,
+            PermissionForm,
             AppLayout,
             Main
         },
         computed: {
             setItem() {
-                this.pbuser.item = this.pbuser.id
-                return this.pbuser
+                this.pbpermission.item = this.pbpermission.id
+                return this.pbpermission
             },
         }
     }

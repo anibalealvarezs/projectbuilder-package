@@ -306,7 +306,7 @@
 
         setup () {
 
-            let navigations = computed(() => usePage().props.value.navigations)
+            let navigations = computed(() => usePage().props.value.shared.navigations.firstlevel)
 
             return { navigations }
         }

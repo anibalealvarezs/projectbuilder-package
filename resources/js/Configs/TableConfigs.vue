@@ -60,11 +60,17 @@ export default {
         )
         table.pushActions({
             "update": {
+                text: 'Update',
+                style: 'secondary',
+                method: 'PUT',
                 route: "configs.edit",
                 formitem: "config",
                 altforuser: {}
             },
             "delete": {
+                text: 'Delete',
+                style: 'danger',
+                method: 'DELETE',
                 route: "configs.destroy",
                 formitem: "config",
                 altforuser: {}

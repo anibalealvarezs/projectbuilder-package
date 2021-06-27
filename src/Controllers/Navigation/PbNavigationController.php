@@ -3,11 +3,15 @@
 namespace Anibalealvarezs\Projectbuilder\Controllers\Navigation;
 
 use Anibalealvarezs\Projectbuilder\Helpers\AeasHelpers as AeasHelpers;
+use Anibalealvarezs\Projectbuilder\Helpers\ControllerTrait;
+use Anibalealvarezs\Projectbuilder\Helpers\Shares;
 use Anibalealvarezs\Projectbuilder\Models\PbNavigation;
 
+use Anibalealvarezs\Projectbuilder\Models\PbPermission;
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
 
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Validator;
@@ -26,8 +30,11 @@ class PbNavigationController extends Controller
     protected $name;
     protected $table;
 
+    use ControllerTrait;
+
     function __construct()
     {
+        $this->middleware(['role_or_permission:crud super-admin']);
         $this->aeas = new AeasHelpers();
         $this->name = "navigations";
         $Navigation = new PbNavigation();
@@ -41,7 +48,17 @@ class PbNavigationController extends Controller
      */
     public function index(): InertiaResponse
     {
-        $navigations =  PbNavigation::all();
+        $navigations =  PbNavigation::with('permission')->get();
+
+        Inertia::share(
+            'shared',
+            array_merge(
+                $this->globalInertiaShare(),
+                Shares::list([
+                    'permissionsall',
+                ]),
+            )
+        );
 
         return Inertia::render($this->aeas->package . '/Navigations/Navigations', [
             'pbnavigations' => $navigations,
@@ -55,6 +72,16 @@ class PbNavigationController extends Controller
      */
     public function create(): InertiaResponse
     {
+        Inertia::share(
+            'shared',
+            array_merge(
+                $this->globalInertiaShare(),
+                Shares::list([
+                    'permissionsall',
+                ]),
+            )
+        );
+
         return Inertia::render($this->aeas->package . '/Navigations/CreateNavigation');
     }
 
@@ -72,7 +99,14 @@ class PbNavigationController extends Controller
             'destiny' => ['required', 'max:254'],
             'type' => ['required', 'max:254', Rule::in(['route', 'path', 'custom'])],
             'parent' => ['required', 'integer'],
+            'permission' => ['required', 'integer'],
         ]);
+
+        $name = $request['name'];
+        $destiny = $request['destiny'];
+        $type = $request['type'];
+        $parent = $request['parent'];
+        $permission = $request['permission'];
 
         if ($validator->fails()) {
             $errors = $validator->errors();
@@ -87,7 +121,13 @@ class PbNavigationController extends Controller
         } else {
 
             try {
-                 PbNavigation::create($request->all());
+                $navigation = new PbNavigation();
+                $navigation->name = $name;
+                $navigation->destiny = $destiny;
+                $navigation->type = $type;
+                $navigation->parent = $parent;
+                $navigation->permission_id = $permission;
+                $navigation->save();
 
                 $request->session()->flash('flash.banner', 'Navigation Created Successfully!');
                 $request->session()->flash('flash.bannerStyle', 'success');
@@ -110,7 +150,14 @@ class PbNavigationController extends Controller
      */
     public function show(int $id): InertiaResponse
     {
-        $navigation =  PbNavigation::find($id);
+        $navigation =  PbNavigation::with('permission')->find($id);
+
+        Inertia::share(
+            'shared',
+            array_merge(
+                $this->globalInertiaShare(),
+            )
+        );
 
         return Inertia::render($this->aeas->package . '/Navigations/ShowNavigation', [
             'pbnavigation' => $navigation,
@@ -125,7 +172,18 @@ class PbNavigationController extends Controller
      */
     public function edit(int $id): InertiaResponse
     {
-        $navigation =  PbNavigation::find($id);
+        $navigation =  PbNavigation::with('permission')->find($id);
+
+        Inertia::share(
+            'shared',
+            array_merge(
+                $this->globalInertiaShare(),
+                Shares::list([
+                    'permissionsall',
+                ]),
+            )
+        );
+
         return Inertia::render($this->aeas->package . '/Navigations/EditNavigation', [
             'pbnavigation' => $navigation,
         ]);
@@ -145,7 +203,14 @@ class PbNavigationController extends Controller
             'destiny' => ['required', 'max:254'],
             'type' => ['required', 'max:254', Rule::in(['route', 'path', 'custom'])],
             'parent' => ['required', 'integer'],
+            'permission' => ['required', 'integer'],
         ]);
+
+        $name = $request['name'];
+        $destiny = $request['destiny'];
+        $type = $request['type'];
+        $parent = $request['parent'];
+        $permission = $request['permission'];
 
         if ($validator->fails()) {
             $errors = $validator->errors();
@@ -161,7 +226,12 @@ class PbNavigationController extends Controller
 
             $navigation =  PbNavigation::find($id);
             try {
-                $navigation->update($request->all());
+                $navigation->name = $name;
+                $navigation->destiny = $destiny;
+                $navigation->type = $type;
+                $navigation->parent = $parent;
+                $navigation->permission_id = $permission;
+                $navigation->save();
 
                 $request->session()->flash('flash.banner', 'Navigation Created Successfully!');
                 $request->session()->flash('flash.bannerStyle', 'success');

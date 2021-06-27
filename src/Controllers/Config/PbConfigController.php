@@ -3,6 +3,7 @@
 namespace Anibalealvarezs\Projectbuilder\Controllers\Config;
 
 use Anibalealvarezs\Projectbuilder\Helpers\AeasHelpers as AeasHelpers;
+use Anibalealvarezs\Projectbuilder\Helpers\ControllerTrait;
 use Anibalealvarezs\Projectbuilder\Models\PbConfig;
 
 use App\Http\Requests;
@@ -26,8 +27,11 @@ class PbConfigController extends Controller
     protected $name;
     protected $table;
 
+    use ControllerTrait;
+
     function __construct()
     {
+        $this->middleware(['role_or_permission:crud super-admin']);
         $this->aeas = new AeasHelpers();
         $this->name = "configs";
         $Config = new PbConfig();
@@ -43,6 +47,13 @@ class PbConfigController extends Controller
     {
         $configs = PbConfig::all();
 
+        Inertia::share(
+            'shared',
+            array_merge(
+                $this->globalInertiaShare(),
+            )
+        );
+
         return Inertia::render($this->aeas->package . '/Configs/Configs', [
             'pbconfigs' => $configs,
         ]);
@@ -55,6 +66,13 @@ class PbConfigController extends Controller
      */
     public function create(): InertiaResponse
     {
+        Inertia::share(
+            'shared',
+            array_merge(
+                $this->globalInertiaShare(),
+            )
+        );
+
         return Inertia::render($this->aeas->package . '/Configs/CreateConfig');
     }
 
@@ -110,6 +128,13 @@ class PbConfigController extends Controller
     {
         $config = PbConfig::find($id);
 
+        Inertia::share(
+            'shared',
+            array_merge(
+                $this->globalInertiaShare(),
+            )
+        );
+
         return Inertia::render($this->aeas->package . '/Configs/ShowConfig', [
             'pbconfig' => $config,
         ]);
@@ -124,6 +149,14 @@ class PbConfigController extends Controller
     public function edit(int $id): InertiaResponse
     {
         $config = PbConfig::find($id);
+
+        Inertia::share(
+            'shared',
+            array_merge(
+                $this->globalInertiaShare(),
+            )
+        );
+
         return Inertia::render($this->aeas->package . '/Configs/EditConfig', [
             'pbconfig' => $config,
         ]);

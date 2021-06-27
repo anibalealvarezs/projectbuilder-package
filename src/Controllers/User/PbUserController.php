@@ -3,6 +3,8 @@
 namespace Anibalealvarezs\Projectbuilder\Controllers\User;
 
 use Anibalealvarezs\Projectbuilder\Helpers\AeasHelpers as AeasHelpers;
+use Anibalealvarezs\Projectbuilder\Helpers\ControllerTrait;
+use Anibalealvarezs\Projectbuilder\Helpers\Shares;
 use Anibalealvarezs\Projectbuilder\Models\PbUser;
 
 use App\Http\Requests;
@@ -26,8 +28,14 @@ class PbUserController extends Controller
     protected $name;
     protected $table;
 
+    use ControllerTrait;
+
     function __construct()
     {
+        $this->middleware(['role_or_permission:read users']);
+        $this->middleware(['role_or_permission:create users'])->only('create', 'store');
+        $this->middleware(['role_or_permission:update users'])->only('edit', 'update');
+        $this->middleware(['role_or_permission:delete users'])->only('destroy');
         $this->aeas = new AeasHelpers();
         $this->name = "users";
         $user = new PbUser();
@@ -41,9 +49,9 @@ class PbUserController extends Controller
      */
     public function index(): InertiaResponse
     {
-        $users = PbUser::with('country', 'city', 'lang')->latest()->paginate(5);
+        $users = PbUser::with('country', 'city', 'lang', 'roles')->latest()->paginate(5);
         $filtered = $users->map(function ($user) {
-            return $user->only(['id', 'name', 'email', 'last_session', 'created_at', 'country', 'city', 'lang']);
+            return $user->only(['id', 'name', 'email', 'last_session', 'created_at', 'country', 'city', 'lang', 'roles']);
         })->sortByDesc(['name', 'email']);
 
         $filtered = $this->aeas->setCollectionAttributeDatetimeFormat(
@@ -51,6 +59,23 @@ class PbUserController extends Controller
             ['created_at', 'last_session'],
             "custom",
             "d/m/y"
+        );
+
+        Inertia::share(
+            'shared',
+            array_merge(
+                $this->globalInertiaShare(),
+                Shares::list([
+                    'languages',
+                    'countries',
+                    'roles',
+                ]),
+                Shares::allowed([
+                    'create users' => 'create',
+                    'update users' => 'update',
+                    'delete users' => 'delete',
+                ]),
+            )
         );
 
         return Inertia::render($this->aeas->package . '/Users/Users', [
@@ -65,6 +90,21 @@ class PbUserController extends Controller
      */
     public function create(): InertiaResponse
     {
+        Inertia::share(
+            'shared',
+            array_merge(
+                $this->globalInertiaShare(),
+                Shares::list([
+                    'languages',
+                    'countries',
+                    'roles',
+                ]),
+                Shares::allowed([
+                    'create users',
+                ]),
+            )
+        );
+
         return Inertia::render($this->aeas->package . '/Users/CreateUser');
     }
 
@@ -81,6 +121,8 @@ class PbUserController extends Controller
             'email' => ['required', 'max:50', 'email', Rule::unique($this->table)],
             'password' => ['required'],
         ]);
+
+        $roles = $request['roles'];
 
         if ($validator->fails()) {
             $errors = $validator->errors();
@@ -99,6 +141,7 @@ class PbUserController extends Controller
                     $user->language_id = $request->input('lang');
                     $user->country_id = $request->input('country');
                     $user->save();
+                    $user->syncRoles($roles);
                 }
 
                 $request->session()->flash('flash.banner', 'User Created Successfully!');
@@ -122,7 +165,14 @@ class PbUserController extends Controller
      */
     public function show(int $id): InertiaResponse
     {
-        $user = PbUser::with('country', 'city', 'lang')->find($id);
+        $user = PbUser::with('country', 'city', 'lang', 'roles')->find($id);
+
+        Inertia::share(
+            'shared',
+            array_merge(
+                $this->globalInertiaShare(),
+            )
+        );
 
         return Inertia::render($this->aeas->package . '/Users/ShowUser', [
             'pbuser' => $user,
@@ -137,9 +187,22 @@ class PbUserController extends Controller
      */
     public function edit(int $id): InertiaResponse
     {
-        $user = PbUser::with('country', 'city', 'lang')->find($id);
+        $user = PbUser::with('country', 'city', 'lang', 'roles')->find($id);
+
+        Inertia::share(
+            'shared',
+            array_merge(
+                $this->globalInertiaShare(),
+                Shares::list([
+                    'languages',
+                    'countries',
+                    'roles',
+                ]),
+            )
+        );
+
         return Inertia::render($this->aeas->package . '/Users/EditUser', [
-            'pbuser' => $user,
+            'pbuser' => $user
         ]);
     }
 
@@ -154,8 +217,10 @@ class PbUserController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'name' => ['required', 'max:190'],
-            'email' => ['required', 'max:50', 'email', Rule::unique('users')->ignore($id)],
+            'email' => ['required', 'max:50', 'email', Rule::unique($this->table)->ignore($id)],
         ]);
+
+        $roles = $request['roles'];
 
         if ($validator->fails()) {
             $errors = $validator->errors();
@@ -179,6 +244,7 @@ class PbUserController extends Controller
                 $user->name = $request->input('name');
                 $user->email = $request->input('email');
                 $user->save();
+                $user->syncRoles($roles);
 
                 $request->session()->flash('flash.banner', 'User Created Successfully!');
                 $request->session()->flash('flash.bannerStyle', 'success');
@@ -197,7 +263,7 @@ class PbUserController extends Controller
      * Remove the specified resource from storage.
      *
      * @param Request $request
-     * @param $id
+     * @param int $id
      * @return RedirectResponse
      */
     public function destroy(Request $request, int $id): RedirectResponse

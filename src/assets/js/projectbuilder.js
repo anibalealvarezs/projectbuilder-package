@@ -13,12 +13,13 @@ class TableFields {
                 },
                 buttons: [],
                 href: {},
-                arrval: {}
+                arrval: {},
+                size: 'single'
             }
         }
     }
 
-    customField(key, name, arrval = {}, style = {}, buttons = {}, href = {}) {
+    customField(key, name, arrval = {}, style = {}, buttons = {}, href = {}, size = 'single') {
         /* Style */
         if (!style.hasOwnProperty('centered')) {
             style['centered'] = false
@@ -40,67 +41,12 @@ class TableFields {
             style: style,
             buttons: buttons,
             href: href,
-            arrval: arrval
+            arrval: arrval,
+            size: size,
         }
     }
 
     pushActions(buttons) {
-        /* Enabled */
-        if (!buttons.update.hasOwnProperty('enabled')) {
-            buttons.update['enabled'] = true
-        }
-        if (!buttons.delete.hasOwnProperty('enabled')) {
-            buttons.delete['enabled'] = true
-        }
-        /* Text */
-        if (!buttons.update.hasOwnProperty('text')) {
-            buttons.update['text'] = 'Update'
-        }
-        if (!buttons.delete.hasOwnProperty('text')) {
-            buttons.delete['text'] = 'Delete'
-        }
-        /* ID */
-        if (!buttons.update.hasOwnProperty('id')) {
-            buttons.update['id'] = true
-        }
-        if (!buttons.delete.hasOwnProperty('id')) {
-            buttons.delete['id'] = true
-        }
-        /* Callback */
-        if (!buttons.update.hasOwnProperty('callback')) {
-            buttons.update['callback'] = null
-        }
-        if (!buttons.delete.hasOwnProperty('callback')) {
-            buttons.delete['callback'] = null
-        }
-        /* Style */
-        if (!buttons.update.hasOwnProperty('style')) {
-            buttons.update['style'] = 'secondary'
-        }
-        if (!buttons.delete.hasOwnProperty('style')) {
-            buttons.delete['style'] = 'danger'
-        }
-        /* Type */
-        if (!buttons.update.hasOwnProperty('type')) {
-            buttons.update['type'] = 'form'
-        }
-        if (!buttons.delete.hasOwnProperty('type')) {
-            buttons.delete['type'] = 'form'
-        }
-        /* Method */
-        if (!buttons.update.hasOwnProperty('method')) {
-            buttons.update['method'] = 'PUT'
-        }
-        if (!buttons.delete.hasOwnProperty('method')) {
-            buttons.delete['method'] = 'DELETE'
-        }
-        /* Method */
-        if (!buttons.update.hasOwnProperty('altforuser')) {
-            buttons.update['altforuser'] = {}
-        }
-        if (!buttons.delete.hasOwnProperty('altforuser')) {
-            buttons.delete['altforuser'] = {}
-        }
         this.fields['actions'] = {
             name: "Actions",
             style: {
@@ -108,35 +54,71 @@ class TableFields {
                 bold: false,
                 width: "w-60",
             },
-            buttons: {
-                'update': {
-                    enabled: buttons.update.enabled,
-                    text: buttons.update.text,
-                    route: buttons.update.route,
-                    id: buttons.update.id,
-                    callback: buttons.update.callback,
-                    style: buttons.update.style,
-                    type: buttons.update.type,
-                    formitem: buttons.update.formitem,
-                    method: buttons.update.method,
-                    altforuser: buttons.update.altforuser
-                },
-                'delete': {
-                    enabled: buttons.delete.enabled,
-                    text: buttons.delete.text,
-                    route: buttons.delete.route,
-                    id: buttons.delete.id,
-                    callback: buttons.delete.callback,
-                    style: buttons.delete.style,
-                    type: buttons.delete.type,
-                    formitem: buttons.delete.formitem,
-                    method: buttons.delete.method,
-                    altforuser: buttons.delete.altforuser
-                }
-            },
+            buttons: {},
             href: {},
-            arrval: {}
+            arrval: {},
+            size: null,
         }
+        let actions = this.fields['actions'];
+        let options = ['update', 'delete']
+        options.forEach(function(option){
+            /* Enabled */
+            if (!buttons[option].hasOwnProperty('enabled')) {
+                buttons[option]['enabled'] = true
+            }
+            /* Text */
+            if (!buttons[option].hasOwnProperty('text')) {
+                buttons[option]['text'] = 'NO TEXT DEFINED'
+            }
+            /* ID */
+            if (!buttons[option].hasOwnProperty('id')) {
+                buttons[option]['id'] = true
+            }
+            /* Route */
+            if (!buttons[option].hasOwnProperty('route')) {
+                buttons[option]['route'] = "/"
+            }
+            /* Callback */
+            if (!buttons[option].hasOwnProperty('callback')) {
+                buttons[option]['callback'] = null
+            }
+            /* Style */
+            if (!buttons[option].hasOwnProperty('style')) {
+                buttons[option]['style'] = 'default'
+            }
+            /* Type */
+            if (!buttons[option].hasOwnProperty('type')) {
+                buttons[option]['type'] = 'form'
+            }
+            /* Method */
+            if (!buttons[option].hasOwnProperty('method')) {
+                buttons[option]['method'] = 'PUT'
+            }
+            /* Method */
+            if (!buttons[option].hasOwnProperty('altforuser')) {
+                buttons[option]['altforuser'] = {}
+            }
+            /* Method */
+            if (!buttons[option].hasOwnProperty('allowed')) {
+                buttons[option]['allowed'] = true
+            }
+            if (buttons[option]['allowed']) {
+                console.log(option);
+                console.log(buttons[option]);
+                actions['buttons'][option] = {
+                    enabled: buttons[option].enabled,
+                    text: buttons[option].text,
+                    route: buttons[option].route,
+                    id: buttons[option].id,
+                    callback: buttons[option].callback,
+                    style: buttons[option].style,
+                    type: buttons[option].type,
+                    formitem: buttons[option].formitem,
+                    method: buttons[option].method,
+                    altforuser: buttons[option].altforuser,
+                }
+            }
+        });
     }
 
     static onItemClicked(value, data , key) {
@@ -223,7 +205,7 @@ class TableFields {
     static buildSwalLoadFormConfig(button) {
         return {
             title: button.text + ' ' + button.formitem,
-            html: '<div id="formmodal" class="p-12 sm:px-20 bg-white border-b border-gray-200"></div>',
+            html: '<div id="formmodal" class="p-12 shadow sm:px-20 bg-white border-b border-gray-200"></div>',
             confirmButtonText: button.text,
             showCloseButton: true,
             showCancelButton: false,

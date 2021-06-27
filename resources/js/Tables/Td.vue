@@ -67,25 +67,51 @@
                 </DangerButton>
             </form>
         </div>
-        <!-- HREF -->
-        <inertia-link
-            v-if="field.href.hasOwnProperty('route')"
-            :href="buildRoute(field.href.route, item.id)"
-        >
-            <!-- HREF CONTENT -->
+        <!-- SIZE -->
+        <div v-if="field.size == 'single'">
+            <!-- HREF -->
+            <inertia-link
+                v-if="field.href.hasOwnProperty('route')"
+                :href="buildRoute(field.href.route, item.id)"
+            >
+                <!-- HREF CONTENT -->
+                <span
+                    :class="buildSpanClasses()"
+                >
+                    {{ cellValue }}
+                </span>
+            </inertia-link>
+            <!-- NO HREF CONTENT -->
             <span
+                v-if="!field.href.hasOwnProperty('route')"
                 :class="buildSpanClasses()"
             >
                 {{ cellValue }}
             </span>
-        </inertia-link>
-        <!-- NO HREF CONTENT -->
-        <span
-            v-if="!field.href.hasOwnProperty('route')"
-            :class="buildSpanClasses()"
-        >
-            {{ cellValue }}
-        </span>
+        </div>
+        <div v-if="field.size == 'multiple'">
+            <div v-for="cv in cellValue">
+                <!-- HREF -->
+                <inertia-link
+                    v-if="field.href.hasOwnProperty('route')"
+                    :href="buildRoute(field.href.route, item.id)"
+                >
+                    <!-- HREF CONTENT -->
+                    <span
+                        :class="buildSpanClasses()"
+                    >
+                        {{ (field.arrval.key ? cv[field.arrval.key] : cv) }}
+                    </span>
+                </inertia-link>
+                <!-- NO HREF CONTENT -->
+                <span
+                    v-if="!field.href.hasOwnProperty('route')"
+                    :class="buildSpanClasses()"
+                >
+                    {{ (field.arrval.key ? cv[field.arrval.key] : cv) }}
+                </span>
+            </div>
+        </div>
     </td>
 </template>
 
@@ -124,7 +150,7 @@ export default {
             return Table.fixKey(this.index)
         },
         cellValue() {
-            if (this.field.arrval.hasOwnProperty('key')) {
+            if (this.field.arrval.hasOwnProperty('key') && (this.field.size == 'single')) {
                 let obj = Object.assign({}, this.item[this.fixKey]);
                 return obj[this.field.arrval.key]
             }

@@ -67,7 +67,7 @@
         </div>
         <div class="flex flex-wrap -mx-3 mb-2 items-center justify-between">
             <!-- submit -->
-            <div class="w-full md:w-1/2 px-3">
+            <div class="w-full px-3">
                 <Button type="submit" :disabled="form.processing">{{ buttontext }}</Button>
             </div>
         </div>

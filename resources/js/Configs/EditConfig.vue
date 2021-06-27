@@ -9,7 +9,7 @@
         <Main>
             <slot>
                 <div class="p-12 sm:px-20 bg-white border-b border-gray-200">
-                    <ConfigForm :name="pbconfig.name" :description="pbconfig.description" :config="pbconfig.config_id" :configkey="pbconfig.configkey" :configvalue="pbconfig.configvalue" />
+                    <ConfigForm :data="setItem" />
                 </div>
             </slot>
         </Main>
@@ -31,6 +31,12 @@
             ConfigForm,
             AppLayout,
             Main
+        },
+        computed: {
+            setItem() {
+                this.pbconfig.item = this.pbconfig.id
+                return this.pbconfig
+            },
         }
     }
 </script>

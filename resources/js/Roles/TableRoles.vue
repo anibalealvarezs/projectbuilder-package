@@ -8,12 +8,12 @@
             </Header>
             <Body>
                 <slot>
-                    <TrBody v-for="navigation in navigations" :item="navigation" :fields="fields" :hiddenid="buildHiddenId" @clicked-edit-item="onItemClicked" />
+                    <TrBody v-for="role in roles" :item="role" :fields="fields" :hiddenid="buildHiddenId" @clicked-edit-item="onItemClicked" />
                 </slot>
             </Body>
         </slot>
         <div v-if="existsFormButton" :id="buildHiddenId" class="infinite-hidden">
-            <NavigationForm :data="data" :keyid="generateRandom" :key="itemFormKey" />
+            <RoleForm :data="data" :keyid="generateRandom" :key="itemFormKey" />
         </div>
     </Container>
 </template>
@@ -24,16 +24,18 @@ import Header from "@/Pages/Projectbuilder/Tables/Header"
 import Body from "@/Pages/Projectbuilder/Tables/Body"
 import TrHead from "@/Pages/Projectbuilder/Tables/TrHead"
 import TrBody from "@/Pages/Projectbuilder/Tables/TrBody"
-import NavigationForm from "@/Pages/Projectbuilder/Navigations/NavigationForm"
+import RoleForm from "@/Pages/Projectbuilder/Roles/RoleForm"
 import { TableFields as Table } from "Pub/js/Projectbuilder/projectbuilder"
+import {computed} from "vue";
+import {usePage} from "@inertiajs/inertia-vue3";
 
 export default {
-    name: "TableNavigations",
+    name: "TableRoles",
     props: {
-        navigations: Object
+        roles: Object,
     },
     components: {
-        NavigationForm,
+        RoleForm,
         TrBody,
         TrHead,
         Container,
@@ -44,45 +46,31 @@ export default {
         const table = new Table
         table.customField(
             "name",
-            "Name"
-        )
-        table.customField(
-            "destiny",
-            "Destiny"
-        )
-        table.customField(
-            "type",
-            "Type"
-        )
-        table.customField(
-            "parent",
-            "Parent"
-        )
-        table.customField(
-            "permission",
-            "Permission",
-            {key: "name"},
-        )
-        table.customField(
-            "module",
-            "Module"
+            "Name",
+            {},
+            {},
+            {},
+            {route: "roles.show", id: true}
         )
         table.pushActions({
             "update": {
                 text: 'Update',
                 style: 'secondary',
                 method: 'PUT',
-                route: "navigations.edit",
-                formitem: "navigation",
-                altforuser: {}
+                route: "roles.edit",
+                formitem: "role",
+                altforrole: {
+                    key: 'id',
+                    altroute: "profile.show"
+                },
             },
             "delete": {
                 text: 'Delete',
                 style: 'danger',
                 method: 'DELETE',
-                route: "navigations.destroy",
-                formitem: "navigation",
-                altforuser: {}
+                route: "roles.destroy",
+                formitem: "role",
+                altforrole: {},
             }
         })
         let fields = table.fields

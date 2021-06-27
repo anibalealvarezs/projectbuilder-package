@@ -68,6 +68,23 @@
                     </option>
                 </select>
             </div>
+            <!-- permissions -->
+            <div class="w-full px-3">
+                <label class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2" :for="'grid-permissions-' + keyid">
+                    Permission
+                </label>
+                <select
+                    v-model="form.permission"
+                    :id="'grid-permissions-' + keyid"
+                    name="permissions"
+                    class="appearance-none w-full md:w-1/1 px-4 py-3 mb-3 block rounded bg-gray-200 text-gray-700 border border-gray-200 overflow-hidden leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
+                    placeholder="Assign permissions"
+                >
+                    <option v-for="permission in permissions" :value="permission.id">
+                        {{ permission.name }}
+                    </option>
+                </select>
+            </div>
             <!-- module -->
             <div class="w-full px-3">
                 <label class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2" :for="'grid-module-' + keyid">
@@ -87,7 +104,7 @@
         </div>
         <div class="flex flex-wrap -mx-3 mb-2 items-center justify-between">
             <!-- submit -->
-            <div class="w-full md:w-1/2 px-3">
+            <div class="w-full px-3">
                 <Button type="submit" :disabled="form.processing">{{ buttontext }}</Button>
             </div>
         </div>
@@ -132,7 +149,8 @@ export default {
             type: props.data.type,
             parent: props.data.parent,
             destiny: props.data.destiny,
-            module: props.data.module
+            module: props.data.module,
+            permission: props.data.permission,
         })
 
         function submit() {
@@ -183,10 +201,11 @@ export default {
         }
 
         let navigations = removeIdsFromNavigations(
-            computed(() => usePage().props.value.navigationsfull)
+            computed(() => usePage().props.value.shared.navigations.full)
         )
+        const permissions = computed(() => usePage().props.value.shared.permissionsall)
 
-        return { form, submit, navigations }
+        return { form, submit, navigations, permissions }
     }
 }
 </script>

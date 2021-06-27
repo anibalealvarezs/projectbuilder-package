@@ -2,9 +2,16 @@
 
 namespace Anibalealvarezs\Projectbuilder\Models;
 
-use Illuminate\Database\Eloquent\Model;
+use Spatie\Permission\Models\Role;
 
-class PbRoles extends Model
+class PbRoles extends Role
 {
-    protected $table = 'roles';
+    // use ModelTrait;
+
+    protected $connection;
+
+    function __construct() {
+        $this->connection = config('database.default');
+    }
+
 }

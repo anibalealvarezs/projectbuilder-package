@@ -25,7 +25,7 @@ class PbNavigation extends Model
      * @var array
      */
     protected $fillable = [
-        'name', 'destiny', 'type', 'parent', 'module'
+        'name', 'destiny', 'type', 'parent', 'module', ''
     ];
 
     public function getNameAttribute($value)
@@ -39,6 +39,11 @@ class PbNavigation extends Model
     public function ascendant(): BelongsTo
     {
         return $this->belongsTo(self::class, 'parent', 'id')->with('ascendant');
+    }
+
+    public function permission(): BelongsTo
+    {
+        return $this->belongsTo(PbPermission::class);
     }
 
     public function descendants(): HasMany

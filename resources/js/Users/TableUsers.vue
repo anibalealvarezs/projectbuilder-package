@@ -26,11 +26,14 @@ import TrHead from "@/Pages/Projectbuilder/Tables/TrHead"
 import TrBody from "@/Pages/Projectbuilder/Tables/TrBody"
 import UserForm from "@/Pages/Projectbuilder/Users/UserForm"
 import { TableFields as Table } from "Pub/js/Projectbuilder/projectbuilder"
+import {computed} from "vue";
+import {usePage} from "@inertiajs/inertia-vue3";
 
 export default {
     name: "TableUsers",
     props: {
-        users: Object
+        users: Object,
+        allowed: Array
     },
     components: {
         UserForm,
@@ -40,7 +43,8 @@ export default {
         Header,
         Body
     },
-    setup() {
+    setup(props) {
+        const allowed = props.allowed
         const table = new Table
         table.customField(
             "name",
@@ -52,15 +56,16 @@ export default {
         )
         table.customField(
             "email",
-            "Email"
+            "Email",
         )
         table.customField(
-            "last_session",
-            "Last Session"
-        )
-        table.customField(
-            "created_at",
-            "Created at"
+            "roles",
+            "Roles",
+            {key: "name"},
+            {},
+            {},
+            {},
+            'multiple',
         )
         table.customField(
             "country",
@@ -72,19 +77,35 @@ export default {
             "Language",
             {key: "name"}
         )
+        table.customField(
+            "created_at",
+            "Created at"
+        )
+        table.customField(
+            "last_session",
+            "Last Session"
+        )
         table.pushActions({
             "update": {
+                text: 'Update',
+                style: 'secondary',
+                method: 'PUT',
                 route: "users.edit",
                 formitem: "user",
                 altforuser: {
                     key: 'id',
                     altroute: "profile.show"
-                }
+                },
+                allowed: allowed.update,
             },
             "delete": {
+                text: 'Delete',
+                style: 'danger',
+                method: 'DELETE',
                 route: "users.destroy",
                 formitem: "user",
-                altforuser: {}
+                altforuser: {},
+                allowed: allowed.delete,
             }
         })
         let fields = table.fields

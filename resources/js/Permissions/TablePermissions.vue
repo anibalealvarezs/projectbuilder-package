@@ -8,12 +8,12 @@
             </Header>
             <Body>
                 <slot>
-                    <TrBody v-for="navigation in navigations" :item="navigation" :fields="fields" :hiddenid="buildHiddenId" @clicked-edit-item="onItemClicked" />
+                    <TrBody v-for="permission in permissions" :item="permission" :fields="fields" :hiddenid="buildHiddenId" @clicked-edit-item="onItemClicked" />
                 </slot>
             </Body>
         </slot>
         <div v-if="existsFormButton" :id="buildHiddenId" class="infinite-hidden">
-            <NavigationForm :data="data" :keyid="generateRandom" :key="itemFormKey" />
+            <PermissionForm :data="data" :keyid="generateRandom" :key="itemFormKey" />
         </div>
     </Container>
 </template>
@@ -24,16 +24,18 @@ import Header from "@/Pages/Projectbuilder/Tables/Header"
 import Body from "@/Pages/Projectbuilder/Tables/Body"
 import TrHead from "@/Pages/Projectbuilder/Tables/TrHead"
 import TrBody from "@/Pages/Projectbuilder/Tables/TrBody"
-import NavigationForm from "@/Pages/Projectbuilder/Navigations/NavigationForm"
+import PermissionForm from "@/Pages/Projectbuilder/Permissions/PermissionForm"
 import { TableFields as Table } from "Pub/js/Projectbuilder/projectbuilder"
+import {computed} from "vue";
+import {usePage} from "@inertiajs/inertia-vue3";
 
 export default {
-    name: "TableNavigations",
+    name: "TablePermissions",
     props: {
-        navigations: Object
+        permissions: Object,
     },
     components: {
-        NavigationForm,
+        PermissionForm,
         TrBody,
         TrHead,
         Container,
@@ -44,45 +46,31 @@ export default {
         const table = new Table
         table.customField(
             "name",
-            "Name"
-        )
-        table.customField(
-            "destiny",
-            "Destiny"
-        )
-        table.customField(
-            "type",
-            "Type"
-        )
-        table.customField(
-            "parent",
-            "Parent"
-        )
-        table.customField(
-            "permission",
-            "Permission",
-            {key: "name"},
-        )
-        table.customField(
-            "module",
-            "Module"
+            "Name",
+            {},
+            {},
+            {},
+            {route: "permissions.show", id: true}
         )
         table.pushActions({
             "update": {
                 text: 'Update',
                 style: 'secondary',
                 method: 'PUT',
-                route: "navigations.edit",
-                formitem: "navigation",
-                altforuser: {}
+                route: "permissions.edit",
+                formitem: "permission",
+                altforpermission: {
+                    key: 'id',
+                    altroute: "profile.show"
+                },
             },
             "delete": {
                 text: 'Delete',
                 style: 'danger',
                 method: 'DELETE',
-                route: "navigations.destroy",
-                formitem: "navigation",
-                altforuser: {}
+                route: "permissions.destroy",
+                formitem: "permission",
+                altforpermission: {},
             }
         })
         let fields = table.fields

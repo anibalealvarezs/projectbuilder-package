@@ -4,8 +4,6 @@ namespace Anibalealvarezs\Projectbuilder\Providers;
 
 use Anibalealvarezs\Projectbuilder\Helpers\AeasHelpers as AeasHelpers;
 use Illuminate\Support\ServiceProvider;
-use Illuminate\Routing\UrlGenerator;
-use Illuminate\Support\Facades\View;
 
 class PbMiddlewareServiceProvider extends ServiceProvider
 {
@@ -25,6 +23,7 @@ class PbMiddlewareServiceProvider extends ServiceProvider
         //router middleware
         $router = $this->app['router'];
         $router->pushMiddlewareToGroup('web', $aeas->vendor.'\\'.$aeas->package.'\Middleware\\'.$aeas->prefix.'HttpsMiddleware');
+        $router->aliasMiddleware('role_or_permission', $aeas->vendor.'\\'.$aeas->package.'\Middleware\\'.$aeas->prefix.'RoleOrPermissionMiddleware');
     }
 
     /**

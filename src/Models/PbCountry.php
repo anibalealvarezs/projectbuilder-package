@@ -62,7 +62,7 @@ class PbCountry extends Model
         // Remove countries from users
         PbUser::where('country_id', $this->id)->update(['country_id' => null]);
 
-        // delete the user
+        // delete the country
         return parent::delete();
     }
 

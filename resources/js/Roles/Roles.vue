@@ -2,28 +2,27 @@
     <AppLayout>
         <template #header>
             <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                Users
+                Roles
             </h2>
         </template>
 
         <Main>
             <slot>
                 <!-- <div>
-                    {{ pbusers }}
+                    {{ pbroles }}
                 </div> -->
                 <div class="p-12 sm:px-20 bg-white border-b border-gray-200">
                     <Button
-                        v-if="allowed.create"
                         @click="loadForm"
                         type="button"
                     >
-                        <slot>Create User</slot>
+                        <slot>Create Role</slot>
                     </Button>
-                    <TableUsers :users="pbusers" :allowed="allowed" />
+                    <TableRoles :roles="pbroles" />
                 </div>
             </slot>
             <div :id="buildHiddenId" class="infinite-hidden">
-                <UserForm :data="{}" />
+                <RoleForm :data="{}" :currentpermissions="currentpermissions" />
             </div>
         </Main>
     </AppLayout>
@@ -31,27 +30,26 @@
 
 <script>
     import AppLayout from '@/Pages/Projectbuilder/AppLayout'
-    import TableUsers from "@/Pages/Projectbuilder/Users/TableUsers"
+    import TableRoles from "@/Pages/Projectbuilder/Roles/TableRoles"
     import Button from "@/Jetstream/Button"
     import Main from "@/Pages/Projectbuilder/Main"
     import {TableFields as Table} from "Pub/js/Projectbuilder/projectbuilder";
     import Swal from "sweetalert2";
-    import UserForm from "@/Pages/Projectbuilder/Users/UserForm"
-    import {computed, reactive} from "vue";
-    import {Inertia} from "@inertiajs/inertia";
+    import RoleForm from "@/Pages/Projectbuilder/Roles/RoleForm"
+    import {computed} from "vue";
     import {usePage} from "@inertiajs/inertia-vue3";
 
     export default {
-        name: "Users",
+        name: "Roles",
         props: {
-            pbusers: Object,
+            pbroles: Object,
         },
         components: {
             Button,
             AppLayout,
-            TableUsers,
+            TableRoles,
             Main,
-            UserForm
+            RoleForm
         },
         data() {
             return {
@@ -60,7 +58,7 @@
         },
         methods: {
             loadForm() {
-                let swalConfig = Table.buildSwalLoadFormConfig({text: "Create", formitem: "user"})
+                let swalConfig = Table.buildSwalLoadFormConfig({text: "Create", formitem: "role"})
                 swalConfig['didOpen'] = () => {
                     Table.appendToSwal(this.hiddenid)
                 }
@@ -75,11 +73,6 @@
                 this.hiddenid = Table.buildHiddenId()
                 return this.hiddenid
             }
-        },
-        setup (props) {
-            const allowed = computed(() => usePage().props.value.shared.allowed)
-
-            return { allowed }
         }
     }
 </script>

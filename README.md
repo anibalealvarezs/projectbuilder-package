@@ -95,7 +95,6 @@ mix.js('node_modules/sweetalert2/dist/sweetalert2.js', 'public/js');
 ### 12. Install new resources as dependencies
 ```
 npm i sweetalert2
-npm install vue-tailwind --save
 npm install @tailwindcss/forms
 ```
 
@@ -104,7 +103,12 @@ npm install @tailwindcss/forms
 require('@tailwindcss/forms')
 ```
 
-### 14. Recompile app.js
+### 14. Add alias for public folder in webpack.config.js
+```
+Pub: path.resolve('public'),
+```
+
+### 15. Recompile app.js
 For production:
 ```
 npm run prod

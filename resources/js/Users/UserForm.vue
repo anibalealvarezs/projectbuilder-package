@@ -53,6 +53,26 @@
             </div>
         </div>
         <div class="flex flex-wrap -mx-3 mb-6">
+            <!-- language -->
+            <div class="w-full px-3">
+                <label class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2" :for="'grid-language-' + keyid">
+                    Language
+                </label>
+                <select
+                    v-model="form.roles"
+                    :id="'grid-language-' + keyid"
+                    name="lang"
+                    class="appearance-none w-full md:w-1/1 px-4 py-3 mb-3 block rounded bg-gray-200 text-gray-700 border border-gray-200 overflow-hidden leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
+                    placeholder="Select language"
+                    multiple="true"
+                >
+                    <option v-for="role in roles" :value="role.name">
+                        {{ role.name }}
+                    </option>
+                </select>
+            </div>
+        </div>
+        <div class="flex flex-wrap -mx-3 mb-6">
             <!-- country -->
             <div class="w-full px-3">
                 <label class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2" :for="'grid-country-' + keyid">
@@ -92,7 +112,7 @@
         </div>
         <div class="flex flex-wrap -mx-3 mb-2 items-center justify-between">
             <!-- submit -->
-            <div class="w-full md:w-1/2 px-3">
+            <div class="w-full px-3">
                 <Button type="submit" :disabled="form.processing">{{ buttontext }}</Button>
             </div>
         </div>
@@ -110,7 +130,7 @@ export default {
     name: "UserForm",
     props: {
         data: Object,
-        keyid: String
+        keyid: String,
     },
     components: {
         Button
@@ -136,6 +156,7 @@ export default {
             email: props.data.email,
             lang: (props.data.lang ? props.data.lang.id : 0),
             country: (props.data.country ? props.data.country.id : 0),
+            roles: props.data.roles,
             password: ""
         })
 
@@ -153,10 +174,11 @@ export default {
             }
         }
 
-        const languages = computed(() => usePage().props.value.languages)
-        const countries = computed(() => usePage().props.value.countries)
+        const languages = computed(() => usePage().props.value.shared.languages)
+        const countries = computed(() => usePage().props.value.shared.countries)
+        const roles = computed(() => usePage().props.value.shared.roles)
 
-        return { form, submit, languages, countries }
+        return { form, submit, languages, countries, roles }
     }
 }
 </script>
