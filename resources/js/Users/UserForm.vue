@@ -53,10 +53,10 @@
             </div>
         </div>
         <div class="flex flex-wrap -mx-3 mb-6">
-            <!-- language -->
+            <!-- role -->
             <div class="w-full px-3">
                 <label class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2" :for="'grid-language-' + keyid">
-                    Language
+                    Role
                 </label>
                 <select
                     v-model="form.roles"

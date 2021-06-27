@@ -19,6 +19,24 @@
             </div>
         </div>
         <div class="flex flex-wrap -mx-3 mb-6">
+            <!-- alias -->
+            <div class="w-full px-3">
+                <label class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2" :for="'grid-alias-' + keyid">
+                    Alias
+                </label>
+                <input
+                    v-model="form.alias"
+                    :id="'grid-alias-' + keyid"
+                    name="alias"
+                    type="text"
+                    placeholder="Alias"
+                    class="temp-readonly appearance-none block w-full bg-gray-200 text-gray-700 border border-red-500 rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white"
+                    readonly="readonly"
+                    @mouseover="disableReadonly"
+                >
+            </div>
+        </div>
+        <div class="flex flex-wrap -mx-3 mb-6">
             <!-- roles -->
             <div class="w-full px-3">
                 <label class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2" :for="'grid-roles-' + keyid">
@@ -84,6 +102,7 @@ export default {
         const form = reactive({
             name: props.data.name,
             roles: props.currentroles,
+            alias: props.data['alias'],
         })
 
         function submit() {

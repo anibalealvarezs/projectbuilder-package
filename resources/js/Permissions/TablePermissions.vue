@@ -47,10 +47,10 @@ export default {
         table.customField(
             "name",
             "Name",
-            {},
-            {},
-            {},
-            {route: "permissions.show", id: true}
+        )
+        table.customField(
+            "alias",
+            "Alias",
         )
         table.pushActions({
             "update": {

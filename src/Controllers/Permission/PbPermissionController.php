@@ -94,10 +94,12 @@ class PbPermissionController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'name' => ['required', 'max:40'],
+            'alias' => ['required', 'max:190'],
         ]);
 
         $name = $request['name'];
         $roles = $request['roles'];
+        $alias = $request['alias'];
 
         if ($validator->fails()) {
             $errors = $validator->errors();
@@ -114,11 +116,12 @@ class PbPermissionController extends Controller
             try {
                 $permission = new PbPermission();
                 $permission->name = $name;
+                $permission->alias = $alias;
                 $permission->guard_name = 'admin';
                 if ($permission->save()) {
                     $adminRoles = PbRoles::whereIn('name', ['super-admin', 'admin'])->get()->modelKeys();
                     $p = PbPermission::findOrFail($permission->id);
-                    $p->syncRoles(array_merge($roles,$adminRoles));
+                    $p->syncRoles(array_merge((is_array($roles) ? $roles : [$roles]), (is_array($adminRoles) ? $adminRoles : [$adminRoles])));
                 }
 
                 $request->session()->flash('flash.banner', 'Permission Created Successfully!');
@@ -190,10 +193,12 @@ class PbPermissionController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'name' => ['required', 'max:40'],
+            'alias' => ['required', 'max:190'],
         ]);
 
         $name = $request['name'];
         $roles = $request['roles'];
+        $alias = $request['alias'];
 
         if ($validator->fails()) {
             $errors = $validator->errors();
@@ -210,6 +215,7 @@ class PbPermissionController extends Controller
             $permission = PbPermission::findOrFail($id);
             try {
                 $permission->name = $name;
+                $permission->alias = $alias;
                 if ($permission->save()) {
                     $p = PbPermission::findOrFail($permission->id);
                     if (in_array($permission->name, ['admin roles permissions', 'crud super-admin'])) {
@@ -223,7 +229,7 @@ class PbPermissionController extends Controller
                         $p->syncRoles($adminRoles);
                     } else {
                         $adminRoles = PbRoles::whereIn('name', ['super-admin', 'admin'])->get()->modelKeys();
-                        $p->syncRoles(array_merge($roles,$adminRoles));
+                        $p->syncRoles(array_merge((is_array($roles) ? $roles : [$roles]), (is_array($adminRoles) ? $adminRoles : [$adminRoles])));
                     }
                 }
 

@@ -94,12 +94,13 @@ class PbRoleController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'name' => ['required', 'max:20', Rule::unique($this->table)],
-            /* 'alias' => ['required'],
-            'status' => ['required'], */
+            'alias' => ['required', 'max:190'],
+            /* 'status' => ['required'], */
         ]);
 
         $name = $request['name'];
         $permissions = $request['permissions'];
+        $alias = $request['alias'];
 
         if ($validator->fails()) {
             $errors = $validator->errors();
@@ -116,6 +117,7 @@ class PbRoleController extends Controller
             try {
                 $role = new PbRoles();
                 $role->name = $name;
+                $role->alias = $alias;
                 $role->guard_name = 'admin';
                 // $role->alias = $request['alias'];
                 if ($role->save()) {
@@ -192,12 +194,13 @@ class PbRoleController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'name' => ['required', 'max:20', Rule::unique($this->table)->ignore($id)],
-            /* 'alias' => ['required'],
-            'status' => ['required'], */
+            'alias' => ['required', 'max:190'],
+            /* 'status' => ['required'], */
         ]);
 
         $name = $request['name'];
         $permissions = $request['permissions'];
+        $alias = $request['alias'];
 
         if ($validator->fails()) {
             $errors = $validator->errors();
@@ -214,6 +217,7 @@ class PbRoleController extends Controller
             $role = PbRoles::findOrFail($id);
             try {
                 $role->name = $name;
+                $role->alias = $alias;
                 if ($role->save()) {
                     $r = PbRoles::findOrFail($role->id);
                     if ($role->name == 'super-admin') {

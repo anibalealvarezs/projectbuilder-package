@@ -55,7 +55,7 @@ class PbLanguagesSeeder extends Seeder
         Language::create(['name' => 'Divehi, Dhivehi, Maldivian', 'code' => 'dv']);
         Language::create(['name' => 'Dutch, Flemish', 'code' => 'nl']);
         Language::create(['name' => 'Dzongkha', 'code' => 'dz']);
-        Language::create(['name' => 'English', 'code' => 'en']);
+        Language::create(['name' => 'English', 'code' => 'en', 'status' => 1]);
         Language::create(['name' => 'Esperanto', 'code' => 'eo']);
         Language::create(['name' => 'Estonian', 'code' => 'et']);
         Language::create(['name' => 'Ewe', 'code' => 'ee']);
@@ -164,7 +164,7 @@ class PbLanguagesSeeder extends Seeder
         Language::create(['name' => 'Slovenian', 'code' => 'sl']);
         Language::create(['name' => 'Somali', 'code' => 'so']);
         Language::create(['name' => 'Southern Sotho', 'code' => 'st']);
-        Language::create(['name' => 'Spanish, Castilian', 'code' => 'es']);
+        Language::create(['name' => 'Spanish, Castilian', 'code' => 'es', 'status' => 1]);
         Language::create(['name' => 'Sundanese', 'code' => 'su']);
         Language::create(['name' => 'Swahili', 'code' => 'sw']);
         Language::create(['name' => 'Swati', 'code' => 'ss']);

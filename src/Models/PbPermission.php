@@ -4,15 +4,26 @@ namespace Anibalealvarezs\Projectbuilder\Models;
 
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Spatie\Permission\Models\Permission;
+use Spatie\Translatable\HasTranslations;
 
 class PbPermission extends Permission
 {
-    // use ModelTrait;
+    use HasTranslations;
 
     protected $connection;
 
+    public $translatable = ['alias'];
+
     function __construct() {
         $this->connection = config('database.default');
+    }
+
+    public function getAliasAttribute($value)
+    {
+        if (json_decode($value)) {
+            return json_decode($value)->{app()->getLocale()};
+        }
+        return $value;
     }
 
     public function delete()
