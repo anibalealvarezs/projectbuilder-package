@@ -28,7 +28,7 @@
                     v-model="form.permissions"
                     :id="'grid-permissions-' + keyid"
                     name="permissions"
-                    class="appearance-none w-full md:w-1/1 px-4 py-3 mb-3 block rounded bg-gray-200 text-gray-700 border border-gray-200 overflow-hidden leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
+                    class="appearance-none w-full md:w-1/1 px-4 py-3 mb-3 block rounded bg-gray-200 text-gray-700 border border-gray-200 overflow-auto leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
                     placeholder="Assign permissions"
                     multiple="true"
                 >
