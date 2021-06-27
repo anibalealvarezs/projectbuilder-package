@@ -44,22 +44,17 @@ php artisan migrate:refresh --seed
 os, in case of failing when turning columns to JSON, ***check manually the tables and transform to json object, and then re-seed***
 
 #### 7. Publish Project Builder's Seeders
-(***ONLY IF INSTALLING FOR THE VERY FIRST TIME SINCE SEEDS COULD GET DUPLICATED***)
+Install these seeds manually
 ```
-php artisan db:seed
-```
-If not, install these seeds manually
-```
+php artisan db:seed --class="Anibalealvarezs\Projectbuilder\Database\Seeders\PbCountriesSeeder"
+php artisan db:seed --class="Anibalealvarezs\Projectbuilder\Database\Seeders\PbCitiesSeeder"
+php artisan db:seed --class="Anibalealvarezs\Projectbuilder\Database\Seeders\PbLanguagesSeeder"
 php artisan db:seed --class="Anibalealvarezs\Projectbuilder\Database\Seeders\PbSpatieSeeder"
 php artisan db:seed --class="Anibalealvarezs\Projectbuilder\Database\Seeders\PbUsersSeeder"
 php artisan db:seed --class="Anibalealvarezs\Projectbuilder\Database\Seeders\PbTeamSeeder"
 php artisan db:seed --class="Anibalealvarezs\Projectbuilder\Database\Seeders\PbLoggerSeeder"
 php artisan db:seed --class="Anibalealvarezs\Projectbuilder\Database\Seeders\PbConfigSeeder"
-1.1.2
 php artisan db:seed --class="Anibalealvarezs\Projectbuilder\Database\Seeders\PbNavigationSeeder"
-php artisan db:seed --class="Anibalealvarezs\Projectbuilder\Database\Seeders\PbCitiesSeeder"
-php artisan db:seed --class="Anibalealvarezs\Projectbuilder\Database\Seeders\PbCountriesSeeder"
-php artisan db:seed --class="Anibalealvarezs\Projectbuilder\Database\Seeders\PbLanguagesSeeder"
 ```
 
 #### 8. Add "pbstorage" link to "app/filesystems.php"

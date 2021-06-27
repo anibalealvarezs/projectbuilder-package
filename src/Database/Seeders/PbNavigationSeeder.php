@@ -16,9 +16,9 @@ class PbNavigationSeeder extends Seeder
     public function run()
     {
         // Parents
-        Navigation::create(['name' => 'Dashboard', 'destiny' => 'dashboard', 'type' => 'route', 'parent' => 0, 'permission_id' => ['login'], 'nodule' => null]);
-        $usersParent = Navigation::create(['name' => 'Users & Roles', 'destiny' => '#navigation-users-roles', 'type' => 'custom', 'parent' => 0, 'permission_id' => ['read users'], 'nodule' => null]);
-        $settingsParent = Navigation::create(['name' => 'Settings', 'destiny' => '#navigation-settings', 'type' => 'custom', 'parent' => 0, 'permission_id' => ['crud super-admin'], 'nodule' => null]);
+        Navigation::create(['name' => 'Dashboard', 'destiny' => 'dashboard', 'type' => 'route', 'parent' => 0, 'permission_id' => ['login'], 'module' => null]);
+        $usersParent = Navigation::create(['name' => 'Users & Roles', 'destiny' => '#navigation-users-roles', 'type' => 'custom', 'parent' => 0, 'permission_id' => ['read users'], 'module' => null]);
+        $settingsParent = Navigation::create(['name' => 'Settings', 'destiny' => '#navigation-settings', 'type' => 'custom', 'parent' => 0, 'permission_id' => ['crud super-admin'], 'module' => null]);
 
         // Children
         if ($usersParent) {
