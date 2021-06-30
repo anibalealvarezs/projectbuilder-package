@@ -30,5 +30,12 @@ class PbTeamSeeder extends Seeder
         $team->personal_team = 1;
         $team->user_id = 1;
         $team->save();
+
+        // User
+        $team = new Team();
+        $team->name = 'User';
+        $team->personal_team = 1;
+        $team->user_id = 1;
+        $team->save();
     }
 }

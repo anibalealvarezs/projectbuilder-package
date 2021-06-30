@@ -3,7 +3,7 @@
 namespace Anibalealvarezs\Projectbuilder\Controllers\Config;
 
 use Anibalealvarezs\Projectbuilder\Helpers\AeasHelpers as AeasHelpers;
-use Anibalealvarezs\Projectbuilder\Helpers\ControllerTrait;
+use Anibalealvarezs\Projectbuilder\Traits\PbControllerTrait;
 use Anibalealvarezs\Projectbuilder\Models\PbConfig;
 
 use App\Http\Requests;
@@ -27,15 +27,16 @@ class PbConfigController extends Controller
     protected $name;
     protected $table;
 
-    use ControllerTrait;
+    use PbControllerTrait;
 
     function __construct()
     {
+        // Middlewares
         $this->middleware(['role_or_permission:crud super-admin']);
+        // Variables
         $this->aeas = new AeasHelpers();
         $this->name = "configs";
-        $Config = new PbConfig();
-        $this->table = $Config->getTable();
+        $this->table = (new PbConfig())->getTable();
     }
 
     /**
@@ -80,41 +81,25 @@ class PbConfigController extends Controller
      * Store a newly created resource in storage.
      *
      * @param Request $request
-     * @return RedirectResponse
      * @throws ValidationException
+     * @return void
      */
-    public function store(Request $request): RedirectResponse
+    public function store(Request $request)
     {
+        // Validation
         $validator = Validator::make($request->all(), [
             'name' => ['required', 'max:190'],
             'configkey' => ['required', 'max:50', Rule::unique($this->table)],
         ]);
+        $this->validationCheck($validator, $request);
 
-        if ($validator->fails()) {
-            $errors = $validator->errors();
-            $current = "";
-            foreach ($errors->all() as $message) {
-                $current = $message;
-            }
-            $request->session()->flash('flash.banner', $current);
-            $request->session()->flash('flash.bannerStyle', 'danger');
+        // Process
+        try {
+            PbConfig::create($request->all());
 
-            return redirect()->back()->withInput();
-        } else {
-
-            try {
-                PbConfig::create($request->all());
-
-                $request->session()->flash('flash.banner', 'Config Created Successfully!');
-                $request->session()->flash('flash.bannerStyle', 'success');
-
-                return redirect()->route($this->name.'.index');
-            } catch (Exception $e) {
-                $request->session()->flash('flash.banner', 'Config could not be created!');
-                $request->session()->flash('flash.bannerStyle', 'danger');
-
-                return redirect()->back()->withInput();
-            }
+            return $this->redirectResponseCRUDSuccess($request, 'Config created successfully!');
+        } catch (Exception $e) {
+            return $this->redirectResponseCRUDFail($request, 'Config could not be created!');
         }
     }
 
@@ -167,41 +152,25 @@ class PbConfigController extends Controller
      *
      * @param Request $request
      * @param int $id
-     * @return RedirectResponse
+     * @return void
      */
-    public function update(Request $request, int $id): RedirectResponse
+    public function update(Request $request, int $id)
     {
+        // Validation
         $validator = Validator::make($request->all(), [
             'name' => ['required', 'max:190'],
             'configkey' => ['required', 'max:50', Rule::unique('config')->ignore($id)],
         ]);
+        $this->validationCheck($validator, $request);
 
-        if ($validator->fails()) {
-            $errors = $validator->errors();
-            $current = "";
-            foreach ($errors->all() as $message) {
-                $current = $message;
-            }
-            $request->session()->flash('flash.banner', $current);
-            $request->session()->flash('flash.bannerStyle', 'danger');
-
-            return redirect()->back()->withInput();
-        } else {
-
+        // Process
+        try {
             $config = PbConfig::find($id);
-            try {
-                $config->update($request->all());
+            $config->update($request->all());
 
-                $request->session()->flash('flash.banner', 'Config Created Successfully!');
-                $request->session()->flash('flash.bannerStyle', 'success');
-
-                return redirect()->route($this->name.'.index');
-            } catch (Exception $e) {
-                $request->session()->flash('flash.banner', 'Config couldn\'t be updated!');
-                $request->session()->flash('flash.bannerStyle', 'danger');
-
-                return redirect()->back()->withInput();
-            }
+            return $this->redirectResponseCRUDSuccess($request, 'Config updated successfully!');
+        } catch (Exception $e) {
+            return $this->redirectResponseCRUDFail($request, 'Config could not be updated!');
         }
     }
 
@@ -209,24 +178,19 @@ class PbConfigController extends Controller
      * Remove the specified resource from storage.
      *
      * @param Request $request
-     * @param $id
-     * @return RedirectResponse
+     * @param int $id
+     * @return void
      */
-    public function destroy(Request $request, int $id): RedirectResponse
+    public function destroy(Request $request, int $id)
     {
-        $config = PbConfig::find($id);
+        // Process
         try {
+            $config = PbConfig::find($id);
             $config->delete();
 
-            $request->session()->flash('flash.banner', 'Config deleted successfully!');
-            $request->session()->flash('flash.bannerStyle', 'success');
-
-            return redirect()->route($this->name.'.index');
+            return $this->redirectResponseCRUDSuccess($request, 'Config deleted successfully!');
         } catch (Exception $e) {
-            $request->session()->flash('flash.banner', 'Config couldn\'t be deleted!');
-            $request->session()->flash('flash.bannerStyle', 'danger');
-
-            return redirect()->back()->withInput();
+            return $this->redirectResponseCRUDFail($request, 'Config could not be deleted!');
         }
     }
 }

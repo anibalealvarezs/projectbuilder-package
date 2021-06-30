@@ -22,7 +22,7 @@
     import ConfigForm from "@/Pages/Projectbuilder/Configs/ConfigForm"
 
     export default {
-        name: "ShowConfig",
+        name: "EditConfig",
         props: {
             pbconfig: Object,
             page: Object

@@ -2,19 +2,19 @@
 
 namespace Anibalealvarezs\Projectbuilder\Models;
 
-use Anibalealvarezs\Projectbuilder\Helpers\ModelTrait;
+use Anibalealvarezs\Projectbuilder\Traits\PbModelTrait;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Notifications\Notifiable;
-use Illuminate\Foundation\Auth\User as Authenticatable;
 use Laravel\Sanctum\HasApiTokens;
 use Spatie\Permission\Traits\HasRoles;
 
-class PbUser extends Authenticatable
+class PbUser extends User
 {
     use Notifiable;
     use HasApiTokens;
     use HasRoles;
-    use ModelTrait;
+    use PbModelTrait;
 
     protected $guard_name = 'admin';
 
@@ -26,26 +26,14 @@ class PbUser extends Authenticatable
      * @var array
      */
     protected $fillable = [
-        'name', 'email', 'password', 'last_session', 'city_id', 'country_id', 'language_id'
+        'name',
+        'email',
+        'password',
+        'last_session',
+        'city_id',
+        'country_id',
+        'language_id'
     ];
-
-    /**
-     * The attributes that should be hidden for arrays.
-     *
-     * @var array
-     */
-    protected $hidden = [
-        'password', 'remember_token'
-    ];
-
-    /* public function delete()
-    {
-        // Remove langs relations
-        $this->langs()->detach();
-
-        // delete the user
-        return parent::delete();
-    } */
 
     public function setPasswordAttribute($password)
     {

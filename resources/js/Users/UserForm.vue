@@ -142,7 +142,7 @@ export default {
     },
     methods: {
         disableReadonly(event) {
-            document.getElementById(event.toElement.id).readOnly = false
+            document.getElementById(event.target.id).readOnly = false
         }
     },
     computed: {
@@ -151,12 +151,18 @@ export default {
         }
     },
     setup (props) {
+        let rolesList = [];
+        if (props.data.roles) {
+            for (const [k, v] of Object.entries(props.data.roles)) {
+                rolesList.push(v.name);
+            }
+        }
         const form = reactive({
             name: props.data.name,
             email: props.data.email,
             lang: (props.data.lang ? props.data.lang.id : 0),
             country: (props.data.country ? props.data.country.id : 0),
-            roles: props.data.roles,
+            roles: rolesList,
             password: ""
         })
 

@@ -2,14 +2,14 @@
 
 namespace Anibalealvarezs\Projectbuilder\Models;
 
-use Anibalealvarezs\Projectbuilder\Helpers\ModelTrait;
+use Anibalealvarezs\Projectbuilder\Traits\PbModelTrait;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 use Spatie\Translatable\HasTranslations;
 
 class PbConfig extends Model
 {
-    use ModelTrait;
+    use PbModelTrait;
     use HasTranslations;
 
     protected $table = 'config';

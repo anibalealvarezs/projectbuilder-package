@@ -8,6 +8,9 @@
 
         <Main>
             <slot>
+                <!-- <div>
+                    {{ pbuser }}
+                </div> -->
                 <div class="p-12 sm:px-20 bg-white border-b border-gray-200">
                     <UserForm :data="setItem" />
                 </div>
@@ -20,10 +23,10 @@
     import AppLayout from '@/Pages/Projectbuilder/AppLayout'
     import Main from "@/Pages/Projectbuilder/Main"
     import UserForm from "@/Pages/Projectbuilder/Users/UserForm"
-    import {TableFields as Table} from "Pub/js/Projectbuilder/projectbuilder";
+    /* import {TableFields as Table} from "Pub/js/Projectbuilder/projectbuilder"; */
 
     export default {
-        name: "ShowUser",
+        name: "EditUser",
         props: {
             pbuser: Object,
             page: Object,

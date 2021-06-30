@@ -8,8 +8,11 @@
 
         <Main>
             <slot>
+                <!-- <div>
+                    {{ pbpermission }}
+                </div> -->
                 <div class="p-12 sm:px-20 bg-white border-b border-gray-200">
-                    <PermissionForm :data="setItem" :currentroles="currentroles" />
+                    <PermissionForm :data="setItem" />
                 </div>
             </slot>
         </Main>
@@ -22,11 +25,10 @@
     import PermissionForm from "@/Pages/Projectbuilder/Permissions/PermissionForm"
 
     export default {
-        name: "ShowPermission",
+        name: "EditPermission",
         props: {
             pbpermission: Object,
             page: Object,
-            currentroles: Object
         },
         components: {
             PermissionForm,

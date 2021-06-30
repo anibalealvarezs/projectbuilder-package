@@ -8,6 +8,9 @@
 
         <Main>
             <slot>
+                <!-- <div>
+                    {{ pbnavigation }}
+                </div> -->
                 <div class="p-12 sm:px-20 bg-white border-b border-gray-200">
                     <NavigationForm :data="setItem" />
                 </div>
@@ -22,7 +25,7 @@
     import NavigationForm from "@/Pages/Projectbuilder/Navigations/NavigationForm"
 
     export default {
-        name: "ShowNavigation",
+        name: "EditNavigation",
         props: {
             pbnavigation: Object,
             page: Object

@@ -5,6 +5,22 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [1.1.3.2] - 2021-06-29
+
+### Added
+
+- Restrictions for User, Roles and Permissions when creating/updating
+
+### Changed
+
+- Trailts moved to "Traits" folder and its names changed
+- Controllers/Traits/Helpers refactored
+
+### Fixed
+
+- CRUD errors in Controllers and Views
+
+
 ## [1.1.3.1] - 2021-06-27
 
 ### Added

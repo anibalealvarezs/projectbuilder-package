@@ -96,7 +96,7 @@ export default {
     },
     methods: {
         disableReadonly(event) {
-            document.getElementById(event.toElement.id).readOnly = false
+            document.getElementById(event.target.id).readOnly = false
         }
     },
     computed: {

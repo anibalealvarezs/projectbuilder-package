@@ -78,7 +78,6 @@ export default {
     props: {
         data: Object,
         keyid: String,
-        currentpermissions: Array
     },
     components: {
         Button
@@ -90,7 +89,7 @@ export default {
     },
     methods: {
         disableReadonly(event) {
-            document.getElementById(event.toElement.id).readOnly = false
+            document.getElementById(event.target.id).readOnly = false
         }
     },
     computed: {
@@ -99,9 +98,15 @@ export default {
         }
     },
     setup (props) {
+        let permissionsList = [];
+        if (props.data.permissions) {
+            for (const [k, v] of Object.entries(props.data.permissions)) {
+                permissionsList.push(v.id);
+            }
+        }
         const form = reactive({
             name: props.data.name,
-            permissions: props.currentpermissions,
+            permissions: permissionsList,
             alias: props.data['alias'],
         })
 

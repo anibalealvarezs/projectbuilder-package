@@ -8,8 +8,11 @@
 
         <Main>
             <slot>
+                <!-- <div>
+                    {{ pbrole }}
+                </div> -->
                 <div class="p-12 sm:px-20 bg-white border-b border-gray-200">
-                    <RoleForm :data="setItem" :currentpermissions="currentpermissions" />
+                    <RoleForm :data="setItem" />
                 </div>
             </slot>
         </Main>
@@ -22,11 +25,10 @@
     import RoleForm from "@/Pages/Projectbuilder/Roles/RoleForm"
 
     export default {
-        name: "ShowRole",
+        name: "EditRole",
         props: {
             pbrole: Object,
             page: Object,
-            currentpermissions: Object
         },
         components: {
             RoleForm,

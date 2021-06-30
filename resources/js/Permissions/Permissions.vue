@@ -22,7 +22,7 @@
                 </div>
             </slot>
             <div :id="buildHiddenId" class="infinite-hidden">
-                <PermissionForm :data="{}" :currentroles="currentroles" />
+                <PermissionForm :data="{}" />
             </div>
         </Main>
     </AppLayout>
@@ -36,14 +36,11 @@
     import {TableFields as Table} from "Pub/js/Projectbuilder/projectbuilder";
     import Swal from "sweetalert2";
     import PermissionForm from "@/Pages/Projectbuilder/Permissions/PermissionForm"
-    import {computed} from "vue";
-    import {usePage} from "@inertiajs/inertia-vue3";
 
     export default {
         name: "Permissions",
         props: {
             pbpermissions: Object,
-            currentroles: Object
         },
         components: {
             Button,

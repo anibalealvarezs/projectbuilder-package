@@ -22,7 +22,7 @@
                 </div>
             </slot>
             <div :id="buildHiddenId" class="infinite-hidden">
-                <RoleForm :data="{}" :currentpermissions="currentpermissions" />
+                <RoleForm :data="{}" />
             </div>
         </Main>
     </AppLayout>
@@ -36,8 +36,6 @@
     import {TableFields as Table} from "Pub/js/Projectbuilder/projectbuilder";
     import Swal from "sweetalert2";
     import RoleForm from "@/Pages/Projectbuilder/Roles/RoleForm"
-    import {computed} from "vue";
-    import {usePage} from "@inertiajs/inertia-vue3";
 
     export default {
         name: "Roles",

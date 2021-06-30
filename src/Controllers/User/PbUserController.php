@@ -3,13 +3,15 @@
 namespace Anibalealvarezs\Projectbuilder\Controllers\User;
 
 use Anibalealvarezs\Projectbuilder\Helpers\AeasHelpers as AeasHelpers;
-use Anibalealvarezs\Projectbuilder\Helpers\ControllerTrait;
+use Anibalealvarezs\Projectbuilder\Models\PbRoles;
+use Anibalealvarezs\Projectbuilder\Traits\PbControllerTrait;
 use Anibalealvarezs\Projectbuilder\Helpers\Shares;
 use Anibalealvarezs\Projectbuilder\Models\PbUser;
 
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
 
+use App\Models\Team;
 use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Validator;
@@ -28,18 +30,19 @@ class PbUserController extends Controller
     protected $name;
     protected $table;
 
-    use ControllerTrait;
+    use PbControllerTrait;
 
     function __construct()
     {
+        // Middlewares
         $this->middleware(['role_or_permission:read users']);
         $this->middleware(['role_or_permission:create users'])->only('create', 'store');
         $this->middleware(['role_or_permission:update users'])->only('edit', 'update');
         $this->middleware(['role_or_permission:delete users'])->only('destroy');
+        // Variables
         $this->aeas = new AeasHelpers();
         $this->name = "users";
-        $user = new PbUser();
-        $this->table = $user->getTable();
+        $this->table = (new PbUser())->getTable();
     }
 
     /**
@@ -49,9 +52,29 @@ class PbUserController extends Controller
      */
     public function index(): InertiaResponse
     {
-        $users = PbUser::with('country', 'city', 'lang', 'roles')->latest()->paginate(5);
+        $usersQuery = PbUser::with('country', 'city', 'lang', 'roles');
+        $currentUser = PbUser::find(Auth::user()->id);
+        if (!$currentUser->hasRole('super-admin')) {
+            $superAdmins = PbUser::role('super-admin')->get()->modelKeys();
+            $usersQuery = $usersQuery->whereNotIn('id', $superAdmins);
+            if (!$currentUser->hasRole('admin')) {
+                $admins = PbUser::role('admin')->get()->modelKeys();
+                $usersQuery = $usersQuery->whereNotIn('id', $admins);
+            }
+        }
+        $users = $usersQuery->get();
         $filtered = $users->map(function ($user) {
-            return $user->only(['id', 'name', 'email', 'last_session', 'created_at', 'country', 'city', 'lang', 'roles']);
+            return $user->only([
+                'id',
+                'name',
+                'email',
+                'last_session',
+                'created_at',
+                'country',
+                'city',
+                'lang',
+                'roles'
+            ]);
         })->sortByDesc(['name', 'email']);
 
         $filtered = $this->aeas->setCollectionAttributeDatetimeFormat(
@@ -112,48 +135,52 @@ class PbUserController extends Controller
      * Store a newly created resource in storage.
      *
      * @param Request $request
-     * @return RedirectResponse
+     * @return void
      */
-    public function store(Request $request): RedirectResponse
+    public function store(Request $request)
     {
+        // Validation
         $validator = Validator::make($request->all(), [
             'name' => ['required', 'max:190'],
+            'roles' => ['required'],
             'email' => ['required', 'max:50', 'email', Rule::unique($this->table)],
             'password' => ['required'],
         ]);
+        $this->validationCheck($validator, $request);
 
+        // Requests
         $roles = $request['roles'];
+        $lang = $request->input('lang');
+        $country = $request->input('country');
 
-        if ($validator->fails()) {
-            $errors = $validator->errors();
-            $current = "";
-            foreach ($errors->all() as $message) {
-                $current = $message;
-            }
-            $request->session()->flash('flash.banner', $current);
-            $request->session()->flash('flash.bannerStyle', 'danger');
-
-            return redirect()->back()->withInput();
-        } else {
-
-            try {
-                if ($user = PbUser::create($request->all())) {
-                    $user->language_id = $request->input('lang');
-                    $user->country_id = $request->input('country');
-                    $user->save();
+        // Process
+        try {
+            if ($user = PbUser::create($request->all())) {
+                $user->current_team_id = $this->getDefaultTeamId($user);
+                $user->language_id = $lang;
+                $user->country_id = $country;
+                if ($user->save()) {
+                    $me = PbUser::find(Auth::user()->id);
+                    if ($me->hasRole(['super-admin'])) {
+                        // Add only super-admin/admin
+                        if ($user->id == Auth::user()->id) {
+                            $roles = ['super-admin'];
+                        } elseif (in_array('admin', $roles)) {
+                            $roles = ['admin'];
+                        }
+                    } else {
+                        // Remove super-admin/admin
+                        $toExclude = ['super-admin', 'admin'];
+                        $intersect = array_intersect($roles, $toExclude);
+                        $roles = array_diff($roles, $intersect);
+                    }
                     $user->syncRoles($roles);
                 }
-
-                $request->session()->flash('flash.banner', 'User Created Successfully!');
-                $request->session()->flash('flash.bannerStyle', 'success');
-
-                return redirect()->route($this->name.'.index');
-            } catch (Exception $e) {
-                $request->session()->flash('flash.banner', 'User could not be created!');
-                $request->session()->flash('flash.bannerStyle', 'danger');
-
-                return redirect()->back()->withInput();
             }
+
+            return $this->redirectResponseCRUDSuccess($request, 'User created successfully!');
+        } catch (Exception $e) {
+            return $this->redirectResponseCRUDFail($request, 'User could not be created!');
         }
     }
 
@@ -211,31 +238,28 @@ class PbUserController extends Controller
      *
      * @param Request $request
      * @param int $id
-     * @return RedirectResponse
+     * @return void
      */
-    public function update(Request $request, int $id): RedirectResponse
+    public function update(Request $request, int $id)
     {
+        // Validation
         $validator = Validator::make($request->all(), [
             'name' => ['required', 'max:190'],
+            'roles' => ['required'],
             'email' => ['required', 'max:50', 'email', Rule::unique($this->table)->ignore($id)],
         ]);
+        $this->validationCheck($validator, $request);
 
+        // Requests
         $roles = $request['roles'];
 
-        if ($validator->fails()) {
-            $errors = $validator->errors();
-            $current = "";
-            foreach ($errors->all() as $message) {
-                $current = $message;
-            }
-            $request->session()->flash('flash.banner', $current);
-            $request->session()->flash('flash.bannerStyle', 'danger');
-
-            return redirect()->back()->withInput();
-        } else {
-
+        // Process
+        try {
             $user = PbUser::find($id);
-            try {
+            $me = PbUser::find(Auth::user()->id);
+            if (!($user->hasRole('super-admin') && !$me->hasRole('super-admin')) &&
+                !($user->hasRole(['admin']) && !$me->hasAnyRole(['super-admin', 'admin']))
+            ) {
                 if ($request->input('password') == "") {
                     unset($user->password);
                 }
@@ -243,19 +267,34 @@ class PbUserController extends Controller
                 $user->country_id = $request->input('country');
                 $user->name = $request->input('name');
                 $user->email = $request->input('email');
-                $user->save();
-                $user->syncRoles($roles);
+                if ($user->save()) {
+                    if ($me->hasRole(['super-admin'])) {
+                        // Add only super-admin/admin
+                        if ($user->id == Auth::user()->id) {
+                            $roles = ['super-admin'];
+                        } elseif (in_array('admin', $roles)) {
+                            $roles = ['admin'];
+                        }
+                    } else {
+                        if ($user->hasRole(['admin'])) {
+                            $roles = ['admin'];
+                        } else {
+                            // Remove super-admin/admin
+                            $toExclude = ['super-admin', 'admin'];
+                            $intersect = array_intersect($roles, $toExclude);
+                            $roles = array_diff($roles, $intersect);
+                        }
+                    }
+                    $user->syncRoles($roles);
+                }
 
-                $request->session()->flash('flash.banner', 'User Created Successfully!');
-                $request->session()->flash('flash.bannerStyle', 'success');
-
-                return redirect()->route($this->name.'.index');
-            } catch (Exception $e) {
-                $request->session()->flash('flash.banner', 'User could not be updated!');
-                $request->session()->flash('flash.bannerStyle', 'danger');
-
-                return redirect()->back()->withInput();
+                return $this->redirectResponseCRUDSuccess($request, 'User updated successfully!');
             }
+
+            return $this->redirectResponseCRUDFail($request, 'You can not edit this user!');
+        } catch (Exception $e) {
+
+            return $this->redirectResponseCRUDFail($request, 'User could not be updated!');
         }
     }
 
@@ -264,23 +303,34 @@ class PbUserController extends Controller
      *
      * @param Request $request
      * @param int $id
-     * @return RedirectResponse
+     * @return void
      */
-    public function destroy(Request $request, int $id): RedirectResponse
+    public function destroy(Request $request, int $id)
     {
-        $user = PbUser::find($id);
+        // Process
         try {
+            $user = PbUser::find($id);
             $user->delete();
 
-            $request->session()->flash('flash.banner', 'User deleted successfully!');
-            $request->session()->flash('flash.bannerStyle', 'success');
-
-            return redirect()->route($this->name.'.index')->withInput();
+            return $this->redirectResponseCRUDSuccess($request, 'User deleted successfully!');
         } catch (Exception $e) {
-            $request->session()->flash('flash.banner', 'User could not be deleted!');
-            $request->session()->flash('flash.bannerStyle', 'danger');
-
-            return redirect()->back()->withInput();
+            return $this->redirectResponseCRUDFail($request, 'User could not be deleted!');
         }
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @param null $user
+     * @return mixed
+     */
+    protected function getDefaultTeamId($user = null)
+    {
+        $team = Team::where('name', 'User')->first();
+        if ($user && $user->hasRole('admin')) {
+            $team = Team::where('name', 'Admin')->first();
+        }
+
+        return $team->id;
     }
 }

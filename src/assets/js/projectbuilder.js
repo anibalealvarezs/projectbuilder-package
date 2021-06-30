@@ -61,7 +61,7 @@ class TableFields {
         }
         let actions = this.fields['actions'];
         let options = ['update', 'delete']
-        options.forEach(function(option){
+        options.forEach(function (option) {
             /* Enabled */
             if (!buttons[option].hasOwnProperty('enabled')) {
                 buttons[option]['enabled'] = true
@@ -121,8 +121,8 @@ class TableFields {
         });
     }
 
-    static onItemClicked(value, data , key) {
-        for(let i in value) {
+    static onItemClicked(value, data, key) {
+        for (let i in value) {
             if (i == "id") {
                 data['item'] = value[i]
             } else {
@@ -139,7 +139,7 @@ class TableFields {
     static existsFormButton(buttons) {
         if (buttons) {
             for (const [k, v] of Object.entries(buttons)) {
-                if ( v.enabled && (v.type === "form")) {
+                if (v.enabled && (v.type === "form")) {
                     return true
                 }
             }
@@ -226,13 +226,11 @@ class TableFields {
 
 class Helpers {
 
-    static refineURL(url)
-    {
+    static refineURL(url) {
         return url.split("?")[0];
     }
 
-    static proxyToObject(proxy)
-    {
+    static proxyToObject(proxy) {
         return Object.assign({}, proxy);
     }
 }

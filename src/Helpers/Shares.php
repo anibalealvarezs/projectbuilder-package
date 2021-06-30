@@ -121,7 +121,6 @@ class Shares
                     'admin roles permissions',
                     'manage app',
                     'create users',
-                    'read users',
                     'update users',
                     'delete users'
                 ]
@@ -157,7 +156,7 @@ class Shares
                     'super-admin',
                     'admin'
                 ]
-            )->get()->pluck('name');
+            )->get();
         }
         return [
             'roles' => $roles

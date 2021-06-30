@@ -33,7 +33,7 @@ class PbSpatieSeeder extends Seeder
         Role::create(['guard_name' => 'admin', 'name' => 'user', 'alias' => 'User'])
             ->givePermissionTo(['login']);
         Role::create(['guard_name' => 'admin', 'name' => 'admin', 'alias' => 'Admin'])
-            ->givePermissionTo(['create users', 'read users', 'update users', 'delete users', 'manage app', 'login']);
+            ->givePermissionTo(['create users', 'read users', 'update users', 'delete users', 'manage app', 'login', 'admin roles permissions']);
         Role::create(['guard_name' => 'admin', 'name' => 'super-admin', 'alias' => 'Super Admin'])
             ->givePermissionTo(Permission::all());
     }

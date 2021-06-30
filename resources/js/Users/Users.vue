@@ -38,7 +38,7 @@
     import Swal from "sweetalert2";
     import UserForm from "@/Pages/Projectbuilder/Users/UserForm"
     import {computed, reactive} from "vue";
-    import {Inertia} from "@inertiajs/inertia";
+    /* import {Inertia} from "@inertiajs/inertia"; */
     import {usePage} from "@inertiajs/inertia-vue3";
 
     export default {

@@ -3,15 +3,13 @@
 namespace Anibalealvarezs\Projectbuilder\Controllers\Navigation;
 
 use Anibalealvarezs\Projectbuilder\Helpers\AeasHelpers as AeasHelpers;
-use Anibalealvarezs\Projectbuilder\Helpers\ControllerTrait;
+use Anibalealvarezs\Projectbuilder\Traits\PbControllerTrait;
 use Anibalealvarezs\Projectbuilder\Helpers\Shares;
 use Anibalealvarezs\Projectbuilder\Models\PbNavigation;
 
-use Anibalealvarezs\Projectbuilder\Models\PbPermission;
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
 
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Validator;
@@ -30,15 +28,16 @@ class PbNavigationController extends Controller
     protected $name;
     protected $table;
 
-    use ControllerTrait;
+    use PbControllerTrait;
 
     function __construct()
     {
+        // Middlewares
         $this->middleware(['role_or_permission:crud super-admin']);
+        // Variables
         $this->aeas = new AeasHelpers();
         $this->name = "navigations";
-        $Navigation = new PbNavigation();
-        $this->table = $Navigation->getTable();
+        $this->table = (new PbNavigation())->getTable();
     }
 
     /**
@@ -48,7 +47,7 @@ class PbNavigationController extends Controller
      */
     public function index(): InertiaResponse
     {
-        $navigations =  PbNavigation::with('permission')->get();
+        $navigations = PbNavigation::with('permission')->get();
 
         Inertia::share(
             'shared',
@@ -89,11 +88,12 @@ class PbNavigationController extends Controller
      * Store a newly created resource in storage.
      *
      * @param Request $request
-     * @return RedirectResponse
      * @throws ValidationException
+     * @return void
      */
-    public function store(Request $request): RedirectResponse
+    public function store(Request $request)
     {
+        // Validation
         $validator = Validator::make($request->all(), [
             'name' => ['required', 'max:190'],
             'destiny' => ['required', 'max:254'],
@@ -101,44 +101,28 @@ class PbNavigationController extends Controller
             'parent' => ['required', 'integer'],
             'permission' => ['required', 'integer'],
         ]);
+        $this->validationCheck($validator, $request);
 
+        // Requests
         $name = $request['name'];
         $destiny = $request['destiny'];
         $type = $request['type'];
         $parent = $request['parent'];
         $permission = $request['permission'];
 
-        if ($validator->fails()) {
-            $errors = $validator->errors();
-            $current = "";
-            foreach ($errors->all() as $message) {
-                $current = $message;
-            }
-            $request->session()->flash('flash.banner', $current);
-            $request->session()->flash('flash.bannerStyle', 'danger');
+        // Process
+        try {
+            $navigation = new PbNavigation();
+            $navigation->name = $name;
+            $navigation->destiny = $destiny;
+            $navigation->type = $type;
+            $navigation->parent = $parent;
+            $navigation->permission_id = $permission;
+            $navigation->save();
 
-            return redirect()->back()->withInput();
-        } else {
-
-            try {
-                $navigation = new PbNavigation();
-                $navigation->name = $name;
-                $navigation->destiny = $destiny;
-                $navigation->type = $type;
-                $navigation->parent = $parent;
-                $navigation->permission_id = $permission;
-                $navigation->save();
-
-                $request->session()->flash('flash.banner', 'Navigation Created Successfully!');
-                $request->session()->flash('flash.bannerStyle', 'success');
-
-                return redirect()->route($this->name.'.index');
-            } catch (Exception $e) {
-                $request->session()->flash('flash.banner', 'Navigation could not be created!');
-                $request->session()->flash('flash.bannerStyle', 'danger');
-
-                return redirect()->back()->withInput();
-            }
+            return $this->redirectResponseCRUDSuccess($request, 'Navigation created successfully!');
+        } catch (Exception $e) {
+            return $this->redirectResponseCRUDFail($request, 'Navigation could not be created!');
         }
     }
 
@@ -150,7 +134,7 @@ class PbNavigationController extends Controller
      */
     public function show(int $id): InertiaResponse
     {
-        $navigation =  PbNavigation::with('permission')->find($id);
+        $navigation = PbNavigation::find($id);
 
         Inertia::share(
             'shared',
@@ -172,7 +156,7 @@ class PbNavigationController extends Controller
      */
     public function edit(int $id): InertiaResponse
     {
-        $navigation =  PbNavigation::with('permission')->find($id);
+        $navigation = PbNavigation::find($id);
 
         Inertia::share(
             'shared',
@@ -194,10 +178,11 @@ class PbNavigationController extends Controller
      *
      * @param Request $request
      * @param int $id
-     * @return RedirectResponse
+     * @return void
      */
-    public function update(Request $request, int $id): RedirectResponse
+    public function update(Request $request, int $id)
     {
+        // Validation
         $validator = Validator::make($request->all(), [
             'name' => ['required', 'max:190'],
             'destiny' => ['required', 'max:254'],
@@ -205,44 +190,28 @@ class PbNavigationController extends Controller
             'parent' => ['required', 'integer'],
             'permission' => ['required', 'integer'],
         ]);
+        $this->validationCheck($validator, $request);
 
+        // Requests
         $name = $request['name'];
         $destiny = $request['destiny'];
         $type = $request['type'];
         $parent = $request['parent'];
         $permission = $request['permission'];
 
-        if ($validator->fails()) {
-            $errors = $validator->errors();
-            $current = "";
-            foreach ($errors->all() as $message) {
-                $current = $message;
-            }
-            $request->session()->flash('flash.banner', $current);
-            $request->session()->flash('flash.bannerStyle', 'danger');
+        // Process
+        try {
+            $navigation = PbNavigation::find($id);
+            $navigation->name = $name;
+            $navigation->destiny = $destiny;
+            $navigation->type = $type;
+            $navigation->parent = $parent;
+            $navigation->permission_id = $permission;
+            $navigation->save();
 
-            return redirect()->back()->withInput();
-        } else {
-
-            $navigation =  PbNavigation::find($id);
-            try {
-                $navigation->name = $name;
-                $navigation->destiny = $destiny;
-                $navigation->type = $type;
-                $navigation->parent = $parent;
-                $navigation->permission_id = $permission;
-                $navigation->save();
-
-                $request->session()->flash('flash.banner', 'Navigation Created Successfully!');
-                $request->session()->flash('flash.bannerStyle', 'success');
-
-                return redirect()->route($this->name.'.index');
-            } catch (Exception $e) {
-                $request->session()->flash('flash.banner', 'Navigation couldn\'t be updated!');
-                $request->session()->flash('flash.bannerStyle', 'danger');
-
-                return redirect()->back()->withInput();
-            }
+            return $this->redirectResponseCRUDSuccess($request, 'Navigation updated successfully!');
+        } catch (Exception $e) {
+            return $this->redirectResponseCRUDFail($request, 'Navigation could not be updated!');
         }
     }
 
@@ -250,24 +219,19 @@ class PbNavigationController extends Controller
      * Remove the specified resource from storage.
      *
      * @param Request $request
-     * @param $id
-     * @return RedirectResponse
+     * @param int $id
+     * @return void
      */
-    public function destroy(Request $request, int $id): RedirectResponse
+    public function destroy(Request $request, int $id)
     {
-        $navigation =  PbNavigation::find($id);
+        // Process
         try {
+            $navigation = PbNavigation::find($id);
             $navigation->delete();
 
-            $request->session()->flash('flash.banner', 'Navigation deleted successfully!');
-            $request->session()->flash('flash.bannerStyle', 'success');
-
-            return redirect()->route($this->name.'.index');
+            return $this->redirectResponseCRUDSuccess($request, 'Navigation deleted successfully!');
         } catch (Exception $e) {
-            $request->session()->flash('flash.banner', 'Navigation couldn\'t be deleted!');
-            $request->session()->flash('flash.bannerStyle', 'danger');
-
-            return redirect()->back()->withInput();
+            return $this->redirectResponseCRUDFail($request, 'Navigation could not be deleted!');
         }
     }
 }

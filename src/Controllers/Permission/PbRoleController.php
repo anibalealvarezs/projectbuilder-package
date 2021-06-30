@@ -3,16 +3,16 @@
 namespace Anibalealvarezs\Projectbuilder\Controllers\Permission;
 
 use Anibalealvarezs\Projectbuilder\Helpers\AeasHelpers as AeasHelpers;
-use Anibalealvarezs\Projectbuilder\Helpers\ControllerTrait;
+use Anibalealvarezs\Projectbuilder\Traits\PbControllerTrait;
 use Anibalealvarezs\Projectbuilder\Helpers\Shares;
 use Anibalealvarezs\Projectbuilder\Models\PbPermission;
 use Anibalealvarezs\Projectbuilder\Models\PbRoles;
 
+use Anibalealvarezs\Projectbuilder\Models\PbUser;
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
 
 use Illuminate\Http\Request;
-use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 
@@ -30,14 +30,16 @@ class PbRoleController extends Controller
     protected $name;
     protected $table;
 
-    use ControllerTrait;
+    use PbControllerTrait;
 
-    public function __construct() {
+    public function __construct()
+    {
+        // Middlewares
         $this->middleware(['role_or_permission:admin roles permissions']);
+        // Variables
         $this->aeas = new AeasHelpers();
         $this->name = "roles";
-        $roles = new PbRoles();
-        $this->table = $roles->getTable();
+        $this->table = (new PbRoles)->getTable();
     }
 
     /**
@@ -47,7 +49,12 @@ class PbRoleController extends Controller
      */
     public function index(): InertiaResponse
     {
-        $roles = PbRoles::all(); //Get all permissions
+        $rolesQuery = PbRoles::with('permissions')->whereNotIn('name', ['super-admin']);
+        $user = PbUser::find(Auth::user()->id);
+        if (!$user->hasRole('super-admin')) {
+            $rolesQuery = $rolesQuery->whereNotIn('name', ['admin']);
+        }
+        $roles = $rolesQuery->get(); //Get all permissions
 
         Inertia::share(
             'shared',
@@ -88,53 +95,36 @@ class PbRoleController extends Controller
      * Store a newly created resource in storage.
      *
      * @param Request $request
-     * @return RedirectResponse
+     * @return void
      */
-    public function store(Request $request): RedirectResponse
+    public function store(Request $request)
     {
+        // Validation
         $validator = Validator::make($request->all(), [
             'name' => ['required', 'max:20', Rule::unique($this->table)],
             'alias' => ['required', 'max:190'],
             /* 'status' => ['required'], */
         ]);
+        $this->validationCheck($validator, $request);
 
+        // Requests
         $name = $request['name'];
         $permissions = $request['permissions'];
         $alias = $request['alias'];
 
-        if ($validator->fails()) {
-            $errors = $validator->errors();
-            $current = "";
-            foreach ($errors->all() as $message) {
-                $current = $message;
+        // Process
+        try {
+            $role = new PbRoles();
+            $role->name = $name;
+            $role->alias = $alias;
+            $role->guard_name = 'admin';
+            if ($role->save()) {
+                $role->syncPermissions($permissions);
             }
-            $request->session()->flash('flash.banner', $current);
-            $request->session()->flash('flash.bannerStyle', 'danger');
 
-            return redirect()->back()->withInput();
-        } else {
-
-            try {
-                $role = new PbRoles();
-                $role->name = $name;
-                $role->alias = $alias;
-                $role->guard_name = 'admin';
-                // $role->alias = $request['alias'];
-                if ($role->save()) {
-                    $r = PbRoles::findOrFail($role->id);
-                    $r->syncPermissions($permissions);
-                }
-
-                $request->session()->flash('flash.banner', 'Role Created Successfully!');
-                $request->session()->flash('flash.bannerStyle', 'success');
-
-                return redirect()->route($this->name.'.index');
-            } catch (Exception $e) {
-                $request->session()->flash('flash.banner', 'Role could not be created!');
-                $request->session()->flash('flash.bannerStyle', 'danger');
-
-                return redirect()->back()->withInput();
-            }
+            return $this->redirectResponseCRUDSuccess($request, 'Role created successfully!');
+        } catch (Exception $e) {
+            return $this->redirectResponseCRUDFail($request, 'Role could not be created!');
         }
     }
 
@@ -153,7 +143,7 @@ class PbRoleController extends Controller
             )
         );
 
-        return redirect()->route($this->name.'.index');
+        return redirect()->route($this->name . '.index');
     }
 
     /**
@@ -164,8 +154,7 @@ class PbRoleController extends Controller
      */
     public function edit(int $id): InertiaResponse
     {
-        $role = PbRoles::findOrFail($id);
-        $currentPermissions = $role->permissions->modelKeys();
+        $role = PbRoles::with('permissions')->findOrFail($id);
 
         Inertia::share(
             'shared',
@@ -179,7 +168,6 @@ class PbRoleController extends Controller
 
         return Inertia::render($this->aeas->package . '/Roles/EditRole', [
             'pbrole' => $role,
-            'currentpermissions' => $currentPermissions
         ]);
     }
 
@@ -188,59 +176,42 @@ class PbRoleController extends Controller
      *
      * @param Request $request
      * @param int $id
-     * @return RedirectResponse
+     * @return void
      */
-    public function update(Request $request, int $id): RedirectResponse
+    public function update(Request $request, int $id)
     {
+        // Validation
         $validator = Validator::make($request->all(), [
             'name' => ['required', 'max:20', Rule::unique($this->table)->ignore($id)],
             'alias' => ['required', 'max:190'],
             /* 'status' => ['required'], */
         ]);
+        $this->validationCheck($validator, $request);
 
+        // Requests
         $name = $request['name'];
         $permissions = $request['permissions'];
         $alias = $request['alias'];
 
-        if ($validator->fails()) {
-            $errors = $validator->errors();
-            $current = "";
-            foreach ($errors->all() as $message) {
-                $current = $message;
-            }
-            $request->session()->flash('flash.banner', $current);
-            $request->session()->flash('flash.bannerStyle', 'danger');
-
-            return redirect()->back()->withInput();
-        } else {
-
+        // Process
+        try {
             $role = PbRoles::findOrFail($id);
-            try {
-                $role->name = $name;
-                $role->alias = $alias;
-                if ($role->save()) {
-                    $r = PbRoles::findOrFail($role->id);
-                    if ($role->name == 'super-admin') {
-                        $r->syncPermissions(PbPermission::all()->modelKeys());
-                    } elseif ($role->name == 'admin') {
-                        $r->syncPermissions(PbPermission::whereNotIn('name', ['admin roles permissions', 'crud super-admin'])->get()->modelKeys());
-                    } elseif ($role->name == 'user') {
-                        $r->syncPermissions(PbPermission::whereIn('name', ['login'])->get()->modelKeys());
-                    } else {
-                        $r->syncPermissions($permissions);
-                    }
+            $role->name = $name;
+            $role->alias = $alias;
+            if ($role->save()) {
+                if ($role->name == 'super-admin') {
+                    $permissions = PbPermission::all()->modelKeys();
+                } elseif ($role->name == 'admin') {
+                    $permissions = PbPermission::whereNotIn('name', ['crud super-admin'])->get()->modelKeys();
+                } elseif ($role->name == 'user') {
+                    $permissions = PbPermission::whereIn('name', ['login'])->get()->modelKeys();
                 }
-
-                $request->session()->flash('flash.banner', 'Permission Created Successfully!');
-                $request->session()->flash('flash.bannerStyle', 'success');
-
-                return redirect()->route($this->name.'.index');
-            } catch (Exception $e) {
-                $request->session()->flash('flash.banner', 'Permission could not be updated!');
-                $request->session()->flash('flash.bannerStyle', 'danger');
-
-                return redirect()->back()->withInput();
+                $role->syncPermissions($permissions);
             }
+
+            return $this->redirectResponseCRUDSuccess($request, 'Permission updated successfully!');
+        } catch (Exception $e) {
+            return $this->redirectResponseCRUDFail($request, 'Permission could not be updated!');
         }
     }
 
@@ -249,24 +220,18 @@ class PbRoleController extends Controller
      *
      * @param Request $request
      * @param int $id
-     * @return RedirectResponse
+     * @return void
      */
-    public function destroy(Request $request, int $id): RedirectResponse
+    public function destroy(Request $request, int $id)
     {
-        $role = PbRoles::findOrFail($id);
-
+        // Process
         try {
+            $role = PbRoles::findOrFail($id);
             $role->delete();
 
-            $request->session()->flash('flash.banner', 'Permission deleted successfully!');
-            $request->session()->flash('flash.bannerStyle', 'success');
-
-            return redirect()->route($this->name.'.index')->withInput();
+            return $this->redirectResponseCRUDSuccess($request, 'Permission deleted successfully!');
         } catch (Exception $e) {
-            $request->session()->flash('flash.banner', 'Permission could not be deleted!');
-            $request->session()->flash('flash.bannerStyle', 'danger');
-
-            return redirect()->back()->withInput();
+            return $this->redirectResponseCRUDFail($request, 'Permission could not be deleted!');
         }
     }
 }

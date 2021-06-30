@@ -78,7 +78,6 @@ export default {
     props: {
         data: Object,
         keyid: String,
-        currentroles: Array
     },
     components: {
         Button
@@ -90,7 +89,7 @@ export default {
     },
     methods: {
         disableReadonly(event) {
-            document.getElementById(event.toElement.id).readOnly = false
+            document.getElementById(event.target.id).readOnly = false
         }
     },
     computed: {
@@ -99,9 +98,15 @@ export default {
         }
     },
     setup (props) {
+        let rolesList = [];
+        if (props.data.roles) {
+            for (const [k, v] of Object.entries(props.data.roles)) {
+                rolesList.push(v.id);
+            }
+        }
         const form = reactive({
             name: props.data.name,
-            roles: props.currentroles,
+            roles: rolesList,
             alias: props.data['alias'],
         })
 

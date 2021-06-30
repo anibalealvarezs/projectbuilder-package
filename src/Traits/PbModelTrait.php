@@ -1,8 +1,8 @@
 <?php
 
-namespace Anibalealvarezs\Projectbuilder\Helpers;
+namespace Anibalealvarezs\Projectbuilder\Traits;
 
-trait ModelTrait {
+trait PbModelTrait {
 
     public function getTable()
     {

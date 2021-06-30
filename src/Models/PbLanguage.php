@@ -2,7 +2,7 @@
 
 namespace Anibalealvarezs\Projectbuilder\Models;
 
-use Anibalealvarezs\Projectbuilder\Helpers\ModelTrait;
+use Anibalealvarezs\Projectbuilder\Traits\PbModelTrait;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
@@ -11,7 +11,7 @@ use Spatie\Translatable\HasTranslations;
 
 class PbLanguage extends Model
 {
-    use ModelTrait;
+    use PbModelTrait;
     use HasTranslations;
 
     protected $table = 'languages';

@@ -135,7 +135,7 @@ export default {
     },
     methods: {
         disableReadonly(event) {
-            document.getElementById(event.toElement.id).readOnly = false
+            document.getElementById(event.target.id).readOnly = false
         }
     },
     computed: {
@@ -150,7 +150,7 @@ export default {
             parent: props.data.parent,
             destiny: props.data.destiny,
             module: props.data.module,
-            permission: props.data.permission,
+            permission: props.data.permission_id,
         })
 
         function submit() {
