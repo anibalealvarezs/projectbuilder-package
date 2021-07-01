@@ -62,60 +62,62 @@ class TableFields {
         let actions = this.fields['actions'];
         let options = ['update', 'delete']
         options.forEach(function (option) {
-            /* Enabled */
-            if (!buttons[option].hasOwnProperty('enabled')) {
-                buttons[option]['enabled'] = true
-            }
-            /* Text */
-            if (!buttons[option].hasOwnProperty('text')) {
-                buttons[option]['text'] = 'NO TEXT DEFINED'
-            }
-            /* ID */
-            if (!buttons[option].hasOwnProperty('id')) {
-                buttons[option]['id'] = true
-            }
-            /* Route */
-            if (!buttons[option].hasOwnProperty('route')) {
-                buttons[option]['route'] = "/"
-            }
-            /* Callback */
-            if (!buttons[option].hasOwnProperty('callback')) {
-                buttons[option]['callback'] = null
-            }
-            /* Style */
-            if (!buttons[option].hasOwnProperty('style')) {
-                buttons[option]['style'] = 'default'
-            }
-            /* Type */
-            if (!buttons[option].hasOwnProperty('type')) {
-                buttons[option]['type'] = 'form'
-            }
-            /* Method */
-            if (!buttons[option].hasOwnProperty('method')) {
-                buttons[option]['method'] = 'PUT'
-            }
-            /* Method */
-            if (!buttons[option].hasOwnProperty('altforuser')) {
-                buttons[option]['altforuser'] = {}
-            }
-            /* Method */
-            if (!buttons[option].hasOwnProperty('allowed')) {
-                buttons[option]['allowed'] = true
-            }
-            if (buttons[option]['allowed']) {
-                console.log(option);
-                console.log(buttons[option]);
-                actions['buttons'][option] = {
-                    enabled: buttons[option].enabled,
-                    text: buttons[option].text,
-                    route: buttons[option].route,
-                    id: buttons[option].id,
-                    callback: buttons[option].callback,
-                    style: buttons[option].style,
-                    type: buttons[option].type,
-                    formitem: buttons[option].formitem,
-                    method: buttons[option].method,
-                    altforuser: buttons[option].altforuser,
+            if (buttons.hasOwnProperty(option)) {
+                /* Enabled */
+                if (!buttons[option].hasOwnProperty('enabled')) {
+                    buttons[option]['enabled'] = true
+                }
+                /* Text */
+                if (!buttons[option].hasOwnProperty('text')) {
+                    buttons[option]['text'] = 'NO TEXT DEFINED'
+                }
+                /* ID */
+                if (!buttons[option].hasOwnProperty('id')) {
+                    buttons[option]['id'] = true
+                }
+                /* Route */
+                if (!buttons[option].hasOwnProperty('route')) {
+                    buttons[option]['route'] = "/"
+                }
+                /* Callback */
+                if (!buttons[option].hasOwnProperty('callback')) {
+                    buttons[option]['callback'] = null
+                }
+                /* Style */
+                if (!buttons[option].hasOwnProperty('style')) {
+                    buttons[option]['style'] = 'default'
+                }
+                /* Type */
+                if (!buttons[option].hasOwnProperty('type')) {
+                    buttons[option]['type'] = 'form'
+                }
+                /* Method */
+                if (!buttons[option].hasOwnProperty('method')) {
+                    buttons[option]['method'] = 'PUT'
+                }
+                /* Method */
+                if (!buttons[option].hasOwnProperty('altforuser')) {
+                    buttons[option]['altforuser'] = {}
+                }
+                /* Method */
+                if (!buttons[option].hasOwnProperty('allowed')) {
+                    buttons[option]['allowed'] = true
+                }
+                if (buttons[option]['allowed']) {
+                    console.log(option);
+                    console.log(buttons[option]);
+                    actions['buttons'][option] = {
+                        enabled: buttons[option].enabled,
+                        text: buttons[option].text,
+                        route: buttons[option].route,
+                        id: buttons[option].id,
+                        callback: buttons[option].callback,
+                        style: buttons[option].style,
+                        type: buttons[option].type,
+                        formitem: buttons[option].formitem,
+                        method: buttons[option].method,
+                        altforuser: buttons[option].altforuser,
+                    }
                 }
             }
         });

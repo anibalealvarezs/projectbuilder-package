@@ -5,6 +5,7 @@ namespace Anibalealvarezs\Projectbuilder\Database\Seeders;
 use Illuminate\Database\Seeder;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
+use Spatie\Permission\PermissionRegistrar;
 
 class PbSpatieSeeder extends Seeder
 {
@@ -16,7 +17,7 @@ class PbSpatieSeeder extends Seeder
     public function run()
     {
         // Reset cached roles and permissions
-        app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
+        app()[PermissionRegistrar::class]->forgetCachedPermissions();
 
         // create permissions
         Permission::create(['guard_name' => 'admin', 'name' => 'crud super-admin', 'alias' => 'CRUD Super Admin']);
