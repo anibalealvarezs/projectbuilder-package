@@ -18,6 +18,8 @@ class PbConfig extends Model
 
     public $translatable = ['name', 'description'];
 
+    protected $appends = ['crud'];
+
     public $timestamps = false;
 
     /**
@@ -55,5 +57,25 @@ class PbConfig extends Model
             return self::find($config->id);
         }
         return null;
+    }
+
+    public function isEditableBy($id): bool
+    {
+        return true;
+    }
+
+    public function isViewableBy($id): bool
+    {
+        return true;
+    }
+
+    public function isSelectableBy($id): bool
+    {
+        return true;
+    }
+
+    public function isDeletableBy($id): bool
+    {
+        return true;
     }
 }

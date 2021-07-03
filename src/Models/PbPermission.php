@@ -16,6 +16,8 @@ class PbPermission extends Permission
 
     public $translatable = ['alias'];
 
+    protected $appends = ['crud'];
+
     function __construct() {
         $this->connection = config('database.default');
     }
@@ -41,5 +43,25 @@ class PbPermission extends Permission
     {
         // Recursive Relationship
         return $this->hasMany(PbNavigation::class);
+    }
+
+    public function isEditableBy($id): bool
+    {
+        return true;
+    }
+
+    public function isViewableBy($id): bool
+    {
+        return true;
+    }
+
+    public function isSelectableBy($id): bool
+    {
+        return true;
+    }
+
+    public function isDeletableBy($id): bool
+    {
+        return true;
     }
 }

@@ -20,6 +20,8 @@ class PbLanguage extends Model
 
     public $translatable = ['name'];
 
+    protected $appends = ['crud'];
+
     public $timestamps = false;
 
     /**
@@ -98,5 +100,25 @@ class PbLanguage extends Model
     public function users(): HasMany
     {
         return $this->hasMany(PbUser::class);
+    }
+
+    public function isEditableBy($id): bool
+    {
+        return true;
+    }
+
+    public function isViewableBy($id): bool
+    {
+        return true;
+    }
+
+    public function isSelectableBy($id): bool
+    {
+        return true;
+    }
+
+    public function isDeletableBy($id): bool
+    {
+        return true;
     }
 }

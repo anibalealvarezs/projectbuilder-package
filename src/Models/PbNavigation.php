@@ -19,6 +19,8 @@ class PbNavigation extends Model
 
     public $translatable = ['name'];
 
+    protected $appends = ['crud'];
+
     public $timestamps = false;
 
     /**
@@ -52,5 +54,25 @@ class PbNavigation extends Model
     {
         // Recursive Relationship
         return $this->hasMany(self::class, 'parent', 'id')->with('descendants');
+    }
+
+    public function isEditableBy($id): bool
+    {
+        return true;
+    }
+
+    public function isViewableBy($id): bool
+    {
+        return true;
+    }
+
+    public function isSelectableBy($id): bool
+    {
+        return true;
+    }
+
+    public function isDeletableBy($id): bool
+    {
+        return true;
     }
 }

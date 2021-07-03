@@ -20,6 +20,8 @@ class PbCity extends Model
 
     public $translatable = ['name'];
 
+    protected $appends = ['crud'];
+
     public $timestamps = false;
 
     /**
@@ -67,5 +69,25 @@ class PbCity extends Model
     public function langs(): MorphToMany
     {
         return $this->morphToMany(PbLanguage::class, 'langable', 'langables', 'language_id', 'language_id');
+    }
+
+    public function isEditableBy($id): bool
+    {
+        return true;
+    }
+
+    public function isViewableBy($id): bool
+    {
+        return true;
+    }
+
+    public function isSelectableBy($id): bool
+    {
+        return true;
+    }
+
+    public function isDeletableBy($id): bool
+    {
+        return true;
     }
 }

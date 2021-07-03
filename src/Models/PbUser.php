@@ -69,7 +69,7 @@ class PbUser extends User
         return "";
     }
 
-    public function isEditableBy($id)
+    public function isEditableBy($id): bool
     {
         $user = self::find($id);
         if (!($this->hasRole('super-admin') && !$user->hasRole('super-admin')) &&
@@ -81,7 +81,7 @@ class PbUser extends User
         return false;
     }
 
-    public function isViewableBy($id)
+    public function isViewableBy($id): bool
     {
         $user = self::find($id);
         if (!($this->hasRole('super-admin') && !$user->hasRole('super-admin')) &&
@@ -93,12 +93,12 @@ class PbUser extends User
         return false;
     }
 
-    public function isSelectableBy($id)
+    public function isSelectableBy($id): bool
     {
         return true;
     }
 
-    public function isDeletableBy($id)
+    public function isDeletableBy($id): bool
     {
         if (!$this->hasAnyRole(['super-admin', 'admin']) && ($this->id != Auth::user()->id)) {
             return true;
@@ -107,7 +107,7 @@ class PbUser extends User
         return false;
     }
 
-    protected function getDeletableStatus()
+    protected function getDeletableStatus(): bool
     {
         $currentUser = self::find(Auth::user()->id);
         if ($this->id == $currentUser->id) {

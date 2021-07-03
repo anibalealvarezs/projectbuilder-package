@@ -15,6 +15,8 @@ class PbRoles extends Role
 
     public $translatable = ['alias'];
 
+    protected $appends = ['crud'];
+
     function __construct() {
         $this->connection = config('database.default');
     }
@@ -25,6 +27,26 @@ class PbRoles extends Role
             return json_decode($value)->{app()->getLocale()};
         }
         return $value;
+    }
+
+    public function isEditableBy($id): bool
+    {
+        return true;
+    }
+
+    public function isViewableBy($id): bool
+    {
+        return true;
+    }
+
+    public function isSelectableBy($id): bool
+    {
+        return true;
+    }
+
+    public function isDeletableBy($id): bool
+    {
+        return true;
     }
 
 }
