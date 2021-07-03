@@ -5,6 +5,21 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [1.1.4] - 2021-07-02
+
+### Added
+
+- Additional validations for Users CRUD to prevent Super-Admin/Admin accounts eliminations
+- CRUD actions individuanny enabled/disabled
+
+### Changed
+
+- Permissions now as middlewares
+
+### Fixed
+
+- CRUD views actions to dropdowns
+
 ## [1.1.3.2] - 2021-06-29
 
 ### Added

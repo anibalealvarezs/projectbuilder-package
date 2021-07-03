@@ -34,9 +34,10 @@ class PbUserController extends Controller
     {
         // Middlewares
         $this->middleware(['role_or_permission:read users']);
+        $this->middleware(['is_user_viewable'])->only('show');
         $this->middleware(['role_or_permission:create users'])->only('create', 'store');
-        $this->middleware(['role_or_permission:update users'])->only('edit', 'update');
-        $this->middleware(['role_or_permission:delete users'])->only('destroy');
+        $this->middleware(['role_or_permission:update users', 'is_user_editable'])->only('edit', 'update');
+        $this->middleware(['role_or_permission:delete users', 'is_user_deletable'])->only('destroy');
         // Variables
         $this->aeas = new AeasHelpers();
         $this->name = "users";
@@ -71,7 +72,8 @@ class PbUserController extends Controller
                 'country',
                 'city',
                 'lang',
-                'roles'
+                'roles',
+                'crud',
             ]);
         })->sortByDesc(['name', 'email']);
 
@@ -90,6 +92,7 @@ class PbUserController extends Controller
                     'languages',
                     'countries',
                     'roles',
+                    'me',
                 ]),
                 Shares::allowed([
                     'create users' => 'create',
@@ -121,7 +124,7 @@ class PbUserController extends Controller
                     'roles',
                 ]),
                 Shares::allowed([
-                    'create users',
+                    'create users' => 'create',
                 ]),
             )
         );
@@ -186,10 +189,14 @@ class PbUserController extends Controller
      * Display the specified resource.
      *
      * @param int $id
-     * @return InertiaResponse
+     * @return mixed
      */
-    public function show(int $id): InertiaResponse
+    public function show(int $id)
     {
+        if (Auth::user()->id == $id) {
+            return redirect('/user/profile');
+        }
+
         $user = PbUser::with('country', 'city', 'lang', 'roles')->find($id);
 
         Inertia::share(
@@ -208,10 +215,14 @@ class PbUserController extends Controller
      * Show the form for editing the specified resource.
      *
      * @param int $id
-     * @return InertiaResponse
+     * @return mixed
      */
-    public function edit(int $id): InertiaResponse
+    public function edit(Request $request, int $id)
     {
+        if (Auth::user()->id == $id) {
+            return redirect('/user/profile');
+        }
+
         $user = PbUser::with('country', 'city', 'lang', 'roles')->find($id);
 
         Inertia::share(
@@ -255,41 +266,35 @@ class PbUserController extends Controller
         try {
             $user = PbUser::find($id);
             $me = PbUser::find(Auth::user()->id);
-            if (!($user->hasRole('super-admin') && !$me->hasRole('super-admin')) &&
-                !($user->hasRole(['admin']) && !$me->hasAnyRole(['super-admin', 'admin']))
-            ) {
-                if ($request->input('password') == "") {
-                    unset($user->password);
-                }
-                $user->language_id = $request->input('lang');
-                $user->country_id = $request->input('country');
-                $user->name = $request->input('name');
-                $user->email = $request->input('email');
-                if ($user->save()) {
-                    if ($me->hasRole(['super-admin'])) {
-                        // Add only super-admin/admin
-                        if ($user->id == Auth::user()->id) {
-                            $roles = ['super-admin'];
-                        } elseif (in_array('admin', $roles)) {
-                            $roles = ['admin'];
-                        }
-                    } else {
-                        if ($user->hasRole(['admin'])) {
-                            $roles = ['admin'];
-                        } else {
-                            // Remove super-admin/admin
-                            $toExclude = ['super-admin', 'admin'];
-                            $intersect = array_intersect($roles, $toExclude);
-                            $roles = array_diff($roles, $intersect);
-                        }
+            if ($request->input('password') == "") {
+                unset($user->password);
+            }
+            $user->language_id = $request->input('lang');
+            $user->country_id = $request->input('country');
+            $user->name = $request->input('name');
+            $user->email = $request->input('email');
+            if ($user->save()) {
+                if ($me->hasRole(['super-admin'])) {
+                    // Add only super-admin/admin
+                    if ($user->id == Auth::user()->id) {
+                        $roles = ['super-admin'];
+                    } elseif (in_array('admin', $roles)) {
+                        $roles = ['admin'];
                     }
-                    $user->syncRoles($roles);
+                } else {
+                    if ($user->hasRole(['admin'])) {
+                        $roles = ['admin'];
+                    } else {
+                        // Remove super-admin/admin
+                        $toExclude = ['super-admin', 'admin'];
+                        $intersect = array_intersect($roles, $toExclude);
+                        $roles = array_diff($roles, $intersect);
+                    }
                 }
-
-                return $this->redirectResponseCRUDSuccess($request, 'User updated successfully!');
+                $user->syncRoles($roles);
             }
 
-            return $this->redirectResponseCRUDFail($request, 'You can not edit this user!');
+            return $this->redirectResponseCRUDSuccess($request, 'User updated successfully!');
         } catch (Exception $e) {
 
             return $this->redirectResponseCRUDFail($request, 'User could not be updated!');

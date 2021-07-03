@@ -4,8 +4,33 @@ namespace Anibalealvarezs\Projectbuilder\Traits;
 
 trait PbModelTrait {
 
-    public function getTable()
+    protected function getCrudAttribute(): array
     {
-        return $this->table;
+        return [
+            'readable' => $this->getReadableStatus(),
+            'editable' => $this->getEditableStatus(),
+            'selectable' => $this->getSelectableStatus(),
+            'deletable' => $this->getDeletableStatus()
+        ];
+    }
+
+    protected function getReadableStatus(): bool
+    {
+        return true;
+    }
+
+    protected function getEditableStatus(): bool
+    {
+        return true;
+    }
+
+    protected function getSelectableStatus(): bool
+    {
+        return true;
+    }
+
+    protected function getDeletableStatus(): bool
+    {
+        return true;
     }
 }

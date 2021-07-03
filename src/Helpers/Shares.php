@@ -42,6 +42,9 @@ class Shares
                 case "countries":
                     $list = array_merge($list, self::getCountries());
                     break;
+                case "me":
+                    $list = array_merge($list, self::getMyData());
+                    break;
                 default:
                     break;
             }
@@ -174,6 +177,13 @@ class Shares
     {
         return [
             'countries' => PbCountry::all()
+        ];
+    }
+
+    public static function getMyData(): array
+    {
+        return [
+            'me' => PbUser::with('country', 'city', 'lang', 'roles')->find(Auth::user()->id)
         ];
     }
 }

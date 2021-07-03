@@ -2,6 +2,7 @@
 
 namespace Anibalealvarezs\Projectbuilder\Models;
 
+use Anibalealvarezs\Projectbuilder\Traits\PbModelMiscTrait;
 use Anibalealvarezs\Projectbuilder\Traits\PbModelTrait;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -14,6 +15,7 @@ use Spatie\Translatable\HasTranslations;
 class PbCountry extends Model
 {
     use PbModelTrait;
+    use PbModelMiscTrait;
     use HasTranslations;
 
     protected $table = 'countries';

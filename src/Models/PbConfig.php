@@ -2,6 +2,7 @@
 
 namespace Anibalealvarezs\Projectbuilder\Models;
 
+use Anibalealvarezs\Projectbuilder\Traits\PbModelMiscTrait;
 use Anibalealvarezs\Projectbuilder\Traits\PbModelTrait;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
@@ -10,6 +11,7 @@ use Spatie\Translatable\HasTranslations;
 class PbConfig extends Model
 {
     use PbModelTrait;
+    use PbModelMiscTrait;
     use HasTranslations;
 
     protected $table = 'config';

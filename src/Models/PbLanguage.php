@@ -2,6 +2,7 @@
 
 namespace Anibalealvarezs\Projectbuilder\Models;
 
+use Anibalealvarezs\Projectbuilder\Traits\PbModelMiscTrait;
 use Anibalealvarezs\Projectbuilder\Traits\PbModelTrait;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -12,6 +13,7 @@ use Spatie\Translatable\HasTranslations;
 class PbLanguage extends Model
 {
     use PbModelTrait;
+    use PbModelMiscTrait;
     use HasTranslations;
 
     protected $table = 'languages';
@@ -97,9 +99,4 @@ class PbLanguage extends Model
     {
         return $this->hasMany(PbUser::class);
     }
-
-    /* public function users(): MorphToMany
-    {
-        return $this->morphedByMany(PbUser::class, 'langable');
-    } */
 }

@@ -2,6 +2,7 @@
 
 namespace Anibalealvarezs\Projectbuilder\Models;
 
+use Anibalealvarezs\Projectbuilder\Traits\PbModelTrait;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Spatie\Permission\Models\Permission;
 use Spatie\Translatable\HasTranslations;
@@ -9,6 +10,7 @@ use Spatie\Translatable\HasTranslations;
 class PbPermission extends Permission
 {
     use HasTranslations;
+    use PbModelTrait;
 
     protected $connection;
 

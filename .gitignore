@@ -54,4 +54,7 @@ fabric.properties
 # .idea/misc.xml
 # *.ipr
 
+## Project Builder:
+
 /.idea/
+/src/assets/assets
