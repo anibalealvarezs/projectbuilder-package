@@ -13,12 +13,13 @@
                 </div> -->
                 <div class="p-12 sm:px-20 bg-white border-b border-gray-200">
                     <Button
+                        v-if="allowed.create"
                         @click="loadForm"
                         type="button"
                     >
                         <slot>Create Permission</slot>
                     </Button>
-                    <TablePermissions :permissions="pbpermissions" />
+                    <TablePermissions :permissions="pbpermissions" :allowed="allowed" />
                 </div>
             </slot>
             <div :id="buildHiddenId" class="infinite-hidden">
@@ -36,6 +37,8 @@
     import {TableFields as Table} from "Pub/js/Projectbuilder/projectbuilder";
     import Swal from "sweetalert2";
     import PermissionForm from "@/Pages/Projectbuilder/Permissions/PermissionForm"
+    import {computed} from "vue";
+    import {usePage} from "@inertiajs/inertia-vue3";
 
     export default {
         name: "Permissions",
@@ -72,5 +75,10 @@
                 return this.hiddenid
             }
         },
+        setup (props) {
+            const allowed = computed(() => usePage().props.value.shared.allowed)
+
+            return { allowed }
+        }
     }
 </script>

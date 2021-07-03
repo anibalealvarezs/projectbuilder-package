@@ -1,5 +1,5 @@
 <template>
-    <td scope="row"
+    <td v-if="(allowed.update || allowed.delete) || (index != 'actions')" scope="row"
         :class="buildTdClasses()">
         <div v-if="index == 'actions'">
             <!-- Actions Dropdown -->
@@ -120,7 +120,8 @@ export default {
         item: Object,
         field: Object,
         index: String,
-        hiddenid: String
+        hiddenid: String,
+        allowed: Array,
     },
     data() {
         return {

@@ -34,7 +34,10 @@ class PbPermissionController extends Controller
     public function __construct()
     {
         // Middlewares
-        $this->middleware(['role_or_permission:admin roles permissions']);
+        $this->middleware(['role_or_permission:read permissions']);
+        $this->middleware(['role_or_permission:create permissions'])->only('create', 'store');
+        $this->middleware(['role_or_permission:update permissions'])->only('edit', 'update');
+        $this->middleware(['role_or_permission:delete permissions'])->only('destroy');
         // Variables
         $this->aeas = new AeasHelpers();
         $this->name = "permissions";
@@ -64,6 +67,11 @@ class PbPermissionController extends Controller
                 $this->globalInertiaShare(),
                 Shares::list([
                     'roles',
+                ]),
+                Shares::allowed([
+                    'create permissions' => 'create',
+                    'update permissions' => 'update',
+                    'delete permissions' => 'delete',
                 ]),
             )
         );

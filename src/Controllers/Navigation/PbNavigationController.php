@@ -33,7 +33,10 @@ class PbNavigationController extends Controller
     function __construct()
     {
         // Middlewares
-        $this->middleware(['role_or_permission:crud super-admin']);
+        $this->middleware(['role_or_permission:read navigations']);
+        $this->middleware(['role_or_permission:create navigations'])->only('create', 'store');
+        $this->middleware(['role_or_permission:update navigations'])->only('edit', 'update');
+        $this->middleware(['role_or_permission:delete navigations'])->only('destroy');
         // Variables
         $this->aeas = new AeasHelpers();
         $this->name = "navigations";
@@ -55,6 +58,11 @@ class PbNavigationController extends Controller
                 $this->globalInertiaShare(),
                 Shares::list([
                     'permissionsall',
+                ]),
+                Shares::allowed([
+                    'create roles' => 'create',
+                    'update roles' => 'update',
+                    'delete roles' => 'delete',
                 ]),
             )
         );

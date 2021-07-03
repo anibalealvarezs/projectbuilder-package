@@ -13,12 +13,13 @@
                 </div> -->
                 <div class="p-12 sm:px-20 bg-white border-b border-gray-200">
                     <Button
+                        v-if="allowed.create"
                         @click="loadForm"
                         type="button"
                     >
                         <slot>Create Role</slot>
                     </Button>
-                    <TableRoles :roles="pbroles" />
+                    <TableRoles :roles="pbroles" :allowed="allowed" />
                 </div>
             </slot>
             <div :id="buildHiddenId" class="infinite-hidden">
@@ -36,6 +37,8 @@
     import {TableFields as Table} from "Pub/js/Projectbuilder/projectbuilder";
     import Swal from "sweetalert2";
     import RoleForm from "@/Pages/Projectbuilder/Roles/RoleForm"
+    import {computed} from "vue";
+    import {usePage} from "@inertiajs/inertia-vue3";
 
     export default {
         name: "Roles",
@@ -71,6 +74,11 @@
                 this.hiddenid = Table.buildHiddenId()
                 return this.hiddenid
             }
+        },
+        setup (props) {
+            const allowed = computed(() => usePage().props.value.shared.allowed)
+
+            return { allowed }
         }
     }
 </script>

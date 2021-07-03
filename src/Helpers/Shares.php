@@ -113,7 +113,19 @@ class Shares
                 [
                     'crud super-admin',
                     'admin roles permissions',
-                    'manage app'
+                    'manage app',
+                    'create roles',
+                    'update roles',
+                    'delete roles',
+                    'create configs',
+                    'update configs',
+                    'delete configs',
+                    'create permissions',
+                    'update permissions',
+                    'delete permissions',
+                    'create navigations',
+                    'update navigations',
+                    'delete navigations',
                 ]
             )->get();
         } elseif($user->hasRole(['admin'])) {
@@ -125,7 +137,19 @@ class Shares
                     'manage app',
                     'create users',
                     'update users',
-                    'delete users'
+                    'delete users',
+                    'create roles',
+                    'update roles',
+                    'delete roles',
+                    'create configs',
+                    'update configs',
+                    'delete configs',
+                    'create permissions',
+                    'update permissions',
+                    'delete permissions',
+                    'create navigations',
+                    'update navigations',
+                    'delete navigations',
                 ]
             )->get();
         }

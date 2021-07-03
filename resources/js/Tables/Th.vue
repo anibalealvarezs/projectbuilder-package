@@ -1,5 +1,5 @@
 <template>
-    <th scope="col"
+    <th v-if="(allowed.update || allowed.delete) || (index != 'actions')" scope="col"
         :class="buildThClasses()"
     >
         <span class="text-gray-800">{{ field.name }}</span>
@@ -11,7 +11,8 @@ export default {
     name: "Th",
     props: {
         field: Object,
-        index: String
+        index: String,
+        allowed: Array,
     },
     methods: {
         buildThClasses() {

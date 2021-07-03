@@ -3,12 +3,12 @@
         <slot>
             <Header>
                 <slot>
-                    <TrHead :fields="fields" />
+                    <TrHead :fields="fields" :allowed="allowed" />
                 </slot>
             </Header>
             <Body>
                 <slot>
-                    <TrBody v-for="user in users" :item="user" :fields="fields" :hiddenid="buildHiddenId" @clicked-edit-item="onItemClicked" />
+                    <TrBody v-for="user in users" :item="user" :fields="fields" :hiddenid="buildHiddenId" :allowed="allowed" @clicked-edit-item="onItemClicked" />
                 </slot>
             </Body>
         </slot>
@@ -33,7 +33,7 @@ export default {
     name: "TableUsers",
     props: {
         users: Object,
-        allowed: Array
+        allowed: Array,
     },
     components: {
         UserForm,

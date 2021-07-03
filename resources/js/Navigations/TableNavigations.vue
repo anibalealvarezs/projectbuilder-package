@@ -3,12 +3,12 @@
         <slot>
             <Header>
                 <slot>
-                    <TrHead :fields="fields" />
+                    <TrHead :fields="fields" :allowed="allowed" />
                 </slot>
             </Header>
             <Body>
                 <slot>
-                    <TrBody v-for="navigation in navigations" :item="navigation" :fields="fields" :hiddenid="buildHiddenId" @clicked-edit-item="onItemClicked" />
+                    <TrBody v-for="navigation in navigations" :item="navigation" :fields="fields" :hiddenid="buildHiddenId" :allowed="allowed" @clicked-edit-item="onItemClicked" />
                 </slot>
             </Body>
         </slot>
@@ -30,7 +30,8 @@ import { TableFields as Table } from "Pub/js/Projectbuilder/projectbuilder"
 export default {
     name: "TableNavigations",
     props: {
-        navigations: Object
+        navigations: Object,
+        allowed: Array,
     },
     components: {
         NavigationForm,

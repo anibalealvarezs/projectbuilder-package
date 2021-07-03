@@ -3,12 +3,12 @@
         <slot>
             <Header>
                 <slot>
-                    <TrHead :fields="fields" />
+                    <TrHead :fields="fields" :allowed="allowed" />
                 </slot>
             </Header>
             <Body>
                 <slot>
-                    <TrBody v-for="role in roles" :item="role" :fields="fields" :hiddenid="buildHiddenId" @clicked-edit-item="onItemClicked" />
+                    <TrBody v-for="role in roles" :item="role" :fields="fields" :hiddenid="buildHiddenId" :allowed="allowed" @clicked-edit-item="onItemClicked" />
                 </slot>
             </Body>
         </slot>
@@ -33,6 +33,7 @@ export default {
     name: "TableRoles",
     props: {
         roles: Object,
+        allowed: Array,
     },
     components: {
         RoleForm,

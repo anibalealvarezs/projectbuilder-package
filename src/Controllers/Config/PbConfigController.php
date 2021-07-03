@@ -3,6 +3,7 @@
 namespace Anibalealvarezs\Projectbuilder\Controllers\Config;
 
 use Anibalealvarezs\Projectbuilder\Helpers\AeasHelpers as AeasHelpers;
+use Anibalealvarezs\Projectbuilder\Helpers\Shares;
 use Anibalealvarezs\Projectbuilder\Traits\PbControllerTrait;
 use Anibalealvarezs\Projectbuilder\Models\PbConfig;
 
@@ -31,7 +32,10 @@ class PbConfigController extends Controller
     function __construct()
     {
         // Middlewares
-        $this->middleware(['role_or_permission:crud super-admin']);
+        $this->middleware(['role_or_permission:read configs']);
+        $this->middleware(['role_or_permission:create configs'])->only('create', 'store');
+        $this->middleware(['role_or_permission:update configs'])->only('edit', 'update');
+        $this->middleware(['role_or_permission:delete configs'])->only('destroy');
         // Variables
         $this->aeas = new AeasHelpers();
         $this->name = "configs";
@@ -51,6 +55,11 @@ class PbConfigController extends Controller
             'shared',
             array_merge(
                 $this->globalInertiaShare(),
+                Shares::allowed([
+                    'create configs' => 'create',
+                    'update configs' => 'update',
+                    'delete configs' => 'delete',
+                ]),
             )
         );
 

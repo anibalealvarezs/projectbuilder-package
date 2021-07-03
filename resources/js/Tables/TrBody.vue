@@ -5,6 +5,7 @@
             :field="field"
             :index="index"
             :hiddenid="hiddenid"
+            :allowed="allowed"
             @clicked-edit-item="onItemClicked"
         />
     </tr>
@@ -21,7 +22,8 @@ export default {
     props: {
         item: Object,
         fields: Object,
-        hiddenid: String
+        hiddenid: String,
+        allowed: Array,
     },
     methods: {
         onItemClicked(value) {

@@ -35,7 +35,10 @@ class PbRoleController extends Controller
     public function __construct()
     {
         // Middlewares
-        $this->middleware(['role_or_permission:admin roles permissions']);
+        $this->middleware(['role_or_permission:read roles']);
+        $this->middleware(['role_or_permission:create roles'])->only('create', 'store');
+        $this->middleware(['role_or_permission:update roles'])->only('edit', 'update');
+        $this->middleware(['role_or_permission:delete roles'])->only('destroy');
         // Variables
         $this->aeas = new AeasHelpers();
         $this->name = "roles";
@@ -62,6 +65,11 @@ class PbRoleController extends Controller
                 $this->globalInertiaShare(),
                 Shares::list([
                     'permissions',
+                ]),
+                Shares::allowed([
+                    'create roles' => 'create',
+                    'update roles' => 'update',
+                    'delete roles' => 'delete',
                 ]),
             )
         );
@@ -193,6 +201,12 @@ class PbRoleController extends Controller
         $permissions = $request['permissions'];
         $alias = $request['alias'];
 
+        $me = PbUser::find(Auth::user()->id);
+        $optionalPermissions = [];
+        if ($me->hasRole('super-admin')) {
+            $optionalPermissions = PbPermission::whereIn('name', ['read roles', 'read configs', 'read permissions', 'read navigations'])->get()->modelKeys();
+        }
+        $adminOptionalPermissions = array_intersect($optionalPermissions, $permissions);
         // Process
         try {
             $role = PbRoles::findOrFail($id);
@@ -202,7 +216,22 @@ class PbRoleController extends Controller
                 if ($role->name == 'super-admin') {
                     $permissions = PbPermission::all()->modelKeys();
                 } elseif ($role->name == 'admin') {
-                    $permissions = PbPermission::whereNotIn('name', ['crud super-admin'])->get()->modelKeys();
+                    $permissions = PbPermission::whereNotIn('name', array_merge([
+                        'crud super-admin',
+                        'admin roles permissions',
+                        'create roles',
+                        'update roles',
+                        'delete roles',
+                        'create permissions',
+                        'update permissions',
+                        'delete permissions',
+                        'create configs',
+                        'update configs',
+                        'delete configs',
+                        'create navigations',
+                        'update navigations',
+                        'delete navigations',
+                    ], $adminOptionalPermissions))->get()->modelKeys();
                 } elseif ($role->name == 'user') {
                     $permissions = PbPermission::whereIn('name', ['login'])->get()->modelKeys();
                 }

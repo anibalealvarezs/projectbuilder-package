@@ -1,6 +1,10 @@
 <template>
     <tr class="bg-gray-200 border-4">
-        <Th v-for="(field, index) in fields" :key="index" :index="index" :field="field" />
+        <Th v-for="(field, index) in fields"
+            :key="index"
+            :index="index"
+            :field="field"
+            :allowed="allowed" />
     </tr>
 </template>
 
@@ -10,7 +14,8 @@ import Th from "./Th"
 export default {
     name: "TrHead",
     props: {
-        fields: Object
+        fields: Object,
+        allowed: Array,
     },
     components: {
         Th

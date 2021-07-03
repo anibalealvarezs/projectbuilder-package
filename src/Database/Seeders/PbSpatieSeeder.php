@@ -21,20 +21,41 @@ class PbSpatieSeeder extends Seeder
 
         // create permissions
         Permission::create(['guard_name' => 'admin', 'name' => 'crud super-admin', 'alias' => 'CRUD Super Admin']);
+        Permission::create(['guard_name' => 'admin', 'name' => 'admin roles permissions', 'alias' => 'Admin Roles & Permissions']);
+        Permission::create(['guard_name' => 'admin', 'name' => 'manage app', 'alias' => 'Manage App']);
+        Permission::create(['guard_name' => 'admin', 'name' => 'login', 'alias' => 'Login']);
+        // CRUD Users
         Permission::create(['guard_name' => 'admin', 'name' => 'create users', 'alias' => 'Create Users']);
         Permission::create(['guard_name' => 'admin', 'name' => 'read users', 'alias' => 'Read Users']);
         Permission::create(['guard_name' => 'admin', 'name' => 'update users', 'alias' => 'Update Users']);
         Permission::create(['guard_name' => 'admin', 'name' => 'delete users', 'alias' => 'Delete Users']);
-        Permission::create(['guard_name' => 'admin', 'name' => 'admin roles permissions', 'alias' => 'Admin Roles & Permissions']);
-        Permission::create(['guard_name' => 'admin', 'name' => 'manage app', 'alias' => 'Manage App']);
-        Permission::create(['guard_name' => 'admin', 'name' => 'login', 'alias' => 'Login']);
+        // CRUD Configs
+        Permission::create(['guard_name' => 'admin', 'name' => 'create configs', 'alias' => 'Create Configs']);
+        Permission::create(['guard_name' => 'admin', 'name' => 'read configs', 'alias' => 'Read Configs']);
+        Permission::create(['guard_name' => 'admin', 'name' => 'update configs', 'alias' => 'Update Configs']);
+        Permission::create(['guard_name' => 'admin', 'name' => 'delete configs', 'alias' => 'Delete Configs']);
+        // CRUD Navigations
+        Permission::create(['guard_name' => 'admin', 'name' => 'create navigations', 'alias' => 'Create Navigations']);
+        Permission::create(['guard_name' => 'admin', 'name' => 'read navigations', 'alias' => 'Read Navigations']);
+        Permission::create(['guard_name' => 'admin', 'name' => 'update navigations', 'alias' => 'Update Navigations']);
+        Permission::create(['guard_name' => 'admin', 'name' => 'delete navigations', 'alias' => 'Delete Navigations']);
+        // CRUD Permissions
+        Permission::create(['guard_name' => 'admin', 'name' => 'create permissions', 'alias' => 'Create Permissions']);
+        Permission::create(['guard_name' => 'admin', 'name' => 'read permissions', 'alias' => 'Read Permissions']);
+        Permission::create(['guard_name' => 'admin', 'name' => 'update permissions', 'alias' => 'Update Permissions']);
+        Permission::create(['guard_name' => 'admin', 'name' => 'delete permissions', 'alias' => 'Delete Permissions']);
+        // CRUD Roles
+        Permission::create(['guard_name' => 'admin', 'name' => 'create roles', 'alias' => 'Create Roles']);
+        Permission::create(['guard_name' => 'admin', 'name' => 'read roles', 'alias' => 'Read Roles']);
+        Permission::create(['guard_name' => 'admin', 'name' => 'update roles', 'alias' => 'Update Roles']);
+        Permission::create(['guard_name' => 'admin', 'name' => 'delete roles', 'alias' => 'Delete Roles']);
 
         // create roles and assign created permissions
 
         Role::create(['guard_name' => 'admin', 'name' => 'user', 'alias' => 'User'])
             ->givePermissionTo(['login']);
         Role::create(['guard_name' => 'admin', 'name' => 'admin', 'alias' => 'Admin'])
-            ->givePermissionTo(['create users', 'read users', 'update users', 'delete users', 'manage app', 'login', 'admin roles permissions']);
+            ->givePermissionTo(['create users', 'read users', 'update users', 'delete users', 'manage app', 'login']);
         Role::create(['guard_name' => 'admin', 'name' => 'super-admin', 'alias' => 'Super Admin'])
             ->givePermissionTo(Permission::all());
     }
