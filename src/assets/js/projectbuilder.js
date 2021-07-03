@@ -9,7 +9,7 @@ class TableFields {
                 style: {
                     centered: true,
                     bold: true,
-                    width: "w-20",
+                    width: "w-12",
                 },
                 buttons: [],
                 href: {},
@@ -48,11 +48,11 @@ class TableFields {
 
     pushActions(buttons) {
         this.fields['actions'] = {
-            name: "Actions",
+            name: "",
             style: {
                 centered: true,
                 bold: false,
-                width: "w-60",
+                width: "w-20",
             },
             buttons: {},
             href: {},
@@ -179,14 +179,22 @@ class TableFields {
         return ""
     }
 
+    static isFlex(flex) {
+        if (flex) {
+            return " flex";
+        }
+        return ""
+    }
+
     static buildTdClasses(centered) {
         let clase = "border px-4 py-2"
         clase += this.isCentered(centered)
         return clase
     }
 
-    static buildSpanClasses(bold, centered) {
+    static buildSpanClasses(bold, centered, flex = true) {
         let clase = ""
+        clase += this.isFlex(flex)
         clase += this.isBold(bold)
         clase += this.isCentered(centered)
         return clase
