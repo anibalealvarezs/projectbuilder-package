@@ -15,6 +15,6 @@ class PbLoggerSeeder extends Seeder
     public function run()
     {
         // anibalealvarezs
-        Logger::create(['message' => 'App Created']);
+        Logger::updateOrCreate(['message' => 'App Created'], ['object_type' => null]);
     }
 }

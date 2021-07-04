@@ -17,24 +17,42 @@ class PbViewServiceProvider extends ServiceProvider
     public function boot(\Illuminate\Contracts\Http\Kernel $kernel)
     {
         $aeas = new AeasHelpers();
+        $dirs = [
+            'core' => __DIR__ . '/../../resources/core',
+            'components' => __DIR__ . '/../../resources/js',
+            'assets_js' => __DIR__ . '/../../src/assets/js',
+            'assets_css' => __DIR__ . '/../../src/assets/css',
+        ];
         // Views
         $views = __DIR__ . '/../../resources/js';
         $this->loadViewsFrom($views, $aeas->prefix);
-        // Core Relacement
+        // Publish
+        // All
+        $allPublish = [
+            $dirs['components'] => resource_path('js/Pages/'.$aeas->package),
+            $dirs['assets_js'] => public_path('js/'.$aeas->package),
+            $dirs['assets_css'] => public_path('css/'.$aeas->package),
+        ];
+        if (!AeasHelpers::isDirEmpty($dirs['core'])) {
+            $allPublish[$dirs['core']] = resource_path('js');
+        }
+        $this->publishes($allPublish, $aeas->name.'-all');
+        // Specific
+        // Only Core Relacement
         $this->publishes([
-            __DIR__ . '/../../resources/core' => resource_path('js'),
+            $dirs['core'] => resource_path('js'),
         ], $aeas->name.'-core');
-        // Components
+        // Only Components
         $this->publishes([
-            __DIR__ . '/../../resources/js' => resource_path('js/Pages/'.$aeas->package),
+            $dirs['components'] => resource_path('js/Pages/'.$aeas->package),
         ], $aeas->name.'-components');
-        // Helpers
+        // Only Js Helpers
         $this->publishes([
-            __DIR__ . '/../../src/assets/js' => public_path('js/'.$aeas->package),
+            $dirs['assets_js'] => public_path('js/'.$aeas->package),
         ], $aeas->name.'-js');
-        // CSS
+        // Only CSS
         $this->publishes([
-            __DIR__ . '/../../src/assets/css' => public_path('css/'.$aeas->package),
+            $dirs['assets_css'] => public_path('css/'.$aeas->package),
         ], $aeas->name.'-css');
     }
 

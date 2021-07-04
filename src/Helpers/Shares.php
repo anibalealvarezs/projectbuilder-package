@@ -96,8 +96,7 @@ class Shares
 
     public static function getCustomLocale(): array
     {
-        $aeas = new AeasHelpers();
-        $customLocale = $aeas->getCustomLocale();
+        $customLocale = AeasHelpers::getCustomLocale();
         return [
             'locale' => $customLocale ?: app()->getLocale()
         ];

@@ -4,6 +4,7 @@ namespace Anibalealvarezs\Projectbuilder\Helpers;
 
 use Anibalealvarezs\Projectbuilder\Models\PbUser;
 use Carbon\Carbon;
+use FilesystemIterator;
 use Illuminate\Support\Facades\Auth;
 
 class AeasHelpers
@@ -42,12 +43,17 @@ class AeasHelpers
         return $collection;
     }
 
-    public function getCustomLocale()
+    public static function getCustomLocale()
     {
         if (Auth::check()) {
             $user = PbUser::find(Auth::user()->id);
             return $user->getLocale();
         }
         return "";
+    }
+
+    public static function isDirEmpty($dir): bool
+    {
+        return !(new FilesystemIterator($dir))->valid();
     }
 }

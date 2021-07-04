@@ -15,26 +15,34 @@ class PbNavigationSeeder extends Seeder
      */
     public function run()
     {
-        // Get Permissions
-        $loginPermission = PbPermission::where('name', 'login')->first();
-        $readUsersPermission = PbPermission::where('name', 'read users')->first();
-        $AdminRolesPermission = PbPermission::where('name', 'admin roles permissions')->first();
-        $crudSuperAdminPermission = PbPermission::where('name', 'crud super-admin')->first();
+        $this->call([
+            PbTeamSeeder::class,
+        ]);
 
-        // Parents
-        Navigation::create(['name' => 'Dashboard', 'destiny' => 'dashboard', 'type' => 'route', 'parent' => 0, 'permission_id' => $loginPermission->id, 'module' => null]);
-        $usersParent = Navigation::create(['name' => 'Users & Roles', 'destiny' => '#navigation-users-roles', 'type' => 'custom', 'parent' => 0, 'permission_id' => $readUsersPermission->id, 'module' => null]);
-        $settingsParent = Navigation::create(['name' => 'Settings', 'destiny' => '#navigation-settings', 'type' => 'custom', 'parent' => 0, 'permission_id' => $crudSuperAdminPermission->id, 'module' => null]);
+        if (Navigation::count() == 0) {
+            // Get Permissions
+            $loginPermission = PbPermission::where('name', 'login')->first();
+            $readUsersPermission = PbPermission::where('name', 'read users')->first();
+            $readRolesPermission = PbPermission::where('name', 'read roles')->first();
+            $readPermissionsPermission = PbPermission::where('name', 'read permissions')->first();
+            $readConfigsPermission = PbPermission::where('name', 'read configs')->first();
+            $readNavigationsPermission = PbPermission::where('name', 'read navigations')->first();
 
-        // Children
-        if ($usersParent) {
-            Navigation::create(['name' => 'Users', 'destiny' => 'users.index', 'type' => 'route', 'parent' => $usersParent->id, 'permission_id' => $readUsersPermission->id, 'module' => 'pbuser']);
-            Navigation::create(['name' => 'Roles', 'destiny' => 'roles.index', 'type' => 'route', 'parent' => $usersParent->id, 'permission_id' => $AdminRolesPermission->id, 'module' => 'pbroles']);
-            Navigation::create(['name' => 'Permissions', 'destiny' => 'permissions.index', 'type' => 'route', 'parent' => $usersParent->id, 'permission_id' => $AdminRolesPermission->id, 'module' => 'pbpermissions']);
-        }
-        if ($settingsParent) {
-            Navigation::create(['name' => 'Config', 'destiny' => 'configs.index', 'type' => 'route', 'parent' => $settingsParent->id, 'permission_id' => $crudSuperAdminPermission->id, 'module' => 'pbconfig']);
-            Navigation::create(['name' => 'Navigations', 'destiny' => 'navigations.index', 'type' => 'route', 'parent' => $settingsParent->id, 'permission_id' => $crudSuperAdminPermission->id, 'module' => 'pbnavigations']);
+            // Parents
+            Navigation::updateOrCreate(['name' => 'Dashboard'], ['destiny' => 'dashboard', 'type' => 'route', 'parent' => 0, 'permission_id' => $loginPermission->id, 'module' => null]);
+            $usersParent = Navigation::updateOrCreate(['name' => 'Users & Roles'], ['destiny' => '#navigation-users-roles', 'type' => 'custom', 'parent' => 0, 'permission_id' => $readUsersPermission->id, 'module' => null]);
+            $settingsParent = Navigation::updateOrCreate(['name' => 'Settings'], ['destiny' => '#navigation-settings', 'type' => 'custom', 'parent' => 0, 'permission_id' => $readConfigsPermission->id, 'module' => null]);
+
+            // Children
+            if ($usersParent) {
+                Navigation::updateOrCreate(['name' => 'Users'], ['destiny' => 'users.index', 'type' => 'route', 'parent' => $usersParent->id, 'permission_id' => $readUsersPermission->id, 'module' => 'pbuser']);
+                Navigation::updateOrCreate(['name' => 'Roles'], ['destiny' => 'roles.index', 'type' => 'route', 'parent' => $usersParent->id, 'permission_id' => $readRolesPermission->id, 'module' => 'pbroles']);
+                Navigation::updateOrCreate(['name' => 'Permissions'], ['destiny' => 'permissions.index', 'type' => 'route', 'parent' => $usersParent->id, 'permission_id' => $readPermissionsPermission->id, 'module' => 'pbpermissions']);
+            }
+            if ($settingsParent) {
+                Navigation::updateOrCreate(['name' => 'Config'], ['destiny' => 'configs.index', 'type' => 'route', 'parent' => $settingsParent->id, 'permission_id' => $readConfigsPermission->id, 'module' => 'pbconfig']);
+                Navigation::updateOrCreate(['name' => 'Navigations'], ['destiny' => 'navigations.index', 'type' => 'route', 'parent' => $settingsParent->id, 'permission_id' => $readNavigationsPermission->id, 'module' => 'pbnavigations']);
+            }
         }
     }
 }

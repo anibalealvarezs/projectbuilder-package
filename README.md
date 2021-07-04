@@ -41,10 +41,10 @@ or, in case of migration failure (***NOT FOR RUNNING PROJECTS SINCE DB WILL BE W
 ```
 php artisan migrate:refresh --seed
 ```
-os, in case of failing when turning columns to JSON, ***check manually the tables and transform to json object, and then re-seed***
+or, in case of failing when turning columns to JSON, ***check manually the tables and transform to json object, and then re-seed***
 
-#### 7. Publish Project Builder's Seeders
-Install these seeds manually
+#### 7. Seed the database
+These are the default seeders in case you want to run them manually
 ```
 php artisan db:seed --class="Anibalealvarezs\Projectbuilder\Database\Seeders\PbCountriesSeeder"
 php artisan db:seed --class="Anibalealvarezs\Projectbuilder\Database\Seeders\PbCitiesSeeder"
@@ -74,9 +74,13 @@ ln -s ../vendor/anibalealvarezs/projectbuilder-package/src/assets pbstorage
 ```
 
 ### 10. Publish Vue components and libraries
+Publish all necessary files
+```
+php artisan vendor:publish --provider="Anibalealvarezs\Projectbuilder\Providers\PbViewServiceProvider" --tag="builder-all" --force
+```
+of publish them one by one
 ```
 php artisan vendor:publish --provider="Anibalealvarezs\Projectbuilder\Providers\PbViewServiceProvider" --tag="builder-components" --force
-1.1.2
 php artisan vendor:publish --provider="Anibalealvarezs\Projectbuilder\Providers\PbViewServiceProvider" --tag="builder-js" --force
 php artisan vendor:publish --provider="Anibalealvarezs\Projectbuilder\Providers\PbViewServiceProvider" --tag="builder-css" --force
 php artisan vendor:publish --provider="Anibalealvarezs\Projectbuilder\Providers\PbViewServiceProvider" --tag="builder-core" --force

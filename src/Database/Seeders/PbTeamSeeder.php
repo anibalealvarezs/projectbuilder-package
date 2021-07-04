@@ -2,6 +2,7 @@
 
 namespace Anibalealvarezs\Projectbuilder\Database\Seeders;
 
+use Anibalealvarezs\Projectbuilder\Models\PbUser;
 use Illuminate\Database\Seeder;
 use App\Models\Team;
 
@@ -10,6 +11,11 @@ use Session;
 
 class PbTeamSeeder extends Seeder
 {
+    public static function byPass()
+    {
+        //
+    }
+
     /**
      * Run the database seeds.
      *
@@ -17,25 +23,15 @@ class PbTeamSeeder extends Seeder
      */
     public function run()
     {
-        // Super Admin
-        $team = new Team();
-        $team->name = 'SuperAdmin';
-        $team->personal_team = 1;
-        $team->user_id = 1;
-        $team->save();
+        $this->call([
+            PbUsersSeeder::class,
+        ]);
 
-        // Admin
-        $team = new Team();
-        $team->name = 'Admin';
-        $team->personal_team = 1;
-        $team->user_id = 1;
-        $team->save();
-
-        // User
-        $team = new Team();
-        $team->name = 'User';
-        $team->personal_team = 1;
-        $team->user_id = 1;
-        $team->save();
+        $user = PbUser::role('super-admin')->first();
+        if ($user) {
+            Team::updateOrCreate(['name' => 'SuperAdmin'], ['personal_team' => true, 'user_id' => $user->id]);
+            Team::updateOrCreate(['name' => 'Admin'], ['personal_team' => true, 'user_id' => $user->id]);
+            Team::updateOrCreate(['name' => 'User'], ['personal_team' => true, 'user_id' => $user->id]);
+        }
     }
 }
