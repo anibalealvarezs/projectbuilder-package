@@ -24,12 +24,15 @@ export default {
 
     computed: {
         liclasses() {
-            let classes = 'dropdown h-full inline-block relative text-gray-500 hover:text-gray-700 focus:text-gray-700 hover:bg-gray-100 text-sm font-medium leading-5 transition duration-150 ease-in-out focus:outline-none active:text-gray-900'
+            let classes = 'h-full inline-block relative text-gray-500 hover:text-gray-700 focus:text-gray-700 hover:bg-gray-100 text-sm font-medium leading-5 transition duration-150 ease-in-out focus:outline-none active:text-gray-900'
             classes += this.isActive
-            if (!this.isRoot) {
-                classes += ' bg-white shadow-lg pb-navigation-child'
+            if (this.hasDescendants) {
+                classes += ' dropdown'
+            }
+            if (this.isRoot) {
+                classes += ' mr-4 pb-navigation-root'
             } else {
-                classes += ' pb-navigation-root'
+                classes += ' bg-white shadow-lg pb-navigation-child'
             }
             if (!this.isOdd) {
                 classes += ' w-full'

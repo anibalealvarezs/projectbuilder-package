@@ -37,8 +37,7 @@
     import {TableFields as Table} from "Pub/js/Projectbuilder/projectbuilder";
     import Swal from "sweetalert2";
     import UserForm from "@/Pages/Projectbuilder/Users/UserForm"
-    import {computed, reactive} from "vue";
-    /* import {Inertia} from "@inertiajs/inertia"; */
+    import {computed} from "vue";
     import {usePage} from "@inertiajs/inertia-vue3";
 
     export default {
@@ -76,7 +75,7 @@
                 return this.hiddenid
             }
         },
-        setup (props) {
+        setup () {
             const allowed = computed(() => usePage().props.value.shared.allowed)
 
             return { allowed }

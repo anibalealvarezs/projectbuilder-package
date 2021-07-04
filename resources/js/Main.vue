@@ -9,11 +9,13 @@
 </template>
 
 <script>
+import "Pub/css/Projectbuilder/projectbuilder.css"
+
 export default {
     name: "Main"
 }
 </script>
 
 <style scoped>
-    @import "Pub/css/Projectbuilder/projectbuilder.css";
+
 </style>
