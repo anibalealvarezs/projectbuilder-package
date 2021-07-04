@@ -85,28 +85,35 @@ if "pbstorage" links show error, navigate to "public folder", manually delete th
 ln -s ../vendor/anibalealvarezs/projectbuilder-package/src/assets pbstorage
 ```
 
-### 11. Add resources to /webpack.mix.js
+### 11. Comment/remove the default "dashboard" route in /routes/web.php
+```
+/* Route::middleware(['auth:sanctum', 'verified'])->get('/dashboard', function () {
+    return Inertia::render('Dashboard');
+})->name('dashboard'); */
+```
+
+### 12. Add resources to /webpack.mix.js
 ```
 mix.js('node_modules/sweetalert2/dist/sweetalert2.js', 'public/js');
 ```
 
-### 12. Install new resources as dependencies
+### 13. Install new resources as dependencies
 ```
 npm i sweetalert2
 npm install @tailwindcss/forms
 ```
 
-### 13. Require Tailwind Plugins in tailwind.config.js
+### 14. Require Tailwind Plugins in tailwind.config.js
 ```
 require('@tailwindcss/forms')
 ```
 
-### 14. Add alias for public folder in webpack.config.js
+### 15. Add alias for public folder in webpack.config.js
 ```
 Pub: path.resolve('public'),
 ```
 
-### 15. Recompile app.js
+### 16. Recompile app.js
 For production:
 ```
 npm run prod
