@@ -4,7 +4,6 @@ namespace Anibalealvarezs\Projectbuilder\Helpers;
 
 use Anibalealvarezs\Projectbuilder\Models\PbUser;
 use Carbon\Carbon;
-use FilesystemIterator;
 use Illuminate\Support\Facades\Auth;
 
 class AeasHelpers
@@ -50,14 +49,5 @@ class AeasHelpers
             return $user->getLocale();
         }
         return "";
-    }
-
-    public static function isDirEmpty($dir): bool
-    {
-        if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {
-            $dir = str_replace('/', '\\', $dir);
-        }
-
-        return !(new FilesystemIterator($dir))->valid();
     }
 }

@@ -32,10 +32,8 @@ class PbViewServiceProvider extends ServiceProvider
             $dirs['components'] => resource_path('js/Pages/'.$aeas->package),
             $dirs['assets_js'] => public_path('js/'.$aeas->package),
             $dirs['assets_css'] => public_path('css/'.$aeas->package),
+            /* $dirs['core'] => resource_path('js'), */
         ];
-        if (!AeasHelpers::isDirEmpty($dirs['core'])) {
-            $allPublish[$dirs['core']] = resource_path('js');
-        }
         $this->publishes($allPublish, $aeas->name.'-all');
         // Specific
         // Only Core Relacement
