@@ -54,6 +54,14 @@ class AeasHelpers
 
     public static function isDirEmpty($dir): bool
     {
-        return !(new FilesystemIterator($dir))->valid();
+        $handle = opendir($dir);
+        while (false !== ($entry = readdir($handle))) {
+            if ($entry != "." && $entry != "..") {
+                closedir($handle);
+                return false;
+            }
+        }
+        closedir($handle);
+        return true;
     }
 }
