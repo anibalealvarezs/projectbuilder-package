@@ -15,10 +15,6 @@ class PbNavigationSeeder extends Seeder
      */
     public function run()
     {
-        $this->call([
-            PbTeamSeeder::class,
-        ]);
-
         if (Navigation::count() == 0) {
             // Get Permissions
             $loginPermission = PbPermission::where('name', 'login')->first();

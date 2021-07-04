@@ -7,11 +7,6 @@ use Illuminate\Database\Seeder;
 
 class PbLanguagesSeeder extends Seeder
 {
-    public static function byPass()
-    {
-        //
-    }
-
     /**
      * Run the database seeds.
      *

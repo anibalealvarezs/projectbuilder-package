@@ -11,11 +11,6 @@ use Session;
 
 class PbTeamSeeder extends Seeder
 {
-    public static function byPass()
-    {
-        //
-    }
-
     /**
      * Run the database seeds.
      *
@@ -23,10 +18,6 @@ class PbTeamSeeder extends Seeder
      */
     public function run()
     {
-        $this->call([
-            PbUsersSeeder::class,
-        ]);
-
         $user = PbUser::role('super-admin')->first();
         if ($user) {
             Team::updateOrCreate(['name' => 'SuperAdmin'], ['personal_team' => true, 'user_id' => $user->id]);

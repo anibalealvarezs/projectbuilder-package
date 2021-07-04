@@ -7,11 +7,6 @@ use Illuminate\Database\Seeder;
 
 class PbCountriesSeeder extends Seeder
 {
-    public static function byPass()
-    {
-        //
-    }
-
     /**
      * Run the database seeds.
      *
@@ -19,9 +14,6 @@ class PbCountriesSeeder extends Seeder
      */
     public function run()
     {
-        $this->call([
-            PbLanguagesSeeder::class,
-        ]);
         if (Country::count() == 0) {
             // Default Countries
             Country::updateOrCreate(['code' => 'AF'], ['name' => 'Afghanistan']);

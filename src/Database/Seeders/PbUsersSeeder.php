@@ -10,11 +10,6 @@ use Session;
 
 class PbUsersSeeder extends Seeder
 {
-    public static function byPass()
-    {
-        //
-    }
-
     /**
      * Run the database seeds.
      *
@@ -22,10 +17,6 @@ class PbUsersSeeder extends Seeder
      */
     public function run()
     {
-        $this->call([
-            PbSpatieSeeder::class,
-        ]);
-
         // SuperAdmin
         $user = User::updateOrCreate(['email' => 'superadmin@superadmin'], ['password' => '123456', 'name' => 'Super Admin', 'current_team_id' => 1]);
         $user->assignRole('super-admin');

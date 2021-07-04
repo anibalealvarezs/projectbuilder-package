@@ -14,9 +14,6 @@ class PbCitiesSeeder extends Seeder
      */
     public function run()
     {
-        $this->call([
-            PbCountriesSeeder::class,
-        ]);
         if (City::count() == 0) {
             // Default Cities
             City::updateOrCreate(['name' => 'Kabul'], ['country_id' => null]);
