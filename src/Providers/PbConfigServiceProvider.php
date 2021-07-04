@@ -2,9 +2,8 @@
 
 namespace Anibalealvarezs\Projectbuilder\Providers;
 
+use Illuminate\Contracts\Http\Kernel;
 use Illuminate\Support\ServiceProvider;
-use Illuminate\Routing\UrlGenerator;
-use Illuminate\Support\Facades\View;
 
 class PbConfigServiceProvider extends ServiceProvider
 {
@@ -13,7 +12,7 @@ class PbConfigServiceProvider extends ServiceProvider
      *
      * @return void
      */
-    public function boot(\Illuminate\Contracts\Http\Kernel $kernel)
+    public function boot(Kernel $kernel)
     {
         //
     }

@@ -26,7 +26,6 @@ use Session;
 
 class PbRoleController extends Controller
 {
-    protected $aeas;
     protected $name;
     protected $table;
 
@@ -40,7 +39,6 @@ class PbRoleController extends Controller
         $this->middleware(['role_or_permission:update roles'])->only('edit', 'update');
         $this->middleware(['role_or_permission:delete roles'])->only('destroy');
         // Variables
-        $this->aeas = new AeasHelpers();
         $this->name = "roles";
         $this->table = (new PbRoles)->getTable();
     }
@@ -74,7 +72,7 @@ class PbRoleController extends Controller
             )
         );
 
-        return Inertia::render($this->aeas->package . '/Roles/Roles', [
+        return Inertia::render(AeasHelpers::AEAS_PACKAGE . '/Roles/Roles', [
             'pbroles' => $roles,
         ]);
     }
@@ -96,7 +94,7 @@ class PbRoleController extends Controller
             )
         );
 
-        return Inertia::render($this->aeas->package . '/Roles/CreateRole');
+        return Inertia::render(AeasHelpers::AEAS_PACKAGE . '/Roles/CreateRole');
     }
 
     /**
@@ -174,7 +172,7 @@ class PbRoleController extends Controller
             )
         );
 
-        return Inertia::render($this->aeas->package . '/Roles/EditRole', [
+        return Inertia::render(AeasHelpers::AEAS_PACKAGE . '/Roles/EditRole', [
             'pbrole' => $role,
         ]);
     }
@@ -219,15 +217,19 @@ class PbRoleController extends Controller
                     $permissions = PbPermission::whereNotIn('name', array_merge([
                         'crud super-admin',
                         'admin roles permissions',
+                        'read roles',
                         'create roles',
                         'update roles',
                         'delete roles',
+                        'read permissions',
                         'create permissions',
                         'update permissions',
                         'delete permissions',
+                        'read configs',
                         'create configs',
                         'update configs',
                         'delete configs',
+                        'read navigations',
                         'create navigations',
                         'update navigations',
                         'delete navigations',

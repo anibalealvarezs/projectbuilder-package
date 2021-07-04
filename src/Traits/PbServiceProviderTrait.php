@@ -6,11 +6,8 @@ use Anibalealvarezs\Projectbuilder\Helpers\AeasHelpers as AeasHelpers;
 
 trait PbServiceProviderTrait {
 
-    protected $aeas;
-
     protected function booter()
     {
-        $this->aeas = new AeasHelpers();
         $dirs = [
             'core' => __DIR__ . '/../../resources/core',
             'components' => __DIR__ . '/../../resources/js',
@@ -19,32 +16,32 @@ trait PbServiceProviderTrait {
         ];
         // Views
         $views = __DIR__ . '/../../resources/js';
-        $this->loadViewsFrom($views, $this->aeas->prefix);
+        $this->loadViewsFrom($views, AeasHelpers::AEAS_PREFIX);
         // Publish
         // All
         $allPublish = [
-            $dirs['components'] => resource_path('js/Pages/'.$this->aeas->package),
-            $dirs['assets_js'] => public_path('js/'.$this->aeas->package),
-            $dirs['assets_css'] => public_path('css/'.$this->aeas->package),
+            $dirs['components'] => resource_path('js/Pages/'.AeasHelpers::AEAS_PACKAGE),
+            $dirs['assets_js'] => public_path('js/'.AeasHelpers::AEAS_PACKAGE),
+            $dirs['assets_css'] => public_path('css/'.AeasHelpers::AEAS_PACKAGE),
             /* $dirs['core'] => resource_path('js'), */
         ];
-        $this->publishes($allPublish, $this->aeas->name.'-views');
+        $this->publishes($allPublish, AeasHelpers::AEAS_NAME.'-views');
         // Specific
         // Only Core Relacement
         $this->publishes([
             $dirs['core'] => resource_path('js'),
-        ], $this->aeas->name.'-core');
+        ], AeasHelpers::AEAS_NAME.'-core');
         // Only Components
         $this->publishes([
-            $dirs['components'] => resource_path('js/Pages/'.$this->aeas->package),
-        ], $this->aeas->name.'-components');
+            $dirs['components'] => resource_path('js/Pages/'.AeasHelpers::AEAS_PACKAGE),
+        ], AeasHelpers::AEAS_NAME.'-components');
         // Only Js Helpers
         $this->publishes([
-            $dirs['assets_js'] => public_path('js/'.$this->aeas->package),
-        ], $this->aeas->name.'-js');
+            $dirs['assets_js'] => public_path('js/'.AeasHelpers::AEAS_PACKAGE),
+        ], AeasHelpers::AEAS_NAME.'-js');
         // Only CSS
         $this->publishes([
-            $dirs['assets_css'] => public_path('css/'.$this->aeas->package),
-        ], $this->aeas->name.'-css');
+            $dirs['assets_css'] => public_path('css/'.AeasHelpers::AEAS_PACKAGE),
+        ], AeasHelpers::AEAS_NAME.'-css');
     }
 }

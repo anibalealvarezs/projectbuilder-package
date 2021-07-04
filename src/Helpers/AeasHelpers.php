@@ -8,22 +8,18 @@ use Illuminate\Support\Facades\Auth;
 
 class AeasHelpers
 {
-    public $vendor;
-    public $package;
-    public $dir;
-    public $prefix;
-    public $name;
+    public const AEAS_VENDOR = 'Anibalealvarezs';
+    public const AEAS_PACKAGE = 'Projectbuilder';
+    public const AEAS_DIR = 'projectbuilder';
+    public const AEAS_PREFIX = 'Pb';
+    public const AEAS_NAME = 'builder';
 
     function __construct()
     {
-        $this->vendor = 'Anibalealvarezs';
-        $this->package = 'Projectbuilder';
-        $this->dir = 'projectbuilder';
-        $this->prefix = 'Pb';
-        $this->name = 'builder';
+        //
     }
 
-    public function setCollectionAttributeDatetimeFormat(
+    public static function setCollectionAttributeDatetimeFormat(
         $collection,
         $fields = [],
         $outputFormatType = 'method',

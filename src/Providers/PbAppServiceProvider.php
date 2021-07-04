@@ -14,7 +14,7 @@ class PbAppServiceProvider extends ServiceProvider
      *
      * @return void
      */
-    public function boot(\Illuminate\Contracts\Http\Kernel $kernel)
+    public function boot()
     {
         Inertia::share([
             'errors' => function () {

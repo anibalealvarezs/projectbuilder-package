@@ -2,9 +2,8 @@
 
 namespace Anibalealvarezs\Projectbuilder\Providers;
 
+use Illuminate\Contracts\Http\Kernel;
 use Illuminate\Support\ServiceProvider;
-use Illuminate\Routing\UrlGenerator;
-use Illuminate\Support\Facades\View;
 
 class PbComposerServiceProvider extends ServiceProvider
 {
@@ -13,12 +12,12 @@ class PbComposerServiceProvider extends ServiceProvider
      *
      * @return void
      */
-    public function boot(\Illuminate\Contracts\Http\Kernel $kernel)
+    public function boot(Kernel $kernel)
     {
         // View Composers
-        View::composers([
+        // View::composers([
             // 'Anibalealvarezs\Projectbuilder\ViewComposers\ScriptsComposer' => ['builder::layouts.front.resources.scripts']
-        ]);
+        // ]);
     }
 
     /**

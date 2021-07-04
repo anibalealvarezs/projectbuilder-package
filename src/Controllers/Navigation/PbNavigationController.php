@@ -24,7 +24,6 @@ use Inertia\Response as InertiaResponse;
 
 class PbNavigationController extends Controller
 {
-    protected $aeas;
     protected $name;
     protected $table;
 
@@ -38,7 +37,6 @@ class PbNavigationController extends Controller
         $this->middleware(['role_or_permission:update navigations'])->only('edit', 'update');
         $this->middleware(['role_or_permission:delete navigations'])->only('destroy');
         // Variables
-        $this->aeas = new AeasHelpers();
         $this->name = "navigations";
         $this->table = (new PbNavigation())->getTable();
     }
@@ -67,7 +65,7 @@ class PbNavigationController extends Controller
             )
         );
 
-        return Inertia::render($this->aeas->package . '/Navigations/Navigations', [
+        return Inertia::render(AeasHelpers::AEAS_PACKAGE . '/Navigations/Navigations', [
             'pbnavigations' => $navigations,
         ]);
     }
@@ -89,7 +87,7 @@ class PbNavigationController extends Controller
             )
         );
 
-        return Inertia::render($this->aeas->package . '/Navigations/CreateNavigation');
+        return Inertia::render(AeasHelpers::AEAS_PACKAGE . '/Navigations/CreateNavigation');
     }
 
     /**
@@ -151,7 +149,7 @@ class PbNavigationController extends Controller
             )
         );
 
-        return Inertia::render($this->aeas->package . '/Navigations/ShowNavigation', [
+        return Inertia::render(AeasHelpers::AEAS_PACKAGE . '/Navigations/ShowNavigation', [
             'pbnavigation' => $navigation,
         ]);
     }
@@ -176,7 +174,7 @@ class PbNavigationController extends Controller
             )
         );
 
-        return Inertia::render($this->aeas->package . '/Navigations/EditNavigation', [
+        return Inertia::render(AeasHelpers::AEAS_PACKAGE . '/Navigations/EditNavigation', [
             'pbnavigation' => $navigation,
         ]);
     }

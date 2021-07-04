@@ -25,7 +25,6 @@ use Session;
 
 class PbPermissionController extends Controller
 {
-    protected $aeas;
     protected $name;
     protected $table;
 
@@ -39,7 +38,6 @@ class PbPermissionController extends Controller
         $this->middleware(['role_or_permission:update permissions'])->only('edit', 'update');
         $this->middleware(['role_or_permission:delete permissions'])->only('destroy');
         // Variables
-        $this->aeas = new AeasHelpers();
         $this->name = "permissions";
         $this->table = (new PbPermission())->getTable();
     }
@@ -76,7 +74,7 @@ class PbPermissionController extends Controller
             )
         );
 
-        return Inertia::render($this->aeas->package . '/Permissions/Permissions', [
+        return Inertia::render(AeasHelpers::AEAS_PACKAGE . '/Permissions/Permissions', [
             'pbpermissions' => $permissions,
         ]);
     }
@@ -98,7 +96,7 @@ class PbPermissionController extends Controller
             )
         );
 
-        return Inertia::render($this->aeas->package . '/Permissions/CreatePermission');
+        return Inertia::render(AeasHelpers::AEAS_PACKAGE . '/Permissions/CreatePermission');
     }
 
     /**
@@ -181,7 +179,7 @@ class PbPermissionController extends Controller
             )
         );
 
-        return Inertia::render($this->aeas->package . '/Permissions/EditPermission', [
+        return Inertia::render(AeasHelpers::AEAS_PACKAGE . '/Permissions/EditPermission', [
             'pbpermission' => $permission,
         ]);
     }

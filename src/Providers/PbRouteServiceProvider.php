@@ -3,8 +3,6 @@
 namespace Anibalealvarezs\Projectbuilder\Providers;
 
 use Illuminate\Support\ServiceProvider;
-use Illuminate\Routing\UrlGenerator;
-use Illuminate\Support\Facades\View;
 
 class PbRouteServiceProvider extends ServiceProvider
 {
@@ -13,7 +11,7 @@ class PbRouteServiceProvider extends ServiceProvider
      *
      * @return void
      */
-    public function boot(\Illuminate\Contracts\Http\Kernel $kernel)
+    public function boot()
     {
         // Routes
         include __DIR__ . '/../routes.php';

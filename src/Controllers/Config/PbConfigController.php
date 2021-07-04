@@ -23,7 +23,6 @@ use Inertia\Response as InertiaResponse;
 
 class PbConfigController extends Controller
 {
-    protected $aeas;
     protected $name;
     protected $table;
 
@@ -37,7 +36,6 @@ class PbConfigController extends Controller
         $this->middleware(['role_or_permission:update configs'])->only('edit', 'update');
         $this->middleware(['role_or_permission:delete configs'])->only('destroy');
         // Variables
-        $this->aeas = new AeasHelpers();
         $this->name = "configs";
         $this->table = (new PbConfig())->getTable();
     }
@@ -63,7 +61,7 @@ class PbConfigController extends Controller
             )
         );
 
-        return Inertia::render($this->aeas->package . '/Configs/Configs', [
+        return Inertia::render(AeasHelpers::AEAS_PACKAGE . '/Configs/Configs', [
             'pbconfigs' => $configs,
         ]);
     }
@@ -82,7 +80,7 @@ class PbConfigController extends Controller
             )
         );
 
-        return Inertia::render($this->aeas->package . '/Configs/CreateConfig');
+        return Inertia::render(AeasHelpers::AEAS_PACKAGE . '/Configs/CreateConfig');
     }
 
     /**
@@ -128,7 +126,7 @@ class PbConfigController extends Controller
             )
         );
 
-        return Inertia::render($this->aeas->package . '/Configs/ShowConfig', [
+        return Inertia::render(AeasHelpers::AEAS_PACKAGE . '/Configs/ShowConfig', [
             'pbconfig' => $config,
         ]);
     }
@@ -150,7 +148,7 @@ class PbConfigController extends Controller
             )
         );
 
-        return Inertia::render($this->aeas->package . '/Configs/EditConfig', [
+        return Inertia::render(AeasHelpers::AEAS_PACKAGE . '/Configs/EditConfig', [
             'pbconfig' => $config,
         ]);
     }

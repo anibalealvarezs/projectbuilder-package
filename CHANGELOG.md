@@ -9,21 +9,26 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Added
 
-- Added Main Seeder
-- Added Service Provider Trait
+- Main Seeder
+- Service Provider Trait
+- AEAS Helper constants
+- Dashboard Controller
 
 ### Changed
 
 - Seeders and Service Providers refactored
+- AEAS Helper methods as static
 
 ### Fixed
+
+- Admin role permissions overlapping: [issue 3](https://github.com/anibalealvarezs/projectbuilder-package/issues/3)
 
 ## [1.1.4] - 2021-07-02
 
 ### Added
 
 - Additional validations for Users CRUD to prevent Super-Admin/Admin accounts eliminations
-- CRUD actions individuanny enabled/disabled
+- CRUD actions individually enabled/disabled
 
 ### Changed
 

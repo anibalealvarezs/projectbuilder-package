@@ -4,7 +4,6 @@ namespace Anibalealvarezs\Projectbuilder\Providers;
 
 use Anibalealvarezs\Projectbuilder\Helpers\AeasHelpers as AeasHelpers;
 use Anibalealvarezs\Projectbuilder\Traits\PbServiceProviderTrait;
-use Illuminate\Contracts\Http\Kernel;
 use Illuminate\Support\ServiceProvider;
 
 class PbViewServiceProvider extends ServiceProvider
@@ -16,7 +15,7 @@ class PbViewServiceProvider extends ServiceProvider
      *
      * @return void
      */
-    public function boot(Kernel $kernel)
+    public function boot()
     {
         $helper = new AeasHelpers();
         $this->booter($helper);

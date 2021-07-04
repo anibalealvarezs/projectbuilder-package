@@ -24,7 +24,6 @@ use Inertia\Response as InertiaResponse;
 
 class PbUserController extends Controller
 {
-    protected $aeas;
     protected $name;
     protected $table;
 
@@ -39,7 +38,6 @@ class PbUserController extends Controller
         $this->middleware(['role_or_permission:update users', 'is_user_editable'])->only('edit', 'update');
         $this->middleware(['role_or_permission:delete users', 'is_user_deletable'])->only('destroy');
         // Variables
-        $this->aeas = new AeasHelpers();
         $this->name = "users";
         $this->table = (new PbUser())->getTable();
     }
@@ -77,7 +75,7 @@ class PbUserController extends Controller
             ]);
         })->sortByDesc(['name', 'email']);
 
-        $filtered = $this->aeas->setCollectionAttributeDatetimeFormat(
+        $filtered = AeasHelpers::setCollectionAttributeDatetimeFormat(
             $filtered,
             ['created_at', 'last_session'],
             "custom",
@@ -102,7 +100,7 @@ class PbUserController extends Controller
             )
         );
 
-        return Inertia::render($this->aeas->package . '/Users/Users', [
+        return Inertia::render(AeasHelpers::AEAS_PACKAGE . '/Users/Users', [
             'pbusers' => $filtered,
         ]);
     }
@@ -129,7 +127,7 @@ class PbUserController extends Controller
             )
         );
 
-        return Inertia::render($this->aeas->package . '/Users/CreateUser');
+        return Inertia::render(AeasHelpers::AEAS_PACKAGE . '/Users/CreateUser');
     }
 
     /**
@@ -206,7 +204,7 @@ class PbUserController extends Controller
             )
         );
 
-        return Inertia::render($this->aeas->package . '/Users/ShowUser', [
+        return Inertia::render(AeasHelpers::AEAS_PACKAGE . '/Users/ShowUser', [
             'pbuser' => $user,
         ]);
     }
@@ -237,7 +235,7 @@ class PbUserController extends Controller
             )
         );
 
-        return Inertia::render($this->aeas->package . '/Users/EditUser', [
+        return Inertia::render(AeasHelpers::AEAS_PACKAGE . '/Users/EditUser', [
             'pbuser' => $user
         ]);
     }
