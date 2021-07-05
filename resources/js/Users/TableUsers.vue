@@ -8,7 +8,7 @@
             </Header>
             <Body>
                 <slot>
-                    <TrBody v-for="user in users" :item="user" :fields="fields" :hiddenid="buildHiddenId" :allowed="allowed" @clicked-edit-item="onItemClicked" />
+                    <TrBody v-for="user in users" :item="user" :fields="fields" :hiddenid="buildHiddenId" :allowed="allowed" :draggable="true" @clicked-edit-item="onItemClicked" />
                 </slot>
             </Body>
         </slot>
@@ -26,8 +26,6 @@ import TrHead from "@/Pages/Projectbuilder/Tables/TrHead"
 import TrBody from "@/Pages/Projectbuilder/Tables/TrBody"
 import UserForm from "@/Pages/Projectbuilder/Users/UserForm"
 import { TableFields as Table } from "Pub/js/Projectbuilder/projectbuilder"
-import {computed} from "vue";
-import {usePage} from "@inertiajs/inertia-vue3";
 
 export default {
     name: "TableUsers",
@@ -52,7 +50,10 @@ export default {
             {},
             {},
             {},
-            {route: "users.show", id: true}
+            {
+                route: "users.show",
+                id: true
+            }
         )
         table.customField(
             "email",
@@ -61,7 +62,13 @@ export default {
         table.customField(
             "roles",
             "Roles",
-            {key: "name"},
+            {
+                key: "name",
+                href: {
+                    route: "roles.show",
+                    id: "id",
+                },
+            },
             {},
             {},
             {},
@@ -70,12 +77,16 @@ export default {
         table.customField(
             "country",
             "Country",
-            {key: "name"}
+            {
+                key: "name"
+            }
         )
         table.customField(
             "lang",
             "Language",
-            {key: "name"}
+            {
+                key: "name"
+            }
         )
         table.customField(
             "created_at",

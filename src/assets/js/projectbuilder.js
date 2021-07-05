@@ -193,7 +193,7 @@ class TableFields {
     }
 
     static buildSpanClasses(bold, centered, flex = true) {
-        let clase = ""
+        let clase = "inline-flex items-center"
         clase += this.isFlex(flex)
         clase += this.isBold(bold)
         clase += this.isCentered(centered)
@@ -234,6 +234,25 @@ class TableFields {
     }
 }
 
+/* class TableDragAndDrop {
+
+    mouseDownHandler = function(e) {
+        // Attach the listeners to `document`
+        document.addEventListener('mousemove', this.mouseMoveHandler);
+        document.addEventListener('mouseup', this.mouseUpHandler);
+    };
+
+    mouseMoveHandler = function(e) {
+        //
+    };
+
+    mouseUpHandler = function() {
+        // Remove the handlers of `mousemove` and `mouseup`
+        document.removeEventListener('mousemove', this.mouseMoveHandler);
+        document.removeEventListener('mouseup', this.mouseUpHandler);
+    };
+} */
+
 class Helpers {
 
     static refineURL(url) {
@@ -247,5 +266,6 @@ class Helpers {
 
 module.exports = {
     TableFields,
-    Helpers
+    /* TableDragAndDrop, */
+    Helpers,
 }

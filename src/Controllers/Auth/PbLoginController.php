@@ -29,7 +29,7 @@ class PbLoginController extends Controller
     {
         User::find(Auth::user()->id)->update(['last_session'=>Session::getId()]);
 
-        return redirect('/');
+        return redirect('/dashboard');
     }
 
     /**
