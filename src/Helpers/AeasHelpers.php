@@ -46,4 +46,9 @@ class AeasHelpers
         }
         return "";
     }
+
+    public static function toPlural($string): string
+    {
+        return $string.'s';
+    }
 }

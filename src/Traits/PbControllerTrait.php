@@ -60,7 +60,11 @@ trait PbControllerTrait
 
         switch ($route) {
             case 'route':
-                $redirect = $redirect->route($destiny);
+                if (is_array($destiny)) {
+                    $redirect = $redirect->route($destiny['route'], $destiny['id']);
+                } else {
+                    $redirect = $redirect->route($destiny);
+                }
                 break;
             case 'back':
                 $redirect = $redirect->back();
@@ -80,7 +84,7 @@ trait PbControllerTrait
             $request,
             $flashMessage,
             'route',
-            $this->name . '.index',
+            $this->names . '.index',
             'success',
             false
         );

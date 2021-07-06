@@ -12,6 +12,7 @@ use Anibalealvarezs\Projectbuilder\Models\PbUser;
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
 
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
@@ -142,14 +143,7 @@ class PbRoleController extends Controller
      */
     public function show(int $id): InertiaResponse
     {
-        Inertia::share(
-            'shared',
-            array_merge(
-                $this->globalInertiaShare(),
-            )
-        );
-
-        return redirect()->route($this->name . '.index');
+        return $this->edit($id);
     }
 
     /**

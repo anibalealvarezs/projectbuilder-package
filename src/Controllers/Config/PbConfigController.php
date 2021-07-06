@@ -2,155 +2,50 @@
 
 namespace Anibalealvarezs\Projectbuilder\Controllers\Config;
 
-use Anibalealvarezs\Projectbuilder\Helpers\AeasHelpers as AeasHelpers;
-use Anibalealvarezs\Projectbuilder\Helpers\Shares;
-use Anibalealvarezs\Projectbuilder\Traits\PbControllerTrait;
-use Anibalealvarezs\Projectbuilder\Models\PbConfig;
+use Anibalealvarezs\Projectbuilder\Controllers\PbBuilderController;
 
 use App\Http\Requests;
-use App\Http\Controllers\Controller;
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 
 use Auth;
 use DB;
 use Session;
 
-use Inertia\Inertia;
-use Inertia\Response as InertiaResponse;
-
-class PbConfigController extends Controller
+class PbConfigController extends PbBuilderController
 {
-    protected $name;
-    protected $table;
-
-    use PbControllerTrait;
-
     function __construct()
     {
+        // Vars Override
+        $this->key = 'Config';
+        // Parent construct
+        parent::__construct();
         // Middlewares
-        $this->middleware(['role_or_permission:read configs']);
-        $this->middleware(['role_or_permission:create configs'])->only('create', 'store');
-        $this->middleware(['role_or_permission:update configs'])->only('edit', 'update');
-        $this->middleware(['role_or_permission:delete configs'])->only('destroy');
-        // Variables
-        $this->name = "configs";
-        $this->table = (new PbConfig())->getTable();
-    }
-
-    /**
-     * Display a listing of the resource.
-     *
-     * @return InertiaResponse
-     */
-    public function index(): InertiaResponse
-    {
-        $configs = PbConfig::all();
-
-        Inertia::share(
-            'shared',
-            array_merge(
-                $this->globalInertiaShare(),
-                Shares::allowed([
-                    'create configs' => 'create',
-                    'update configs' => 'update',
-                    'delete configs' => 'delete',
-                ]),
-            )
-        );
-
-        return Inertia::render(AeasHelpers::AEAS_PACKAGE . '/Configs/Configs', [
-            'pbconfigs' => $configs,
-        ]);
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return InertiaResponse
-     */
-    public function create(): InertiaResponse
-    {
-        Inertia::share(
-            'shared',
-            array_merge(
-                $this->globalInertiaShare(),
-            )
-        );
-
-        return Inertia::render(AeasHelpers::AEAS_PACKAGE . '/Configs/CreateConfig');
+        $this->middleware(['role_or_permission:read '.$this->names]);
+        $this->middleware(['role_or_permission:create '.$this->names])->only('create', 'store');
+        $this->middleware(['role_or_permission:update '.$this->names])->only('edit', 'update');
+        $this->middleware(['role_or_permission:delete '.$this->names])->only('destroy');
     }
 
     /**
      * Store a newly created resource in storage.
      *
      * @param Request $request
-     * @throws ValidationException
+     * @param array $validationRules
+     * @param array $replacers
      * @return void
      */
-    public function store(Request $request)
+    public function store(Request $request, array $validationRules = [], array $replacers = [])
     {
-        // Validation
-        $validator = Validator::make($request->all(), [
+        $validationRules = [
             'name' => ['required', 'max:190'],
             'configkey' => ['required', 'max:50', Rule::unique($this->table)],
-        ]);
-        $this->validationCheck($validator, $request);
+            'configvalue' => ['required'],
+            'description' => []
+        ];
 
-        // Process
-        try {
-            PbConfig::create($request->all());
-
-            return $this->redirectResponseCRUDSuccess($request, 'Config created successfully!');
-        } catch (Exception $e) {
-            return $this->redirectResponseCRUDFail($request, 'Config could not be created!');
-        }
-    }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param int $id
-     * @return InertiaResponse
-     */
-    public function show(int $id): InertiaResponse
-    {
-        $config = PbConfig::find($id);
-
-        Inertia::share(
-            'shared',
-            array_merge(
-                $this->globalInertiaShare(),
-            )
-        );
-
-        return Inertia::render(AeasHelpers::AEAS_PACKAGE . '/Configs/ShowConfig', [
-            'pbconfig' => $config,
-        ]);
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param int $id
-     * @return InertiaResponse
-     */
-    public function edit(int $id): InertiaResponse
-    {
-        $config = PbConfig::find($id);
-
-        Inertia::share(
-            'shared',
-            array_merge(
-                $this->globalInertiaShare(),
-            )
-        );
-
-        return Inertia::render(AeasHelpers::AEAS_PACKAGE . '/Configs/EditConfig', [
-            'pbconfig' => $config,
-        ]);
+        return parent::store($request, $validationRules, $replacers);
     }
 
     /**
@@ -158,45 +53,19 @@ class PbConfigController extends Controller
      *
      * @param Request $request
      * @param int $id
+     * @param array $validationRules
+     * @param array $replacers
      * @return void
      */
-    public function update(Request $request, int $id)
+    public function update(Request $request, int $id, array $validationRules = [], array $replacers = [])
     {
-        // Validation
-        $validator = Validator::make($request->all(), [
+        $validationRules = [
             'name' => ['required', 'max:190'],
             'configkey' => ['required', 'max:50', Rule::unique('config')->ignore($id)],
-        ]);
-        $this->validationCheck($validator, $request);
+            'configvalue' => ['required'],
+            'description' => []
+        ];
 
-        // Process
-        try {
-            $config = PbConfig::find($id);
-            $config->update($request->all());
-
-            return $this->redirectResponseCRUDSuccess($request, 'Config updated successfully!');
-        } catch (Exception $e) {
-            return $this->redirectResponseCRUDFail($request, 'Config could not be updated!');
-        }
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param Request $request
-     * @param int $id
-     * @return void
-     */
-    public function destroy(Request $request, int $id)
-    {
-        // Process
-        try {
-            $config = PbConfig::find($id);
-            $config->delete();
-
-            return $this->redirectResponseCRUDSuccess($request, 'Config deleted successfully!');
-        } catch (Exception $e) {
-            return $this->redirectResponseCRUDFail($request, 'Config could not be deleted!');
-        }
+        return parent::update($request, $id, $validationRules, $replacers);
     }
 }

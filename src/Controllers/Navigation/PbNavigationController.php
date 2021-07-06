@@ -2,181 +2,106 @@
 
 namespace Anibalealvarezs\Projectbuilder\Controllers\Navigation;
 
-use Anibalealvarezs\Projectbuilder\Helpers\AeasHelpers as AeasHelpers;
-use Anibalealvarezs\Projectbuilder\Traits\PbControllerTrait;
-use Anibalealvarezs\Projectbuilder\Helpers\Shares;
-use Anibalealvarezs\Projectbuilder\Models\PbNavigation;
+use Anibalealvarezs\Projectbuilder\Controllers\PbBuilderController;
 
 use App\Http\Requests;
-use App\Http\Controllers\Controller;
 
 use Illuminate\Http\Request;
-use Illuminate\Http\RedirectResponse;
-use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 
 use Auth;
 use DB;
 use Session;
 
-use Inertia\Inertia;
 use Inertia\Response as InertiaResponse;
 
-class PbNavigationController extends Controller
+class PbNavigationController extends PbBuilderController
 {
-    protected $name;
-    protected $table;
-
-    use PbControllerTrait;
-
     function __construct()
     {
+        // Vars Override
+        $this->key = 'Navigation';
+        // Parent construct
+        parent::__construct();
         // Middlewares
-        $this->middleware(['role_or_permission:read navigations']);
-        $this->middleware(['role_or_permission:create navigations'])->only('create', 'store');
-        $this->middleware(['role_or_permission:update navigations'])->only('edit', 'update');
-        $this->middleware(['role_or_permission:delete navigations'])->only('destroy');
-        // Variables
-        $this->name = "navigations";
-        $this->table = (new PbNavigation())->getTable();
+        $this->middleware(['role_or_permission:read '.$this->names]);
+        $this->middleware(['role_or_permission:create '.$this->names])->only('create', 'store');
+        $this->middleware(['role_or_permission:update '.$this->names])->only('edit', 'update');
+        $this->middleware(['role_or_permission:delete '.$this->names])->only('destroy');
     }
 
     /**
      * Display a listing of the resource.
      *
+     * @param null $elements
+     * @param array $shares
      * @return InertiaResponse
      */
-    public function index(): InertiaResponse
+    public function index($elements = null, array $shares = []): InertiaResponse
     {
-        $navigations = PbNavigation::with('permission')->get();
+        ${$this->names} = $this->modelPath::with('permission')->get();
+        $shares = [
+            'permissionsall',
+        ];
 
-        Inertia::share(
-            'shared',
-            array_merge(
-                $this->globalInertiaShare(),
-                Shares::list([
-                    'permissionsall',
-                ]),
-                Shares::allowed([
-                    'create roles' => 'create',
-                    'update roles' => 'update',
-                    'delete roles' => 'delete',
-                ]),
-            )
-        );
-
-        return Inertia::render(AeasHelpers::AEAS_PACKAGE . '/Navigations/Navigations', [
-            'pbnavigations' => $navigations,
-        ]);
+        return parent::index(${$this->names}, $shares);
     }
 
     /**
      * Show the form for creating a new resource.
      *
+     * @param array $shares
      * @return InertiaResponse
      */
-    public function create(): InertiaResponse
+    public function create(array $shares = []): InertiaResponse
     {
-        Inertia::share(
-            'shared',
-            array_merge(
-                $this->globalInertiaShare(),
-                Shares::list([
-                    'permissionsall',
-                ]),
-            )
-        );
+        $shares = [
+            'permissionsall',
+        ];
 
-        return Inertia::render(AeasHelpers::AEAS_PACKAGE . '/Navigations/CreateNavigation');
+        return parent::create($shares);
     }
 
     /**
      * Store a newly created resource in storage.
      *
      * @param Request $request
-     * @throws ValidationException
+     * @param array $validationRules
+     * @param array $replacers
      * @return void
      */
-    public function store(Request $request)
+    public function store(Request $request, array $validationRules = [], array $replacers = [])
     {
-        // Validation
-        $validator = Validator::make($request->all(), [
+        $validationRules = [
             'name' => ['required', 'max:190'],
             'destiny' => ['required', 'max:254'],
             'type' => ['required', 'max:254', Rule::in(['route', 'path', 'custom'])],
             'parent' => ['required', 'integer'],
             'permission' => ['required', 'integer'],
-        ]);
-        $this->validationCheck($validator, $request);
+            'module' => [],
+        ];
 
-        // Requests
-        $name = $request['name'];
-        $destiny = $request['destiny'];
-        $type = $request['type'];
-        $parent = $request['parent'];
-        $permission = $request['permission'];
+        $replacers = [
+            'permission' => 'permission_id'
+        ];
 
-        // Process
-        try {
-            $navigation = new PbNavigation();
-            $navigation->name = $name;
-            $navigation->destiny = $destiny;
-            $navigation->type = $type;
-            $navigation->parent = $parent;
-            $navigation->permission_id = $permission;
-            $navigation->save();
-
-            return $this->redirectResponseCRUDSuccess($request, 'Navigation created successfully!');
-        } catch (Exception $e) {
-            return $this->redirectResponseCRUDFail($request, 'Navigation could not be created!');
-        }
-    }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param int $id
-     * @return InertiaResponse
-     */
-    public function show(int $id): InertiaResponse
-    {
-        $navigation = PbNavigation::find($id);
-
-        Inertia::share(
-            'shared',
-            array_merge(
-                $this->globalInertiaShare(),
-            )
-        );
-
-        return Inertia::render(AeasHelpers::AEAS_PACKAGE . '/Navigations/ShowNavigation', [
-            'pbnavigation' => $navigation,
-        ]);
+        return parent::store($request, $validationRules, $replacers);
     }
 
     /**
      * Show the form for editing the specified resource.
      *
      * @param int $id
+     * @param array $shares
      * @return InertiaResponse
      */
-    public function edit(int $id): InertiaResponse
+    public function edit(int $id, array $shares = []): InertiaResponse
     {
-        $navigation = PbNavigation::find($id);
+        $shares = [
+            'permissionsall',
+        ];
 
-        Inertia::share(
-            'shared',
-            array_merge(
-                $this->globalInertiaShare(),
-                Shares::list([
-                    'permissionsall',
-                ]),
-            )
-        );
-
-        return Inertia::render(AeasHelpers::AEAS_PACKAGE . '/Navigations/EditNavigation', [
-            'pbnavigation' => $navigation,
-        ]);
+        return parent::edit($id, $shares);
     }
 
     /**
@@ -184,60 +109,25 @@ class PbNavigationController extends Controller
      *
      * @param Request $request
      * @param int $id
+     * @param array $validationRules
+     * @param array $replacers
      * @return void
      */
-    public function update(Request $request, int $id)
+    public function update(Request $request, int $id, array $validationRules = [], array $replacers = [])
     {
-        // Validation
-        $validator = Validator::make($request->all(), [
+        $validationRules = [
             'name' => ['required', 'max:190'],
             'destiny' => ['required', 'max:254'],
             'type' => ['required', 'max:254', Rule::in(['route', 'path', 'custom'])],
             'parent' => ['required', 'integer'],
             'permission' => ['required', 'integer'],
-        ]);
-        $this->validationCheck($validator, $request);
+            'module' => [],
+        ];
 
-        // Requests
-        $name = $request['name'];
-        $destiny = $request['destiny'];
-        $type = $request['type'];
-        $parent = $request['parent'];
-        $permission = $request['permission'];
+        $replacers = [
+            'permission' => 'permission_id'
+        ];
 
-        // Process
-        try {
-            $navigation = PbNavigation::find($id);
-            $navigation->name = $name;
-            $navigation->destiny = $destiny;
-            $navigation->type = $type;
-            $navigation->parent = $parent;
-            $navigation->permission_id = $permission;
-            $navigation->save();
-
-            return $this->redirectResponseCRUDSuccess($request, 'Navigation updated successfully!');
-        } catch (Exception $e) {
-            return $this->redirectResponseCRUDFail($request, 'Navigation could not be updated!');
-        }
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param Request $request
-     * @param int $id
-     * @return void
-     */
-    public function destroy(Request $request, int $id)
-    {
-        // Process
-        try {
-            $navigation = PbNavigation::find($id);
-            $navigation->delete();
-
-            return $this->redirectResponseCRUDSuccess($request, 'Navigation deleted successfully!');
-        } catch (Exception $e) {
-            return $this->redirectResponseCRUDFail($request, 'Navigation could not be deleted!');
-        }
+        return parent::update($request, $id, $validationRules, $replacers);
     }
 }
