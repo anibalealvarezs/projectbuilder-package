@@ -2,13 +2,11 @@
 
 namespace Anibalealvarezs\Projectbuilder\Controllers\User;
 
-use Anibalealvarezs\Projectbuilder\Helpers\AeasHelpers as AeasHelpers;
-use Anibalealvarezs\Projectbuilder\Traits\PbControllerTrait;
+use Anibalealvarezs\Projectbuilder\Controllers\PbBuilderController;
+use Anibalealvarezs\Projectbuilder\Helpers\PbHelpers;
 use Anibalealvarezs\Projectbuilder\Helpers\Shares;
-use Anibalealvarezs\Projectbuilder\Models\PbUser;
 
 use App\Http\Requests;
-use App\Http\Controllers\Controller;
 
 use App\Models\Team;
 use Illuminate\Http\Request;
@@ -22,46 +20,42 @@ use Session;
 use Inertia\Inertia;
 use Inertia\Response as InertiaResponse;
 
-class PbUserController extends Controller
+class PbUserController extends PbBuilderController
 {
-    protected $name;
-    protected $table;
-
-    use PbControllerTrait;
-
-    function __construct()
+    function __construct($crud_perms = false)
     {
+        // Vars Override
+        $this->key = 'User';
+        // Parent construct
+        parent::__construct(true);
         // Middlewares
-        $this->middleware(['role_or_permission:read users']);
-        $this->middleware(['is_user_viewable'])->only('show');
-        $this->middleware(['role_or_permission:create users'])->only('create', 'store');
-        $this->middleware(['role_or_permission:update users', 'is_user_editable'])->only('edit', 'update');
-        $this->middleware(['role_or_permission:delete users', 'is_user_deletable'])->only('destroy');
-        // Variables
-        $this->name = "users";
-        $this->table = (new PbUser())->getTable();
+        $this->middleware(['is_'.$this->name.'_editable'])->only('edit', 'update');
+        $this->middleware(['is_'.$this->name.'_deletable'])->only('destroy');
+        $this->middleware(['is_'.$this->name.'_viewable'])->only('show');
     }
 
     /**
      * Display a listing of the resource.
      *
+     * @param null $elements
+     * @param array $shares
      * @return InertiaResponse
      */
-    public function index(): InertiaResponse
+    public function index($elements = null, array $shares = []): InertiaResponse
     {
-        $usersQuery = PbUser::with('country', 'city', 'lang', 'roles');
-        $currentUser = PbUser::find(Auth::user()->id);
+        $query = $this->modelPath::with('country', 'city', 'lang', 'roles');
+        $currentUser = $this->modelPath::find(Auth::user()->id);
         if (!$currentUser->hasRole('super-admin')) {
-            $superAdmins = PbUser::role('super-admin')->get()->modelKeys();
-            $usersQuery = $usersQuery->whereNotIn('id', $superAdmins);
+            $superAdmins = $this->modelPath::role('super-admin')->get()->modelKeys();
+            $query = $query->whereNotIn('id', $superAdmins);
             if (!$currentUser->hasRole('admin')) {
-                $admins = PbUser::role('admin')->get()->modelKeys();
-                $usersQuery = $usersQuery->whereNotIn('id', $admins);
+                $admins = $this->modelPath::role('admin')->get()->modelKeys();
+                $query = $query->whereNotIn('id', $admins);
             }
         }
-        $users = $usersQuery->get();
-        $filtered = $users->map(function ($user) {
-            return $user->only([
+        ${$this->names} = $query->get();
+        $filtered = ${$this->names}->map(function ($q) {
+            return $q->only([
                 'id',
                 'name',
                 'email',
@@ -75,94 +69,108 @@ class PbUserController extends Controller
             ]);
         })->sortByDesc(['name', 'email']);
 
-        $filtered = AeasHelpers::setCollectionAttributeDatetimeFormat(
+        $filtered = PbHelpers::setCollectionAttributeDatetimeFormat(
             $filtered,
             ['created_at', 'last_session'],
             "custom",
             "d/m/y"
         );
 
-        Inertia::share(
-            'shared',
-            array_merge(
-                $this->globalInertiaShare(),
-                Shares::list([
-                    'languages',
-                    'countries',
-                    'roles',
-                    'me',
-                ]),
-                Shares::allowed([
-                    'create users' => 'create',
-                    'update users' => 'update',
-                    'delete users' => 'delete',
-                ]),
-            )
-        );
+        $shares = [
+            'languages',
+            'countries',
+            'roles',
+            'me',
+        ];
 
-        return Inertia::render(AeasHelpers::AEAS_PACKAGE . '/Users/Users', [
-            'pbusers' => $filtered,
-        ]);
+        return parent::index($filtered, $shares);
     }
 
     /**
      * Show the form for creating a new resource.
      *
+     * @param array $shares
      * @return InertiaResponse
      */
-    public function create(): InertiaResponse
+    public function create(array $shares = []): InertiaResponse
     {
+        $shares = [
+            'languages',
+            'countries',
+            'roles',
+        ];
+
         Inertia::share(
             'shared',
             array_merge(
                 $this->globalInertiaShare(),
-                Shares::list([
-                    'languages',
-                    'countries',
-                    'roles',
-                ]),
+                Shares::list($shares),
                 Shares::allowed([
-                    'create users' => 'create',
+                    'create '.$this->names => 'create',
                 ]),
             )
         );
 
-        return Inertia::render(AeasHelpers::AEAS_PACKAGE . '/Users/CreateUser');
+        return Inertia::render($this->viewsPath.'Create'.$this->key);
     }
 
     /**
      * Store a newly created resource in storage.
      *
      * @param Request $request
+     * @param array $validationRules
+     * @param array $replacers
      * @return void
      */
-    public function store(Request $request)
+    public function store(Request $request, array $validationRules = [], array $replacers = [])
     {
-        // Validation
-        $validator = Validator::make($request->all(), [
+        $validationRules = [
             'name' => ['required', 'max:190'],
-            'roles' => ['required'],
             'email' => ['required', 'max:50', 'email', Rule::unique($this->table)],
             'password' => ['required'],
-        ]);
+        ];
+
+        $validationRules2 = [
+            'roles' => ['required'],
+        ];
+
+        $this->storeValidation = array_merge($this->storeValidation, array_merge($validationRules, $validationRules2));
+
+        // Validation
+        $validator = Validator::make($request->all(), $this->storeValidation);
         $this->validationCheck($validator, $request);
 
         // Requests
-        $roles = $request['roles'];
+        $keys = [];
+        foreach($validationRules as $vrKey => $vr) {
+            if (isset($replacers[$vrKey])) {
+                ${$replacers[$vrKey]} = $request[$vrKey];
+                array_push($keys, $replacers[$vrKey]);
+            } else {
+                ${$vrKey} = $request[$vrKey];
+                array_push($keys, $vrKey);
+            }
+        }
+
+        $roles = $request->input('roles');
         $lang = $request->input('lang');
         $country = $request->input('country');
 
         // Process
         try {
-            if ($user = PbUser::create($request->all())) {
-                $user->current_team_id = $this->getDefaultTeamId($user);
-                $user->language_id = $lang;
-                $user->country_id = $country;
-                if ($user->save()) {
-                    $me = PbUser::find(Auth::user()->id);
+            ${$this->name} = new $this->modelPath();
+            foreach($keys as $key) {
+                ${$this->name}->$key = ${$key};
+            }
+            ${$this->name}->language_id = $lang;
+            ${$this->name}->country_id = $country;
+            if (${$this->name}->save()) {
+                ${$this->name}->current_team_id = $this->getDefaultTeamId(${$this->name});
+                if (${$this->name}->save()) {
+                    $me = $this->modelPath::find(Auth::user()->id);
                     if ($me->hasRole(['super-admin'])) {
                         // Add only super-admin/admin
-                        if ($user->id == Auth::user()->id) {
+                        if (${$this->name}->id == Auth::user()->id) {
                             $roles = ['super-admin'];
                         } elseif (in_array('admin', $roles)) {
                             $roles = ['admin'];
@@ -173,71 +181,58 @@ class PbUserController extends Controller
                         $intersect = array_intersect($roles, $toExclude);
                         $roles = array_diff($roles, $intersect);
                     }
-                    $user->syncRoles($roles);
+                    ${$this->name}->syncRoles($roles);
                 }
             }
 
-            return $this->redirectResponseCRUDSuccess($request, 'User created successfully!');
+            return $this->redirectResponseCRUDSuccess($request, $this->key.' created successfully!');
         } catch (Exception $e) {
-            return $this->redirectResponseCRUDFail($request, 'User could not be created!');
+            return $this->redirectResponseCRUDFail($request, $this->key.' could not be created!');
         }
     }
 
     /**
      * Display the specified resource.
      *
+     * @param null $element
      * @param int $id
-     * @return mixed
+     * @param array $shares
+     * @return InertiaResponse
      */
-    public function show(int $id)
+    public function show(int $id, $element = null, array $shares = []): InertiaResponse
     {
         if (Auth::user()->id == $id) {
-            return redirect('/user/profile');
+            return redirect('/'.${$this->name}.'/profile');
         }
 
-        $user = PbUser::with('country', 'city', 'lang', 'roles')->find($id);
+        ${$this->name} = $this->modelPath::with('country', 'city', 'lang', 'roles')->find($id);
 
-        Inertia::share(
-            'shared',
-            array_merge(
-                $this->globalInertiaShare(),
-            )
-        );
-
-        return Inertia::render(AeasHelpers::AEAS_PACKAGE . '/Users/ShowUser', [
-            'pbuser' => $user,
-        ]);
+        return parent::show($id, ${$this->name});
     }
 
     /**
      * Show the form for editing the specified resource.
      *
      * @param int $id
-     * @return mixed
+     * @param null $element
+     * @param array $shares
+     * @return InertiaResponse
      */
-    public function edit(Request $request, int $id)
+    public function edit(int $id, $element = null, array $shares = []): InertiaResponse
     {
         if (Auth::user()->id == $id) {
-            return redirect('/user/profile');
+            return redirect('/'.${$this->name}.'/profile');
         }
 
-        $user = PbUser::with('country', 'city', 'lang', 'roles')->find($id);
+        ${$this->name} = $this->modelPath::with('country', 'city', 'lang', 'roles')->find($id);
 
-        Inertia::share(
-            'shared',
-            array_merge(
-                $this->globalInertiaShare(),
-                Shares::list([
-                    'languages',
-                    'countries',
-                    'roles',
-                ]),
-            )
-        );
+        $shares = [
+            'languages',
+            'countries',
+            'roles',
+        ];
 
-        return Inertia::render(AeasHelpers::AEAS_PACKAGE . '/Users/EditUser', [
-            'pbuser' => $user
-        ]);
+        return parent::edit($id, ${$this->name}, $shares);
     }
 
     /**
@@ -245,42 +240,68 @@ class PbUserController extends Controller
      *
      * @param Request $request
      * @param int $id
+     * @param array $validationRules
+     * @param array $replacers
      * @return void
      */
-    public function update(Request $request, int $id)
+    public function update(Request $request, int $id, array $validationRules = [], array $replacers = [])
     {
-        // Validation
-        $validator = Validator::make($request->all(), [
+        $validationRules = [
             'name' => ['required', 'max:190'],
-            'roles' => ['required'],
             'email' => ['required', 'max:50', 'email', Rule::unique($this->table)->ignore($id)],
-        ]);
+        ];
+
+        $validationRules2 = [
+            'roles' => ['required'],
+        ];
+
+        $this->storeValidation = array_merge($this->storeValidation, array_merge($validationRules, $validationRules2));
+
+        // Validation
+        $validator = Validator::make($request->all(), $this->storeValidation);
         $this->validationCheck($validator, $request);
 
         // Requests
-        $roles = $request['roles'];
+        $keys = [];
+        foreach($validationRules as $vrKey => $vr) {
+            if (isset($replacers[$vrKey])) {
+                ${$replacers[$vrKey]} = $request[$vrKey];
+                array_push($keys, $replacers[$vrKey]);
+            } else {
+                ${$vrKey} = $request[$vrKey];
+                array_push($keys, $vrKey);
+            }
+        }
+
+        // Requests
+        $roles = $request->input('roles');
+        $lang = $request->input('lang');
+        $country = $request->input('country');
+        $password = $request->input('password');
 
         // Process
         try {
-            $user = PbUser::find($id);
-            $me = PbUser::find(Auth::user()->id);
-            if ($request->input('password') == "") {
-                unset($user->password);
+            ${$this->name} = $this->modelPath::find($id);
+            $requests = [];
+            foreach($keys as $key) {
+                $requests[$key] = ${$key};
             }
-            $user->language_id = $request->input('lang');
-            $user->country_id = $request->input('country');
-            $user->name = $request->input('name');
-            $user->email = $request->input('email');
-            if ($user->save()) {
+            if ($password != "") {
+                $requests['password'] = $password;
+            }
+            $requests['language_id'] = $lang;
+            $requests['country_id'] = $country;
+            if (${$this->name}->update($requests)) {
+                $me = $this->modelPath::find(Auth::user()->id);
                 if ($me->hasRole(['super-admin'])) {
                     // Add only super-admin/admin
-                    if ($user->id == Auth::user()->id) {
+                    if (${$this->name}->id == Auth::user()->id) {
                         $roles = ['super-admin'];
                     } elseif (in_array('admin', $roles)) {
                         $roles = ['admin'];
                     }
                 } else {
-                    if ($user->hasRole(['admin'])) {
+                    if (${$this->name}->hasRole(['admin'])) {
                         $roles = ['admin'];
                     } else {
                         // Remove super-admin/admin
@@ -289,33 +310,13 @@ class PbUserController extends Controller
                         $roles = array_diff($roles, $intersect);
                     }
                 }
-                $user->syncRoles($roles);
+                ${$this->name}->syncRoles($roles);
             }
 
-            return $this->redirectResponseCRUDSuccess($request, 'User updated successfully!');
+            return $this->redirectResponseCRUDSuccess($request, $this->key.' updated successfully!');
         } catch (Exception $e) {
 
-            return $this->redirectResponseCRUDFail($request, 'User could not be updated!');
-        }
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param Request $request
-     * @param int $id
-     * @return void
-     */
-    public function destroy(Request $request, int $id)
-    {
-        // Process
-        try {
-            $user = PbUser::find($id);
-            $user->delete();
-
-            return $this->redirectResponseCRUDSuccess($request, 'User deleted successfully!');
-        } catch (Exception $e) {
-            return $this->redirectResponseCRUDFail($request, 'User could not be deleted!');
+            return $this->redirectResponseCRUDFail($request, $this->key.' could not be updated!');
         }
     }
 

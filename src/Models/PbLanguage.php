@@ -2,25 +2,18 @@
 
 namespace Anibalealvarezs\Projectbuilder\Models;
 
-use Anibalealvarezs\Projectbuilder\Traits\PbModelMiscTrait;
-use Anibalealvarezs\Projectbuilder\Traits\PbModelTrait;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Illuminate\Support\Facades\DB;
 use Spatie\Translatable\HasTranslations;
 
-class PbLanguage extends Model
+class PbLanguage extends PbBuilder
 {
-    use PbModelTrait;
-    use PbModelMiscTrait;
     use HasTranslations;
 
     protected $table = 'languages';
 
     public $translatable = ['name'];
-
-    protected $appends = ['crud'];
 
     public $timestamps = false;
 
@@ -100,25 +93,5 @@ class PbLanguage extends Model
     public function users(): HasMany
     {
         return $this->hasMany(PbUser::class);
-    }
-
-    public function isEditableBy($id): bool
-    {
-        return true;
-    }
-
-    public function isViewableBy($id): bool
-    {
-        return true;
-    }
-
-    public function isSelectableBy($id): bool
-    {
-        return true;
-    }
-
-    public function isDeletableBy($id): bool
-    {
-        return true;
     }
 }

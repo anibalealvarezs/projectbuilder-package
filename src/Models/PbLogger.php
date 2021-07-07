@@ -2,11 +2,10 @@
 
 namespace Anibalealvarezs\Projectbuilder\Models;
 
-use Illuminate\Database\Eloquent\Model;
 use Spatie\Permission\Traits\HasRoles;
 use Spatie\Translatable\HasTranslations;
 
-class PbLogger extends Model
+class PbLogger extends PbBuilder
 {
     use HasRoles;
     use HasTranslations;

@@ -2,7 +2,7 @@
 
 namespace Anibalealvarezs\Projectbuilder\Providers;
 
-use Anibalealvarezs\Projectbuilder\Helpers\AeasHelpers as AeasHelpers;
+use Anibalealvarezs\Projectbuilder\Helpers\PbHelpers;
 use Anibalealvarezs\Projectbuilder\Traits\PbServiceProviderTrait;
 use Illuminate\Support\ServiceProvider;
 
@@ -17,7 +17,7 @@ class PbViewServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        $helper = new AeasHelpers();
+        $helper = new PbHelpers();
         $this->booter($helper);
     }
 

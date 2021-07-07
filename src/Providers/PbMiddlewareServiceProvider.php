@@ -2,7 +2,7 @@
 
 namespace Anibalealvarezs\Projectbuilder\Providers;
 
-use Anibalealvarezs\Projectbuilder\Helpers\AeasHelpers as AeasHelpers;
+use Anibalealvarezs\Projectbuilder\Helpers\PbHelpers;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Contracts\Http\Kernel;
 use Illuminate\Support\ServiceProvider;
@@ -17,18 +17,18 @@ class PbMiddlewareServiceProvider extends ServiceProvider
     public function boot(Kernel $kernel)
     {
         //global middleware
-        $kernel->prependMiddleware(AeasHelpers::AEAS_VENDOR.'\\'.AeasHelpers::AEAS_PACKAGE.'\Middleware\\'.AeasHelpers::AEAS_PREFIX.'HttpsMiddleware');
-        $kernel->pushMiddleware(AeasHelpers::AEAS_VENDOR.'\\'.AeasHelpers::AEAS_PACKAGE.'\Middleware\\'.AeasHelpers::AEAS_PREFIX.'HttpsMiddleware');
-        $kernel->prependMiddleware(AeasHelpers::AEAS_VENDOR.'\\'.AeasHelpers::AEAS_PACKAGE.'\Middleware\\'.AeasHelpers::AEAS_PREFIX.'SingleSessionMiddleware');
-        $kernel->pushMiddleware(AeasHelpers::AEAS_VENDOR.'\\'.AeasHelpers::AEAS_PACKAGE.'\Middleware\\'.AeasHelpers::AEAS_PREFIX.'SingleSessionMiddleware');
+        $kernel->prependMiddleware(PbHelpers::PB_VENDOR.'\\'.PbHelpers::PB_PACKAGE.'\Middleware\\'.PbHelpers::PB_PREFIX.'HttpsMiddleware');
+        $kernel->pushMiddleware(PbHelpers::PB_VENDOR.'\\'.PbHelpers::PB_PACKAGE.'\Middleware\\'.PbHelpers::PB_PREFIX.'HttpsMiddleware');
+        $kernel->prependMiddleware(PbHelpers::PB_VENDOR.'\\'.PbHelpers::PB_PACKAGE.'\Middleware\\'.PbHelpers::PB_PREFIX.'SingleSessionMiddleware');
+        $kernel->pushMiddleware(PbHelpers::PB_VENDOR.'\\'.PbHelpers::PB_PACKAGE.'\Middleware\\'.PbHelpers::PB_PREFIX.'SingleSessionMiddleware');
         //router middleware
         $router = $this->app['router'];
-        $router->pushMiddlewareToGroup('web', AeasHelpers::AEAS_VENDOR.'\\'.AeasHelpers::AEAS_PACKAGE.'\Middleware\\'.AeasHelpers::AEAS_PREFIX.'HttpsMiddleware');
-        $router->aliasMiddleware('role_or_permission', AeasHelpers::AEAS_VENDOR.'\\'.AeasHelpers::AEAS_PACKAGE.'\Middleware\\'.AeasHelpers::AEAS_PREFIX.'RoleOrPermissionMiddleware');
-        $router->aliasMiddleware('is_user_viewable', AeasHelpers::AEAS_VENDOR.'\\'.AeasHelpers::AEAS_PACKAGE.'\Middleware\\'.AeasHelpers::AEAS_PREFIX.'IsUserViewableMiddleware');
-        $router->aliasMiddleware('is_user_editable', AeasHelpers::AEAS_VENDOR.'\\'.AeasHelpers::AEAS_PACKAGE.'\Middleware\\'.AeasHelpers::AEAS_PREFIX.'IsUserEditableMiddleware');
-        $router->aliasMiddleware('is_user_selectable', AeasHelpers::AEAS_VENDOR.'\\'.AeasHelpers::AEAS_PACKAGE.'\Middleware\\'.AeasHelpers::AEAS_PREFIX.'IsUserSelectableMiddleware');
-        $router->aliasMiddleware('is_user_deletable', AeasHelpers::AEAS_VENDOR.'\\'.AeasHelpers::AEAS_PACKAGE.'\Middleware\\'.AeasHelpers::AEAS_PREFIX.'IsUserDeletableMiddleware');
+        $router->pushMiddlewareToGroup('web', PbHelpers::PB_VENDOR.'\\'.PbHelpers::PB_PACKAGE.'\Middleware\\'.PbHelpers::PB_PREFIX.'HttpsMiddleware');
+        $router->aliasMiddleware('role_or_permission', PbHelpers::PB_VENDOR.'\\'.PbHelpers::PB_PACKAGE.'\Middleware\\'.PbHelpers::PB_PREFIX.'RoleOrPermissionMiddleware');
+        $router->aliasMiddleware('is_user_viewable', PbHelpers::PB_VENDOR.'\\'.PbHelpers::PB_PACKAGE.'\Middleware\\'.PbHelpers::PB_PREFIX.'IsUserViewableMiddleware');
+        $router->aliasMiddleware('is_user_editable', PbHelpers::PB_VENDOR.'\\'.PbHelpers::PB_PACKAGE.'\Middleware\\'.PbHelpers::PB_PREFIX.'IsUserEditableMiddleware');
+        $router->aliasMiddleware('is_user_selectable', PbHelpers::PB_VENDOR.'\\'.PbHelpers::PB_PACKAGE.'\Middleware\\'.PbHelpers::PB_PREFIX.'IsUserSelectableMiddleware');
+        $router->aliasMiddleware('is_user_deletable', PbHelpers::PB_VENDOR.'\\'.PbHelpers::PB_PACKAGE.'\Middleware\\'.PbHelpers::PB_PREFIX.'IsUserDeletableMiddleware');
     }
 
     /**
@@ -39,6 +39,6 @@ class PbMiddlewareServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        $this->app->make(AeasHelpers::AEAS_VENDOR.'\\'.AeasHelpers::AEAS_PACKAGE.'\Middleware\\'.AeasHelpers::AEAS_PREFIX.'HttpsMiddleware');
+        $this->app->make(PbHelpers::PB_VENDOR.'\\'.PbHelpers::PB_PACKAGE.'\Middleware\\'.PbHelpers::PB_PREFIX.'HttpsMiddleware');
     }
 }

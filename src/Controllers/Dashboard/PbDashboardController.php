@@ -3,7 +3,7 @@
 namespace Anibalealvarezs\Projectbuilder\Controllers\Dashboard;
 
 use Anibalealvarezs\Projectbuilder\Controllers\PbBuilderController;
-use Anibalealvarezs\Projectbuilder\Helpers\AeasHelpers as AeasHelpers;
+use Anibalealvarezs\Projectbuilder\Helpers\PbHelpers;
 
 use App\Http\Requests;
 
@@ -16,7 +16,7 @@ use Inertia\Response as InertiaResponse;
 
 class PbDashboardController extends PbBuilderController
 {
-    function __construct()
+    function __construct($crud_perms = false)
     {
         // Middlewares
         $this->middleware(['role_or_permission:login']);
@@ -39,6 +39,6 @@ class PbDashboardController extends PbBuilderController
             )
         );
 
-        return Inertia::render(AeasHelpers::AEAS_PACKAGE . '/Dashboard');
+        return Inertia::render(PbHelpers::PB_PACKAGE . '/Dashboard');
     }
 }

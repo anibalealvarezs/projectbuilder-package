@@ -2,12 +2,12 @@
 
 namespace Anibalealvarezs\Projectbuilder\Helpers;
 
-use Anibalealvarezs\Projectbuilder\Helpers\AeasHelpers as AeasHelpers;
+use Anibalealvarezs\Projectbuilder\Helpers\PbHelpers;
 use Anibalealvarezs\Projectbuilder\Models\PbCountry;
 use Anibalealvarezs\Projectbuilder\Models\PbLanguage;
 use Anibalealvarezs\Projectbuilder\Models\PbNavigation;
 use Anibalealvarezs\Projectbuilder\Models\PbPermission;
-use Anibalealvarezs\Projectbuilder\Models\PbRoles;
+use Anibalealvarezs\Projectbuilder\Models\PbRole;
 use Anibalealvarezs\Projectbuilder\Models\PbUser;
 use Illuminate\Support\Facades\Auth;
 
@@ -96,7 +96,7 @@ class Shares
 
     public static function getCustomLocale(): array
     {
-        $customLocale = AeasHelpers::getCustomLocale();
+        $customLocale = PbHelpers::getCustomLocale();
         return [
             'locale' => $customLocale ?: app()->getLocale()
         ];
@@ -169,14 +169,14 @@ class Shares
         $user = PbUser::find(Auth::user()->id);
         $roles = ([]);
         if ($user->hasRole(['super-admin'])) {
-            $roles = PbRoles::whereNotIn(
+            $roles = PbRole::whereNotIn(
                 'name',
                 [
                     'super-admin'
                 ]
             )->get();
         } elseif($user->hasRole(['admin'])) {
-            $roles = PbRoles::whereNotIn(
+            $roles = PbRole::whereNotIn(
                 'name',
                 [
                     'super-admin',

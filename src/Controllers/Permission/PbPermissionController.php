@@ -2,153 +2,140 @@
 
 namespace Anibalealvarezs\Projectbuilder\Controllers\Permission;
 
-use Anibalealvarezs\Projectbuilder\Helpers\AeasHelpers as AeasHelpers;
-use Anibalealvarezs\Projectbuilder\Traits\PbControllerTrait;
-use Anibalealvarezs\Projectbuilder\Helpers\Shares;
-use Anibalealvarezs\Projectbuilder\Models\PbPermission;
-use Anibalealvarezs\Projectbuilder\Models\PbRoles;
+use Anibalealvarezs\Projectbuilder\Controllers\PbBuilderController;
+use Anibalealvarezs\Projectbuilder\Models\PbRole;
 
 use Anibalealvarezs\Projectbuilder\Models\PbUser;
 use App\Http\Requests;
-use App\Http\Controllers\Controller;
 
-use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
 use Auth;
 use DB;
 
-use Inertia\Inertia;
 use Inertia\Response as InertiaResponse;
 
 use Session;
 
-class PbPermissionController extends Controller
+class PbPermissionController extends PbBuilderController
 {
-    protected $name;
-    protected $table;
-
-    use PbControllerTrait;
-
-    public function __construct()
+    public function __construct($crud_perms = false)
     {
-        // Middlewares
-        $this->middleware(['role_or_permission:read permissions']);
-        $this->middleware(['role_or_permission:create permissions'])->only('create', 'store');
-        $this->middleware(['role_or_permission:update permissions'])->only('edit', 'update');
-        $this->middleware(['role_or_permission:delete permissions'])->only('destroy');
-        // Variables
-        $this->name = "permissions";
-        $this->table = (new PbPermission())->getTable();
+        // Vars Override
+        $this->key = 'Permission';
+        // Parent construct
+        parent::__construct(true);
     }
 
     /**
      * Display a listing of the resource.
      *
+     * @param null $elements
+     * @param array $shares
      * @return InertiaResponse
      */
-    public function index(): InertiaResponse
+    public function index($elements = null, array $shares = []): InertiaResponse
     {
         $user = PbUser::find(Auth::user()->id);
         $toExclude = ['crud super-admin'];
         if (!$user->hasRole('super-admin')) {
-            $toExclude = array_merge($toExclude, ['admin roles permissions', 'manage app']);
+            $toExclude = array_merge($toExclude, ['admin roles '.$this->names, 'manage app']);
             if (!$user->hasRole('admin')) {
                 $toExclude = array_merge($toExclude, ['login', 'create users', 'update users', 'delete users']);
             }
         }
-        $permissions = PbPermission::with('roles')->whereNotIn('name', $toExclude)->get(); //Get all permissions
+        ${$this->names} = $this->modelPath::with('roles')->whereNotIn('name', $toExclude)->get(); //Get all permissions
 
-        Inertia::share(
-            'shared',
-            array_merge(
-                $this->globalInertiaShare(),
-                Shares::list([
-                    'roles',
-                ]),
-                Shares::allowed([
-                    'create permissions' => 'create',
-                    'update permissions' => 'update',
-                    'delete permissions' => 'delete',
-                ]),
-            )
-        );
+        $shares = [
+            'roles',
+        ];
 
-        return Inertia::render(AeasHelpers::AEAS_PACKAGE . '/Permissions/Permissions', [
-            'pbpermissions' => $permissions,
-        ]);
+        return parent::index(${$this->names}, $shares);
     }
 
     /**
      * Show the form for creating a new resource.
      *
+     * @param array $shares
      * @return InertiaResponse
      */
-    public function create(): InertiaResponse
+    public function create(array $shares = []): InertiaResponse
     {
-        Inertia::share(
-            'shared',
-            array_merge(
-                $this->globalInertiaShare(),
-                Shares::list([
-                    'roles',
-                ]),
-            )
-        );
+        $shares = [
+            'roles',
+        ];
 
-        return Inertia::render(AeasHelpers::AEAS_PACKAGE . '/Permissions/CreatePermission');
+        return parent::create($shares);
     }
 
     /**
      * Store a newly created resource in storage.
      *
      * @param Request $request
+     * @param array $validationRules
+     * @param array $replacers
      * @return void
      */
-    public function store(Request $request)
+    public function store(Request $request, array $validationRules = [], array $replacers = [])
     {
-        // Validation
-        $validator = Validator::make($request->all(), [
+        $validationRules = [
             'name' => ['required', 'max:40'],
             'alias' => ['required', 'max:190'],
-        ]);
+        ];
+
+        $this->storeValidation = array_merge($this->storeValidation, $validationRules);
+
+        // Validation
+        $validator = Validator::make($request->all(), $this->storeValidation);
         $this->validationCheck($validator, $request);
 
         // Requests
-        $name = $request['name'];
+        $keys = [];
+        foreach($validationRules as $vrKey => $vr) {
+            if (isset($replacers[$vrKey])) {
+                ${$replacers[$vrKey]} = $request[$vrKey];
+                array_push($keys, $replacers[$vrKey]);
+            } else {
+                ${$vrKey} = $request[$vrKey];
+                array_push($keys, $vrKey);
+            }
+        }
+
         $roles = $request['roles'];
-        $alias = $request['alias'];
 
         // Process
         try {
-            $permission = new PbPermission();
-            $permission->name = $name;
-            $permission->alias = $alias;
-            $permission->guard_name = 'admin';
-            if ($permission->save()) {
-                $adminRoles = PbRoles::whereIn('name', ['super-admin', 'admin'])->get()->modelKeys();
-                $permission->syncRoles(
+            ${$this->name} = new $this->modelPath();
+            foreach($keys as $key) {
+                ${$this->name}->$key = ${$key};
+            }
+            ${$this->name}->guard_name = 'admin';
+            if (${$this->name}->save()) {
+                $adminRoles = PbRole::whereIn('name', ['super-admin', 'admin'])->get()->modelKeys();
+                ${$this->name}->syncRoles(
                     array_merge(
-                        (is_array($roles) ? $roles : [$roles]),
-                        (is_array($adminRoles) ? $adminRoles : [$adminRoles])
+                        ($roles && is_array($roles) ? $roles : [$roles]),
+                        ($adminRoles && is_array($adminRoles) ? $adminRoles : [$adminRoles])
                     )
                 );
             }
 
-            return $this->redirectResponseCRUDSuccess($request, 'Permission created successfully!');
+            return $this->redirectResponseCRUDSuccess($request, $this->key.' created successfully!');
         } catch (Exception $e) {
-            return $this->redirectResponseCRUDFail($request, 'Permission could not be created!');
+            return $this->redirectResponseCRUDFail($request, $this->key.' could not be created!');
         }
     }
 
     /**
      * Display the specified resource.
      *
+     * @param null $element
      * @param int $id
+     * @param array $shares
      * @return InertiaResponse
      */
-    public function show(int $id): InertiaResponse
+    public function show(int $id, $element = null, array $shares = []): InertiaResponse
     {
         return $this->edit($id);
     }
@@ -157,25 +144,18 @@ class PbPermissionController extends Controller
      * Show the form for editing the specified resource.
      *
      * @param int $id
+     * @param array $shares
      * @return InertiaResponse
      */
-    public function edit(int $id): InertiaResponse
+    public function edit(int $id, $element = null, array $shares = []): InertiaResponse
     {
-        $permission = PbPermission::with('roles')->findOrFail($id);
+        ${$this->name} = $this->modelPath::with('roles')->findOrFail($id);
 
-        Inertia::share(
-            'shared',
-            array_merge(
-                $this->globalInertiaShare(),
-                Shares::list([
-                    'roles',
-                ]),
-            )
-        );
+        $shares = [
+            'roles',
+        ];
 
-        return Inertia::render(AeasHelpers::AEAS_PACKAGE . '/Permissions/EditPermission', [
-            'pbpermission' => $permission,
-        ]);
+        return parent::edit($id, ${$this->name}, $shares);
     }
 
     /**
@@ -185,38 +165,53 @@ class PbPermissionController extends Controller
      * @param int $id
      * @return void
      */
-    public function update(Request $request, int $id)
+    public function update(Request $request, int $id, array $validationRules = [], array $replacers = [])
     {
-        // Validation
-        $validator = Validator::make($request->all(), [
+        $validationRules = [
             'name' => ['required', 'max:40'],
             'alias' => ['required', 'max:190'],
-        ]);
+        ];
+
+        $this->updateValidation = array_merge($this->updateValidation, $validationRules);
+
+        // Validation
+        $validator = Validator::make($request->all(), $this->updateValidation);
         $this->validationCheck($validator, $request);
 
         // Requests
-        $name = $request['name'];
+        $keys = [];
+        foreach($validationRules as $vrKey => $vr) {
+            if (isset($replacers[$vrKey])) {
+                ${$replacers[$vrKey]} = $request[$vrKey];
+                array_push($keys, $replacers[$vrKey]);
+            } else {
+                ${$vrKey} = $request[$vrKey];
+                array_push($keys, $vrKey);
+            }
+        }
+
         $roles = $request['roles'];
-        $alias = $request['alias'];
 
         // Process
         try {
-            $permission = PbPermission::findOrFail($id);
-            $permission->name = $name;
-            $permission->alias = $alias;
-            if ($permission->save()) {
-                if (in_array($permission->name, ['crud super-admin'])) {
-                    $superAdminRoles = PbRoles::whereIn('name', ['super-admin'])->get()->modelKeys();
-                    $permission->syncRoles($superAdminRoles);
-                } elseif (in_array($permission->name, ['manage app', 'admin roles permissions'])) {
-                    $adminRoles = PbRoles::whereIn('name', ['super-admin', 'admin'])->get()->modelKeys();
-                    $permission->syncRoles($adminRoles);
-                } elseif (in_array($permission->name, ['login'])) {
-                    $adminRoles = PbRoles::all()->modelKeys();
-                    $permission->syncRoles($adminRoles);
+            ${$this->name} = $this->modelPath::find($id);
+            $requests = [];
+            foreach($keys as $key) {
+                $requests[$key] = ${$key};
+            }
+            if (${$this->name}->update($requests)) {
+                if (in_array(${$this->name}->name, ['crud super-admin'])) {
+                    $superAdminRoles = PbRole::whereIn('name', ['super-admin'])->get()->modelKeys();
+                    ${$this->name}->syncRoles($superAdminRoles);
+                } elseif (in_array(${$this->name}->name, ['manage app', 'admin roles permissions'])) {
+                    $adminRoles = PbRole::whereIn('name', ['super-admin', 'admin'])->get()->modelKeys();
+                    ${$this->name}->syncRoles($adminRoles);
+                } elseif (in_array(${$this->name}->name, ['login'])) {
+                    $adminRoles = PbRole::all()->modelKeys();
+                    ${$this->name}->syncRoles($adminRoles);
                 } else {
-                    $adminRoles = PbRoles::whereIn('name', ['super-admin', 'admin'])->get()->modelKeys();
-                    $permission->syncRoles(
+                    $adminRoles = PbRole::whereIn('name', ['super-admin', 'admin'])->get()->modelKeys();
+                    ${$this->name}->syncRoles(
                         array_merge(
                             (is_array($roles) ? $roles : [$roles]),
                             (is_array($adminRoles) ? $adminRoles : [$adminRoles])
@@ -225,9 +220,9 @@ class PbPermissionController extends Controller
                 }
             }
 
-            return $this->redirectResponseCRUDSuccess($request, 'Permission updated successfully!');
+            return $this->redirectResponseCRUDSuccess($request, $this->key.' updated successfully!');
         } catch (Exception $e) {
-            return $this->redirectResponseCRUDFail($request, 'Permission could not be updated!');
+            return $this->redirectResponseCRUDFail($request, $this->key.' could not be updated!');
         }
     }
 
@@ -242,19 +237,19 @@ class PbPermissionController extends Controller
     {
         // Process
         try {
-            $permission = PbPermission::findOrFail($id);
+            ${$this->name} = $this->modelPath::findOrFail($id);
             //Make it impossible to delete these specific permissions
-            if (in_array($permission->name, ['admin roles permissions', 'manage app', 'crud super-admin'])) {
+            if (in_array(${$this->name}->name, ['admin roles permissions', 'manage app', 'crud super-admin'])) {
                 $request->session()->flash('flash.banner', 'This permission can not be deleted!');
                 $request->session()->flash('flash.bannerStyle', 'danger');
 
-                return redirect()->route($this->name . '.index');
+                return redirect()->route($this->names . '.index');
             }
-            $permission->delete();
+            ${$this->name}->delete();
 
-            return $this->redirectResponseCRUDSuccess($request, 'Permission deleted successfully!');
+            return $this->redirectResponseCRUDSuccess($request, $this->key.' deleted successfully!');
         } catch (Exception $e) {
-            return $this->redirectResponseCRUDFail($request, 'Permission could not be deleted!');
+            return $this->redirectResponseCRUDFail($request, $this->key.' could not be deleted!');
         }
     }
 }

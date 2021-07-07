@@ -17,17 +17,12 @@ use Inertia\Response as InertiaResponse;
 
 class PbNavigationController extends PbBuilderController
 {
-    function __construct()
+    function __construct($crud_perms = false)
     {
         // Vars Override
         $this->key = 'Navigation';
         // Parent construct
-        parent::__construct();
-        // Middlewares
-        $this->middleware(['role_or_permission:read '.$this->names]);
-        $this->middleware(['role_or_permission:create '.$this->names])->only('create', 'store');
-        $this->middleware(['role_or_permission:update '.$this->names])->only('edit', 'update');
-        $this->middleware(['role_or_permission:delete '.$this->names])->only('destroy');
+        parent::__construct(true);
     }
 
     /**
@@ -40,6 +35,7 @@ class PbNavigationController extends PbBuilderController
     public function index($elements = null, array $shares = []): InertiaResponse
     {
         ${$this->names} = $this->modelPath::with('permission')->get();
+
         $shares = [
             'permissionsall',
         ];
@@ -95,7 +91,7 @@ class PbNavigationController extends PbBuilderController
      * @param array $shares
      * @return InertiaResponse
      */
-    public function edit(int $id, array $shares = []): InertiaResponse
+    public function edit(int $id, $element = null, array $shares = []): InertiaResponse
     {
         $shares = [
             'permissionsall',

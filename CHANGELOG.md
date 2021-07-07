@@ -5,6 +5,24 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [1.2.0] - 2021-07-06
+
+### Added
+
+- Added `PbBuilderController`
+- Added `PbBuilder` model
+
+### Changed
+
+- All controllers but "Auth" ones now extend from `PbBuilderController`
+- All models but "Users & roles/permissions" ones now extend from `PbBuilder`
+- `AeasHelpers` renamed as `PbHelpers`
+- `PbRoles` model renamed as `PbRole`
+
+### Fixed
+
+- CRUD fully fixed
+
 ## [1.1.5] - 2021-07-03
 
 ### Added

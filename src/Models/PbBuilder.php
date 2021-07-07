@@ -2,32 +2,16 @@
 
 namespace Anibalealvarezs\Projectbuilder\Models;
 
+use Anibalealvarezs\Projectbuilder\Traits\PbModelMiscTrait;
 use Anibalealvarezs\Projectbuilder\Traits\PbModelTrait;
-use Spatie\Permission\Models\Role;
-use Spatie\Translatable\HasTranslations;
+use Illuminate\Database\Eloquent\Model;
 
-class PbRoles extends Role
+class PbBuilder extends Model
 {
-    use HasTranslations;
     use PbModelTrait;
-
-    protected $connection;
-
-    public $translatable = ['alias'];
+    use PbModelMiscTrait;
 
     protected $appends = ['crud'];
-
-    function __construct() {
-        $this->connection = config('database.default');
-    }
-
-    public function getAliasAttribute($value)
-    {
-        if (json_decode($value)) {
-            return json_decode($value)->{app()->getLocale()};
-        }
-        return $value;
-    }
 
     public function isEditableBy($id): bool
     {
@@ -48,5 +32,4 @@ class PbRoles extends Role
     {
         return true;
     }
-
 }

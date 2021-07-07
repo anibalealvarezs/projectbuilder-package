@@ -2,7 +2,7 @@
 
 namespace Anibalealvarezs\Projectbuilder\Controllers;
 
-use Anibalealvarezs\Projectbuilder\Helpers\AeasHelpers as AeasHelpers;
+use Anibalealvarezs\Projectbuilder\Helpers\PbHelpers;
 use Anibalealvarezs\Projectbuilder\Helpers\Shares;
 use Anibalealvarezs\Projectbuilder\Traits\PbControllerTrait;
 
@@ -38,7 +38,7 @@ class PbBuilderController extends Controller
 
     use PbControllerTrait;
 
-    function __construct()
+    function __construct($crud_perms = false)
     {
         if (!$this->key) {
             $this->key = 'Builder';
@@ -46,18 +46,26 @@ class PbBuilderController extends Controller
         if (!$this->prefix) {
             $this->prefix = 'Pb';
         }
-        $this->keys = AeasHelpers::toPlural($this->key);
+        $this->keys = PbHelpers::toPlural($this->key);
         $this->model = $this->prefix.$this->key;
-        $this->models = AeasHelpers::toPlural($this->model);
+        $this->models = PbHelpers::toPlural($this->model);
         $this->name = strtolower($this->key);
-        $this->names = AeasHelpers::toPlural($this->name);
+        $this->names = PbHelpers::toPlural($this->name);
         $this->prefixName = strtolower($this->prefix.$this->key);
-        $this->prefixNames = AeasHelpers::toPlural($this->prefixName);
-        $this->modelPath = AeasHelpers::AEAS_VENDOR."\\".AeasHelpers::AEAS_PACKAGE."\\Models\\".$this->model;
-        $this->viewsPath = AeasHelpers::AEAS_PACKAGE . '/'.$this->keys.'/';
+        $this->prefixNames = PbHelpers::toPlural($this->prefixName);
+        $this->modelPath = PbHelpers::PB_VENDOR."\\".PbHelpers::PB_PACKAGE."\\Models\\".$this->model;
+        $this->viewsPath = PbHelpers::PB_PACKAGE . '/'.$this->keys.'/';
         $this->storeValidation = [];
         $this->updateValidation = [];
         $this->table = (new $this->modelPath())->getTable();
+
+        if ($crud_perms) {
+            // Middlewares
+            $this->middleware(['role_or_permission:read '.$this->names]);
+            $this->middleware(['role_or_permission:create '.$this->names])->only('create', 'store');
+            $this->middleware(['role_or_permission:update '.$this->names])->only('edit', 'update');
+            $this->middleware(['role_or_permission:delete '.$this->names])->only('destroy');
+        }
     }
 
     /**
@@ -105,8 +113,8 @@ class PbBuilderController extends Controller
             'shared',
             array_merge(
                 $this->globalInertiaShare(),
+                Shares::list($shares),
             ),
-            Shares::list($shares),
         );
 
         return Inertia::render($this->viewsPath.'Create'.$this->key);
@@ -157,20 +165,25 @@ class PbBuilderController extends Controller
     /**
      * Display the specified resource.
      *
+     * @param null $element
      * @param int $id
      * @param array $shares
      * @return InertiaResponse
      */
-    public function show(int $id, array $shares = []): InertiaResponse
+    public function show(int $id, $element = null, array $shares = []): InertiaResponse
     {
-        ${strtolower($this->key)} = $this->modelPath::find($id);
+        if ($element) {
+            ${$this->name} = $element;
+        } else {
+            ${$this->name} = $this->modelPath::find($id);
+        }
 
         Inertia::share(
             'shared',
             array_merge(
                 $this->globalInertiaShare(),
+                Shares::list($shares),
             ),
-            Shares::list($shares),
         );
 
         return Inertia::render($this->viewsPath.'Show'.$this->key, [
@@ -182,22 +195,27 @@ class PbBuilderController extends Controller
      * Show the form for editing the specified resource.
      *
      * @param int $id
+     * @param null $element
      * @param array $shares
      * @return InertiaResponse
      */
-    public function edit(int $id, array $shares = []): InertiaResponse
+    public function edit(int $id, $element = null, array $shares = []): InertiaResponse
     {
-        ${$this->name} = $this->modelPath::find($id);
+        if ($element) {
+            ${$this->name} = $element;
+        } else {
+            ${$this->name} = $this->modelPath::find($id);
+        }
 
         Inertia::share(
             'shared',
             array_merge(
                 $this->globalInertiaShare(),
+                Shares::list($shares),
             ),
-            Shares::list($shares),
         );
 
-        return Inertia::render(AeasHelpers::AEAS_PACKAGE . '/'.$this->keys.'/Edit'.$this->key, [
+        return Inertia::render(PbHelpers::PB_PACKAGE . '/'.$this->keys.'/Edit'.$this->key, [
             $this->prefixName => ${$this->name},
         ]);
     }

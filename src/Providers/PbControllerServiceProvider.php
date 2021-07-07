@@ -2,7 +2,7 @@
 
 namespace Anibalealvarezs\Projectbuilder\Providers;
 
-use Anibalealvarezs\Projectbuilder\Helpers\AeasHelpers as AeasHelpers;
+use Anibalealvarezs\Projectbuilder\Helpers\PbHelpers;
 use Illuminate\Contracts\Http\Kernel;
 use Illuminate\Support\ServiceProvider;
 
@@ -25,15 +25,15 @@ class PbControllerServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        $this->app->make(AeasHelpers::AEAS_VENDOR.'\\'.AeasHelpers::AEAS_PACKAGE.'\Controllers\Auth\\'.AeasHelpers::AEAS_PREFIX.'ForgotPasswordController');
-        $this->app->make(AeasHelpers::AEAS_VENDOR.'\\'.AeasHelpers::AEAS_PACKAGE.'\Controllers\Auth\\'.AeasHelpers::AEAS_PREFIX.'LoginController');
-        $this->app->make(AeasHelpers::AEAS_VENDOR.'\\'.AeasHelpers::AEAS_PACKAGE.'\Controllers\Auth\\'.AeasHelpers::AEAS_PREFIX.'RegisterController');
-        $this->app->make(AeasHelpers::AEAS_VENDOR.'\\'.AeasHelpers::AEAS_PACKAGE.'\Controllers\Auth\\'.AeasHelpers::AEAS_PREFIX.'ResetPasswordController');
-        $this->app->make(AeasHelpers::AEAS_VENDOR.'\\'.AeasHelpers::AEAS_PACKAGE.'\Controllers\Config\\'.AeasHelpers::AEAS_PREFIX.'ConfigController');
-        $this->app->make(AeasHelpers::AEAS_VENDOR.'\\'.AeasHelpers::AEAS_PACKAGE.'\Controllers\Logger\\'.AeasHelpers::AEAS_PREFIX.'LoggerController');
-        $this->app->make(AeasHelpers::AEAS_VENDOR.'\\'.AeasHelpers::AEAS_PACKAGE.'\Controllers\Permission\\'.AeasHelpers::AEAS_PREFIX.'PermissionController');
-        $this->app->make(AeasHelpers::AEAS_VENDOR.'\\'.AeasHelpers::AEAS_PACKAGE.'\Controllers\Permission\\'.AeasHelpers::AEAS_PREFIX.'RoleController');
-        $this->app->make(AeasHelpers::AEAS_VENDOR.'\\'.AeasHelpers::AEAS_PACKAGE.'\Controllers\User\\'.AeasHelpers::AEAS_PREFIX.'UserController');
-        $this->app->make(AeasHelpers::AEAS_VENDOR.'\\'.AeasHelpers::AEAS_PACKAGE.'\Controllers\Dashboard\\'.AeasHelpers::AEAS_PREFIX.'DashboardController');
+        $this->app->make(PbHelpers::PB_VENDOR.'\\'.PbHelpers::PB_PACKAGE.'\Controllers\Auth\\'.PbHelpers::PB_PREFIX.'ForgotPasswordController');
+        $this->app->make(PbHelpers::PB_VENDOR.'\\'.PbHelpers::PB_PACKAGE.'\Controllers\Auth\\'.PbHelpers::PB_PREFIX.'LoginController');
+        $this->app->make(PbHelpers::PB_VENDOR.'\\'.PbHelpers::PB_PACKAGE.'\Controllers\Auth\\'.PbHelpers::PB_PREFIX.'RegisterController');
+        $this->app->make(PbHelpers::PB_VENDOR.'\\'.PbHelpers::PB_PACKAGE.'\Controllers\Auth\\'.PbHelpers::PB_PREFIX.'ResetPasswordController');
+        $this->app->make(PbHelpers::PB_VENDOR.'\\'.PbHelpers::PB_PACKAGE.'\Controllers\Config\\'.PbHelpers::PB_PREFIX.'ConfigController');
+        $this->app->make(PbHelpers::PB_VENDOR.'\\'.PbHelpers::PB_PACKAGE.'\Controllers\Logger\\'.PbHelpers::PB_PREFIX.'LoggerController');
+        $this->app->make(PbHelpers::PB_VENDOR.'\\'.PbHelpers::PB_PACKAGE.'\Controllers\Permission\\'.PbHelpers::PB_PREFIX.'PermissionController');
+        $this->app->make(PbHelpers::PB_VENDOR.'\\'.PbHelpers::PB_PACKAGE.'\Controllers\Permission\\'.PbHelpers::PB_PREFIX.'RoleController');
+        $this->app->make(PbHelpers::PB_VENDOR.'\\'.PbHelpers::PB_PACKAGE.'\Controllers\User\\'.PbHelpers::PB_PREFIX.'UserController');
+        $this->app->make(PbHelpers::PB_VENDOR.'\\'.PbHelpers::PB_PACKAGE.'\Controllers\Dashboard\\'.PbHelpers::PB_PREFIX.'DashboardController');
     }
 }

@@ -2,24 +2,17 @@
 
 namespace Anibalealvarezs\Projectbuilder\Models;
 
-use Anibalealvarezs\Projectbuilder\Traits\PbModelMiscTrait;
-use Anibalealvarezs\Projectbuilder\Traits\PbModelTrait;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Spatie\Translatable\HasTranslations;
 
-class PbNavigation extends Model
+class PbNavigation extends PbBuilder
 {
-    use PbModelTrait;
-    use PbModelMiscTrait;
     use HasTranslations;
 
     protected $table = 'navigations';
 
     public $translatable = ['name'];
-
-    protected $appends = ['crud'];
 
     public $timestamps = false;
 
@@ -54,25 +47,5 @@ class PbNavigation extends Model
     {
         // Recursive Relationship
         return $this->hasMany(self::class, 'parent', 'id')->with('descendants');
-    }
-
-    public function isEditableBy($id): bool
-    {
-        return true;
-    }
-
-    public function isViewableBy($id): bool
-    {
-        return true;
-    }
-
-    public function isSelectableBy($id): bool
-    {
-        return true;
-    }
-
-    public function isDeletableBy($id): bool
-    {
-        return true;
     }
 }

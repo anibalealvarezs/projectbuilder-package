@@ -6,13 +6,13 @@ use Anibalealvarezs\Projectbuilder\Models\PbUser;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 
-class AeasHelpers
+class PbHelpers
 {
-    public const AEAS_VENDOR = 'Anibalealvarezs';
-    public const AEAS_PACKAGE = 'Projectbuilder';
-    public const AEAS_DIR = 'projectbuilder';
-    public const AEAS_PREFIX = 'Pb';
-    public const AEAS_NAME = 'builder';
+    public const PB_VENDOR = 'Anibalealvarezs';
+    public const PB_PACKAGE = 'Projectbuilder';
+    public const PB_DIR = 'projectbuilder';
+    public const PB_PREFIX = 'Pb';
+    public const PB_NAME = 'builder';
 
     function __construct()
     {

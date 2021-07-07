@@ -15,17 +15,12 @@ use Session;
 
 class PbConfigController extends PbBuilderController
 {
-    function __construct()
+    function __construct($crud_perms = false)
     {
         // Vars Override
         $this->key = 'Config';
         // Parent construct
-        parent::__construct();
-        // Middlewares
-        $this->middleware(['role_or_permission:read '.$this->names]);
-        $this->middleware(['role_or_permission:create '.$this->names])->only('create', 'store');
-        $this->middleware(['role_or_permission:update '.$this->names])->only('edit', 'update');
-        $this->middleware(['role_or_permission:delete '.$this->names])->only('destroy');
+        parent::__construct(true);
     }
 
     /**

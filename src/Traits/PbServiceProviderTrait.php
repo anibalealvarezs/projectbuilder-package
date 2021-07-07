@@ -2,7 +2,7 @@
 
 namespace Anibalealvarezs\Projectbuilder\Traits;
 
-use Anibalealvarezs\Projectbuilder\Helpers\AeasHelpers as AeasHelpers;
+use Anibalealvarezs\Projectbuilder\Helpers\PbHelpers;
 
 trait PbServiceProviderTrait {
 
@@ -16,32 +16,32 @@ trait PbServiceProviderTrait {
         ];
         // Views
         $views = __DIR__ . '/../../resources/js';
-        $this->loadViewsFrom($views, AeasHelpers::AEAS_PREFIX);
+        $this->loadViewsFrom($views, PbHelpers::PB_PREFIX);
         // Publish
         // All
         $allPublish = [
-            $dirs['components'] => resource_path('js/Pages/'.AeasHelpers::AEAS_PACKAGE),
-            $dirs['assets_js'] => public_path('js/'.AeasHelpers::AEAS_PACKAGE),
-            $dirs['assets_css'] => public_path('css/'.AeasHelpers::AEAS_PACKAGE),
+            $dirs['components'] => resource_path('js/Pages/'.PbHelpers::PB_PACKAGE),
+            $dirs['assets_js'] => public_path('js/'.PbHelpers::PB_PACKAGE),
+            $dirs['assets_css'] => public_path('css/'.PbHelpers::PB_PACKAGE),
             /* $dirs['core'] => resource_path('js'), */
         ];
-        $this->publishes($allPublish, AeasHelpers::AEAS_NAME.'-views');
+        $this->publishes($allPublish, PbHelpers::PB_NAME.'-views');
         // Specific
         // Only Core Relacement
         $this->publishes([
             $dirs['core'] => resource_path('js'),
-        ], AeasHelpers::AEAS_NAME.'-core');
+        ], PbHelpers::PB_NAME.'-core');
         // Only Components
         $this->publishes([
-            $dirs['components'] => resource_path('js/Pages/'.AeasHelpers::AEAS_PACKAGE),
-        ], AeasHelpers::AEAS_NAME.'-components');
+            $dirs['components'] => resource_path('js/Pages/'.PbHelpers::PB_PACKAGE),
+        ], PbHelpers::PB_NAME.'-components');
         // Only Js Helpers
         $this->publishes([
-            $dirs['assets_js'] => public_path('js/'.AeasHelpers::AEAS_PACKAGE),
-        ], AeasHelpers::AEAS_NAME.'-js');
+            $dirs['assets_js'] => public_path('js/'.PbHelpers::PB_PACKAGE),
+        ], PbHelpers::PB_NAME.'-js');
         // Only CSS
         $this->publishes([
-            $dirs['assets_css'] => public_path('css/'.AeasHelpers::AEAS_PACKAGE),
-        ], AeasHelpers::AEAS_NAME.'-css');
+            $dirs['assets_css'] => public_path('css/'.PbHelpers::PB_PACKAGE),
+        ], PbHelpers::PB_NAME.'-css');
     }
 }

@@ -2,23 +2,16 @@
 
 namespace Anibalealvarezs\Projectbuilder\Models;
 
-use Anibalealvarezs\Projectbuilder\Traits\PbModelMiscTrait;
-use Anibalealvarezs\Projectbuilder\Traits\PbModelTrait;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 use Spatie\Translatable\HasTranslations;
 
-class PbConfig extends Model
+class PbConfig extends PbBuilder
 {
-    use PbModelTrait;
-    use PbModelMiscTrait;
     use HasTranslations;
 
     protected $table = 'config';
 
     public $translatable = ['name', 'description'];
-
-    protected $appends = ['crud'];
 
     public $timestamps = false;
 
@@ -57,25 +50,5 @@ class PbConfig extends Model
             return self::find($config->id);
         }
         return null;
-    }
-
-    public function isEditableBy($id): bool
-    {
-        return true;
-    }
-
-    public function isViewableBy($id): bool
-    {
-        return true;
-    }
-
-    public function isSelectableBy($id): bool
-    {
-        return true;
-    }
-
-    public function isDeletableBy($id): bool
-    {
-        return true;
     }
 }
