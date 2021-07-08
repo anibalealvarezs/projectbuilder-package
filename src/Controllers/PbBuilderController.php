@@ -34,6 +34,10 @@ class PbBuilderController extends Controller
     /**
      * @var string
      */
+    protected $helper;
+    /**
+     * @var string
+     */
     protected $name;
     /**
      * @var string
@@ -79,9 +83,6 @@ class PbBuilderController extends Controller
      * @var string
      */
     protected $prefixNames;
-    /**
-     * @var string
-     */
     /**
      * @var string
      */
@@ -237,67 +238,70 @@ class PbBuilderController extends Controller
 
     function __construct($crud_perms = false)
     {
-        if (!$this->vendor) {
-            $this->vendor = PbHelpers::PB_VENDOR;
-        }
-        if (!$this->package) {
-            $this->package = PbHelpers::PB_PACKAGE;
-        }
         if (!$this->key) {
             $this->key = 'Builder';
         }
         if (!$this->prefix) {
             $this->prefix = 'Pb';
         }
-        $this->keys = PbHelpers::toPlural($this->key);
+        if (!$this->helper) {
+            $this->helper = PbHelpers::PB_VENDOR.'\\'.PbHelpers::PB_PACKAGE.'\\Helpers\\'.$this->prefix.'Helpers';
+        }
+        if (!$this->vendor) {
+            $this->vendor = $this->helper::PB_VENDOR;
+        }
+        if (!$this->package) {
+            $this->package = $this->helper::PB_PACKAGE;
+        }
+        $this->keys = $this->helper::toPlural($this->key);
         $this->model = $this->prefix.$this->key;
-        $this->models = PbHelpers::toPlural($this->model);
+        $this->models = $this->helper::toPlural($this->model);
         $this->name = strtolower($this->key);
-        $this->names = PbHelpers::toPlural($this->name);
+        $this->names = $this->helper::toPlural($this->name);
         $this->prefixName = strtolower($this->prefix.$this->key);
-        $this->prefixNames = PbHelpers::toPlural($this->prefixName);
+        $this->prefixNames = $this->helper::toPlural($this->prefixName);
         $this->modelPath = $this->vendor."\\".$this->package."\\Models\\".$this->model;
         $this->viewsPath = $this->package . '/'.$this->keys.'/';
         $this->table = (new $this->modelPath())->getTable();
         // Additional Parent Model Variables
         if ($this->parentKey) {
-            $this->parentKeys = PbHelpers::toPlural($this->parentKey);
+            $this->parentKeys = $this->helper::toPlural($this->parentKey);
             $this->parentModel = $this->prefix.$this->parentKey;
-            $this->parentModels = PbHelpers::toPlural($this->parentModel);
+            $this->parentModels = $this->helper::toPlural($this->parentModel);
             $this->parentName = strtolower($this->parentKey);
-            $this->parentNames = PbHelpers::toPlural($this->parentName);
+            $this->parentNames = $this->helper::toPlural($this->parentName);
             $this->prefixParentName = strtolower($this->prefix.$this->parentKey);
-            $this->prefixParentNames = PbHelpers::toPlural($this->prefixParentName);
+            $this->prefixParentNames = $this->helper::toPlural($this->prefixParentName);
         }
         // Additional Grand Parent Model Variables
         if ($this->grandparentKey) {
-            $this->grandparentKeys = PbHelpers::toPlural($this->grandparentKey);
+            $this->grandparentKeys = $this->helper::toPlural($this->grandparentKey);
             $this->grandparentModel = $this->prefix.$this->grandparentKey;
-            $this->grandparentModels = PbHelpers::toPlural($this->grandparentModel);
+            $this->grandparentModels = $this->helper::toPlural($this->grandparentModel);
             $this->grandparentName = strtolower($this->grandparentKey);
-            $this->grandparentNames = PbHelpers::toPlural($this->grandparentName);
+            $this->grandparentNames = $this->helper::toPlural($this->grandparentName);
             $this->prefixGrandparentName = strtolower($this->prefix.$this->grandparentKey);
-            $this->prefixGrandparentNames = PbHelpers::toPlural($this->prefixGrandparentName);
+            $this->prefixGrandparentNames = $this->helper::toPlural($this->prefixGrandparentName);
         }
         // Additional Child Model Variables
         if ($this->childKey) {
-            $this->childKeys = PbHelpers::toPlural($this->childKey);
+            $this->childKeys = $this->helper::toPlural($this->childKey);
             $this->childModel = $this->prefix.$this->childKey;
-            $this->childModels = PbHelpers::toPlural($this->childModel);
+            $this->childModels = $this->helper::toPlural($this->childModel);
             $this->childName = strtolower($this->childKey);
-            $this->childNames = PbHelpers::toPlural($this->childName);
+            $this->childNames = $this->helper::toPlural($this->childName);
             $this->prefixChildName = strtolower($this->prefix.$this->childKey);
-            $this->prefixChildNames = PbHelpers::toPlural($this->prefixChildName);
+            $this->prefixChildNames = $this->helper::toPlural($this->prefixChildName);
         }
         // Additional Grand Child Model Variables
         if ($this->grandchildKey) {
-            $this->grandchildKeys = PbHelpers::toPlural($this->grandchildKey);
+            $this->grandchildKeys = $this->helper::toPlural($this->grandchildKey);
             $this->grandchildModel = $this->prefix.$this->grandchildKey;
-            $this->grandchildModels = PbHelpers::toPlural($this->grandchildModel);
+            $this->grandchildModels = $this->helper::toPlural($this->grandchildModel);
             $this->grandchildName = strtolower($this->grandchildKey);
-            $this->grandchildNames = PbHelpers::toPlural($this->grandchildName);
+            $this->grandchildNames = $this->helper::toPlural($this->grandchildName);
             $this->prefixGrandchildName = strtolower($this->prefix.$this->grandchildKey);
-            $this->prefixGrandchildNames = PbHelpers::toPlural($this->prefixGrandchildName);
+            $this->prefixGrandchildNames = $this->helper::toPlural($this->prefixGrandchildName);
         }
 
         if ($crud_perms) {

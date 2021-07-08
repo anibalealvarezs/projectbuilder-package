@@ -81,7 +81,7 @@ class PbUserController extends PbBuilderController
             ]);
         })->sortByDesc(['name', 'email']);
 
-        $filtered = PbHelpers::setCollectionAttributeDatetimeFormat(
+        $filtered = $this->helper::setCollectionAttributeDatetimeFormat(
             $filtered,
             ['created_at', 'last_session'],
             "custom",
