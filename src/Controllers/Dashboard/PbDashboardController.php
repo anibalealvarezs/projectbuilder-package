@@ -8,6 +8,7 @@ use App\Http\Requests;
 
 use Auth;
 use DB;
+use Illuminate\Http\RedirectResponse;
 use Session;
 
 use Inertia\Response as InertiaResponse;
@@ -28,9 +29,9 @@ class PbDashboardController extends PbBuilderController
      * @param null $element
      * @param bool $multiple
      * @param string $route
-     * @return InertiaResponse
+     * @return void
      */
-    public function index($element = null, bool $multiple = false, string $route = 'level'): InertiaResponse
+    public function index($element = null, bool $multiple = false, string $route = 'level')
     {
         return $this->renderView($this->package . '/Dashboard');
     }

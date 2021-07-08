@@ -43,9 +43,9 @@ class PbPermissionController extends PbBuilderController
      * @param null $element
      * @param bool $multiple
      * @param string $route
-     * @return InertiaResponse
+     * @return void
      */
-    public function index($element = null, bool $multiple = false, string $route = 'level'): InertiaResponse
+    public function index($element = null, bool $multiple = false, string $route = 'level')
     {
         $me = PbUser::find(Auth::user()->id);
         $toExclude = ['crud super-admin'];

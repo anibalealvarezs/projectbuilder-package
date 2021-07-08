@@ -9,6 +9,7 @@ use Anibalealvarezs\Projectbuilder\Traits\PbControllerTrait;
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
 
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
@@ -339,9 +340,9 @@ class PbBuilderController extends Controller
      * @param null $element
      * @param bool $multiple
      * @param string $route
-     * @return InertiaResponse
+     * @return void
      */
-    public function index($element = null, bool $multiple = false, string $route = 'level'): InertiaResponse
+    public function index($element = null, bool $multiple = false, string $route = 'level')
     {
         $arrayElements = $this->buildModelsArray($element, $multiple, null, true);
 
@@ -495,19 +496,19 @@ class PbBuilderController extends Controller
                 foreach($element as $key => $value) {
                     switch($key) {
                         case 'child':
-                            $arrayElements[$this->prefixChildName] = $value;
+                            $arrayElements[($value['size'] == 'multiple' ? $this->prefixChildNames : $this->prefixChildName)] = $value['object'];
                             break;
                         case 'grandchild':
-                            $arrayElements[$this->prefixGrandchildName] = $value;
+                            $arrayElements[($value['size'] == 'multiple' ? $this->prefixGrandchildNames : $this->prefixGrandchildName)] = $value['object'];
                             break;
                         case 'parent':
-                            $arrayElements[$this->prefixParentName] = $value;
+                            $arrayElements[($value['size'] == 'multiple' ? $this->prefixParentNames : $this->prefixParentName)] = $value['object'];
                             break;
                         case 'grandparent':
-                            $arrayElements[$this->prefixGrandparentName] = $value;
+                            $arrayElements[($value['size'] == 'multiple' ? $this->prefixGrandparentNames : $this->prefixGrandparentName)] = $value['object'];
                             break;
                         default:
-                            $arrayElements[$this->prefixName] = $value;
+                            $arrayElements[($value['size'] == 'multiple' ? $this->prefixNames : $this->prefixName)] = $value['object'];
                             break;
                     }
                 }

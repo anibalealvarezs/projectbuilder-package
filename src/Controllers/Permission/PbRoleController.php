@@ -43,9 +43,9 @@ class PbRoleController extends PbBuilderController
      * @param null $element
      * @param bool $multiple
      * @param string $route
-     * @return InertiaResponse
+     * @return void
      */
-    public function index($element = null, bool $multiple = false, string $route = 'level'): InertiaResponse
+    public function index($element = null, bool $multiple = false, string $route = 'level')
     {
         $query = $this->modelPath::with('permissions')->whereNotIn('name', ['super-admin']);
         $user = PbUser::find(Auth::user()->id);
