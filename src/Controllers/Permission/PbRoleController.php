@@ -42,9 +42,10 @@ class PbRoleController extends PbBuilderController
      *
      * @param null $element
      * @param bool $multiple
+     * @param string $route
      * @return InertiaResponse
      */
-    public function index($element = null, bool $multiple = false): InertiaResponse
+    public function index($element = null, bool $multiple = false, string $route = 'level'): InertiaResponse
     {
         $query = $this->modelPath::with('permissions')->whereNotIn('name', ['super-admin']);
         $user = PbUser::find(Auth::user()->id);
@@ -96,9 +97,10 @@ class PbRoleController extends PbBuilderController
      * @param int $id
      * @param null $element
      * @param bool $multiple
+     * @param string $route
      * @return InertiaResponse
      */
-    public function show(int $id, $element = null, bool $multiple = false): InertiaResponse
+    public function show(int $id, $element = null, bool $multiple = false, string $route = 'level'): InertiaResponse
     {
         return $this->edit($id);
     }
@@ -109,9 +111,10 @@ class PbRoleController extends PbBuilderController
      * @param int $id
      * @param null $element
      * @param bool $multiple
+     * @param string $route
      * @return InertiaResponse
      */
-    public function edit(int $id, $element = null, bool $multiple = false): InertiaResponse
+    public function edit(int $id, $element = null, bool $multiple = false, string $route = 'level'): InertiaResponse
     {
         $model = $this->modelPath::with('permissions')->findOrFail($id);
 

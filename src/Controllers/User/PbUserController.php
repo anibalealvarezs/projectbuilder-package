@@ -3,7 +3,6 @@
 namespace Anibalealvarezs\Projectbuilder\Controllers\User;
 
 use Anibalealvarezs\Projectbuilder\Controllers\PbBuilderController;
-use Anibalealvarezs\Projectbuilder\Helpers\PbHelpers;
 
 use Anibalealvarezs\Projectbuilder\Models\PbUser;
 use App\Http\Requests;
@@ -51,9 +50,10 @@ class PbUserController extends PbBuilderController
      *
      * @param null $element
      * @param bool $multiple
+     * @param string $route
      * @return InertiaResponse
      */
-    public function index($element = null, bool $multiple = false): InertiaResponse
+    public function index($element = null, bool $multiple = false, string $route = 'level'): InertiaResponse
     {
         $query = $this->modelPath::with('country', 'city', 'lang', 'roles');
         $currentUser = $this->modelPath::find(Auth::user()->id);
@@ -96,9 +96,10 @@ class PbUserController extends PbBuilderController
     /**
      * Show the form for creating a new resource.
      *
+     * @param string $route
      * @return InertiaResponse
      */
-    public function create(): InertiaResponse
+    public function create(string $route = 'level'): InertiaResponse
     {
         $this->allowed = [
             'create '.$this->names => 'create',
@@ -170,9 +171,10 @@ class PbUserController extends PbBuilderController
      * @param int $id
      * @param null $element
      * @param bool $multiple
+     * @param string $route
      * @return InertiaResponse
      */
-    public function show(int $id, $element = null, bool $multiple = false): InertiaResponse
+    public function show(int $id, $element = null, bool $multiple = false, string $route = 'level'): InertiaResponse
     {
         if (Auth::user()->id == $id) {
             return redirect('/'.${$this->name}.'/profile');
@@ -189,9 +191,10 @@ class PbUserController extends PbBuilderController
      * @param int $id
      * @param null $element
      * @param bool $multiple
+     * @param string $route
      * @return InertiaResponse
      */
-    public function edit(int $id, $element = null, bool $multiple = false): InertiaResponse
+    public function edit(int $id, $element = null, bool $multiple = false, string $route = 'level'): InertiaResponse
     {
         if (Auth::user()->id == $id) {
             return redirect('/'.${$this->name}.'/profile');

@@ -27,9 +27,10 @@ class PbDashboardController extends PbBuilderController
      *
      * @param null $element
      * @param bool $multiple
+     * @param string $route
      * @return InertiaResponse
      */
-    public function index($element = null, bool $multiple = false): InertiaResponse
+    public function index($element = null, bool $multiple = false, string $route = 'level'): InertiaResponse
     {
         return $this->renderView($this->package . '/Dashboard');
     }

@@ -110,6 +110,10 @@ class PbBuilderController extends Controller
     /**
      * @var string
      */
+    protected $parentViewsPath;
+    /**
+     * @var string
+     */
     protected $prefixParentName;
     /**
      * @var string
@@ -139,6 +143,10 @@ class PbBuilderController extends Controller
      * @var string
      */
     protected $grandparentNames;
+    /**
+     * @var string
+     */
+    protected $grandparentViewsPath;
     /**
      * @var string
      */
@@ -174,6 +182,10 @@ class PbBuilderController extends Controller
     /**
      * @var string
      */
+    protected $childViewsPath;
+    /**
+     * @var string
+     */
     protected $prefixChildName;
     /**
      * @var string
@@ -203,6 +215,10 @@ class PbBuilderController extends Controller
      * @var string
      */
     protected $grandchildNames;
+    /**
+     * @var string
+     */
+    protected $grandchildViewsPath;
     /**
      * @var string
      */
@@ -272,6 +288,7 @@ class PbBuilderController extends Controller
             $this->parentNames = $this->helper::toPlural($this->parentName);
             $this->prefixParentName = strtolower($this->prefix.$this->parentKey);
             $this->prefixParentNames = $this->helper::toPlural($this->prefixParentName);
+            $this->parentViewsPath = $this->package . '/'.$this->parentKeys.'/';
         }
         // Additional Grand Parent Model Variables
         if ($this->grandparentKey) {
@@ -282,6 +299,7 @@ class PbBuilderController extends Controller
             $this->grandparentNames = $this->helper::toPlural($this->grandparentName);
             $this->prefixGrandparentName = strtolower($this->prefix.$this->grandparentKey);
             $this->prefixGrandparentNames = $this->helper::toPlural($this->prefixGrandparentName);
+            $this->grandparentViewsPath = $this->package . '/'.$this->grandparentKeys.'/';
         }
         // Additional Child Model Variables
         if ($this->childKey) {
@@ -292,6 +310,7 @@ class PbBuilderController extends Controller
             $this->childNames = $this->helper::toPlural($this->childName);
             $this->prefixChildName = strtolower($this->prefix.$this->childKey);
             $this->prefixChildNames = $this->helper::toPlural($this->prefixChildName);
+            $this->childViewsPath = $this->package . '/'.$this->childKeys.'/';
         }
         // Additional Grand Child Model Variables
         if ($this->grandchildKey) {
@@ -302,6 +321,7 @@ class PbBuilderController extends Controller
             $this->grandchildNames = $this->helper::toPlural($this->grandchildName);
             $this->prefixGrandchildName = strtolower($this->prefix.$this->grandchildKey);
             $this->prefixGrandchildNames = $this->helper::toPlural($this->prefixGrandchildName);
+            $this->grandchildViewsPath = $this->package . '/'.$this->grandchildKeys.'/';
         }
 
         if ($crud_perms) {
@@ -318,9 +338,10 @@ class PbBuilderController extends Controller
      *
      * @param null $element
      * @param bool $multiple
+     * @param string $route
      * @return InertiaResponse
      */
-    public function index($element = null, bool $multiple = false): InertiaResponse
+    public function index($element = null, bool $multiple = false, string $route = 'level'): InertiaResponse
     {
         $arrayElements = $this->buildModelsArray($element, $multiple, null, true);
 
@@ -330,17 +351,22 @@ class PbBuilderController extends Controller
             'delete '.$this->names => 'delete',
         ];
 
-        return $this->renderView($this->viewsPath.$this->keys, $arrayElements);
+        $path = $this->buildRouteString($route, 'index');
+
+        return $this->renderView($path, $arrayElements);
     }
 
     /**
      * Show the form for creating a new resource.
      *
+     * @param string $route
      * @return InertiaResponse
      */
-    public function create(): InertiaResponse
+    public function create(string $route = 'level'): InertiaResponse
     {
-        return $this->renderView($this->viewsPath.'Create'.$this->key);
+        $path = $this->buildRouteString($route, 'create');
+
+        return $this->renderView($path);
     }
 
     /**
@@ -375,13 +401,16 @@ class PbBuilderController extends Controller
      * @param int $id
      * @param null $element
      * @param bool $multiple
+     * @param string $route
      * @return InertiaResponse
      */
-    public function show(int $id, $element = null, bool $multiple = false): InertiaResponse
+    public function show(int $id, $element = null, bool $multiple = false, string $route = 'level'): InertiaResponse
     {
         $arrayElements = $this->buildModelsArray($element, $multiple, $id);
 
-        return $this->renderView($this->viewsPath.'Show'.$this->key, $arrayElements);
+        $path = $this->buildRouteString($route, 'show');
+
+        return $this->renderView($path, $arrayElements);
     }
 
     /**
@@ -390,13 +419,16 @@ class PbBuilderController extends Controller
      * @param int $id
      * @param null $element
      * @param bool $multiple
+     * @param string $route
      * @return InertiaResponse
      */
-    public function edit(int $id, $element = null, bool $multiple = false): InertiaResponse
+    public function edit(int $id, $element = null, bool $multiple = false, string $route = 'level'): InertiaResponse
     {
         $arrayElements = $this->buildModelsArray($element, $multiple, $id);
 
-        return $this->renderView($this->viewsPath.'Edit'.$this->key, $arrayElements);
+        $path = $this->buildRouteString($route, 'edit');
+
+        return $this->renderView($path, $arrayElements);
     }
 
     /**
@@ -569,5 +601,54 @@ class PbBuilderController extends Controller
         $this->shareVars();
 
         return Inertia::render($view, $elements);
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @param $route
+     * @return string
+     */
+    protected function buildRouteString($route, $type): string
+    {
+        switch($route) {
+            case 'child':
+                $path = $this->childViewsPath.$this->buildFile($type, ['singular' => $this->childKey, 'plural' => $this->childKeys]);
+                break;
+            case 'grandchild':
+                $path = $this->grandchildViewsPath.$this->buildFile($type, ['singular' => $this->grandchildKey, 'plural' => $this->grandchildKeys]);
+                break;
+            case 'parent':
+                $path = $this->parentViewsPath.$this->buildFile($type, ['singular' => $this->parentKey, 'plural' => $this->parentKeys]);
+                break;
+            case 'gradnparent':
+                $path = $this->grandparentViewsPath.$this->buildFile($type, ['singular' => $this->grandparentKey, 'plural' => $this->grandparentKeys]);
+                break;
+            default:
+                $path = $this->viewsPath.$this->buildFile($type, ['singular' => $this->key, 'plural' => $this->keys]);
+                break;
+        }
+
+        return $path;
+    }
+
+    protected function buildFile($type, $keys)
+    {
+        switch($type) {
+            case 'show':
+                $file = 'Show'.$keys['singular'];
+                break;
+            case 'create':
+                $file = 'Create'.$keys['singular'];
+                break;
+            case 'edit':
+                $file = 'Edit'.$keys['singular'];
+                break;
+            default:
+                $file = $keys['plural'];
+                break;
+        }
+
+        return $file;
     }
 }

@@ -46,9 +46,10 @@ class PbNavigationController extends PbBuilderController
      *
      * @param null $element
      * @param bool $multiple
+     * @param string $route
      * @return InertiaResponse
      */
-    public function index($element = null, bool $multiple = false): InertiaResponse
+    public function index($element = null, bool $multiple = false, string $route = 'level'): InertiaResponse
     {
         $model = $this->modelPath::with('permission')->get();
 
