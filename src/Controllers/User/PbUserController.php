@@ -4,20 +4,18 @@ namespace Anibalealvarezs\Projectbuilder\Controllers\User;
 
 use Anibalealvarezs\Projectbuilder\Controllers\PbBuilderController;
 use Anibalealvarezs\Projectbuilder\Helpers\PbHelpers;
-use Anibalealvarezs\Projectbuilder\Helpers\Shares;
 
+use Anibalealvarezs\Projectbuilder\Models\PbUser;
 use App\Http\Requests;
 
 use App\Models\Team;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 
 use Auth;
 use DB;
 use Session;
 
-use Inertia\Inertia;
 use Inertia\Response as InertiaResponse;
 
 class PbUserController extends PbBuilderController
@@ -32,16 +30,30 @@ class PbUserController extends PbBuilderController
         $this->middleware(['is_'.$this->name.'_editable'])->only('edit', 'update');
         $this->middleware(['is_'.$this->name.'_deletable'])->only('destroy');
         $this->middleware(['is_'.$this->name.'_viewable'])->only('show');
+        // Validation Rules
+        $this->validationRules = [
+            'name' => ['required', 'max:190'],
+        ];
+        // Model fields name replacing
+        $this->replacers = [
+            'permission' => 'permission_id'
+        ];
+        // Additional variables to share
+        $this->shares = [
+            'languages',
+            'countries',
+            'roles',
+        ];
     }
 
     /**
      * Display a listing of the resource.
      *
-     * @param null $elements
-     * @param array $shares
+     * @param null $element
+     * @param bool $multiple
      * @return InertiaResponse
      */
-    public function index($elements = null, array $shares = []): InertiaResponse
+    public function index($element = null, bool $multiple = false): InertiaResponse
     {
         $query = $this->modelPath::with('country', 'city', 'lang', 'roles');
         $currentUser = $this->modelPath::find(Auth::user()->id);
@@ -53,8 +65,8 @@ class PbUserController extends PbBuilderController
                 $query = $query->whereNotIn('id', $admins);
             }
         }
-        ${$this->names} = $query->get();
-        $filtered = ${$this->names}->map(function ($q) {
+        $model = $query->get();
+        $filtered = $model->map(function ($q) {
             return $q->only([
                 'id',
                 'name',
@@ -76,81 +88,42 @@ class PbUserController extends PbBuilderController
             "d/m/y"
         );
 
-        $shares = [
-            'languages',
-            'countries',
-            'roles',
-            'me',
-        ];
+        $this->shares[] = 'me';
 
-        return parent::index($filtered, $shares);
+        return parent::index($filtered);
     }
 
     /**
      * Show the form for creating a new resource.
      *
-     * @param array $shares
      * @return InertiaResponse
      */
-    public function create(array $shares = []): InertiaResponse
+    public function create(): InertiaResponse
     {
-        $shares = [
-            'languages',
-            'countries',
-            'roles',
+        $this->allowed = [
+            'create '.$this->names => 'create',
         ];
 
-        Inertia::share(
-            'shared',
-            array_merge(
-                $this->globalInertiaShare(),
-                Shares::list($shares),
-                Shares::allowed([
-                    'create '.$this->names => 'create',
-                ]),
-            )
-        );
-
-        return Inertia::render($this->viewsPath.'Create'.$this->key);
+        return $this->renderView($this->viewsPath.'Create'.$this->key);
     }
 
     /**
      * Store a newly created resource in storage.
      *
      * @param Request $request
-     * @param array $validationRules
-     * @param array $replacers
      * @return void
      */
-    public function store(Request $request, array $validationRules = [], array $replacers = [])
+    public function store(Request $request)
     {
-        $validationRules = [
-            'name' => ['required', 'max:190'],
-            'email' => ['required', 'max:50', 'email', Rule::unique($this->table)],
-            'password' => ['required'],
-        ];
+        $this->validationRules['email'] = ['required', 'max:50', 'email', Rule::unique($this->table)];
+        $this->validationRules['password'] = ['required'];
 
         $validationRules2 = [
             'roles' => ['required'],
         ];
 
-        $this->storeValidation = array_merge($this->storeValidation, array_merge($validationRules, $validationRules2));
-
         // Validation
-        $validator = Validator::make($request->all(), $this->storeValidation);
-        $this->validationCheck($validator, $request);
-
-        // Requests
-        $keys = [];
-        foreach($validationRules as $vrKey => $vr) {
-            if (isset($replacers[$vrKey])) {
-                ${$replacers[$vrKey]} = $request[$vrKey];
-                array_push($keys, $replacers[$vrKey]);
-            } else {
-                ${$vrKey} = $request[$vrKey];
-                array_push($keys, $vrKey);
-            }
-        }
+        $this->validateRequest('store', array_merge($this->validationRules, $validationRules2), $request);
 
         $roles = $request->input('roles');
         $lang = $request->input('lang');
@@ -158,19 +131,19 @@ class PbUserController extends PbBuilderController
 
         // Process
         try {
-            ${$this->name} = new $this->modelPath();
-            foreach($keys as $key) {
-                ${$this->name}->$key = ${$key};
-            }
-            ${$this->name}->language_id = $lang;
-            ${$this->name}->country_id = $country;
-            if (${$this->name}->save()) {
-                ${$this->name}->current_team_id = $this->getDefaultTeamId(${$this->name});
-                if (${$this->name}->save()) {
-                    $me = $this->modelPath::find(Auth::user()->id);
+            // Build model
+            $model = new $this->modelPath();
+            // Add requests
+            $model = $this->processModelRequests($this->validationRules, $request, $this->replacers, $model);
+            $model->language_id = $lang;
+            $model->country_id = $country;
+            if ($model->save()) {
+                $model->current_team_id = $this->getDefaultTeamId($model);
+                if ($model->save()) {
+                    $me = PbUser::find(Auth::user()->id);
                     if ($me->hasRole(['super-admin'])) {
                         // Add only super-admin/admin
-                        if (${$this->name}->id == Auth::user()->id) {
+                        if ($model->id == Auth::user()->id) {
                             $roles = ['super-admin'];
                         } elseif (in_array('admin', $roles)) {
                             $roles = ['admin'];
@@ -181,7 +154,7 @@ class PbUserController extends PbBuilderController
                         $intersect = array_intersect($roles, $toExclude);
                         $roles = array_diff($roles, $intersect);
                     }
-                    ${$this->name}->syncRoles($roles);
+                    $model->syncRoles($roles);
                 }
             }
 
@@ -194,20 +167,20 @@ class PbUserController extends PbBuilderController
     /**
      * Display the specified resource.
      *
-     * @param null $element
      * @param int $id
-     * @param array $shares
+     * @param null $element
+     * @param bool $multiple
      * @return InertiaResponse
      */
-    public function show(int $id, $element = null, array $shares = []): InertiaResponse
+    public function show(int $id, $element = null, bool $multiple = false): InertiaResponse
     {
         if (Auth::user()->id == $id) {
             return redirect('/'.${$this->name}.'/profile');
         }
 
-        ${$this->name} = $this->modelPath::with('country', 'city', 'lang', 'roles')->find($id);
+        $model = $this->modelPath::with('country', 'city', 'lang', 'roles')->find($id);
 
-        return parent::show($id, ${$this->name});
+        return parent::show($id, $model);
     }
 
     /**
@@ -215,24 +188,18 @@ class PbUserController extends PbBuilderController
      *
      * @param int $id
      * @param null $element
-     * @param array $shares
+     * @param bool $multiple
      * @return InertiaResponse
      */
-    public function edit(int $id, $element = null, array $shares = []): InertiaResponse
+    public function edit(int $id, $element = null, bool $multiple = false): InertiaResponse
     {
         if (Auth::user()->id == $id) {
             return redirect('/'.${$this->name}.'/profile');
         }
 
-        ${$this->name} = $this->modelPath::with('country', 'city', 'lang', 'roles')->find($id);
+        $model = $this->modelPath::with('country', 'city', 'lang', 'roles')->find($id);
 
-        $shares = [
-            'languages',
-            'countries',
-            'roles',
-        ];
-
-        return parent::edit($id, ${$this->name}, $shares);
+        return parent::edit($id, $model);
     }
 
     /**
@@ -240,38 +207,18 @@ class PbUserController extends PbBuilderController
      *
      * @param Request $request
      * @param int $id
-     * @param array $validationRules
-     * @param array $replacers
      * @return void
      */
-    public function update(Request $request, int $id, array $validationRules = [], array $replacers = [])
+    public function update(Request $request, int $id)
     {
-        $validationRules = [
-            'name' => ['required', 'max:190'],
-            'email' => ['required', 'max:50', 'email', Rule::unique($this->table)->ignore($id)],
-        ];
+        $this->validationRules['email'] = ['required', 'max:50', 'email', Rule::unique($this->table)->ignore($id)];
 
         $validationRules2 = [
             'roles' => ['required'],
         ];
 
-        $this->storeValidation = array_merge($this->storeValidation, array_merge($validationRules, $validationRules2));
-
         // Validation
-        $validator = Validator::make($request->all(), $this->storeValidation);
-        $this->validationCheck($validator, $request);
-
-        // Requests
-        $keys = [];
-        foreach($validationRules as $vrKey => $vr) {
-            if (isset($replacers[$vrKey])) {
-                ${$replacers[$vrKey]} = $request[$vrKey];
-                array_push($keys, $replacers[$vrKey]);
-            } else {
-                ${$vrKey} = $request[$vrKey];
-                array_push($keys, $vrKey);
-            }
-        }
+        $this->validateRequest('update', array_merge($this->validationRules, $validationRules2), $request);
 
         // Requests
         $roles = $request->input('roles');
@@ -281,27 +228,26 @@ class PbUserController extends PbBuilderController
 
         // Process
         try {
-            ${$this->name} = $this->modelPath::find($id);
-            $requests = [];
-            foreach($keys as $key) {
-                $requests[$key] = ${$key};
-            }
+            // Build model
+            $model = $this->modelPath::find($id);
+            // Build requests
+            $requests = $this->processModelRequests($this->validationRules, $request, $this->replacers);
             if ($password != "") {
                 $requests['password'] = $password;
             }
             $requests['language_id'] = $lang;
             $requests['country_id'] = $country;
-            if (${$this->name}->update($requests)) {
-                $me = $this->modelPath::find(Auth::user()->id);
+            if ($model->update($requests)) {
+                $me = PbUser::find(Auth::user()->id);
                 if ($me->hasRole(['super-admin'])) {
                     // Add only super-admin/admin
-                    if (${$this->name}->id == Auth::user()->id) {
+                    if ($model->id == Auth::user()->id) {
                         $roles = ['super-admin'];
                     } elseif (in_array('admin', $roles)) {
                         $roles = ['admin'];
                     }
                 } else {
-                    if (${$this->name}->hasRole(['admin'])) {
+                    if ($model->hasRole(['admin'])) {
                         $roles = ['admin'];
                     } else {
                         // Remove super-admin/admin
@@ -310,7 +256,7 @@ class PbUserController extends PbBuilderController
                         $roles = array_diff($roles, $intersect);
                     }
                 }
-                ${$this->name}->syncRoles($roles);
+                $model->syncRoles($roles);
             }
 
             return $this->redirectResponseCRUDSuccess($request, $this->key.' updated successfully!');

@@ -21,26 +21,25 @@ class PbConfigController extends PbBuilderController
         $this->key = 'Config';
         // Parent construct
         parent::__construct(true);
+        // Validation Rules
+        $this->validationRules = [
+            'name' => ['required', 'max:190'],
+            'configvalue' => ['required'],
+            'description' => []
+        ];
     }
 
     /**
      * Store a newly created resource in storage.
      *
      * @param Request $request
-     * @param array $validationRules
-     * @param array $replacers
      * @return void
      */
-    public function store(Request $request, array $validationRules = [], array $replacers = [])
+    public function store(Request $request)
     {
-        $validationRules = [
-            'name' => ['required', 'max:190'],
-            'configkey' => ['required', 'max:50', Rule::unique($this->table)],
-            'configvalue' => ['required'],
-            'description' => []
-        ];
+        $this->validationRules['configkey'] = ['required', 'max:50', Rule::unique($this->table)];
 
-        return parent::store($request, $validationRules, $replacers);
+        return parent::store($request, $this->validationRules, $this->replacers);
     }
 
     /**
@@ -48,19 +47,12 @@ class PbConfigController extends PbBuilderController
      *
      * @param Request $request
      * @param int $id
-     * @param array $validationRules
-     * @param array $replacers
      * @return void
      */
-    public function update(Request $request, int $id, array $validationRules = [], array $replacers = [])
+    public function update(Request $request, int $id)
     {
-        $validationRules = [
-            'name' => ['required', 'max:190'],
-            'configkey' => ['required', 'max:50', Rule::unique('config')->ignore($id)],
-            'configvalue' => ['required'],
-            'description' => []
-        ];
+        $this->validationRules['configkey'] = ['required', 'max:50', Rule::unique($this->table)->ignore($id)];
 
-        return parent::update($request, $id, $validationRules, $replacers);
+        return parent::update($request, $id, $this->validationRules, $this->replacers);
     }
 }

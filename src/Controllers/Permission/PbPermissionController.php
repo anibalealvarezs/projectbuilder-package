@@ -26,94 +26,64 @@ class PbPermissionController extends PbBuilderController
         $this->key = 'Permission';
         // Parent construct
         parent::__construct(true);
+        // Validation Rules
+        $this->validationRules = [
+            'name' => ['required', 'max:40'],
+            'alias' => ['required', 'max:190'],
+        ];
+        // Additional variables to share
+        $this->shares = [
+            'roles',
+        ];
     }
 
     /**
      * Display a listing of the resource.
      *
-     * @param null $elements
-     * @param array $shares
+     * @param null $element
+     * @param bool $multiple
      * @return InertiaResponse
      */
-    public function index($elements = null, array $shares = []): InertiaResponse
+    public function index($element = null, bool $multiple = false): InertiaResponse
     {
-        $user = PbUser::find(Auth::user()->id);
+        $me = PbUser::find(Auth::user()->id);
         $toExclude = ['crud super-admin'];
-        if (!$user->hasRole('super-admin')) {
+        if (!$me->hasRole('super-admin')) {
             $toExclude = array_merge($toExclude, ['admin roles '.$this->names, 'manage app']);
-            if (!$user->hasRole('admin')) {
+            if (!$me->hasRole('admin')) {
                 $toExclude = array_merge($toExclude, ['login', 'create users', 'update users', 'delete users']);
             }
         }
-        ${$this->names} = $this->modelPath::with('roles')->whereNotIn('name', $toExclude)->get(); //Get all permissions
+        $model = $this->modelPath::with('roles')->whereNotIn('name', $toExclude)->get(); //Get all permissions
 
-        $shares = [
-            'roles',
-        ];
-
-        return parent::index(${$this->names}, $shares);
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @param array $shares
-     * @return InertiaResponse
-     */
-    public function create(array $shares = []): InertiaResponse
-    {
-        $shares = [
-            'roles',
-        ];
-
-        return parent::create($shares);
+        return parent::index($model);
     }
 
     /**
      * Store a newly created resource in storage.
      *
      * @param Request $request
-     * @param array $validationRules
-     * @param array $replacers
      * @return void
      */
-    public function store(Request $request, array $validationRules = [], array $replacers = [])
+    public function store(Request $request)
     {
-        $validationRules = [
-            'name' => ['required', 'max:40'],
-            'alias' => ['required', 'max:190'],
-        ];
-
-        $this->storeValidation = array_merge($this->storeValidation, $validationRules);
-
         // Validation
-        $validator = Validator::make($request->all(), $this->storeValidation);
-        $this->validationCheck($validator, $request);
+        $this->validateRequest('store', $this->validationRules, $request);
 
-        // Requests
-        $keys = [];
-        foreach($validationRules as $vrKey => $vr) {
-            if (isset($replacers[$vrKey])) {
-                ${$replacers[$vrKey]} = $request[$vrKey];
-                array_push($keys, $replacers[$vrKey]);
-            } else {
-                ${$vrKey} = $request[$vrKey];
-                array_push($keys, $vrKey);
-            }
-        }
-
-        $roles = $request['roles'];
+        $roles = $request->input('roles');
 
         // Process
         try {
-            ${$this->name} = new $this->modelPath();
-            foreach($keys as $key) {
-                ${$this->name}->$key = ${$key};
-            }
-            ${$this->name}->guard_name = 'admin';
-            if (${$this->name}->save()) {
+            // Build model
+            $model = new $this->modelPath();
+            // Add requests
+            $model = $this->processModelRequests($this->validationRules, $request, $this->replacers, $model);
+            // Add additional fields values
+            $model->guard_name = 'admin';
+            // Model save
+            if ($model->save()) {
                 $adminRoles = PbRole::whereIn('name', ['super-admin', 'admin'])->get()->modelKeys();
-                ${$this->name}->syncRoles(
+                $model->syncRoles(
                     array_merge(
                         ($roles && is_array($roles) ? $roles : [$roles]),
                         ($adminRoles && is_array($adminRoles) ? $adminRoles : [$adminRoles])
@@ -130,12 +100,12 @@ class PbPermissionController extends PbBuilderController
     /**
      * Display the specified resource.
      *
-     * @param null $element
      * @param int $id
-     * @param array $shares
+     * @param null $element
+     * @param bool $multiple
      * @return InertiaResponse
      */
-    public function show(int $id, $element = null, array $shares = []): InertiaResponse
+    public function show(int $id, $element = null, bool $multiple = false): InertiaResponse
     {
         return $this->edit($id);
     }
@@ -144,18 +114,15 @@ class PbPermissionController extends PbBuilderController
      * Show the form for editing the specified resource.
      *
      * @param int $id
-     * @param array $shares
+     * @param null $element
+     * @param bool $multiple
      * @return InertiaResponse
      */
-    public function edit(int $id, $element = null, array $shares = []): InertiaResponse
+    public function edit(int $id, $element = null, bool $multiple = false): InertiaResponse
     {
-        ${$this->name} = $this->modelPath::with('roles')->findOrFail($id);
+        $model = $this->modelPath::with('roles')->findOrFail($id);
 
-        $shares = [
-            'roles',
-        ];
-
-        return parent::edit($id, ${$this->name}, $shares);
+        return parent::edit($id, $model);
     }
 
     /**
@@ -165,53 +132,33 @@ class PbPermissionController extends PbBuilderController
      * @param int $id
      * @return void
      */
-    public function update(Request $request, int $id, array $validationRules = [], array $replacers = [])
+    public function update(Request $request, int $id)
     {
-        $validationRules = [
-            'name' => ['required', 'max:40'],
-            'alias' => ['required', 'max:190'],
-        ];
-
-        $this->updateValidation = array_merge($this->updateValidation, $validationRules);
-
         // Validation
-        $validator = Validator::make($request->all(), $this->updateValidation);
-        $this->validationCheck($validator, $request);
+        $this->validateRequest('update', $this->validationRules, $request);
 
-        // Requests
-        $keys = [];
-        foreach($validationRules as $vrKey => $vr) {
-            if (isset($replacers[$vrKey])) {
-                ${$replacers[$vrKey]} = $request[$vrKey];
-                array_push($keys, $replacers[$vrKey]);
-            } else {
-                ${$vrKey} = $request[$vrKey];
-                array_push($keys, $vrKey);
-            }
-        }
-
-        $roles = $request['roles'];
+        $roles = $request->input('roles');
 
         // Process
         try {
-            ${$this->name} = $this->modelPath::find($id);
-            $requests = [];
-            foreach($keys as $key) {
-                $requests[$key] = ${$key};
-            }
-            if (${$this->name}->update($requests)) {
-                if (in_array(${$this->name}->name, ['crud super-admin'])) {
+            // Build model
+            $model = $this->modelPath::find($id);
+            // Build requests
+            $requests = $this->processModelRequests($this->validationRules, $request, $this->replacers);
+            // Update model
+            if ($model->update($requests)) {
+                if (in_array($model->name, ['crud super-admin'])) {
                     $superAdminRoles = PbRole::whereIn('name', ['super-admin'])->get()->modelKeys();
-                    ${$this->name}->syncRoles($superAdminRoles);
-                } elseif (in_array(${$this->name}->name, ['manage app', 'admin roles permissions'])) {
+                    $model->syncRoles($superAdminRoles);
+                } elseif (in_array($model->name, ['manage app', 'admin roles permissions'])) {
                     $adminRoles = PbRole::whereIn('name', ['super-admin', 'admin'])->get()->modelKeys();
-                    ${$this->name}->syncRoles($adminRoles);
-                } elseif (in_array(${$this->name}->name, ['login'])) {
+                    $model->syncRoles($adminRoles);
+                } elseif (in_array($model->name, ['login'])) {
                     $adminRoles = PbRole::all()->modelKeys();
-                    ${$this->name}->syncRoles($adminRoles);
+                    $model->syncRoles($adminRoles);
                 } else {
                     $adminRoles = PbRole::whereIn('name', ['super-admin', 'admin'])->get()->modelKeys();
-                    ${$this->name}->syncRoles(
+                    $model->syncRoles(
                         array_merge(
                             (is_array($roles) ? $roles : [$roles]),
                             (is_array($adminRoles) ? $adminRoles : [$adminRoles])
@@ -237,15 +184,15 @@ class PbPermissionController extends PbBuilderController
     {
         // Process
         try {
-            ${$this->name} = $this->modelPath::findOrFail($id);
+            $model = $this->modelPath::findOrFail($id);
             //Make it impossible to delete these specific permissions
-            if (in_array(${$this->name}->name, ['admin roles permissions', 'manage app', 'crud super-admin'])) {
+            if (in_array($model->name, ['admin roles permissions', 'manage app', 'crud super-admin'])) {
                 $request->session()->flash('flash.banner', 'This permission can not be deleted!');
                 $request->session()->flash('flash.bannerStyle', 'danger');
 
                 return redirect()->route($this->names . '.index');
             }
-            ${$this->name}->delete();
+            $model->delete();
 
             return $this->redirectResponseCRUDSuccess($request, $this->key.' deleted successfully!');
         } catch (Exception $e) {

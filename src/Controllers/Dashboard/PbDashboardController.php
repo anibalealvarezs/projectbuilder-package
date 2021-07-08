@@ -3,7 +3,6 @@
 namespace Anibalealvarezs\Projectbuilder\Controllers\Dashboard;
 
 use Anibalealvarezs\Projectbuilder\Controllers\PbBuilderController;
-use Anibalealvarezs\Projectbuilder\Helpers\PbHelpers;
 
 use App\Http\Requests;
 
@@ -11,34 +10,27 @@ use Auth;
 use DB;
 use Session;
 
-use Inertia\Inertia;
 use Inertia\Response as InertiaResponse;
 
 class PbDashboardController extends PbBuilderController
 {
     function __construct($crud_perms = false)
     {
+        // Parent construct
+        parent::__construct();
         // Middlewares
         $this->middleware(['role_or_permission:login']);
-        // Variables
     }
 
     /**
      * Display a listing of the resource.
      *
-     * @param null $elements
-     * @param array $shares
+     * @param null $element
+     * @param bool $multiple
      * @return InertiaResponse
      */
-    public function index($elements = null, array $shares = []): InertiaResponse
+    public function index($element = null, bool $multiple = false): InertiaResponse
     {
-        Inertia::share(
-            'shared',
-            array_merge(
-                $this->globalInertiaShare(),
-            )
-        );
-
-        return Inertia::render(PbHelpers::PB_PACKAGE . '/Dashboard');
+        return $this->renderView($this->package . '/Dashboard');
     }
 }

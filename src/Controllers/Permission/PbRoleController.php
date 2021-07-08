@@ -27,90 +27,61 @@ class PbRoleController extends PbBuilderController
         $this->key = 'Role';
         // Parent construct
         parent::__construct(true);
+        // Validation Rules
+        $this->validationRules = [
+            'alias' => ['required', 'max:190'],
+        ];
+        // Additional variables to share
+        $this->shares = [
+            'permissions',
+        ];
     }
 
     /**
      * Display a listing of the resource.
      *
-     * @param null $elements
-     * @param array $shares
+     * @param null $element
+     * @param bool $multiple
      * @return InertiaResponse
      */
-    public function index($elements = null, array $shares = []): InertiaResponse
+    public function index($element = null, bool $multiple = false): InertiaResponse
     {
         $query = $this->modelPath::with('permissions')->whereNotIn('name', ['super-admin']);
         $user = PbUser::find(Auth::user()->id);
         if (!$user->hasRole('super-admin')) {
             $query = $query->whereNotIn('name', ['admin']);
         }
-        ${$this->names} = $query->get(); //Get all permissions
+        $model = $query->get(); //Get all permissions
 
-        $shares = [
-            'permissions',
-        ];
-
-        return parent::index(${$this->names}, $shares);
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @param array $shares
-     * @return InertiaResponse
-     */
-    public function create(array $shares = []): InertiaResponse
-    {
-        $shares = [
-            'permissions',
-        ];
-
-        return parent::create($shares);
+        return parent::index($model);
     }
 
     /**
      * Store a newly created resource in storage.
      *
      * @param Request $request
-     * @param array $validationRules
-     * @param array $replacers
      * @return void
      */
-    public function store(Request $request, array $validationRules = [], array $replacers = [])
+    public function store(Request $request)
     {
-        $validationRules = [
-            'name' => ['required', 'max:20', Rule::unique($this->table)],
-            'alias' => ['required', 'max:190'],
-        ];
-
-        $this->storeValidation = array_merge($this->storeValidation, $validationRules);
+        $this->validationRules['name'] = ['required', 'max:20', Rule::unique($this->table)];
 
         // Validation
-        $validator = Validator::make($request->all(), $this->storeValidation);
-        $this->validationCheck($validator, $request);
+        $this->validateRequest('store', $this->validationRules, $request);
 
-        // Requests
-        $keys = [];
-        foreach($validationRules as $vrKey => $vr) {
-            if (isset($replacers[$vrKey])) {
-                ${$replacers[$vrKey]} = $request[$vrKey];
-                array_push($keys, $replacers[$vrKey]);
-            } else {
-                ${$vrKey} = $request[$vrKey];
-                array_push($keys, $vrKey);
-            }
-        }
-
-        $permissions = $request['permissions'];
+        $permissions = $request->input('permissions');
 
         // Process
         try {
-            ${$this->name} = new $this->modelPath();
-            foreach($keys as $key) {
-                ${$this->name}->$key = ${$key};
-            }
-            ${$this->name}->guard_name = 'admin';
-            if (${$this->name}->save()) {
-                ${$this->name}->syncPermissions($permissions);
+            // Build model
+            $model = new $this->modelPath();
+            // Add requests
+            $model = $this->processModelRequests($this->validationRules, $request, $this->replacers, $model);
+            // Add additional fields values
+            $model->guard_name = 'admin';
+            // Model save
+            if ($model->save()) {
+                $model->syncPermissions($permissions);
             }
 
             return $this->redirectResponseCRUDSuccess($request, $this->key.' created successfully!');
@@ -122,12 +93,12 @@ class PbRoleController extends PbBuilderController
     /**
      * Display the specified resource.
      *
-     * @param null $element
      * @param int $id
-     * @param array $shares
+     * @param null $element
+     * @param bool $multiple
      * @return InertiaResponse
      */
-    public function show(int $id, $element = null, array $shares = []): InertiaResponse
+    public function show(int $id, $element = null, bool $multiple = false): InertiaResponse
     {
         return $this->edit($id);
     }
@@ -136,17 +107,15 @@ class PbRoleController extends PbBuilderController
      * Show the form for editing the specified resource.
      *
      * @param int $id
+     * @param null $element
+     * @param bool $multiple
      * @return InertiaResponse
      */
-    public function edit(int $id, $element = null, array $shares = []): InertiaResponse
+    public function edit(int $id, $element = null, bool $multiple = false): InertiaResponse
     {
-        ${$this->name} = $this->modelPath::with('permissions')->findOrFail($id);
+        $model = $this->modelPath::with('permissions')->findOrFail($id);
 
-        $shares = [
-            'permissions',
-        ];
-
-        return parent::edit($id, ${$this->name}, $shares);
+        return parent::edit($id, $model);
     }
 
     /**
@@ -156,50 +125,33 @@ class PbRoleController extends PbBuilderController
      * @param int $id
      * @return void
      */
-    public function update(Request $request, int $id, array $validationRules = [], array $replacers = [])
+    public function update(Request $request, int $id)
     {
-        $validationRules = [
-            'name' => ['required', 'max:20', Rule::unique($this->table)->ignore($id)],
-            'alias' => ['required', 'max:190'],
-        ];
-
-        $this->updateValidation = array_merge($this->updateValidation, $validationRules);
+        $this->validationRules['name'] = ['required', 'max:20', Rule::unique($this->table)->ignore($id)];
 
         // Validation
-        $validator = Validator::make($request->all(), $this->updateValidation);
-        $this->validationCheck($validator, $request);
+        $this->validateRequest('update', $this->validationRules, $request);
 
-        // Requests
-        $keys = [];
-        foreach($validationRules as $vrKey => $vr) {
-            if (isset($replacers[$vrKey])) {
-                ${$replacers[$vrKey]} = $request[$vrKey];
-                array_push($keys, $replacers[$vrKey]);
-            } else {
-                ${$vrKey} = $request[$vrKey];
-                array_push($keys, $vrKey);
-            }
-        }
+        $permissions = $request->input('permissions');
 
-        $permissions = $request['permissions'];
-
-        $me = PbUser::find(Auth::user()->id);
         $optionalPermissions = [];
+        $me = PbUser::find(Auth::user()->id);
         if ($me->hasRole('super-admin')) {
             $optionalPermissions = PbPermission::whereIn('name', ['read roles', 'read configs', 'read permissions', 'read navigations'])->get()->modelKeys();
         }
         $adminOptionalPermissions = array_intersect($optionalPermissions, $permissions);
+
         // Process
         try {
-            ${$this->name} = $this->modelPath::find($id);
-            $requests = [];
-            foreach($keys as $key) {
-                $requests[$key] = ${$key};
-            }
-            if (${$this->name}->update($requests)) {
-                if (${$this->name}->name == 'super-admin') {
+            // Build model
+            $model = $this->modelPath::find($id);
+            // Build requests
+            $requests = $this->processModelRequests($this->validationRules, $request, $this->replacers);
+            // Update model
+            if ($model->update($requests)) {
+                if ($model->name == 'super-admin') {
                     $permissions = PbPermission::all()->modelKeys();
-                } elseif (${$this->name}->name == 'admin') {
+                } elseif ($model->name == 'admin') {
                     $permissions = PbPermission::whereNotIn('name', array_merge([
                         'crud super-admin',
                         'admin roles permissions',
@@ -220,10 +172,10 @@ class PbRoleController extends PbBuilderController
                         'update navigations',
                         'delete navigations',
                     ], $adminOptionalPermissions))->get()->modelKeys();
-                } elseif (${$this->name}->name == 'user') {
+                } elseif ($model->name == 'user') {
                     $permissions = PbPermission::whereIn('name', ['login'])->get()->modelKeys();
                 }
-                ${$this->name}->syncPermissions($permissions);
+                $model->syncPermissions($permissions);
             }
 
             return $this->redirectResponseCRUDSuccess($request, $this->key.' updated successfully!');
