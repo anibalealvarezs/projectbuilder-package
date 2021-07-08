@@ -203,13 +203,17 @@ class TableFields {
     static appendToSwal(id) {
         let hidden = document.getElementById(id);
         let formodal = document.getElementById('formmodal');
-        formodal.append(hidden.childNodes[0]);
+        if (!!formodal) {
+            formodal.append(hidden.childNodes[0]);
+        }
     }
 
     static removeFromSwal(id) {
         let hidden = document.getElementById(id);
         let formodal = document.getElementById('formmodal');
-        hidden.append(formodal.childNodes[0]);
+        if (!!hidden) {
+            hidden.append(formodal.childNodes[0]);
+        }
     }
 
     static buildSwalLoadFormConfig(button) {
