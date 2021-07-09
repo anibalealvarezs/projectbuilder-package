@@ -18,7 +18,7 @@
                     <template #content>
                         <div class="w-60">
                             <!-- Actions -->
-                            <div v-for="(button, i) in field.buttons" :key="i">
+                            <div v-for="(button, i) in field.buttons" class="space-y-1" :key="i">
                                 <JetDropdownLink
                                     v-if="(button.type == 'link') && ((i != 'update') || item.crud.editable) && ((i != 'delete') || item.crud.deletable)"
                                     :href="buildRoute(button.route, item.id)"
@@ -74,7 +74,7 @@
             </span>
         </div>
         <div v-if="field.size == 'multiple'">
-            <div v-for="cv in cellValue" :class="(field.arrval.hasOwnProperty('href') ? 'bg-gray-200' : '')">
+            <div v-for="cv in cellValue" :class="(field.arrval.hasOwnProperty('href') ? 'bg-gray-200 space-y-1' : 'space-y-1')">
                 <!-- HREF -->
                 <JetDropdownLink
                     v-if="field.arrval.hasOwnProperty('href')"

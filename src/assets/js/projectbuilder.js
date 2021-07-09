@@ -187,7 +187,7 @@ class TableFields {
     }
 
     static buildTdClasses(centered) {
-        let clase = "border px-4 py-2"
+        let clase = "border px-4 py-2 align-top"
         clase += this.isCentered(centered)
         return clase
     }
