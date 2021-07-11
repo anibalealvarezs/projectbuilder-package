@@ -2,6 +2,7 @@
 
 namespace Anibalealvarezs\Projectbuilder\Models;
 
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\DB;
 use Spatie\Translatable\HasTranslations;
 
@@ -21,8 +22,13 @@ class PbConfig extends PbBuilder
      * @var array
      */
     protected $fillable = [
-        'configkey', 'configvalue', 'name', 'description'
+        'configkey', 'configvalue', 'name', 'description', 'module_id'
     ];
+
+    public function module(): BelongsTo
+    {
+        return $this->belongsTo(PbModule::class, 'module_id', 'id');
+    }
 
     public function getNameAttribute($value)
     {

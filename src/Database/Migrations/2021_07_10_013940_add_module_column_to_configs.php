@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateNavigationsTable extends Migration
+class AddModuleColumnToConfigs extends Migration
 {
     /**
      * Run the migrations.
@@ -13,13 +13,8 @@ class CreateNavigationsTable extends Migration
      */
     public function up()
     {
-        Schema::create('navigations', function (Blueprint $table) {
-            $table->id();
-            $table->string('name', 254);
-            $table->string('destiny', 254);
-            $table->enum('type', ['route', 'path', 'custom']);
+        Schema::table('config', function (Blueprint $table) {
             $table->unsignedInteger('module_id')->nullable();
-            $table->unsignedTinyInteger('parent')->default(0);
         });
     }
 
@@ -30,6 +25,8 @@ class CreateNavigationsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('navigations');
+        Schema::table('config', function (Blueprint $table) {
+            $table->dropColumn('module_id');
+        });
     }
 }

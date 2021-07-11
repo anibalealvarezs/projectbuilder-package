@@ -10,7 +10,8 @@ trait PbModelTrait {
             'readable' => $this->getReadableStatus(),
             'editable' => $this->getEditableStatus(),
             'selectable' => $this->getSelectableStatus(),
-            'deletable' => $this->getDeletableStatus()
+            'deletable' => $this->getDeletableStatus(),
+            'configurable' => $this->getConfigurableStatus(),
         ];
     }
 
@@ -30,6 +31,11 @@ trait PbModelTrait {
     }
 
     protected function getDeletableStatus(): bool
+    {
+        return true;
+    }
+
+    protected function getConfigurableStatus(): bool
     {
         return true;
     }

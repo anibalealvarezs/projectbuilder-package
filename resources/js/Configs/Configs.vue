@@ -8,9 +8,6 @@
 
         <Main>
             <slot>
-                <!-- <div>
-                    {{ pbconfigs }}
-                </div> -->
                 <div class="p-12 sm:px-20 bg-white border-b border-gray-200">
                     <Button
                         v-if="allowed.create"
@@ -19,7 +16,7 @@
                     >
                         <slot>Create Config</slot>
                     </Button>
-                    <TableConfigs :configs="pbconfigs" :allowed="allowed" />
+                    <TableConfigs :configs="pbconfigs" :allowed="allowed" :sort="sort" :showpos="showpos" :showid="showid" :model="model" />
                 </div>
             </slot>
             <div :id="buildHiddenId" class="infinite-hidden">
@@ -67,7 +64,19 @@
                     Table.removeFromSwal(this.hiddenid)
                 }
                 Swal.fire(swalConfig);
-            }
+            },
+            getRowPos(el) {
+                return Table.getRowPos(this.sort, el)
+            },
+            getTablePositions(group) {
+                let sort = [];
+                document.querySelectorAll('#'+this.model+'-table-rows tr').forEach(function(value){
+                    if (value.dataset.group == group) {
+                        sort.push(value.dataset.id)
+                    }
+                })
+                return sort
+            },
         },
         computed: {
             buildHiddenId() {
@@ -77,8 +86,12 @@
         },
         setup (props) {
             const allowed = computed(() => usePage().props.value.shared.allowed)
+            const sort = computed(() => usePage().props.value.shared.sort)
+            const showpos = computed(() => usePage().props.value.shared.showpos)
+            const showid = computed(() => usePage().props.value.shared.showid)
+            const model = computed(() => usePage().props.value.shared.model)
 
-            return { allowed }
+            return { allowed, sort, model, showpos, showid }
         }
     }
 </script>

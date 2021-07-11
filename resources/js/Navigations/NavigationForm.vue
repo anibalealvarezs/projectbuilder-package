@@ -82,7 +82,27 @@
                     placeholder="Assign permissions"
                 >
                     <option v-for="permission in permissions" :value="permission.id">
-                        {{ permission.name }}
+                        {{ permission.alias }}
+                    </option>
+                </select>
+            </div>
+            <!-- status -->
+            <div class="w-full px-3 mb-6 md:mb-0">
+                <label class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2" :for="'grid-status-' + keyid">
+                    Status
+                </label>
+                <select
+                    v-model="form.status"
+                    :id="'grid-status-' + keyid"
+                    name="status"
+                    class="appearance-none w-full md:w-1/1 px-4 py-3 mb-3 block rounded bg-gray-200 text-gray-700 border border-gray-200 overflow-hidden leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
+                    placeholder="Select status"
+                >
+                    <option value="1">
+                        Enabled
+                    </option>
+                    <option value="0">
+                        Disabled
                     </option>
                 </select>
             </div>
@@ -151,6 +171,7 @@ export default {
             parent: props.data.parent,
             destiny: props.data.destiny,
             module: props.data.module,
+            status: props.data.status,
             permission: props.data.permission_id,
         })
 

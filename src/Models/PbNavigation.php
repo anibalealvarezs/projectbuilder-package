@@ -22,7 +22,7 @@ class PbNavigation extends PbBuilder
      * @var array
      */
     protected $fillable = [
-        'name', 'destiny', 'type', 'parent', 'module', ''
+        'name', 'destiny', 'type', 'parent', 'permission_id', 'module_id', 'position', 'status'
     ];
 
     public function getNameAttribute($value)
@@ -46,6 +46,11 @@ class PbNavigation extends PbBuilder
     public function descendants(): HasMany
     {
         // Recursive Relationship
-        return $this->hasMany(self::class, 'parent', 'id')->with('descendants');
+        return $this->hasMany(self::class, 'parent', 'id')->orderBy('position')->with('descendants');
+    }
+
+    public function module(): BelongsTo
+    {
+        return $this->belongsTo(PbModule::class, 'module_id', 'id');
     }
 }

@@ -11,6 +11,7 @@ use Illuminate\Validation\Rule;
 
 use Auth;
 use DB;
+use Inertia\Response;
 use Session;
 
 class PbConfigController extends PbBuilderController
@@ -27,6 +28,23 @@ class PbConfigController extends PbBuilderController
             'configvalue' => ['required'],
             'description' => []
         ];
+        // Show ID column ?
+        $this->showId = false;
+    }
+
+    /**
+     * Display a listing of the resource.
+     *
+     * @param null $element
+     * @param bool $multiple
+     * @param string $route
+     * @return Response
+     */
+    public function index($element = null, bool $multiple = false, string $route = 'level'): Response
+    {
+        $arrayElements = $this->modelPath::with('module')->get();
+
+        return parent::index($arrayElements);
     }
 
     /**

@@ -6,9 +6,9 @@
                     <TrHead :fields="fields" :allowed="allowed" />
                 </slot>
             </Header>
-            <Body>
+            <Body :id="model+'-table-rows'">
                 <slot>
-                    <TrBody v-for="role in roles" :item="role" :fields="fields" :hiddenid="buildHiddenId" :allowed="allowed" @clicked-edit-item="onItemClicked" />
+                    <TrBody v-for="role in roles" :item="role" :fields="fields" :hiddenid="buildHiddenId" :allowed="allowed" :data-pos="getRowPos(role)" @clicked-edit-item="onItemClicked" />
                 </slot>
             </Body>
         </slot>
@@ -28,12 +28,17 @@ import RoleForm from "@/Pages/Projectbuilder/Roles/RoleForm"
 import { TableFields as Table } from "Pub/js/Projectbuilder/projectbuilder"
 import {computed} from "vue";
 import {usePage} from "@inertiajs/inertia-vue3";
+import Sortable from "sortablejs";
 
 export default {
     name: "TableRoles",
     props: {
         roles: Object,
-        allowed: Array,
+        allowed: Object,
+        model: String,
+        sort: Boolean,
+        showpos: Boolean,
+        showid: Boolean,
     },
     components: {
         RoleForm,
@@ -43,8 +48,37 @@ export default {
         Header,
         Body
     },
-    setup() {
-        const table = new Table
+    mounted() {
+        if (this.sort) {
+            let that = this
+            let sortingOptions = Object.assign(
+                {},
+                Table.getSortingOptions(),
+                {
+                    onSort: function (e) {
+                        let data = {
+                            sortlist: that.getTablePositions(e.item.dataset.group)
+                        }
+                        that.$inertia.post(
+                            'roles/sort/'+e.item.dataset.group,
+                            data,
+                            {
+                                preserveState: false,
+                            }
+                        )
+                    },
+                }
+            );
+
+            Sortable.create(
+                document.getElementById(this.model+'-table-rows'),
+                sortingOptions
+            )
+        }
+    },
+    setup(props) {
+        const allowed = props.allowed
+        const table = new Table(props.showid)
         table.customField(
             "name",
             "Name",
@@ -64,6 +98,7 @@ export default {
                     key: 'id',
                     altroute: "profile.show"
                 },
+                allowed: allowed.update,
             },
             "delete": {
                 text: 'Delete',
@@ -72,6 +107,7 @@ export default {
                 route: "roles.destroy",
                 formitem: "role",
                 altforrole: {},
+                allowed: allowed.delete,
             }
         })
         let fields = table.fields
@@ -88,7 +124,10 @@ export default {
             let result = Table.onItemClicked(value, this.data, this.itemFormKey)
             this.data = result.data
             this.itemFormKey = result.key
-        }
+        },
+        getRowPos(el) {
+            return Table.getRowPos(this.sort, el)
+        },
     },
     computed: {
         existsFormButton() {

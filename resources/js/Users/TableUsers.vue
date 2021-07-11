@@ -6,9 +6,9 @@
                     <TrHead :fields="fields" :allowed="allowed" />
                 </slot>
             </Header>
-            <Body>
+            <Body :id="model+'-table-rows'">
                 <slot>
-                    <TrBody v-for="user in users" :item="user" :fields="fields" :hiddenid="buildHiddenId" :allowed="allowed" :draggable="true" @clicked-edit-item="onItemClicked" />
+                    <TrBody v-for="user in users" :item="user" :fields="fields" :hiddenid="buildHiddenId" :allowed="allowed" :data-pos="getRowPos(user)" @clicked-edit-item="onItemClicked" />
                 </slot>
             </Body>
         </slot>
@@ -26,12 +26,19 @@ import TrHead from "@/Pages/Projectbuilder/Tables/TrHead"
 import TrBody from "@/Pages/Projectbuilder/Tables/TrBody"
 import UserForm from "@/Pages/Projectbuilder/Users/UserForm"
 import { TableFields as Table } from "Pub/js/Projectbuilder/projectbuilder"
+import Sortable from "sortablejs";
+/* import Sortable, { MultiDrag, Swap } from 'sortablejs'
+Sortable.mount(new MultiDrag(), new Swap()); */
 
 export default {
     name: "TableUsers",
     props: {
         users: Object,
         allowed: Array,
+        model: String,
+        sort: Boolean,
+        showpos: Boolean,
+        showid: Boolean,
     },
     components: {
         UserForm,
@@ -41,9 +48,37 @@ export default {
         Header,
         Body
     },
+    mounted() {
+        if (this.sort) {
+            let that = this
+            let sortingOptions = Object.assign(
+                {},
+                Table.getSortingOptions(),
+                {
+                    onSort: function (e) {
+                        let data = {
+                            sortlist: that.getTablePositions(e.item.dataset.group)
+                        }
+                        that.$inertia.post(
+                            'users/sort/'+e.item.dataset.group,
+                            data,
+                            {
+                                preserveState: false,
+                            }
+                        )
+                    },
+                }
+            );
+
+            Sortable.create(
+                document.getElementById(this.model+'-table-rows'),
+                sortingOptions
+            )
+        }
+    },
     setup(props) {
         const allowed = props.allowed
-        const table = new Table
+        const table = new Table(props.showid)
         table.customField(
             "name",
             "Name",
@@ -133,7 +168,10 @@ export default {
             let result = Table.onItemClicked(value, this.data, this.itemFormKey)
             this.data = result.data
             this.itemFormKey = result.key
-        }
+        },
+        getRowPos(el) {
+            return Table.getRowPos(this.sort, el)
+        },
     },
     computed: {
         existsFormButton() {
@@ -144,8 +182,8 @@ export default {
         },
         generateRandom() {
             return Table.generateRandom()
-        }
-    }
+        },
+    },
 }
 </script>
 

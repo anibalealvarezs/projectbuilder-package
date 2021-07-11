@@ -2,6 +2,7 @@
 
 namespace Anibalealvarezs\Projectbuilder\Database\Seeders;
 
+use Anibalealvarezs\Projectbuilder\Models\PbModule;
 use Illuminate\Database\Seeder;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
@@ -19,36 +20,48 @@ class PbSpatieSeeder extends Seeder
         // Reset cached roles and permissions
         app()[PermissionRegistrar::class]->forgetCachedPermissions();
 
+        $moduleUser = PbModule::where('modulekey', 'user')->first();
+        $moduleConfig = PbModule::where('modulekey', 'config')->first();
+        $moduleNavigation = PbModule::where('modulekey', 'navigation')->first();
+        $moduleRole = PbModule::where('modulekey', 'role')->first();
+        $modulePermission = PbModule::where('modulekey', 'permission')->first();
+
         // updateOrCreate permissions
-        Permission::updateOrCreate(['guard_name' => 'admin', 'name' => 'crud super-admin'], ['alias' => 'CRUD Super Admin']);
-        Permission::updateOrCreate(['guard_name' => 'admin', 'name' => 'admin roles permissions'], ['alias' => 'Admin Roles & Permissions']);
-        Permission::updateOrCreate(['guard_name' => 'admin', 'name' => 'manage app'], ['alias' => 'Manage App']);
-        Permission::updateOrCreate(['guard_name' => 'admin', 'name' => 'login'], ['alias' => 'Login']);
+        Permission::updateOrCreate(['guard_name' => 'admin', 'name' => 'crud super-admin'], ['alias' => 'CRUD Super Admin', 'module_id' => null]);
+        Permission::updateOrCreate(['guard_name' => 'admin', 'name' => 'admin roles permissions'], ['alias' => 'Admin Roles & Permissions', 'module_id' => null]);
+        Permission::updateOrCreate(['guard_name' => 'admin', 'name' => 'manage app'], ['alias' => 'Manage App', 'module_id' => null]);
+        Permission::updateOrCreate(['guard_name' => 'admin', 'name' => 'login'], ['alias' => 'Login', 'module_id' => null]);
+        Permission::updateOrCreate(['guard_name' => 'admin', 'name' => 'config builder'], ['alias' => 'Edit main config variables', 'module_id' => null]);
         // CRUD Users
-        Permission::updateOrCreate(['guard_name' => 'admin', 'name' => 'create users'], ['alias' => 'Create Users']);
-        Permission::updateOrCreate(['guard_name' => 'admin', 'name' => 'read users'], ['alias' => 'Read Users']);
-        Permission::updateOrCreate(['guard_name' => 'admin', 'name' => 'update users'], ['alias' => 'Update Users']);
-        Permission::updateOrCreate(['guard_name' => 'admin', 'name' => 'delete users'], ['alias' => 'Delete Users']);
+        Permission::updateOrCreate(['guard_name' => 'admin', 'name' => 'config users'], ['alias' => 'Configure Users', 'module_id' => $moduleUser->id]);
+        Permission::updateOrCreate(['guard_name' => 'admin', 'name' => 'create users'], ['alias' => 'Create Users', 'module_id' => $moduleUser->id]);
+        Permission::updateOrCreate(['guard_name' => 'admin', 'name' => 'read users'], ['alias' => 'Read Users', 'module_id' => $moduleUser->id]);
+        Permission::updateOrCreate(['guard_name' => 'admin', 'name' => 'update users'], ['alias' => 'Update Users', 'module_id' => $moduleUser->id]);
+        Permission::updateOrCreate(['guard_name' => 'admin', 'name' => 'delete users'], ['alias' => 'Delete Users', 'module_id' => $moduleUser->id]);
         // CRUD Configs
-        Permission::updateOrCreate(['guard_name' => 'admin', 'name' => 'create configs'], ['alias' => 'Create Configs']);
-        Permission::updateOrCreate(['guard_name' => 'admin', 'name' => 'read configs'], ['alias' => 'Read Configs']);
-        Permission::updateOrCreate(['guard_name' => 'admin', 'name' => 'update configs'], ['alias' => 'Update Configs']);
-        Permission::updateOrCreate(['guard_name' => 'admin', 'name' => 'delete configs'], ['alias' => 'Delete Configs']);
+        Permission::updateOrCreate(['guard_name' => 'admin', 'name' => 'config configs'], ['alias' => 'Configure Configs', 'module_id' => $moduleConfig->id]);
+        Permission::updateOrCreate(['guard_name' => 'admin', 'name' => 'create configs'], ['alias' => 'Create Configs', 'module_id' => $moduleConfig->id]);
+        Permission::updateOrCreate(['guard_name' => 'admin', 'name' => 'read configs'], ['alias' => 'Read Configs', 'module_id' => $moduleConfig->id]);
+        Permission::updateOrCreate(['guard_name' => 'admin', 'name' => 'update configs'], ['alias' => 'Update Configs', 'module_id' => $moduleConfig->id]);
+        Permission::updateOrCreate(['guard_name' => 'admin', 'name' => 'delete configs'], ['alias' => 'Delete Configs', 'module_id' => $moduleConfig->id]);
         // CRUD Navigations
-        Permission::updateOrCreate(['guard_name' => 'admin', 'name' => 'create navigations'], ['alias' => 'Create Navigations']);
-        Permission::updateOrCreate(['guard_name' => 'admin', 'name' => 'read navigations'], ['alias' => 'Read Navigations']);
-        Permission::updateOrCreate(['guard_name' => 'admin', 'name' => 'update navigations'], ['alias' => 'Update Navigations']);
-        Permission::updateOrCreate(['guard_name' => 'admin', 'name' => 'delete navigations'], ['alias' => 'Delete Navigations']);
+        Permission::updateOrCreate(['guard_name' => 'admin', 'name' => 'config navigations'], ['alias' => 'Configure Navigations', 'module_id' => $moduleNavigation->id]);
+        Permission::updateOrCreate(['guard_name' => 'admin', 'name' => 'create navigations'], ['alias' => 'Create Navigations', 'module_id' => $moduleNavigation->id]);
+        Permission::updateOrCreate(['guard_name' => 'admin', 'name' => 'read navigations'], ['alias' => 'Read Navigations', 'module_id' => $moduleNavigation->id]);
+        Permission::updateOrCreate(['guard_name' => 'admin', 'name' => 'update navigations'], ['alias' => 'Update Navigations', 'module_id' => $moduleNavigation->id]);
+        Permission::updateOrCreate(['guard_name' => 'admin', 'name' => 'delete navigations'], ['alias' => 'Delete Navigations', 'module_id' => $moduleNavigation->id]);
         // CRUD Permissions
-        Permission::updateOrCreate(['guard_name' => 'admin', 'name' => 'create permissions'], ['alias' => 'Create Permissions']);
-        Permission::updateOrCreate(['guard_name' => 'admin', 'name' => 'read permissions'], ['alias' => 'Read Permissions']);
-        Permission::updateOrCreate(['guard_name' => 'admin', 'name' => 'update permissions'], ['alias' => 'Update Permissions']);
-        Permission::updateOrCreate(['guard_name' => 'admin', 'name' => 'delete permissions'], ['alias' => 'Delete Permissions']);
+        Permission::updateOrCreate(['guard_name' => 'admin', 'name' => 'config permissions'], ['alias' => 'Configure Permissions', 'module_id' => $modulePermission->id]);
+        Permission::updateOrCreate(['guard_name' => 'admin', 'name' => 'create permissions'], ['alias' => 'Create Permissions', 'module_id' => $modulePermission->id]);
+        Permission::updateOrCreate(['guard_name' => 'admin', 'name' => 'read permissions'], ['alias' => 'Read Permissions', 'module_id' => $modulePermission->id]);
+        Permission::updateOrCreate(['guard_name' => 'admin', 'name' => 'update permissions'], ['alias' => 'Update Permissions', 'module_id' => $modulePermission->id]);
+        Permission::updateOrCreate(['guard_name' => 'admin', 'name' => 'delete permissions'], ['alias' => 'Delete Permissions', 'module_id' => $modulePermission->id]);
         // CRUD Roles
-        Permission::updateOrCreate(['guard_name' => 'admin', 'name' => 'create roles'], ['alias' => 'Create Roles']);
-        Permission::updateOrCreate(['guard_name' => 'admin', 'name' => 'read roles'], ['alias' => 'Read Roles']);
-        Permission::updateOrCreate(['guard_name' => 'admin', 'name' => 'update roles'], ['alias' => 'Update Roles']);
-        Permission::updateOrCreate(['guard_name' => 'admin', 'name' => 'delete roles'], ['alias' => 'Delete Roles']);
+        Permission::updateOrCreate(['guard_name' => 'admin', 'name' => 'config roles'], ['alias' => 'Configure Roles', 'module_id' => $moduleRole->id]);
+        Permission::updateOrCreate(['guard_name' => 'admin', 'name' => 'create roles'], ['alias' => 'Create Roles', 'module_id' => $moduleRole->id]);
+        Permission::updateOrCreate(['guard_name' => 'admin', 'name' => 'read roles'], ['alias' => 'Read Roles', 'module_id' => $moduleRole->id]);
+        Permission::updateOrCreate(['guard_name' => 'admin', 'name' => 'update roles'], ['alias' => 'Update Roles', 'module_id' => $moduleRole->id]);
+        Permission::updateOrCreate(['guard_name' => 'admin', 'name' => 'delete roles'], ['alias' => 'Delete Roles', 'module_id' => $moduleRole->id]);
 
         // updateOrCreate roles and assign updateOrCreated permissions
 

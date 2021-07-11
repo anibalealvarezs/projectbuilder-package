@@ -15,7 +15,7 @@ export default {
     name: "TrHead",
     props: {
         fields: Object,
-        allowed: Array,
+        allowed: Object,
     },
     components: {
         Th

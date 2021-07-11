@@ -35,6 +35,8 @@ class PbRoleController extends PbBuilderController
         $this->shares = [
             'permissions',
         ];
+        // Show ID column ?
+        $this->showId = false;
     }
 
     /**

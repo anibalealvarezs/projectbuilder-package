@@ -12,7 +12,7 @@ export default {
     props: {
         field: Object,
         index: String,
-        allowed: Array,
+        allowed: Object,
     },
     methods: {
         buildThClasses() {

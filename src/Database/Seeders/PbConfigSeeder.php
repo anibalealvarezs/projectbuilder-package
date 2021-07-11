@@ -3,6 +3,7 @@
 namespace Anibalealvarezs\Projectbuilder\Database\Seeders;
 
 use Anibalealvarezs\Projectbuilder\Models\PbConfig as Config;
+use Anibalealvarezs\Projectbuilder\Models\PbModule;
 use Illuminate\Database\Seeder;
 
 class PbConfigSeeder extends Seeder
@@ -14,8 +15,9 @@ class PbConfigSeeder extends Seeder
      */
     public function run()
     {
+        $moduleConfig = PbModule::where('modulekey', 'config')->first();
         // Default Config
-        Config::updateOrCreate(['configkey' => '_APP_NAME_'], ['configvalue' => 'Builder', 'name' => 'App Name', 'description' => 'App Description']);
-        Config::updateOrCreate(['configkey' => '_FORCE_HTTPS_'], ['configvalue' => false, 'name' => 'Force HTTPS', 'description' => 'Force HTTPS']);
+        Config::updateOrCreate(['configkey' => '_APP_NAME_'], ['configvalue' => 'Builder', 'name' => 'App Name', 'description' => 'App Description', 'module_id' => $moduleConfig->id]);
+        Config::updateOrCreate(['configkey' => '_FORCE_HTTPS_'], ['configvalue' => false, 'name' => 'Force HTTPS', 'description' => 'Force HTTPS', 'module_id' => $moduleConfig->id]);
     }
 }

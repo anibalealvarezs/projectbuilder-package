@@ -15,6 +15,7 @@ class PbMainSeeder extends Seeder
     {
         // Permissions Seeder
         $this->call([
+            PbModulesSeeder::class,
             PbLanguagesSeeder::class,
             PbCountriesSeeder::class,
             PbCitiesSeeder::class,

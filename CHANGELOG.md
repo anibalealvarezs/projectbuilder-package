@@ -5,6 +5,25 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [1.2.2] - 2021-07-06
+
+### Added
+
+- Models are now sortable
+- Draggable table rows for sortable models (using [Sortablejs](https://github.com/SortableJS/Sortable))
+- ID and Position columns are now removable
+- PbModule model added
+
+### Changed
+
+- Status columns now show reference icons
+- Config vars and Permissions are now associated to modules
+- Seeders updated
+
+### Fixed
+
+- Added missing fields from models in forms and tables
+
 ## [1.2.1.1] - 2021-07-06
 
 ### Added

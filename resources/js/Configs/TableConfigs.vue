@@ -6,9 +6,9 @@
                     <TrHead :fields="fields" :allowed="allowed" />
                 </slot>
             </Header>
-            <Body>
+            <Body :id="model+'-table-rows'">
                 <slot>
-                    <TrBody v-for="config in configs" :item="config" :fields="fields" :hiddenid="buildHiddenId" :allowed="allowed" @clicked-edit-item="onItemClicked" />
+                    <TrBody v-for="config in configs" :item="config" :fields="fields" :hiddenid="buildHiddenId" :allowed="allowed" :data-pos="getRowPos(config)" @clicked-edit-item="onItemClicked" />
                 </slot>
             </Body>
         </slot>
@@ -26,12 +26,17 @@ import TrHead from "@/Pages/Projectbuilder/Tables/TrHead"
 import TrBody from "@/Pages/Projectbuilder/Tables/TrBody"
 import ConfigForm from "@/Pages/Projectbuilder/Configs/ConfigForm"
 import { TableFields as Table } from "Pub/js/Projectbuilder/projectbuilder"
+import Sortable from "sortablejs";
 
 export default {
     name: "TableConfigs",
     props: {
         configs: Object,
-        allowed: Array,
+        allowed: Object,
+        model: String,
+        sort: Boolean,
+        showpos: Boolean,
+        showid: Boolean,
     },
     components: {
         ConfigForm,
@@ -41,8 +46,37 @@ export default {
         Header,
         Body
     },
-    setup() {
-        const table = new Table
+    mounted() {
+        if (this.sort) {
+            let that = this
+            let sortingOptions = Object.assign(
+                {},
+                Table.getSortingOptions(),
+                {
+                    onSort: function (e) {
+                        let data = {
+                            sortlist: that.getTablePositions(e.item.dataset.group)
+                        }
+                        that.$inertia.post(
+                            'configs/sort/'+e.item.dataset.group,
+                            data,
+                            {
+                                preserveState: false,
+                            }
+                        )
+                    },
+                }
+            );
+
+            Sortable.create(
+                document.getElementById(this.model+'-table-rows'),
+                sortingOptions
+            )
+        }
+    },
+    setup(props) {
+        const allowed = props.allowed
+        const table = new Table(props.showid)
         table.customField(
             "name",
             "Name"
@@ -56,6 +90,11 @@ export default {
             "Value"
         )
         table.customField(
+            "module",
+            "Module",
+            {key: "name"},
+        )
+        table.customField(
             "description",
             "Description"
         )
@@ -66,7 +105,8 @@ export default {
                 method: 'PUT',
                 route: "configs.edit",
                 formitem: "config",
-                altforuser: {}
+                altforuser: {},
+                allowed: allowed.update,
             },
             "delete": {
                 text: 'Delete',
@@ -74,7 +114,8 @@ export default {
                 method: 'DELETE',
                 route: "configs.destroy",
                 formitem: "config",
-                altforuser: {}
+                altforuser: {},
+                allowed: allowed.delete,
             }
         })
         let fields = table.fields
@@ -91,7 +132,10 @@ export default {
             let result = Table.onItemClicked(value, this.data, this.itemFormKey)
             this.data = result.data
             this.itemFormKey = result.key
-        }
+        },
+        getRowPos(el) {
+            return Table.getRowPos(this.sort, el)
+        },
     },
     computed: {
         existsFormButton() {

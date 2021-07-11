@@ -8,9 +8,6 @@
 
         <Main>
             <slot>
-                <!-- <div>
-                    {{ pbnavigations }}
-                </div> -->
                 <div class="p-12 sm:px-20 bg-white border-b border-gray-200">
                     <Button
                         v-if="allowed.create"
@@ -19,7 +16,7 @@
                     >
                         <slot>Create Navigation</slot>
                     </Button>
-                    <TableNavigations :navigations="pbnavigations" :allowed="allowed" />
+                    <TableNavigations :navigations="pbnavigations" :allowed="allowed" :sort="sort" :showpos="showpos" :showid="showid" :model="model" />
                 </div>
             </slot>
             <div :id="buildHiddenId" class="infinite-hidden">
@@ -75,10 +72,14 @@
                 return this.hiddenid
             }
         },
-        setup (props) {
+        setup () {
             const allowed = computed(() => usePage().props.value.shared.allowed)
+            const sort = computed(() => usePage().props.value.shared.sort)
+            const showpos = computed(() => usePage().props.value.shared.showpos)
+            const showid = computed(() => usePage().props.value.shared.showid)
+            const model = computed(() => usePage().props.value.shared.model)
 
-            return { allowed }
+            return { allowed, sort, model, showpos, showid }
         }
     }
 </script>

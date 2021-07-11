@@ -23,8 +23,7 @@ export default {
         item: Object,
         fields: Object,
         hiddenid: String,
-        allowed: Array,
-        draggable: Boolean
+        allowed: Object,
     },
     data() {
         return {
@@ -38,7 +37,7 @@ export default {
     },
     computed: {
         getClasses() {
-            return this.classes + (this.draggable ? " draggable" : "")
+            return this.classes
         }
     },
 }

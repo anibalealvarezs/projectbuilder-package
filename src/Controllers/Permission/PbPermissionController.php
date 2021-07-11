@@ -35,6 +35,8 @@ class PbPermissionController extends PbBuilderController
         $this->shares = [
             'roles',
         ];
+        // Show ID column ?
+        $this->showId = false;
     }
 
     /**
@@ -55,7 +57,7 @@ class PbPermissionController extends PbBuilderController
                 $toExclude = array_merge($toExclude, ['login', 'create users', 'update users', 'delete users']);
             }
         }
-        $model = $this->modelPath::with('roles')->whereNotIn('name', $toExclude)->get(); //Get all permissions
+        $model = $this->modelPath::with(['roles', 'module'])->whereNotIn('name', $toExclude)->get(); //Get all permissions
 
         return parent::index($model);
     }

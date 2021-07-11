@@ -39,6 +39,10 @@ class PbBuilderController extends Controller
     /**
      * @var string
      */
+    protected $viewModelName;
+    /**
+     * @var string
+     */
     protected $name;
     /**
      * @var string
@@ -252,6 +256,22 @@ class PbBuilderController extends Controller
      * @var array
      */
     protected $allowed = [];
+    /**
+     * @var string
+     */
+    protected $sortable;
+    /**
+     * @var array
+     */
+    protected $sortingRef;
+    /**
+     * @var array
+     */
+    protected $showPosition;
+    /**
+     * @var array
+     */
+    protected $showId;
 
     function __construct($crud_perms = false)
     {
@@ -269,6 +289,9 @@ class PbBuilderController extends Controller
         }
         if (!$this->package) {
             $this->package = $this->helper::PB_PACKAGE;
+        }
+        if (!$this->sortable) {
+            $this->sortable = false;
         }
         $this->keys = $this->helper::toPlural($this->key);
         $this->model = $this->prefix.$this->key;
@@ -331,6 +354,22 @@ class PbBuilderController extends Controller
             $this->middleware(['role_or_permission:create '.$this->names])->only('create', 'store');
             $this->middleware(['role_or_permission:update '.$this->names])->only('edit', 'update');
             $this->middleware(['role_or_permission:delete '.$this->names])->only('destroy');
+        }
+
+        if (!$this->viewModelName) {
+            $this->viewModelName = $this->names;
+        }
+
+        if (!$this->sortingRef) {
+            $this->sortingRef = null;
+        }
+
+        if (!$this->showPosition) {
+            $this->showPosition = false;
+        }
+
+        if (!$this->showId) {
+            $this->showId = true;
         }
     }
 
@@ -480,6 +519,49 @@ class PbBuilderController extends Controller
     }
 
     /**
+     * Sort model elements
+     *
+     * @param Request $request
+     * @param int $id
+     * @return void
+     */
+    public function sort(Request $request, int $id)
+    {
+        // Validation
+        $validator = Validator::make($request->all(), [
+            'sortlist' => ['required'],
+        ]);
+        $this->validationCheck($validator, $request);
+
+        $sortList = $request['sortlist'];
+
+        try {
+            $n = 0;
+            foreach($sortList as $sortEl) {
+                if ($id > 0) {
+                    $query = $this->modelPath::where($this->sortingRef, $id)->where('id', $sortEl)->first();
+                    if ($query) {
+                        // Build model
+                        $el = $this->modelPath::find($query->id);
+                    }
+                } else {
+                    // Build model
+                    $el = $this->modelPath::find($sortEl);
+                }
+                if ($el) {
+                    $el->position = $n;
+                    $el->save();
+                }
+                $n++;
+            }
+
+            return $this->redirectResponseCRUDSuccess($request, $this->key.' sorted successfully!');
+        } catch (Exception $e) {
+            return $this->redirectResponseCRUDFail($request, $this->key.' could not be sorted!');
+        }
+    }
+
+    /**
      * Remove the specified resource from storage.
      *
      * @param null $element
@@ -535,6 +617,10 @@ class PbBuilderController extends Controller
                 $this->globalInertiaShare(),
                 Shares::allowed($this->allowed),
                 Shares::list($this->shares),
+                ['sort' => $this->sortable],
+                ['showpos' => $this->showPosition],
+                ['showid' => $this->showId],
+                ['model' => $this->viewModelName],
             )
         );
     }
@@ -595,9 +681,9 @@ class PbBuilderController extends Controller
      *
      * @param $view
      * @param array $elements
-     * @return void
+     * @return InertiaResponse
      */
-    protected function renderView($view, array $elements = [])
+    protected function renderView($view, array $elements = []): InertiaResponse
     {
         $this->shareVars();
 
@@ -608,6 +694,7 @@ class PbBuilderController extends Controller
      * Remove the specified resource from storage.
      *
      * @param $route
+     * @param $type
      * @return string
      */
     protected function buildRouteString($route, $type): string

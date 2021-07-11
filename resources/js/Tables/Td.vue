@@ -8,9 +8,7 @@
                     <template #trigger>
                         <span class="inline-flex rounded-md">
                             <Button type="button">
-                                <svg class="h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                                    <path fill-rule="evenodd" d="M10 3a1 1 0 01.707.293l3 3a1 1 0 01-1.414 1.414L10 5.414 7.707 7.707a1 1 0 01-1.414-1.414l3-3A1 1 0 0110 3zm-3.707 9.293a1 1 0 011.414 0L10 14.586l2.293-2.293a1 1 0 011.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd" />
-                                </svg>
+                                ...
                             </Button>
                         </span>
                     </template>
@@ -59,19 +57,42 @@
                 <span
                     :class="buildSpanClasses()"
                 >
-                    {{ cellValue }}
+                        {{ cellValue }}
                     <!-- <svg class="h-4 w-4"  width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">  <path stroke="none" d="M0 0h24v24H0z"/>  <path d="M14 8v-2a2 2 0 0 0 -2 -2h-7a2 2 0 0 0 -2 2v12a2 2 0 0 0 2 2h7a2 2 0 0 0 2 -2v-2" />
                         <path d="M7 12h14l-3 -3m0 6l3 -3" />
                     </svg> -->
                 </span>
             </JetDropdownLink>
             <!-- NO HREF CONTENT -->
-            <span
-                v-if="!field.href.hasOwnProperty('route')"
-                :class="buildSpanClasses()"
-            >
-                {{ cellValue }}
-            </span>
+            <div v-else>
+                <div v-if="field.status">
+                    <span
+                        v-if="cellValue == 1"
+                        :class="buildSpanClasses()"
+                    >
+                        <svg class="mr-2 h-5 w-5 text-green-400" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" stroke="currentColor" viewBox="0 0 24 24" data-v-73b67a72=""><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" data-v-73b67a72=""></path></svg>
+                        <!-- <svg class="h-4 w-4"  width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">  <path stroke="none" d="M0 0h24v24H0z"/>  <path d="M14 8v-2a2 2 0 0 0 -2 -2h-7a2 2 0 0 0 -2 2v12a2 2 0 0 0 2 2h7a2 2 0 0 0 2 -2v-2" />
+                            <path d="M7 12h14l-3 -3m0 6l3 -3" />
+                        </svg> -->
+                    </span>
+                </div>
+                <div v-else-if="index == 'sorthandle'">
+                    <span
+                        :class="buildHandlerClasses()"
+                    >
+                        <svg class="h-4 w-4 sort-handle" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" data-v-4ba735d4=""><path fill-rule="evenodd" d="M10 3a1 1 0 01.707.293l3 3a1 1 0 01-1.414 1.414L10 5.414 7.707 7.707a1 1 0 01-1.414-1.414l3-3A1 1 0 0110 3zm-3.707 9.293a1 1 0 011.414 0L10 14.586l2.293-2.293a1 1 0 011.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd" data-v-4ba735d4=""></path></svg>
+                    </span>
+                </div>
+                <span
+                    v-else
+                    :class="buildSpanClasses()"
+                >
+                        {{ cellValue }}
+                    <!-- <svg class="h-4 w-4"  width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">  <path stroke="none" d="M0 0h24v24H0z"/>  <path d="M14 8v-2a2 2 0 0 0 -2 -2h-7a2 2 0 0 0 -2 2v12a2 2 0 0 0 2 2h7a2 2 0 0 0 2 -2v-2" />
+                        <path d="M7 12h14l-3 -3m0 6l3 -3" />
+                    </svg> -->
+                </span>
+            </div>
         </div>
         <div v-if="field.size == 'multiple'">
             <div v-for="cv in cellValue" :class="(field.arrval.hasOwnProperty('href') ? 'bg-gray-200 space-y-1' : 'space-y-1')">
@@ -152,6 +173,9 @@ export default {
     methods: {
         buildSpanClasses() {
             return Table.buildSpanClasses(this.field.style.bold, this.field.style.centered)
+        },
+        buildHandlerClasses() {
+            return Table.buildHandlerClasses()
         },
         buildTdClasses() {
             return Table.buildTdClasses(this.field.style.centered)

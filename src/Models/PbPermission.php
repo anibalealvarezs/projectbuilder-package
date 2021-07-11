@@ -2,7 +2,9 @@
 
 namespace Anibalealvarezs\Projectbuilder\Models;
 
+use Anibalealvarezs\Projectbuilder\Traits\PbModelCrudTrait;
 use Anibalealvarezs\Projectbuilder\Traits\PbModelTrait;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Spatie\Permission\Models\Permission;
 use Spatie\Translatable\HasTranslations;
@@ -11,6 +13,7 @@ class PbPermission extends Permission
 {
     use HasTranslations;
     use PbModelTrait;
+    use PbModelCrudTrait;
 
     protected $connection;
 
@@ -45,23 +48,8 @@ class PbPermission extends Permission
         return $this->hasMany(PbNavigation::class);
     }
 
-    public function isEditableBy($id): bool
+    public function module(): BelongsTo
     {
-        return true;
-    }
-
-    public function isViewableBy($id): bool
-    {
-        return true;
-    }
-
-    public function isSelectableBy($id): bool
-    {
-        return true;
-    }
-
-    public function isDeletableBy($id): bool
-    {
-        return true;
+        return $this->belongsTo(PbModule::class, 'module_id', 'id');
     }
 }

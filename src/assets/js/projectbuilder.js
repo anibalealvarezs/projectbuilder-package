@@ -2,9 +2,24 @@
 
 class TableFields {
 
-    constructor() {
-        this.fields = {
-            "item": {
+    constructor(showid = true, sort = false) {
+        this.fields = {}
+        if (sort) {
+            this.fields['sorthandle'] = {
+                name: "Sort",
+                style: {
+                    centered: true,
+                    bold: true,
+                    width: "w-12",
+                },
+                buttons: [],
+                href: {},
+                arrval: {},
+                size: 'single'
+            }
+        }
+        if (showid) {
+            this.fields['item'] = {
                 name: "#",
                 style: {
                     centered: true,
@@ -19,7 +34,7 @@ class TableFields {
         }
     }
 
-    customField(key, name, arrval = {}, style = {}, buttons = {}, href = {}, size = 'single') {
+    customField(key, name, arrval = {}, style = {}, buttons = {}, href = {}, size = 'single', status = false) {
         /* Style */
         if (!style.hasOwnProperty('centered')) {
             style['centered'] = false
@@ -43,12 +58,13 @@ class TableFields {
             href: href,
             arrval: arrval,
             size: size,
+            status: status,
         }
     }
 
     pushActions(buttons) {
         this.fields['actions'] = {
-            name: "",
+            name: "Actions",
             style: {
                 centered: true,
                 bold: false,
@@ -192,8 +208,16 @@ class TableFields {
         return clase
     }
 
-    static buildSpanClasses(bold, centered, flex = true) {
-        let clase = "inline-flex items-center"
+    static buildSpanClasses(bold = false, centered = false, flex = true) {
+        let clase = "inline-flex items-center mt-2 mb-1"
+        clase += this.isFlex(flex)
+        clase += this.isBold(bold)
+        clase += this.isCentered(centered)
+        return clase
+    }
+
+    static buildHandlerClasses(bold = true, centered = true, flex = true) {
+        let clase = "inline-flex items-center mt-2 mb-1 cursor-pointer"
         clase += this.isFlex(flex)
         clase += this.isBold(bold)
         clase += this.isCentered(centered)
@@ -236,26 +260,26 @@ class TableFields {
             confirmButtonText: button.text
         }
     }
+
+    static getRowPos(sort, el) {
+        if (sort && el.hasOwnProperty('position')) {
+            return el.position
+        }
+        return 0
+    }
+
+    static getSortingOptions() {
+        return {
+            animation: 150,
+            ghostClass: 'blue-background-class',
+            delay: 500,
+            delayOnTouchOnly: true,
+            easing: "cubic-bezier(1, 0, 0, 1)",
+            handle: ".sort-handle",
+            direction: 'vertical',
+        }
+    }
 }
-
-/* class TableDragAndDrop {
-
-    mouseDownHandler = function(e) {
-        // Attach the listeners to `document`
-        document.addEventListener('mousemove', this.mouseMoveHandler);
-        document.addEventListener('mouseup', this.mouseUpHandler);
-    };
-
-    mouseMoveHandler = function(e) {
-        //
-    };
-
-    mouseUpHandler = function() {
-        // Remove the handlers of `mousemove` and `mouseup`
-        document.removeEventListener('mousemove', this.mouseMoveHandler);
-        document.removeEventListener('mouseup', this.mouseUpHandler);
-    };
-} */
 
 class Helpers {
 
@@ -270,6 +294,5 @@ class Helpers {
 
 module.exports = {
     TableFields,
-    /* TableDragAndDrop, */
     Helpers,
 }

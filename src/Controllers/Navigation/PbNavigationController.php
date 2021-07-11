@@ -12,8 +12,6 @@ use Auth;
 use DB;
 use Session;
 
-use Inertia\Response as InertiaResponse;
-
 class PbNavigationController extends PbBuilderController
 {
     function __construct($crud_perms = false)
@@ -30,6 +28,7 @@ class PbNavigationController extends PbBuilderController
             'parent' => ['required', 'integer'],
             'permission' => ['required', 'integer'],
             'module' => [],
+            'status' => [],
         ];
         // Model fields name replacing
         $this->replacers = [
@@ -39,6 +38,14 @@ class PbNavigationController extends PbBuilderController
         $this->shares = [
             'permissionsall',
         ];
+        // Sortable model ?
+        $this->sortable = true;
+        // Sortable model
+        $this->sortingRef = 'parent';
+        // Show position column ?
+        // $this->showPosition = true;
+        // Show ID column ?
+        $this->showId = false;
     }
 
     /**
@@ -51,7 +58,7 @@ class PbNavigationController extends PbBuilderController
      */
     public function index($element = null, bool $multiple = false, string $route = 'level')
     {
-        $model = $this->modelPath::with('permission')->get();
+        $model = $this->modelPath::with(['ascendant', 'permission', 'module'])->orderBy('parent')->orderBy('position')->get();
 
         return parent::index($model);
     }

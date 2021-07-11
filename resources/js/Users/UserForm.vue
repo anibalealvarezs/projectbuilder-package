@@ -55,15 +55,15 @@
         <div class="flex flex-wrap -mx-3 mb-6">
             <!-- role -->
             <div class="w-full px-3">
-                <label class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2" :for="'grid-language-' + keyid">
+                <label class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2" :for="'grid-role-' + keyid">
                     Role
                 </label>
                 <select
                     v-model="form.roles"
-                    :id="'grid-language-' + keyid"
+                    :id="'grid-role-' + keyid"
                     name="lang"
                     class="appearance-none w-full md:w-1/1 px-4 py-3 mb-3 block rounded bg-gray-200 text-gray-700 border border-gray-200 overflow-auto leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
-                    placeholder="Select language"
+                    placeholder="Select role"
                     multiple="true"
                 >
                     <option v-for="role in roles" :value="role.name">

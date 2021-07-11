@@ -95,12 +95,14 @@ ln -s ../vendor/anibalealvarezs/projectbuilder-package/src/assets pbstorage
 ### 12. Add resources to /webpack.mix.js
 ```
 mix.js('node_modules/sweetalert2/dist/sweetalert2.js', 'public/js');
+    js('node_modules/sortablejs/Sortable.js', 'public/js').
 ```
 
 ### 13. Install new resources as dependencies
 ```
 npm i sweetalert2
 npm install @tailwindcss/forms
+npm install sortablejs --save
 ```
 
 ### 14. Require Tailwind Plugins in tailwind.config.js

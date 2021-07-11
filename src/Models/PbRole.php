@@ -2,6 +2,7 @@
 
 namespace Anibalealvarezs\Projectbuilder\Models;
 
+use Anibalealvarezs\Projectbuilder\Traits\PbModelCrudTrait;
 use Anibalealvarezs\Projectbuilder\Traits\PbModelTrait;
 use Spatie\Permission\Models\Role;
 use Spatie\Translatable\HasTranslations;
@@ -10,6 +11,7 @@ class PbRole extends Role
 {
     use HasTranslations;
     use PbModelTrait;
+    use PbModelCrudTrait;
 
     protected $connection;
 
@@ -27,26 +29,6 @@ class PbRole extends Role
             return json_decode($value)->{app()->getLocale()};
         }
         return $value;
-    }
-
-    public function isEditableBy($id): bool
-    {
-        return true;
-    }
-
-    public function isViewableBy($id): bool
-    {
-        return true;
-    }
-
-    public function isSelectableBy($id): bool
-    {
-        return true;
-    }
-
-    public function isDeletableBy($id): bool
-    {
-        return true;
     }
 
 }
