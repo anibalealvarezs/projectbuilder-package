@@ -216,10 +216,8 @@ class TableFields {
         return clase
     }
 
-    static buildHandlerClasses(bold = true, centered = true, flex = true) {
-        let clase = "inline-flex items-center mt-2 mb-1 cursor-pointer"
-        clase += this.isFlex(flex)
-        clase += this.isBold(bold)
+    static buildHandlerClasses(bold = true, centered = true) {
+        let clase = "border px-4 py-2 align-top cursor-pointer sort-handle"
         clase += this.isCentered(centered)
         return clase
     }

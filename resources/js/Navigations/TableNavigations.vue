@@ -58,7 +58,7 @@ export default {
                             sortlist: that.getTablePositions(e.item.dataset.group)
                         }
                         that.$inertia.post(
-                            'navigations/sort/'+e.item.dataset.group,
+                            '/navigations/sort/'+e.item.dataset.group,
                             data,
                             {
                                 preserveState: false,

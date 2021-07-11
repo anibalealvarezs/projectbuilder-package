@@ -2,11 +2,9 @@
 
 namespace Anibalealvarezs\Projectbuilder\Traits;
 
-use Anibalealvarezs\Projectbuilder\Helpers\PbHelpers;
-
 trait PbServiceProviderTrait {
 
-    protected function booter()
+    protected function booter($name, $package)
     {
         $dirs = [
             'core' => __DIR__ . '/../../resources/core',
@@ -15,33 +13,33 @@ trait PbServiceProviderTrait {
             'assets_css' => __DIR__ . '/../../src/assets/css',
         ];
         // Views
-        $views = __DIR__ . '/../../resources/js';
-        $this->loadViewsFrom($views, PbHelpers::PB_PREFIX);
+        $views = __DIR__ . '/../../resources/views';
+        $this->loadViewsFrom($views, $package);
         // Publish
         // All
         $allPublish = [
-            $dirs['components'] => resource_path('js/Pages/'.PbHelpers::PB_PACKAGE),
-            $dirs['assets_js'] => public_path('js/'.PbHelpers::PB_PACKAGE),
-            $dirs['assets_css'] => public_path('css/'.PbHelpers::PB_PACKAGE),
+            $dirs['components'] => resource_path('js/Pages/'.$package),
+            $dirs['assets_js'] => public_path('js/'.$package),
+            $dirs['assets_css'] => public_path('css/'.$package),
             /* $dirs['core'] => resource_path('js'), */
         ];
-        $this->publishes($allPublish, PbHelpers::PB_NAME.'-views');
+        $this->publishes($allPublish, $name.'-views');
         // Specific
         // Only Core Relacement
         $this->publishes([
             $dirs['core'] => resource_path('js'),
-        ], PbHelpers::PB_NAME.'-core');
+        ], $name.'-core');
         // Only Components
         $this->publishes([
-            $dirs['components'] => resource_path('js/Pages/'.PbHelpers::PB_PACKAGE),
-        ], PbHelpers::PB_NAME.'-components');
+            $dirs['components'] => resource_path('js/Pages/'.$package),
+        ], $name.'-components');
         // Only Js Helpers
         $this->publishes([
-            $dirs['assets_js'] => public_path('js/'.PbHelpers::PB_PACKAGE),
-        ], PbHelpers::PB_NAME.'-js');
+            $dirs['assets_js'] => public_path('js/'.$package),
+        ], $name.'-js');
         // Only CSS
         $this->publishes([
-            $dirs['assets_css'] => public_path('css/'.PbHelpers::PB_PACKAGE),
-        ], PbHelpers::PB_NAME.'-css');
+            $dirs['assets_css'] => public_path('css/'.$package),
+        ], $name.'-css');
     }
 }

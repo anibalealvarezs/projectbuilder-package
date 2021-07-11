@@ -17,8 +17,7 @@ class PbViewServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        $helper = new PbHelpers();
-        $this->booter($helper);
+        $this->booter(PbHelpers::PB_NAME, PbHelpers::PB_PACKAGE);
     }
 
     /**

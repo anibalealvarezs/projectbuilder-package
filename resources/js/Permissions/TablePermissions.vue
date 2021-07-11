@@ -60,7 +60,7 @@ export default {
                             sortlist: that.getTablePositions(e.item.dataset.group)
                         }
                         that.$inertia.post(
-                            'permissions/sort/'+e.item.dataset.group,
+                            '/permissions/sort/'+e.item.dataset.group,
                             data,
                             {
                                 preserveState: false,

@@ -272,6 +272,10 @@ class PbBuilderController extends Controller
      * @var array
      */
     protected $showId;
+    /**
+     * @var array
+     */
+    protected $inertiaRoot;
 
     function __construct($crud_perms = false)
     {
@@ -283,6 +287,9 @@ class PbBuilderController extends Controller
         }
         if (!$this->helper) {
             $this->helper = PbHelpers::PB_VENDOR.'\\'.PbHelpers::PB_PACKAGE.'\\Helpers\\'.$this->prefix.'Helpers';
+        }
+        if (!$this->inertiaRoot) {
+            $this->inertiaRoot = $this->helper::PB_PACKAGE.'::app';
         }
         if (!$this->vendor) {
             $this->vendor = $this->helper::PB_VENDOR;
@@ -686,6 +693,8 @@ class PbBuilderController extends Controller
     protected function renderView($view, array $elements = []): InertiaResponse
     {
         $this->shareVars();
+
+        Inertia::setRootView($this->inertiaRoot);
 
         return Inertia::render($view, $elements);
     }
