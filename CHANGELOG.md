@@ -13,16 +13,19 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - Draggable table rows for sortable models (using [Sortablejs](https://github.com/SortableJS/Sortable))
 - ID and Position columns are now removable
 - PbModule model added
+- Customizable blade template in controllers
 
 ### Changed
 
 - Status columns now show reference icons
 - Config vars and Permissions are now associated to modules
 - Seeders updated
+- Custom "app.blade" file
 
 ### Fixed
 
 - Added missing fields from models in forms and tables
+- Sorting "icon" replaced by sorting "td"
 
 ## [1.2.1.1] - 2021-07-06
 

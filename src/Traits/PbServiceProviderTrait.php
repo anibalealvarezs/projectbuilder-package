@@ -4,7 +4,7 @@ namespace Anibalealvarezs\Projectbuilder\Traits;
 
 trait PbServiceProviderTrait {
 
-    protected function booter($name, $package)
+    protected function booter($name, $package, $dir)
     {
         $dirs = [
             'core' => __DIR__ . '/../../resources/core',
@@ -13,7 +13,7 @@ trait PbServiceProviderTrait {
             'assets_css' => __DIR__ . '/../../src/assets/css',
         ];
         // Views
-        $views = __DIR__ . '/../../resources/views';
+        $views = __DIR__ . '/../../../'.$dir.'/resources/views';
         $this->loadViewsFrom($views, $package);
         // Publish
         // All

@@ -10,7 +10,7 @@ class PbHelpers
 {
     public const PB_VENDOR = 'Anibalealvarezs';
     public const PB_PACKAGE = 'Projectbuilder';
-    public const PB_DIR = 'projectbuilder';
+    public const PB_DIR = 'projectbuilder-package';
     public const PB_PREFIX = 'Pb';
     public const PB_NAME = 'builder';
 
