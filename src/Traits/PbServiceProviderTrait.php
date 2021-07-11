@@ -4,16 +4,17 @@ namespace Anibalealvarezs\Projectbuilder\Traits;
 
 trait PbServiceProviderTrait {
 
-    protected function booter($name, $package, $dir)
+    protected function booter($name, $package)
     {
         $dirs = [
             'core' => __DIR__ . '/../../resources/core',
             'components' => __DIR__ . '/../../resources/js',
             'assets_js' => __DIR__ . '/../../src/assets/js',
             'assets_css' => __DIR__ . '/../../src/assets/css',
+            'blade' => __DIR__ . '/../../resources/views',
         ];
         // Views
-        $views = __DIR__ . '/../../../'.$dir.'/resources/views';
+        $views = resource_path('views/'.$package);
         $this->loadViewsFrom($views, $package);
         // Publish
         // All
@@ -21,6 +22,7 @@ trait PbServiceProviderTrait {
             $dirs['components'] => resource_path('js/Pages/'.$package),
             $dirs['assets_js'] => public_path('js/'.$package),
             $dirs['assets_css'] => public_path('css/'.$package),
+            $dirs['blade'] => resource_path('views/'.$package),
             /* $dirs['core'] => resource_path('js'), */
         ];
         $this->publishes($allPublish, $name.'-views');
@@ -37,6 +39,10 @@ trait PbServiceProviderTrait {
         $this->publishes([
             $dirs['assets_js'] => public_path('js/'.$package),
         ], $name.'-js');
+        // Only Views
+        $this->publishes([
+            $dirs['blade'] => resource_path('views/'.$package),
+        ], $name.'-blade');
         // Only CSS
         $this->publishes([
             $dirs['assets_css'] => public_path('css/'.$package),
