@@ -68,6 +68,8 @@ php artisan vendor:publish --provider="Anibalealvarezs\Projectbuilder\Providers\
 php artisan vendor:publish --provider="Anibalealvarezs\Projectbuilder\Providers\PbViewServiceProvider" --tag="builder-css" --force
 php artisan vendor:publish --provider="Anibalealvarezs\Projectbuilder\Providers\PbViewServiceProvider" --tag="builder-blade" --force
 php artisan vendor:publish --provider="Anibalealvarezs\Projectbuilder\Providers\PbViewServiceProvider" --tag="builder-core" --force
+php artisan vendor:publish --provider="Anibalealvarezs\Projectbuilder\Providers\PbViewServiceProvider" --tag="builder-fonts" --force
+php artisan vendor:publish --provider="Anibalealvarezs\Projectbuilder\Providers\PbViewServiceProvider" --tag="builder-img" --force
 ```
 
 #### 9. Add "pbstorage" link to "app/filesystems.php"
