@@ -270,8 +270,8 @@ class TableFields {
         return {
             animation: 150,
             ghostClass: 'blue-background-class',
-            delay: 500,
-            delayOnTouchOnly: true,
+            /* delay: 500,
+            delayOnTouchOnly: true, */
             easing: "cubic-bezier(1, 0, 0, 1)",
             handle: ".sort-handle",
             direction: 'vertical',

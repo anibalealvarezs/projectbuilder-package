@@ -2,6 +2,9 @@
 
 ### Instructions for installation:
 
+#### 0. Prepare your .env file
+Submit database connection data, site URL and project name
+
 #### 1. Add the following lines to composer.json:
 ```
 "repositories": [
@@ -24,6 +27,7 @@ composer require anibalealvarezs/projectbuilder-package --no-cache
 ```
 
 #### 4. Publish Spatie's Migration
+Probably, after publishing, you'll have to change the file "date name" for it to be run before changes to roles table in other migration files
 ```
 php artisan vendor:publish --provider="Spatie\Permission\PermissionServiceProvider"
 ```
@@ -71,6 +75,7 @@ php artisan vendor:publish --provider="Anibalealvarezs\Projectbuilder\Providers\
 php artisan vendor:publish --provider="Anibalealvarezs\Projectbuilder\Providers\PbViewServiceProvider" --tag="builder-fonts" --force
 php artisan vendor:publish --provider="Anibalealvarezs\Projectbuilder\Providers\PbViewServiceProvider" --tag="builder-img" --force
 ```
+Ignore any alert for from of these seeders. Not all folders are used with every package.
 
 #### 9. Add "pbstorage" link to "app/filesystems.php"
 ```
@@ -94,11 +99,33 @@ ln -s ../vendor/anibalealvarezs/projectbuilder-package/src/assets pbstorage
     return Inertia::render('Dashboard');
 })->name('dashboard'); */
 ```
+Optionally, add a default view for root path
+```
+Route::get('/', function () {
+    return Inertia::render('Welcome', [
+        'canLogin' => Route::has('login'),
+        'canRegister' => Route::has('register'),
+        'laravelVersion' => Application::VERSION,
+        'phpVersion' => PHP_VERSION,
+    ]);
+});
+```
 
 ### 12. Add resources to /webpack.mix.js
 ```
-mix.js('node_modules/sweetalert2/dist/sweetalert2.js', 'public/js');
+mix.js('node_modules/sweetalert2/dist/sweetalert2.js', 'public/js').
     js('node_modules/sortablejs/Sortable.js', 'public/js').
+    js('resources/js/app.js', 'public/js').vue()
+    .postCss('resources/css/app.css', 'public/css', [
+        require('postcss-import'),
+        require('tailwindcss'),
+        require('autoprefixer'),
+    ])
+    .webpackConfig(require('./webpack.config'));
+
+if (mix.inProduction()) {
+    mix.version();
+}
 ```
 
 ### 13. Install new resources as dependencies
