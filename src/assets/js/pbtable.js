@@ -37,6 +37,15 @@ export default {
         getRowPos(el) {
             return Table.getRowPos(this.sort, el)
         },
+        getTablePositions(group) {
+            let sort = [];
+            document.querySelectorAll('#'+this.model+'-table-rows tr').forEach(function(value){
+                if (value.dataset.group == group) {
+                    sort.push(value.dataset.id)
+                }
+            })
+            return sort
+        },
     },
     computed: {
         existsFormButton() {
