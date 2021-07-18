@@ -5,6 +5,19 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [1.2.2.2] - 2021-07-18
+
+### Added
+
+### Changed
+
+- Forms reset after creation
+- Dragging no longer requires delay on mobile
+
+### Fixed
+
+- Forms fields validations
+
 ## [1.2.2] - 2021-07-06
 
 ### Added
