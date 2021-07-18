@@ -13,9 +13,10 @@
                     type="text"
                     placeholder="Name"
                     class="appearance-none block w-full bg-gray-200 text-gray-700 border border-red-500 rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white"
-                    :readonly="!isEmptyField(form.name)"
+                    readonly="true"
                     :required="isRequired('name')"
                     @mouseover="disableReadonly"
+                    @focus="disableReadonly"
                 >
             </div>
             <!-- key -->
@@ -30,7 +31,7 @@
                     type="text"
                     placeholder="Key"
                     class="appearance-none block w-full bg-gray-200 text-gray-700 border border-red-500 rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white"
-                    :readonly="!isEmptyField(form.configkey)"
+                    :readonly="!isEmptyField(data.configkey)"
                     :required="isRequired('configkey')"
                 >
             </div>
@@ -46,9 +47,10 @@
                     type="text"
                     placeholder="Value"
                     class="appearance-none block w-full bg-gray-200 text-gray-700 border border-red-500 rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white"
-                    :readonly="!isEmptyField(form.configvalue)"
+                    readonly="true"
                     :required="isRequired('configvalue')"
                     @mouseover="disableReadonly"
+                    @focus="disableReadonly"
                 >
             </div>
             <!-- description -->
@@ -62,9 +64,10 @@
                     name="description"
                     placeholder="description"
                     class="appearance-none block w-full bg-gray-200 text-gray-700 border border-red-500 rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white"
-                    :readonly="!isEmptyField(form.description)"
+                    readonly="true"
                     :required="isRequired('description')"
                     @mouseover="disableReadonly"
+                    @focus="disableReadonly"
                 >
                 </textarea>
             </div>
@@ -104,6 +107,7 @@ export default {
             } else {
                 Inertia.post("/configs", form, {
                     preserveScroll: true,
+                    preserveState: false,
                     onSuccess: () => Swal.close()
                 })
             }

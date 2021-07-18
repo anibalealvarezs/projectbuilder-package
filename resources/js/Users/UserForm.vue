@@ -13,9 +13,10 @@
                     type="text"
                     placeholder="Name"
                     class="temp-readonly appearance-none block w-full bg-gray-200 text-gray-700 border border-red-500 rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white"
-                    :readonly="!isEmptyField(form.name)"
+                    readonly="true"
                     :required="isRequired('name')"
                     @mouseover="disableReadonly"
+                    @focus="disableReadonly"
                 >
             </div>
             <!-- email -->
@@ -30,9 +31,10 @@
                     type="text"
                     placeholder="email@email.com"
                     class="temp-readonly appearance-none block w-full bg-gray-200 text-gray-700 border border-red-500 rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white"
-                    :readonly="!isEmptyField(form.email)"
+                    readonly="true"
                     :required="isRequired('email')"
                     @mouseover="disableReadonly"
+                    @focus="disableReadonly"
                 >
             </div>
         </div>
@@ -49,9 +51,10 @@
                     type="password"
                     placeholder="******************"
                     class="temp-readonly appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
-                    :readonly="!isEmptyField(form.password)"
+                    readonly="true"
                     :required="isRequired('password')"
                     @mouseover="disableReadonly"
+                    @focus="disableReadonly"
                 >
             </div>
         </div>
@@ -161,6 +164,7 @@ export default {
             } else {
                 Inertia.post("/users", form, {
                     preserveScroll: true,
+                    preserveState: false,
                     onSuccess: () => Swal.close()
                 })
             }

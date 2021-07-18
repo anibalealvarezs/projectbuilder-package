@@ -13,9 +13,10 @@
                     type="text"
                     placeholder="Name"
                     class="temp-readonly appearance-none block w-full bg-gray-200 text-gray-700 border border-red-500 rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white"
-                    :readonly="!isEmptyField(form.name)"
+                    readonly="true"
                     :required="isRequired('name')"
                     @mouseover="disableReadonly"
+                    @focus="disableReadonly"
                 >
             </div>
         </div>
@@ -32,9 +33,10 @@
                     type="text"
                     placeholder="Alias"
                     class="temp-readonly appearance-none block w-full bg-gray-200 text-gray-700 border border-red-500 rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white"
-                    :readonly="!isEmptyField(form.alias)"
+                    readonly="true"
                     :required="isRequired('alias')"
                     @mouseover="disableReadonly"
+                    @focus="disableReadonly"
                 >
             </div>
         </div>
@@ -100,6 +102,7 @@ export default {
             } else {
                 Inertia.post("/permissions", form, {
                     preserveScroll: true,
+                    preserveState: false,
                     onSuccess: () => Swal.close()
                 })
             }

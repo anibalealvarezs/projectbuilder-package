@@ -1,7 +1,6 @@
 <template>
     <form @submit.prevent="submit" class="w-full max-w-lg">
         <div class="flex flex-wrap -mx-3 mb-6">
-            <!-- <div>{{ permissions }}</div> -->
             <!-- name -->
             <div class="w-full px-3 mb-6 md:mb-0">
                 <label class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2" :for="'grid-name-' + keyid">
@@ -14,9 +13,10 @@
                     type="text"
                     placeholder="Name"
                     class="appearance-none block w-full bg-gray-200 text-gray-700 border border-red-500 rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white"
-                    :readonly="!isEmptyField(form.name)"
+                    readonly="true"
                     :required="isRequired('name')"
                     @mouseover="disableReadonly"
+                    @focus="disableReadonly"
                 >
             </div>
             <!-- destiny -->
@@ -30,9 +30,10 @@
                     name="destiny"
                     placeholder="Destiny"
                     class="appearance-none block w-full bg-gray-200 text-gray-700 border border-red-500 rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white"
-                    :readonly="!isEmptyField(form.destiny)"
+                    readonly="true"
                     :required="isRequired('destiny')"
                     @mouseover="disableReadonly"
+                    @focus="disableReadonly"
                 >
                 </textarea>
             </div>
@@ -124,9 +125,10 @@
                     type="text"
                     placeholder="Module"
                     class="appearance-none block w-full bg-gray-200 text-gray-700 border border-red-500 rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white"
-                    :readonly="!isEmptyField(form.module)"
+                    readonly="true"
                     :required="isRequired('module')"
                     @mouseover="disableReadonly"
+                    @focus="disableReadonly"
                 >
             </div>
         </div>
@@ -170,6 +172,7 @@ export default {
             } else {
                 Inertia.post("/navigations", form, {
                     preserveScroll: true,
+                    preserveState: false,
                     onSuccess: () => Swal.close()
                 })
             }
