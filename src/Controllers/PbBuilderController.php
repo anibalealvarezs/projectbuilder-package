@@ -651,12 +651,13 @@ class PbBuilderController extends Controller
         foreach($this->defaults as $key => $value) {
             switch($key) {
                 case 'lang':
-                    $defaults->lang = PbLanguage::findByCode($value);
+                    $defaults->$key = PbLanguage::findByCode($value);
                     break;
                 case 'country':
-                    $defaults->country = PbCountry::findByCode($value);
+                    $defaults->$key = PbCountry::findByCode($value);
                     break;
                 default:
+                    $defaults->$key = $value;
                     break;
             }
         }
