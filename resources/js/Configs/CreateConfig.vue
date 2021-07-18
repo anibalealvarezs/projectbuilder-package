@@ -9,7 +9,7 @@
         <Main>
             <slot>
                 <div class="p-12 sm:px-20 bg-white border-b border-gray-200">
-                    <ConfigForm :data="{}" />
+                    <ConfigForm :data="{}" :defaults="defaults" :required="required" />
                 </div>
             </slot>
         </Main>
@@ -17,19 +17,22 @@
 </template>
 
 <script>
-    import AppLayout from '@/Pages/Projectbuilder/AppLayout'
-    import Main from "@/Pages/Projectbuilder/Main"
     import ConfigForm from "@/Pages/Projectbuilder/Configs/ConfigForm"
+    import {computed} from "vue"
+    import {usePage} from "@inertiajs/inertia-vue3"
+    import PbCreate from "Pub/js/Projectbuilder/pbcreate"
 
     export default {
+        extends: PbCreate,
         name: "CreateConfig",
-        props: {
-            page: Object
-        },
         components: {
             ConfigForm,
-            AppLayout,
-            Main
+        },
+        setup () {
+            const defaults = computed(() => usePage().props.value.shared.defaults)
+            const required = computed(() => usePage().props.value.shared.required)
+
+            return { defaults, required }
         }
     }
 </script>

@@ -16,61 +16,32 @@
                     >
                         <slot>Create Navigation</slot>
                     </Button>
-                    <TableNavigations :navigations="pbnavigations" :allowed="allowed" :sort="sort" :showpos="showpos" :showid="showid" :model="model" />
+                    <TableNavigations :navigations="pbnavigations" :allowed="allowed" :sort="sort" :showpos="showpos" :showid="showid" :model="model" :defaults="defaults" :required="required" />
                 </div>
             </slot>
             <div :id="buildHiddenId" class="infinite-hidden">
-                <NavigationForm :data="{}" />
+                <NavigationForm :data="{}" :defaults="defaults" :required="required" />
             </div>
         </Main>
     </AppLayout>
 </template>
 
 <script>
-    import AppLayout from '@/Pages/Projectbuilder/AppLayout'
     import TableNavigations from "@/Pages/Projectbuilder/Navigations/TableNavigations"
-    import Button from "@/Jetstream/Button"
-    import Main from "@/Pages/Projectbuilder/Main"
-    import {TableFields as Table} from "Pub/js/Projectbuilder/projectbuilder";
-    import Swal from "sweetalert2";
     import NavigationForm from "@/Pages/Projectbuilder/Navigations/NavigationForm"
     import {computed} from "vue";
-    import {usePage} from "@inertiajs/inertia-vue3";
+    import {usePage} from "@inertiajs/inertia-vue3"
+    import PbIndex from "Pub/js/Projectbuilder/pbindex"
 
     export default {
+        extends: PbIndex,
         name: "Navigations",
         props: {
             pbnavigations: Object
         },
         components: {
-            Button,
-            AppLayout,
             TableNavigations,
-            Main,
             NavigationForm
-        },
-        data() {
-            return {
-                hiddenid: 0
-            }
-        },
-        methods: {
-            loadForm() {
-                let swalNavigation = Table.buildSwalLoadFormConfig({text: "Create", formitem: "navigation"})
-                swalNavigation['didOpen'] = () => {
-                    Table.appendToSwal(this.hiddenid)
-                }
-                swalNavigation['willClose'] = () => {
-                    Table.removeFromSwal(this.hiddenid)
-                }
-                Swal.fire(swalNavigation);
-            }
-        },
-        computed: {
-            buildHiddenId() {
-                this.hiddenid = Table.buildHiddenId()
-                return this.hiddenid
-            }
         },
         setup () {
             const allowed = computed(() => usePage().props.value.shared.allowed)
@@ -78,8 +49,10 @@
             const showpos = computed(() => usePage().props.value.shared.showpos)
             const showid = computed(() => usePage().props.value.shared.showid)
             const model = computed(() => usePage().props.value.shared.model)
+            const defaults = computed(() => usePage().props.value.shared.defaults)
+            const required = computed(() => usePage().props.value.shared.required)
 
-            return { allowed, sort, model, showpos, showid }
+            return { allowed, sort, model, showpos, showid, defaults, required }
         }
     }
 </script>

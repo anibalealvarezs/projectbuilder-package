@@ -25,8 +25,6 @@ class PbRoleController extends PbBuilderController
     {
         // Vars Override
         $this->key = 'Role';
-        // Parent construct
-        parent::__construct(true);
         // Validation Rules
         $this->validationRules = [
             'alias' => ['required', 'max:190'],
@@ -37,6 +35,8 @@ class PbRoleController extends PbBuilderController
         ];
         // Show ID column ?
         $this->showId = false;
+        // Parent construct
+        parent::__construct(true);
     }
 
     /**
@@ -56,7 +56,22 @@ class PbRoleController extends PbBuilderController
         }
         $model = $query->get(); //Get all permissions
 
+        $this->required = array_merge($this->required, ['name']);
+
         return parent::index($model);
+    }
+
+    /**
+     * Show the form for creating a new resource.
+     *
+     * @param string $route
+     * @return InertiaResponse
+     */
+    public function create(string $route = 'level'): InertiaResponse
+    {
+        $this->required = array_merge($this->required, ['name']);
+
+        return parent::create($route);
     }
 
     /**
@@ -70,7 +85,9 @@ class PbRoleController extends PbBuilderController
         $this->validationRules['name'] = ['required', 'max:20', Rule::unique($this->table)];
 
         // Validation
-        $this->validateRequest('store', $this->validationRules, $request);
+        if ($failed = $this->validateRequest($this->validationRules, $request)) {
+            return $failed;
+        }
 
         $permissions = $request->input('permissions');
 
@@ -120,6 +137,8 @@ class PbRoleController extends PbBuilderController
     {
         $model = $this->modelPath::with('permissions')->findOrFail($id);
 
+        $this->required = array_merge($this->required, ['name']);
+
         return parent::edit($id, $model);
     }
 
@@ -135,7 +154,9 @@ class PbRoleController extends PbBuilderController
         $this->validationRules['name'] = ['required', 'max:20', Rule::unique($this->table)->ignore($id)];
 
         // Validation
-        $this->validateRequest('update', $this->validationRules, $request);
+        if ($failed = $this->validateRequest($this->validationRules, $request)) {
+            return $failed;
+        }
 
         $permissions = $request->input('permissions');
 

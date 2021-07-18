@@ -14,7 +14,8 @@
                     type="text"
                     placeholder="Name"
                     class="appearance-none block w-full bg-gray-200 text-gray-700 border border-red-500 rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white"
-                    readonly="readonly"
+                    :readonly="!isEmptyField(form.name)"
+                    :required="isRequired('name')"
                     @mouseover="disableReadonly"
                 >
             </div>
@@ -29,7 +30,8 @@
                     name="destiny"
                     placeholder="Destiny"
                     class="appearance-none block w-full bg-gray-200 text-gray-700 border border-red-500 rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white"
-                    readonly="readonly"
+                    :readonly="!isEmptyField(form.destiny)"
+                    :required="isRequired('destiny')"
                     @mouseover="disableReadonly"
                 >
                 </textarea>
@@ -45,6 +47,7 @@
                     name="type"
                     class="appearance-none w-full md:w-1/1 px-4 py-3 mb-3 block rounded bg-gray-200 text-gray-700 border border-gray-200 overflow-hidden leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
                     placeholder="Select Type"
+                    :required="isRequired('type')"
                 >
                     <option v-for="type in ['route', 'path', 'custom']" :value="type">
                         {{ type }}
@@ -62,6 +65,7 @@
                     name="parent"
                     class="appearance-none w-full md:w-1/1 px-4 py-3 mb-3 block rounded bg-gray-200 text-gray-700 border border-gray-200 overflow-hidden leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
                     placeholder="Select parent"
+                    :required="isRequired('parent')"
                 >
                     <option value="0">[None]</option>
                     <option v-for="navigation in navigations" :value="navigation.id">
@@ -80,6 +84,7 @@
                     name="permissions"
                     class="appearance-none w-full md:w-1/1 px-4 py-3 mb-3 block rounded bg-gray-200 text-gray-700 border border-gray-200 overflow-hidden leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
                     placeholder="Assign permissions"
+                    :required="isRequired('permissions')"
                 >
                     <option v-for="permission in permissions" :value="permission.id">
                         {{ permission.alias }}
@@ -97,6 +102,7 @@
                     name="status"
                     class="appearance-none w-full md:w-1/1 px-4 py-3 mb-3 block rounded bg-gray-200 text-gray-700 border border-gray-200 overflow-hidden leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
                     placeholder="Select status"
+                    :required="isRequired('status')"
                 >
                     <option value="1">
                         Enabled
@@ -118,7 +124,8 @@
                     type="text"
                     placeholder="Module"
                     class="appearance-none block w-full bg-gray-200 text-gray-700 border border-red-500 rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white"
-                    readonly="readonly"
+                    :readonly="!isEmptyField(form.module)"
+                    :required="isRequired('module')"
                     @mouseover="disableReadonly"
                 >
             </div>
@@ -133,37 +140,16 @@
 </template>
 
 <script>
-import Button from "@/Jetstream/Button"
 import {computed, reactive} from 'vue'
 import { Inertia } from '@inertiajs/inertia'
 import Swal from "sweetalert2"
 import {usePage} from "@inertiajs/inertia-vue3";
 import { Helpers } from "Pub/js/Projectbuilder/projectbuilder"
+import PbForm from "Pub/js/Projectbuilder/pbform"
 
 export default {
+    extends: PbForm,
     name: "NavigationForm",
-    props: {
-        data: Object,
-        keyid: String,
-    },
-    components: {
-        Button
-    },
-    data() {
-        return {
-            buttontext: (this.data.item ? "Save" : "Create")
-        }
-    },
-    methods: {
-        disableReadonly(event) {
-            document.getElementById(event.target.id).readOnly = false
-        }
-    },
-    computed: {
-        readonly() {
-            return this.data.hasOwnProperty('item')
-        }
-    },
     setup (props) {
         const form = reactive({
             name: props.data.name,

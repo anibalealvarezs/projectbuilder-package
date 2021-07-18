@@ -17,19 +17,14 @@
 </template>
 
 <script>
-    import AppLayout from '@/Pages/Projectbuilder/AppLayout'
-    import Main from "@/Pages/Projectbuilder/Main"
+    import PbShow from "Pub/js/Projectbuilder/pbshow"
 
     export default {
+        extends: PbShow,
         name: "ShowConfig",
         props: {
             pbconfig: Object,
-            page: Object
         },
-        components: {
-            AppLayout,
-            Main
-        }
     }
 </script>
 

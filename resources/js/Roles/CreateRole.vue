@@ -9,7 +9,7 @@
         <Main>
             <slot>
                 <div class="p-12 sm:px-20 bg-white border-b border-gray-200">
-                    <RoleForm :data="{}" />
+                    <RoleForm :data="{}" :defaults="defaults" :required="required" />
                 </div>
             </slot>
         </Main>
@@ -17,19 +17,22 @@
 </template>
 
 <script>
-    import AppLayout from '@/Pages/Projectbuilder/AppLayout'
-    import Main from "@/Pages/Projectbuilder/Main"
     import RoleForm from "@/Pages/Projectbuilder/Roles/RoleForm"
+    import {computed} from "vue"
+    import {usePage} from "@inertiajs/inertia-vue3"
+    import PbCreate from "Pub/js/Projectbuilder/pbcreate"
 
     export default {
+        extends: PbCreate,
         name: "CreateRole",
-        props: {
-            page: Object
-        },
         components: {
             RoleForm,
-            AppLayout,
-            Main
+        },
+        setup () {
+            const defaults = computed(() => usePage().props.value.shared.defaults)
+            const required = computed(() => usePage().props.value.shared.required)
+
+            return { defaults, required }
         }
     }
 </script>

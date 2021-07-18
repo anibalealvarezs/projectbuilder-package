@@ -16,73 +16,32 @@
                     >
                         <slot>Create Role</slot>
                     </Button>
-                    <TableRoles :roles="pbroles" :allowed="allowed" :sort="sort" :showpos="showpos" :showid="showid" :model="model" />
+                    <TableRoles :roles="pbroles" :allowed="allowed" :sort="sort" :showpos="showpos" :showid="showid" :model="model" :defaults="defaults" :required="required" />
                 </div>
             </slot>
             <div :id="buildHiddenId" class="infinite-hidden">
-                <RoleForm :data="{}" />
+                <RoleForm :data="{}" :defaults="defaults" :required="required" />
             </div>
         </Main>
     </AppLayout>
 </template>
 
 <script>
-    import AppLayout from '@/Pages/Projectbuilder/AppLayout'
     import TableRoles from "@/Pages/Projectbuilder/Roles/TableRoles"
-    import Button from "@/Jetstream/Button"
-    import Main from "@/Pages/Projectbuilder/Main"
-    import {TableFields as Table} from "Pub/js/Projectbuilder/projectbuilder";
-    import Swal from "sweetalert2";
     import RoleForm from "@/Pages/Projectbuilder/Roles/RoleForm"
-    import {computed} from "vue";
-    import {usePage} from "@inertiajs/inertia-vue3";
+    import {computed} from "vue"
+    import {usePage} from "@inertiajs/inertia-vue3"
+    import PbIndex from "Pub/js/Projectbuilder/pbindex"
 
     export default {
+        extends: PbIndex,
         name: "Roles",
         props: {
             pbroles: Object,
         },
         components: {
-            Button,
-            AppLayout,
             TableRoles,
-            Main,
             RoleForm
-        },
-        data() {
-            return {
-                hiddenid: 0
-            }
-        },
-        methods: {
-            loadForm() {
-                let swalConfig = Table.buildSwalLoadFormConfig({text: "Create", formitem: "role"})
-                swalConfig['didOpen'] = () => {
-                    Table.appendToSwal(this.hiddenid)
-                }
-                swalConfig['willClose'] = () => {
-                    Table.removeFromSwal(this.hiddenid)
-                }
-                Swal.fire(swalConfig);
-            },
-            getRowPos(el) {
-                return Table.getRowPos(this.sort, el)
-            },
-            getTablePositions(group) {
-                let sort = [];
-                document.querySelectorAll('#'+this.model+'-table-rows tr').forEach(function(value){
-                    if (value.dataset.group == group) {
-                        sort.push(value.dataset.id)
-                    }
-                })
-                return sort
-            },
-        },
-        computed: {
-            buildHiddenId() {
-                this.hiddenid = Table.buildHiddenId()
-                return this.hiddenid
-            }
         },
         setup () {
             const allowed = computed(() => usePage().props.value.shared.allowed)
@@ -90,8 +49,10 @@
             const showpos = computed(() => usePage().props.value.shared.showpos)
             const showid = computed(() => usePage().props.value.shared.showid)
             const model = computed(() => usePage().props.value.shared.model)
+            const defaults = computed(() => usePage().props.value.shared.defaults)
+            const required = computed(() => usePage().props.value.shared.required)
 
-            return { allowed, sort, model, showpos, showid }
+            return { allowed, sort, model, showpos, showid, defaults, required }
         }
     }
 </script>

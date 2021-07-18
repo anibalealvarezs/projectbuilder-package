@@ -9,7 +9,7 @@
         <Main>
             <slot>
                 <div class="p-12 sm:px-20 bg-white border-b border-gray-200">
-                    <PermissionForm :data="{}" />
+                    <PermissionForm :data="{}" :defaults="defaults" :required="required" />
                 </div>
             </slot>
         </Main>
@@ -17,19 +17,22 @@
 </template>
 
 <script>
-    import AppLayout from '@/Pages/Projectbuilder/AppLayout'
-    import Main from "@/Pages/Projectbuilder/Main"
     import PermissionForm from "@/Pages/Projectbuilder/Permissions/PermissionForm"
+    import {computed} from "vue"
+    import {usePage} from "@inertiajs/inertia-vue3"
+    import PbCreate from "Pub/js/Projectbuilder/pbcreate"
 
     export default {
+        extends: PbCreate,
         name: "CreatePermission",
-        props: {
-            page: Object
-        },
         components: {
             PermissionForm,
-            AppLayout,
-            Main
+        },
+        setup () {
+            const defaults = computed(() => usePage().props.value.shared.defaults)
+            const required = computed(() => usePage().props.value.shared.required)
+
+            return { defaults, required }
         }
     }
 </script>

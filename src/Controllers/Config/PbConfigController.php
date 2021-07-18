@@ -12,6 +12,7 @@ use Illuminate\Validation\Rule;
 use Auth;
 use DB;
 use Inertia\Response;
+use Inertia\Response as InertiaResponse;
 use Session;
 
 class PbConfigController extends PbBuilderController
@@ -20,8 +21,6 @@ class PbConfigController extends PbBuilderController
     {
         // Vars Override
         $this->key = 'Config';
-        // Parent construct
-        parent::__construct(true);
         // Validation Rules
         $this->validationRules = [
             'name' => ['required', 'max:190'],
@@ -30,6 +29,8 @@ class PbConfigController extends PbBuilderController
         ];
         // Show ID column ?
         $this->showId = false;
+        // Parent construct
+        parent::__construct(true);
     }
 
     /**
@@ -48,6 +49,19 @@ class PbConfigController extends PbBuilderController
     }
 
     /**
+     * Show the form for creating a new resource.
+     *
+     * @param string $route
+     * @return InertiaResponse
+     */
+    public function create(string $route = 'level'): InertiaResponse
+    {
+        $this->required = array_merge($this->required, ['configkey']);
+
+        return parent::create();
+    }
+
+    /**
      * Store a newly created resource in storage.
      *
      * @param Request $request
@@ -57,7 +71,23 @@ class PbConfigController extends PbBuilderController
     {
         $this->validationRules['configkey'] = ['required', 'max:50', Rule::unique($this->table)];
 
-        return parent::store($request, $this->validationRules, $this->replacers);
+        return parent::store($request);
+    }
+
+    /**
+     * Show the form for editing the specified resource.
+     *
+     * @param int $id
+     * @param null $element
+     * @param bool $multiple
+     * @param string $route
+     * @return InertiaResponse
+     */
+    public function edit(int $id, $element = null, bool $multiple = false, string $route = 'level'): InertiaResponse
+    {
+        $this->required = array_merge($this->required, ['configkey']);
+
+        return parent::edit($id);
     }
 
     /**
@@ -71,6 +101,6 @@ class PbConfigController extends PbBuilderController
     {
         $this->validationRules['configkey'] = ['required', 'max:50', Rule::unique($this->table)->ignore($id)];
 
-        return parent::update($request, $id, $this->validationRules, $this->replacers);
+        return parent::update($request, $id);
     }
 }

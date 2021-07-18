@@ -6,6 +6,8 @@ use Anibalealvarezs\Projectbuilder\Helpers\Shares;
 use Anibalealvarezs\Projectbuilder\Models\PbUser;
 
 use Auth;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
 trait PbControllerTrait
 {
@@ -32,8 +34,17 @@ trait PbControllerTrait
         return $allowed;
     }
 
-    protected function validationCheck($validator, $request)
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @param $validationRules
+     * @param Request $request
+     * @return void
+     */
+    protected function validateRequest($validationRules, Request $request)
     {
+        $validator = Validator::make($request->all(), $validationRules);
+
         if ($validator->fails()) {
             $errors = $validator->errors();
             $current = "";
@@ -41,8 +52,10 @@ trait PbControllerTrait
                 $current = $message;
             }
 
-            $this->redirectResponse($request, $current);
+            return $this->redirectResponse($request, $current);
         }
+
+        return null;
     }
 
     protected function redirectResponse(

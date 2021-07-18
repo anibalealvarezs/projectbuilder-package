@@ -13,7 +13,8 @@
                     type="text"
                     placeholder="Name"
                     class="appearance-none block w-full bg-gray-200 text-gray-700 border border-red-500 rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white"
-                    readonly="readonly"
+                    :readonly="!isEmptyField(form.name)"
+                    :required="isRequired('name')"
                     @mouseover="disableReadonly"
                 >
             </div>
@@ -29,7 +30,8 @@
                     type="text"
                     placeholder="Key"
                     class="appearance-none block w-full bg-gray-200 text-gray-700 border border-red-500 rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white"
-                    :readonly="readonly"
+                    :readonly="!isEmptyField(form.configkey)"
+                    :required="isRequired('configkey')"
                 >
             </div>
             <!-- value -->
@@ -44,7 +46,8 @@
                     type="text"
                     placeholder="Value"
                     class="appearance-none block w-full bg-gray-200 text-gray-700 border border-red-500 rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white"
-                    readonly="readonly"
+                    :readonly="!isEmptyField(form.configvalue)"
+                    :required="isRequired('configvalue')"
                     @mouseover="disableReadonly"
                 >
             </div>
@@ -59,7 +62,8 @@
                     name="description"
                     placeholder="description"
                     class="appearance-none block w-full bg-gray-200 text-gray-700 border border-red-500 rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white"
-                    readonly="readonly"
+                    :readonly="!isEmptyField(form.description)"
+                    :required="isRequired('description')"
                     @mouseover="disableReadonly"
                 >
                 </textarea>
@@ -75,35 +79,14 @@
 </template>
 
 <script>
-import Button from "@/Jetstream/Button"
 import { reactive } from 'vue'
 import { Inertia } from '@inertiajs/inertia'
 import Swal from "sweetalert2"
+import PbForm from "Pub/js/Projectbuilder/pbform"
 
 export default {
+    extends: PbForm,
     name: "ConfigForm",
-    props: {
-        data: Object,
-        keyid: String
-    },
-    components: {
-        Button
-    },
-    data() {
-        return {
-            buttontext: (this.data.item ? "Save" : "Create")
-        }
-    },
-    methods: {
-        disableReadonly(event) {
-            document.getElementById(event.target.id).readOnly = false
-        }
-    },
-    computed: {
-        readonly() {
-            return this.data.hasOwnProperty('item')
-        }
-    },
     setup (props) {
         const form = reactive({
             name: props.data.name,

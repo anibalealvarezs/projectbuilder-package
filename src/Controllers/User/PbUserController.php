@@ -4,6 +4,8 @@ namespace Anibalealvarezs\Projectbuilder\Controllers\User;
 
 use Anibalealvarezs\Projectbuilder\Controllers\PbBuilderController;
 
+use Anibalealvarezs\Projectbuilder\Models\PbCountry;
+use Anibalealvarezs\Projectbuilder\Models\PbLanguage;
 use Anibalealvarezs\Projectbuilder\Models\PbUser;
 use App\Http\Requests;
 
@@ -23,12 +25,6 @@ class PbUserController extends PbBuilderController
     {
         // Vars Override
         $this->key = 'User';
-        // Parent construct
-        parent::__construct(true);
-        // Middlewares
-        $this->middleware(['is_'.$this->name.'_editable'])->only('edit', 'update');
-        $this->middleware(['is_'.$this->name.'_deletable'])->only('destroy');
-        $this->middleware(['is_'.$this->name.'_viewable'])->only('show');
         // Validation Rules
         $this->validationRules = [
             'name' => ['required', 'max:190'],
@@ -43,6 +39,17 @@ class PbUserController extends PbBuilderController
             'countries',
             'roles',
         ];
+        // Default values
+        $this->defaults = [
+            'lang' => 'es',
+            'country' => 'ES'
+        ];
+        // Parent construct
+        parent::__construct(true);
+        // Middlewares
+        $this->middleware(['is_'.$this->name.'_editable'])->only('edit', 'update');
+        $this->middleware(['is_'.$this->name.'_deletable'])->only('destroy');
+        $this->middleware(['is_'.$this->name.'_viewable'])->only('show');
     }
 
     /**
@@ -55,6 +62,8 @@ class PbUserController extends PbBuilderController
      */
     public function index($element = null, bool $multiple = false, string $route = 'level')
     {
+        $this->required = array_merge($this->required, ['roles', 'email']);
+
         $query = $this->modelPath::with('country', 'city', 'lang', 'roles');
         $currentUser = $this->modelPath::find(Auth::user()->id);
         if (!$currentUser->hasRole('super-admin')) {
@@ -105,6 +114,8 @@ class PbUserController extends PbBuilderController
             'create '.$this->names => 'create',
         ];
 
+        $this->required = array_merge($this->required, ['roles', 'password', 'email']);
+
         return $this->renderView($this->viewsPath.'Create'.$this->key);
     }
 
@@ -124,7 +135,9 @@ class PbUserController extends PbBuilderController
         ];
 
         // Validation
-        $this->validateRequest('store', array_merge($this->validationRules, $validationRules2), $request);
+        if ($failed = $this->validateRequest(array_merge($this->validationRules, $validationRules2), $request)) {
+            return $failed;
+        }
 
         $roles = $request->input('roles');
         $lang = $request->input('lang');
@@ -202,6 +215,8 @@ class PbUserController extends PbBuilderController
 
         $model = $this->modelPath::with('country', 'city', 'lang', 'roles')->find($id);
 
+        $this->required = array_merge($this->required, ['roles', 'email']);
+
         return parent::edit($id, $model);
     }
 
@@ -221,7 +236,9 @@ class PbUserController extends PbBuilderController
         ];
 
         // Validation
-        $this->validateRequest('update', array_merge($this->validationRules, $validationRules2), $request);
+        if ($failed = $this->validateRequest(array_merge($this->validationRules, $validationRules2), $request)) {
+            return $failed;
+        }
 
         // Requests
         $roles = $request->input('roles');

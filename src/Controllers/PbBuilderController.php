@@ -4,6 +4,8 @@ namespace Anibalealvarezs\Projectbuilder\Controllers;
 
 use Anibalealvarezs\Projectbuilder\Helpers\PbHelpers;
 use Anibalealvarezs\Projectbuilder\Helpers\Shares;
+use Anibalealvarezs\Projectbuilder\Models\PbCountry;
+use Anibalealvarezs\Projectbuilder\Models\PbLanguage;
 use Anibalealvarezs\Projectbuilder\Traits\PbControllerTrait;
 
 use App\Http\Requests;
@@ -234,14 +236,6 @@ class PbBuilderController extends Controller
     /**
      * @var array
      */
-    protected $storeValidation = [];
-    /**
-     * @var array
-     */
-    protected $updateValidation = [];
-    /**
-     * @var array
-     */
     protected $validationRules = [];
     /**
      * @var array
@@ -275,6 +269,14 @@ class PbBuilderController extends Controller
      * @var array
      */
     protected $inertiaRoot;
+    /**
+     * @var array
+     */
+    protected $defaults = [];
+    /**
+     * @var array
+     */
+    protected $required = [];
 
     function __construct($crud_perms = false)
     {
@@ -377,6 +379,8 @@ class PbBuilderController extends Controller
         if (!$this->showId) {
             $this->showId = true;
         }
+
+        $this->required = $this->getRequired();
     }
 
     /**
@@ -424,7 +428,9 @@ class PbBuilderController extends Controller
     public function store(Request $request)
     {
         // Validation
-        $this->validateRequest('store', $this->validationRules, $request);
+        if ($failed = $this->validateRequest($this->validationRules, $request)) {
+            return $failed;
+        }
 
         // Process
         try {
@@ -487,7 +493,9 @@ class PbBuilderController extends Controller
     public function update(Request $request, int $id)
     {
         // Validation
-        $this->validateRequest('update', $this->validationRules, $request);
+        if ($failed = $this->validateRequest($this->validationRules, $request)) {
+            return $failed;
+        }
 
         // Process
         try {
@@ -534,10 +542,9 @@ class PbBuilderController extends Controller
     public function sort(Request $request, int $id)
     {
         // Validation
-        $validator = Validator::make($request->all(), [
-            'sortlist' => ['required'],
-        ]);
-        $this->validationCheck($validator, $request);
+        if ($failed = $this->validateRequest(['sortlist' => ['required']], $request)) {
+            return $failed;
+        }
 
         $sortList = $request['sortlist'];
 
@@ -627,8 +634,49 @@ class PbBuilderController extends Controller
                 ['showpos' => $this->showPosition],
                 ['showid' => $this->showId],
                 ['model' => $this->viewModelName],
+                ['required' => $this->required],
+                ['defaults' => $this->getDefaults()],
             )
         );
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @return void
+     */
+    protected function getDefaults()
+    {
+        $defaults = (object) [];
+        foreach($this->defaults as $key => $value) {
+            switch($key) {
+                case 'lang':
+                    $defaults->lang = PbLanguage::findByCode($value);
+                    break;
+                case 'country':
+                    $defaults->country = PbCountry::findByCode($value);
+                    break;
+                default:
+                    break;
+            }
+        }
+        return $defaults;
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @return void
+     */
+    protected function getRequired()
+    {
+        $required = [];
+        foreach($this->validationRules as $key => $value) {
+            if (in_array('required', $value)) {
+                array_push($required, $key);
+            }
+        }
+        return $required;
     }
 
     /**
@@ -664,22 +712,6 @@ class PbBuilderController extends Controller
             }
             return $requests;
         }
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param $method
-     * @param $validationRules
-     * @param Request $request
-     * @return void
-     */
-    protected function validateRequest($method, $validationRules, Request $request)
-    {
-        $key = $method.'Validation';
-        $this->$key = array_merge($this->$key, $validationRules);
-        $validator = Validator::make($request->all(), $this->$key);
-        $this->validationCheck($validator, $request);
     }
 
     /**

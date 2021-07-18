@@ -24,8 +24,6 @@ class PbPermissionController extends PbBuilderController
     {
         // Vars Override
         $this->key = 'Permission';
-        // Parent construct
-        parent::__construct(true);
         // Validation Rules
         $this->validationRules = [
             'name' => ['required', 'max:40'],
@@ -37,6 +35,8 @@ class PbPermissionController extends PbBuilderController
         ];
         // Show ID column ?
         $this->showId = false;
+        // Parent construct
+        parent::__construct(true);
     }
 
     /**
@@ -71,7 +71,9 @@ class PbPermissionController extends PbBuilderController
     public function store(Request $request)
     {
         // Validation
-        $this->validateRequest('store', $this->validationRules, $request);
+        if ($failed = $this->validateRequest($this->validationRules, $request)) {
+            return $failed;
+        }
 
         $roles = $request->input('roles');
 
@@ -140,7 +142,9 @@ class PbPermissionController extends PbBuilderController
     public function update(Request $request, int $id)
     {
         // Validation
-        $this->validateRequest('update', $this->validationRules, $request);
+        if ($failed = $this->validateRequest($this->validationRules, $request)) {
+            return $failed;
+        }
 
         $roles = $request->input('roles');
 

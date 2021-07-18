@@ -18,8 +18,6 @@ class PbNavigationController extends PbBuilderController
     {
         // Vars Override
         $this->key = 'Navigation';
-        // Parent construct
-        parent::__construct(true);
         // Validation Rules
         $this->validationRules = [
             'name' => ['required', 'max:190'],
@@ -46,6 +44,8 @@ class PbNavigationController extends PbBuilderController
         // $this->showPosition = true;
         // Show ID column ?
         $this->showId = false;
+        // Parent construct
+        parent::__construct(true);
     }
 
     /**

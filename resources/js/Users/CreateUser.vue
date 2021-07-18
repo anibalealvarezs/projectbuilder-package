@@ -9,7 +9,7 @@
         <Main>
             <slot>
                 <div class="p-12 sm:px-20 bg-white border-b border-gray-200">
-                    <UserForm :data="{}" />
+                    <UserForm :data="{}" :defaults="defaults" :required="required" />
                 </div>
             </slot>
         </Main>
@@ -17,19 +17,22 @@
 </template>
 
 <script>
-    import AppLayout from '@/Pages/Projectbuilder/AppLayout'
-    import Main from "@/Pages/Projectbuilder/Main"
     import UserForm from "@/Pages/Projectbuilder/Users/UserForm"
+    import {computed} from "vue"
+    import {usePage} from "@inertiajs/inertia-vue3"
+    import PbCreate from "Pub/js/Projectbuilder/pbcreate"
 
     export default {
+        extends: PbCreate,
         name: "CreateUser",
-        props: {
-            page: Object
-        },
         components: {
             UserForm,
-            AppLayout,
-            Main
+        },
+        setup () {
+            const defaults = computed(() => usePage().props.value.shared.defaults)
+            const required = computed(() => usePage().props.value.shared.required)
+
+            return { defaults, required }
         }
     }
 </script>

@@ -13,7 +13,8 @@
                     type="text"
                     placeholder="Name"
                     class="temp-readonly appearance-none block w-full bg-gray-200 text-gray-700 border border-red-500 rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white"
-                    readonly="readonly"
+                    :readonly="!isEmptyField(form.name)"
+                    :required="isRequired('name')"
                     @mouseover="disableReadonly"
                 >
             </div>
@@ -31,7 +32,8 @@
                     type="text"
                     placeholder="Alias"
                     class="temp-readonly appearance-none block w-full bg-gray-200 text-gray-700 border border-red-500 rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white"
-                    readonly="readonly"
+                    :readonly="!isEmptyField(form.alias)"
+                    :required="isRequired('alias')"
                     @mouseover="disableReadonly"
                 >
             </div>
@@ -49,6 +51,7 @@
                     class="appearance-none w-full md:w-1/1 px-4 py-3 mb-3 block rounded bg-gray-200 text-gray-700 border border-gray-200 overflow-auto leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
                     placeholder="Assign it to roles"
                     multiple="true"
+                    :required="isRequired('roles')"
                 >
                     <option v-for="role in roles" :value="role.id">
                         {{ role.name }}
@@ -66,37 +69,15 @@
 </template>
 
 <script>
-import Button from "@/Jetstream/Button"
 import {computed, reactive} from 'vue'
 import { Inertia } from '@inertiajs/inertia'
 import Swal from "sweetalert2"
 import {usePage} from "@inertiajs/inertia-vue3";
-/* import {usePage} from "@inertiajs/inertia-vue3"; */
+import PbForm from "Pub/js/Projectbuilder/pbform"
 
 export default {
+    extends: PbForm,
     name: "PermissionForm",
-    props: {
-        data: Object,
-        keyid: String,
-    },
-    components: {
-        Button
-    },
-    data() {
-        return {
-            buttontext: (this.data.item ? "Save" : "Create")
-        }
-    },
-    methods: {
-        disableReadonly(event) {
-            document.getElementById(event.target.id).readOnly = false
-        }
-    },
-    computed: {
-        readonly() {
-            return this.data.hasOwnProperty('item')
-        }
-    },
     setup (props) {
         let rolesList = [];
         if (props.data.roles) {

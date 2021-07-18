@@ -13,7 +13,8 @@
                     type="text"
                     placeholder="Name"
                     class="temp-readonly appearance-none block w-full bg-gray-200 text-gray-700 border border-red-500 rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white"
-                    readonly="readonly"
+                    :readonly="!isEmptyField(form.name)"
+                    :required="isRequired('name')"
                     @mouseover="disableReadonly"
                 >
             </div>
@@ -29,7 +30,8 @@
                     type="text"
                     placeholder="email@email.com"
                     class="temp-readonly appearance-none block w-full bg-gray-200 text-gray-700 border border-red-500 rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white"
-                    readonly="readonly"
+                    :readonly="!isEmptyField(form.email)"
+                    :required="isRequired('email')"
                     @mouseover="disableReadonly"
                 >
             </div>
@@ -47,7 +49,8 @@
                     type="password"
                     placeholder="******************"
                     class="temp-readonly appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
-                    readonly="readonly"
+                    :readonly="!isEmptyField(form.password)"
+                    :required="isRequired('password')"
                     @mouseover="disableReadonly"
                 >
             </div>
@@ -61,10 +64,11 @@
                 <select
                     v-model="form.roles"
                     :id="'grid-role-' + keyid"
-                    name="lang"
+                    name="role"
                     class="appearance-none w-full md:w-1/1 px-4 py-3 mb-3 block rounded bg-gray-200 text-gray-700 border border-gray-200 overflow-auto leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
                     placeholder="Select role"
                     multiple="true"
+                    :required="isRequired('role')"
                 >
                     <option v-for="role in roles" :value="role.name">
                         {{ role.name }}
@@ -84,6 +88,7 @@
                     name="country"
                     class="appearance-none w-full md:w-1/1 px-4 py-3 mb-3 block rounded bg-gray-200 text-gray-700 border border-gray-200 overflow-hidden leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
                     placeholder="Select country"
+                    :required="isRequired('country')"
                 >
                     <option v-for="country in countries" :value="country.id">
                         {{ country.name }}
@@ -103,8 +108,9 @@
                     name="lang"
                     class="appearance-none w-full md:w-1/1 px-4 py-3 mb-3 block rounded bg-gray-200 text-gray-700 border border-gray-200 overflow-hidden leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
                     placeholder="Select language"
+                    :required="isRequired('lang')"
                 >
-                    <option v-for="language in languages" :value="language.id">
+                    <option v-for="language in languages" :value="language.id" :data-iso="language.code">
                         {{ language.name }}
                     </option>
                 </select>
@@ -120,36 +126,15 @@
 </template>
 
 <script>
-import Button from "@/Jetstream/Button"
 import {computed, reactive} from 'vue'
 import { Inertia } from '@inertiajs/inertia'
 import Swal from "sweetalert2"
-import {usePage} from "@inertiajs/inertia-vue3";
+import {usePage} from "@inertiajs/inertia-vue3"
+import PbForm from "Pub/js/Projectbuilder/pbform"
 
 export default {
+    extends: PbForm,
     name: "UserForm",
-    props: {
-        data: Object,
-        keyid: String,
-    },
-    components: {
-        Button
-    },
-    data() {
-        return {
-            buttontext: (this.data.item ? "Save" : "Create")
-        }
-    },
-    methods: {
-        disableReadonly(event) {
-            document.getElementById(event.target.id).readOnly = false
-        }
-    },
-    computed: {
-        readonly() {
-            return this.data.hasOwnProperty('item')
-        }
-    },
     setup (props) {
         let rolesList = [];
         if (props.data.roles) {
@@ -157,11 +142,12 @@ export default {
                 rolesList.push(v.name);
             }
         }
+
         const form = reactive({
             name: props.data.name,
             email: props.data.email,
-            lang: (props.data.lang ? props.data.lang.id : 0),
-            country: (props.data.country ? props.data.country.id : 0),
+            lang: (props.data.lang ? props.data.lang.id : (props.defaults.hasOwnProperty('lang') ? props.defaults.lang.id : 0)),
+            country: (props.data.country ? props.data.country.id : (props.defaults.hasOwnProperty('country') ? props.defaults.country.id : 0)),
             roles: rolesList,
             password: ""
         })

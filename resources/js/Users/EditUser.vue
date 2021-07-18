@@ -8,11 +8,8 @@
 
         <Main>
             <slot>
-                <!-- <div>
-                    {{ pbuser }}
-                </div> -->
                 <div class="p-12 sm:px-20 bg-white border-b border-gray-200">
-                    <UserForm :data="setItem" />
+                    <UserForm :data="setItem" :defaults="defaults" :required="required" />
                 </div>
             </slot>
         </Main>
@@ -20,27 +17,31 @@
 </template>
 
 <script>
-    import AppLayout from '@/Pages/Projectbuilder/AppLayout'
-    import Main from "@/Pages/Projectbuilder/Main"
     import UserForm from "@/Pages/Projectbuilder/Users/UserForm"
-    /* import {TableFields as Table} from "Pub/js/Projectbuilder/projectbuilder"; */
+    import {computed} from "vue"
+    import {usePage} from "@inertiajs/inertia-vue3"
+    import PbEdit from "Pub/js/Projectbuilder/pbedit"
 
     export default {
+        extends: PbEdit,
         name: "EditUser",
         props: {
             pbuser: Object,
-            page: Object,
         },
         components: {
             UserForm,
-            AppLayout,
-            Main
         },
         computed: {
             setItem() {
                 this.pbuser.item = this.pbuser.id
                 return this.pbuser
             },
+        },
+        setup () {
+            const defaults = computed(() => usePage().props.value.shared.defaults)
+            const required = computed(() => usePage().props.value.shared.required)
+
+            return { defaults, required }
         }
     }
 </script>
