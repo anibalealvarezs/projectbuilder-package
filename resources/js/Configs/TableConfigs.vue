@@ -87,7 +87,7 @@ export default {
         )
         table.pushActions({
             "update": {
-                text: 'Update',
+                text: 'Edit',
                 style: 'secondary',
                 method: 'PUT',
                 route: "configs.edit",

@@ -11,7 +11,10 @@ use Anibalealvarezs\Projectbuilder\Traits\PbControllerTrait;
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
 
+use Illuminate\Contracts\Foundation\Application;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Routing\Redirector;
 use Illuminate\Support\Facades\Validator;
 
 use Auth;
@@ -454,9 +457,9 @@ class PbBuilderController extends Controller
      * @param null $element
      * @param bool $multiple
      * @param string $route
-     * @return InertiaResponse
+     * @return Application|RedirectResponse|Redirector|InertiaResponse
      */
-    public function show(int $id, $element = null, bool $multiple = false, string $route = 'level'): InertiaResponse
+    public function show(int $id, $element = null, bool $multiple = false, string $route = 'level')
     {
         $arrayElements = $this->buildModelsArray($element, $multiple, $id);
 
@@ -750,7 +753,7 @@ class PbBuilderController extends Controller
             case 'parent':
                 $path = $this->parentViewsPath.$this->buildFile($type, ['singular' => $this->parentKey, 'plural' => $this->parentKeys]);
                 break;
-            case 'gradnparent':
+            case 'grandparent':
                 $path = $this->grandparentViewsPath.$this->buildFile($type, ['singular' => $this->grandparentKey, 'plural' => $this->grandparentKeys]);
                 break;
             default:

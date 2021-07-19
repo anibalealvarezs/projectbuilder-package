@@ -10,7 +10,10 @@ use Anibalealvarezs\Projectbuilder\Models\PbUser;
 use App\Http\Requests;
 
 use App\Models\Team;
+use Illuminate\Contracts\Foundation\Application;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Routing\Redirector;
 use Illuminate\Validation\Rule;
 
 use Auth;
@@ -185,12 +188,12 @@ class PbUserController extends PbBuilderController
      * @param null $element
      * @param bool $multiple
      * @param string $route
-     * @return InertiaResponse
+     * @return Application|RedirectResponse|Redirector|InertiaResponse
      */
-    public function show(int $id, $element = null, bool $multiple = false, string $route = 'level'): InertiaResponse
+    public function show(int $id, $element = null, bool $multiple = false, string $route = 'level')
     {
         if (Auth::user()->id == $id) {
-            return redirect('/'.${$this->name}.'/profile');
+            return redirect('/'.$this->name.'/profile');
         }
 
         $model = $this->modelPath::with('country', 'city', 'lang', 'roles')->find($id);
