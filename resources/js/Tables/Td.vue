@@ -198,7 +198,7 @@ export default {
         processAction(b, i) {
             switch(b.text) {
                 case "Create":
-                case "Update":
+                case "Edit":
                     let action = true;
                     if (b.altforuser.hasOwnProperty('altroute')) {
                         if (i[b.altforuser.key] == this.user[b.altforuser.key]) {
