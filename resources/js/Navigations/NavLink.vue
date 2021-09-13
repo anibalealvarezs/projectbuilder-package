@@ -1,8 +1,8 @@
 <template>
     <li :class="liclasses">
-        <inertia-link :href="getHref" :class="aclasses">
+        <Link :href="getHref" :class="aclasses">
             <slot></slot>
-        </inertia-link>
+        </Link>
         <ul v-if="hasDescendants" :class="ulclasses">
             <NavLink v-for="subnav in nav.descendants" :nav="subnav" active="false" :level="addLevel">
                 {{ subnav.name }}
@@ -12,7 +12,13 @@
 </template>
 
 <script>
+import {Link} from "@inertiajs/inertia-vue3";
+
 export default {
+    components: {
+        Link,
+    },
+
     props: {
         nav: Object,
         level: Number
