@@ -30,4 +30,31 @@ class PbModule extends PbBuilder
         }
         return $value;
     }
+
+    public function getByKey($value): bool
+    {
+        $module = self::where('modulekey', $value)->first();
+        if ($module) {
+            return self::find($module->id);
+        }
+        return false;
+    }
+
+    public static function isEnabled($value): bool
+    {
+        $module = (new PbModule)->getByKey($value);
+        if ($module) {
+            return (bool) $module->status;
+        }
+        return false;
+    }
+
+    public static function exists($value): bool
+    {
+        $module = (new PbModule)->getByKey($value);
+        if ($module) {
+            return true;
+        }
+        return false;
+    }
 }

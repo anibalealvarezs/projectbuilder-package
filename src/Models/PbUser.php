@@ -116,4 +116,34 @@ class PbUser extends User
 
         return true;
     }
+
+    public function delete()
+    {
+        if (PbModule::exists('filemanager') && class_exists(\Anibalealvarezs\Filemanager\Models\FmFile::class)) {
+            $user = self::getDefaultUser();
+            if ($user) {
+                try {
+                    \Anibalealvarezs\Filemanager\Models\FmFile::replaceAuthor($this->id, $user->id);
+                } catch (Exception $e) {
+                    $module = PbModule::getByKey('filemanager');
+                    PbLogger::create([
+                        'severity' => 3,
+                        'code' => 1,
+                        'message' => 'Author not replaced',
+                        'object_type' => 'file',
+                        'user_id' => Auth::user()->id,
+                        'module_id' => ($module ? $module->id : null)
+                    ]);
+                }
+            }
+        }
+
+        // delete the country
+        return parent::delete();
+    }
+
+    public function getDefaultUser()
+    {
+        return PbUser::find(1);
+    }
 }
