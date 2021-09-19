@@ -243,6 +243,10 @@ class PbBuilderController extends Controller
     /**
      * @var array
      */
+    protected $modelExclude = [];
+    /**
+     * @var array
+     */
     protected $replacers = [];
     /**
      * @var array
@@ -706,13 +710,17 @@ class PbBuilderController extends Controller
         }
         if ($model) {
             foreach($keys as $key) {
-                $model->$key = ${$key};
+                if (!in_array($key, $this->modelExclude)) {
+                    $model->$key = ${$key};
+                }
             }
             return $model;
         } else {
             $requests = [];
             foreach($keys as $key) {
-                $requests[$key] = ${$key};
+                if (!in_array($key, $this->modelExclude)) {
+                    $requests[$key] = ${$key};
+                }
             }
             return $requests;
         }
