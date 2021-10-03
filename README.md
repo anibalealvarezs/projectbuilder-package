@@ -17,7 +17,7 @@ Submit database connection data, site URL and project name
 ],
 ```
 
-#### 2. Add "pbstorage" link to "config/app/filesystems.php"
+#### 2. Add "pbstorage" link to "config/filesystems.php"
 ```php
 'links' => [
         public_path('pbstorage') => app_path('vendor/anibalealvarezs/projectbuilder-package/src/assets'),
@@ -28,13 +28,14 @@ Submit database connection data, site URL and project name
 
 ## Installation
 
-#### 3. Require the package
+#### 3. Require the package & install it
+```shell
+composer require anibalealvarezs/projectbuilder-package --no-cache
+php artisan pbuilder:install --inertia
+```
+If Jetstream & Inertia already installed, remove the ```--inertia``` flag from the command line
 ```shell
 php artisan pbuilder:install
-```
-If not installed Jetstream & Inertia, add ```--inertia``` to command line in order to install them
-```shell
-php artisan pbuilder:install --inertia
 ```
 In case of links failure (if "pbstorage" links show error), navigate to "public folder", manually delete the link, and create a new one with the following command:
 ```
