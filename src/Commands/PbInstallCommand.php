@@ -4,7 +4,6 @@ namespace Anibalealvarezs\Projectbuilder\Commands;
 
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Artisan;
-use Symfony\Component\Process\Process;
 
 class PbInstallCommand extends Command
 {
@@ -20,7 +19,7 @@ class PbInstallCommand extends Command
      *
      * @var string
      */
-    protected $description = 'Project Builde installation';
+    protected $description = 'Project Builder installation';
 
     /**
      * Create a new command instance.
@@ -35,40 +34,83 @@ class PbInstallCommand extends Command
     /**
      * Execute the console command.
      *
-     * @return int
+     * @return void
      */
     public function handle()
     {
         // Inertia...
+        echo "[[ Process start ]]\n";
         if ($this->option('inertia')) {
-            // $this->installInertia();
-            Artisan::call(
-                'jetstream:install',
-                [
-                    'stack' => 'inertia',
-                    '--teams' => 'default'
-                ]
-            );
+            echo "-- [[ Pre-requirements ]]\n";
+            $this->installInertia();
         }
-
-        shell_exec("composer require anibalealvarezs/projectbuilder-package --no-cache");
-
-        echo "Project Builder installed!\n";
+        echo "-- [[ Installing Project Builder ]]\n";
+        $this->installProjectBuilder();
+        echo "[[ Project Builder installed! ]]\n";
     }
+
+    /**
+     * Execute the console command.
+     *
+     * @return void
+     */
 
     public function installInertia()
     {
+        echo "---- Requiring Jetstream...\n";
         shell_exec("composer require laravel/jetstream");
+        echo "---- Installing Jetstream & Inertia...\n";
+        Artisan::call(
+            'jetstream:install',
+            [
+                'stack' => 'inertia',
+                '--teams' => 'default'
+            ]
+        );
     }
+
+    /**
+     * Execute the console command.
+     *
+     * @return void
+     */
+
+    public function installProjectBuilder()
+    {
+        $this->requirePackage();
+        $this->publishResources();
+        $this->migrateAndSeed();
+        $this->createLinks();
+    }
+
+    /**
+     * Execute the console command.
+     *
+     * @return void
+     */
+
+    public function requirePackage()
+    {
+        echo "---- Requiring Project Builder...\n";
+        shell_exec("composer require anibalealvarezs/projectbuilder-package --no-cache");
+    }
+
+    /**
+     * Execute the console command.
+     *
+     * @return void
+     */
 
     public function publishResources()
     {
+        echo "---- Publishing Spatie's files...\n";
         Artisan::call(
             'vendor:publish',
             [
                 '--provider' => 'Spatie\Permission\PermissionServiceProvider'
             ]
         );
+        echo "---- Publishing Project Builder's stubs... \n";
         Artisan::call(
             'vendor:publish',
             [
@@ -76,6 +118,7 @@ class PbInstallCommand extends Command
                 '--tag' => 'migrations'
             ]
         );
+        echo "---- Publishing Project Builder's views... \n";
         Artisan::call(
             'vendor:publish',
             [
@@ -84,13 +127,38 @@ class PbInstallCommand extends Command
                 '--force' => 'default'
             ]
         );
+    }
+
+    /**
+     * Execute the console command.
+     *
+     * @return void
+     */
+
+    public function migrateAndSeed()
+    {
+        echo "---- Clearing cache... \n";
         Artisan::call('cache:clear');
+        echo "---- Migrating... \n";
         Artisan::call('migrate');
+        echo "---- Seeding... \n";
         Artisan::call(
             'db:seed',
             [
                 '--class' => '\\Anibalealvarezs\\Projectbuilder\\Database\\Seeders\\PbMainSeeder'
             ]
         );
+    }
+
+    /**
+     * Execute the console command.
+     *
+     * @return void
+     */
+
+    public function createLinks()
+    {
+        echo "---- Creating links\n";
+        Artisan::call('storage:link');
     }
 }
