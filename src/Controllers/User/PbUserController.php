@@ -4,8 +4,6 @@ namespace Anibalealvarezs\Projectbuilder\Controllers\User;
 
 use Anibalealvarezs\Projectbuilder\Controllers\PbBuilderController;
 
-use Anibalealvarezs\Projectbuilder\Models\PbCountry;
-use Anibalealvarezs\Projectbuilder\Models\PbLanguage;
 use Anibalealvarezs\Projectbuilder\Models\PbUser;
 use App\Http\Requests;
 
@@ -193,7 +191,7 @@ class PbUserController extends PbBuilderController
     public function show(int $id, $element = null, bool $multiple = false, string $route = 'level')
     {
         if (Auth::user()->id == $id) {
-            return redirect('/'.$this->name.'/profile');
+            return redirect(DIRECTORY_SEPARATOR.$this->name.'/profile');
         }
 
         $model = $this->modelPath::with('country', 'city', 'lang', 'roles')->find($id);
@@ -213,7 +211,7 @@ class PbUserController extends PbBuilderController
     public function edit(int $id, $element = null, bool $multiple = false, string $route = 'level'): InertiaResponse
     {
         if (Auth::user()->id == $id) {
-            return redirect('/'.${$this->name}.'/profile');
+            return redirect(DIRECTORY_SEPARATOR.${$this->name}.'/profile');
         }
 
         $model = $this->modelPath::with('country', 'city', 'lang', 'roles')->find($id);
