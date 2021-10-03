@@ -17,7 +17,14 @@ Submit database connection data, site URL and project name
 ],
 ```
 
-#### 2. If ***NOT*** installed, let's requiere jetstream and install inertia
+#### 2. Add "pbstorage" link to "config/app/filesystems.php"
+```php
+'links' => [
+        public_path('pbstorage') => app_path('vendor/anibalealvarezs/projectbuilder-package/src/assets'),
+    ],
+```
+
+#### 3. If ***NOT*** installed, let's requiere jetstream and install inertia
 ```shell
 composer require laravel/jetstream
 php artisan jetstream:install inertia --teams
@@ -84,13 +91,6 @@ php artisan vendor:publish --provider="Anibalealvarezs\Projectbuilder\Providers\
 [//]: <> (```)
 Ignore any alert from any seeder. Not all folders are used with every package.
 
-#### 8. Add "pbstorage" link to "config/app/filesystems.php"
-```php
-'links' => [
-        public_path('pbstorage') => app_path('vendor/anibalealvarezs/projectbuilder-package/src/assets'),
-    ],
-```
-
 #### 9. Create default "storage" and "pbstorage" links
 ```shell
 php artisan storage:link
@@ -142,7 +142,7 @@ npm install sortablejs --save
 
 [//]: <> (#### 13. Require Tailwind Plugins in tailwind.config.js)
 [//]: <> (```javascript)
-[//]: <> (require('@tailwindcss/forms'\))
+[//]: <> (require\('@tailwindcss/forms'\))
 [//]: <> (```)
 
 #### 13. Add alias for public folder in webpack.config.js
