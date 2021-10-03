@@ -61,10 +61,10 @@ in case of failing when turning columns to JSON, ***check manually the tables an
 [//]: <> (php artisan db:seed --class="Anibalealvarezs\Projectbuilder\Database\Seeders\PbSpatieSeeder")
 
 [//]: <> (The following are already included in previous seeds:)
-[//]: <> (php artisan db:seed --class="Anibalealvarezs\Projectbuilder\Database\Seeders\PbCountriesSeeder"
-[//]: <> (php artisan db:seed --class="Anibalealvarezs\Projectbuilder\Database\Seeders\PbLanguagesSeeder"
-[//]: <> (php artisan db:seed --class="Anibalealvarezs\Projectbuilder\Database\Seeders\PbUsersSeeder"
-[//]: <> (php artisan db:seed --class="Anibalealvarezs\Projectbuilder\Database\Seeders\PbTeamSeeder"
+[//]: <> (php artisan db:seed --class="Anibalealvarezs\Projectbuilder\Database\Seeders\PbCountriesSeeder")
+[//]: <> (php artisan db:seed --class="Anibalealvarezs\Projectbuilder\Database\Seeders\PbLanguagesSeeder")
+[//]: <> (php artisan db:seed --class="Anibalealvarezs\Projectbuilder\Database\Seeders\PbUsersSeeder")
+[//]: <> (php artisan db:seed --class="Anibalealvarezs\Projectbuilder\Database\Seeders\PbTeamSeeder")
 [//]: <> (```)
 
 #### 7. Publish Vue components and libraries
