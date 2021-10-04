@@ -316,7 +316,7 @@ class PbBuilderController extends Controller
         $this->prefixName = strtolower($this->prefix.$this->key);
         $this->prefixNames = $this->helper::toPlural($this->prefixName);
         $this->modelPath = $this->vendor."\\".$this->package."\\Models\\".$this->model;
-        $this->viewsPath = $this->package . DIRECTORY_SEPARATOR.$this->keys.DIRECTORY_SEPARATOR;
+        $this->viewsPath = $this->package."/".$this->keys."/";
         $this->table = (new $this->modelPath())->getTable();
         // Additional Parent Model Variables
         if ($this->parentKey) {
@@ -327,7 +327,7 @@ class PbBuilderController extends Controller
             $this->parentNames = $this->helper::toPlural($this->parentName);
             $this->prefixParentName = strtolower($this->prefix.$this->parentKey);
             $this->prefixParentNames = $this->helper::toPlural($this->prefixParentName);
-            $this->parentViewsPath = $this->package . DIRECTORY_SEPARATOR.$this->parentKeys.DIRECTORY_SEPARATOR;
+            $this->parentViewsPath = $this->package . "/".$this->parentKeys."/";
         }
         // Additional Grand Parent Model Variables
         if ($this->grandparentKey) {
@@ -338,7 +338,7 @@ class PbBuilderController extends Controller
             $this->grandparentNames = $this->helper::toPlural($this->grandparentName);
             $this->prefixGrandparentName = strtolower($this->prefix.$this->grandparentKey);
             $this->prefixGrandparentNames = $this->helper::toPlural($this->prefixGrandparentName);
-            $this->grandparentViewsPath = $this->package . DIRECTORY_SEPARATOR.$this->grandparentKeys.DIRECTORY_SEPARATOR;
+            $this->grandparentViewsPath = $this->package . "/".$this->grandparentKeys."/";
         }
         // Additional Child Model Variables
         if ($this->childKey) {
@@ -349,7 +349,7 @@ class PbBuilderController extends Controller
             $this->childNames = $this->helper::toPlural($this->childName);
             $this->prefixChildName = strtolower($this->prefix.$this->childKey);
             $this->prefixChildNames = $this->helper::toPlural($this->prefixChildName);
-            $this->childViewsPath = $this->package . DIRECTORY_SEPARATOR.$this->childKeys.DIRECTORY_SEPARATOR;
+            $this->childViewsPath = $this->package . "/".$this->childKeys."/";
         }
         // Additional Grand Child Model Variables
         if ($this->grandchildKey) {
@@ -360,7 +360,7 @@ class PbBuilderController extends Controller
             $this->grandchildNames = $this->helper::toPlural($this->grandchildName);
             $this->prefixGrandchildName = strtolower($this->prefix.$this->grandchildKey);
             $this->prefixGrandchildNames = $this->helper::toPlural($this->prefixGrandchildName);
-            $this->grandchildViewsPath = $this->package . DIRECTORY_SEPARATOR.$this->grandchildKeys.DIRECTORY_SEPARATOR;
+            $this->grandchildViewsPath = $this->package . "/".$this->grandchildKeys."/";
         }
 
         if ($crud_perms) {

@@ -28,14 +28,14 @@ class PbHelpers
      * @param array $fields
      * @param string $outputFormatType
      * @param string $outputFormat
-     * @return array
+     * @return object
      */
     public static function setCollectionAttributeDatetimeFormat(
         $collection,
         array $fields = [],
         string $outputFormatType = 'method',
         string $outputFormat = "toDateTimeString"
-    ): array {
+    ): object {
         return $collection->map(function ($array) use ($fields, $outputFormat, $outputFormatType) {
             foreach ($fields as $f) {
                 $array[$f] = (
