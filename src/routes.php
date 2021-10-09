@@ -25,3 +25,11 @@ Route::get('/clear-cache', function() {
     Artisan::call('cache:clear');
     return "Cache is cleared";
 });
+
+Route::prefix('api')->group(function () {
+    Route::resource('users', UserController::class)->middleware(['auth:sanctum'])->name('*', 'users');
+    Route::resource('configs', ConfigController::class)->middleware(['auth:sanctum'])->name('*', 'configs');
+    Route::resource('navigations', NavigationController::class)->middleware(['auth:sanctum'])->name('*', 'navigations');
+    Route::resource('roles', RoleController::class)->middleware(['auth:sanctum'])->name('*', 'roles');
+    Route::resource('permissions', PermissionController::class)->middleware(['auth:sanctum'])->name('*', 'permissions');
+});
