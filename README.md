@@ -42,7 +42,16 @@ In case of links failure (if "pbstorage" links show error), navigate to "public 
 ln -s ../vendor/anibalealvarezs/projectbuilder-package/src/assets pbstorage
 ```
 
-#### 4. Comment/remove the default "dashboard" route in /routes/web.php
+#### 4. Add Sanctum's middleware to your project's kernel in ```/app/Http/Kernel.php```
+```php
+'api' => [
+    ...
+    \Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful::class,
+    ...
+],
+```
+
+#### 5. Comment/remove the default "dashboard" route in ```/routes/web.php```
 ```php
 /*
 Route::middleware(['auth:sanctum', 'verified'])->get('/dashboard', function () {
@@ -62,7 +71,7 @@ Route::get('/', function () {
 });
 ```
 
-#### 5. Add resources to /webpack.mix.js
+#### 6. Add resources to ```/webpack.mix.js```
 ```javascript
 mix.js('node_modules/sweetalert2/dist/sweetalert2.js', 'public/js').
     js('node_modules/sortablejs/Sortable.js', 'public/js').
@@ -75,19 +84,19 @@ mix.js('node_modules/sweetalert2/dist/sweetalert2.js', 'public/js').
     .webpackConfig(require('./webpack.config'));
 ```
 
-#### 6. Install new resources as dependencies
+#### 7. Install new resources as dependencies
 ```shell
 npm i sweetalert2
 npm install @tailwindcss/forms
 npm install sortablejs --save
 ```
 
-#### 7. Add alias for public folder in webpack.config.js
+#### 8. Add alias for public folder in ```/webpack.config.js```
 ```
 Pub: path.resolve('public'),
 ```
 
-#### 8. Recompile app.js
+#### 9. Recompile app.js
 ```shell
 npm run prod
 ```

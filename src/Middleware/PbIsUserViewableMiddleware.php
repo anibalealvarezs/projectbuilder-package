@@ -20,8 +20,10 @@ class PbIsUserViewableMiddleware
      */
     public function handle(Request $request, Closure $next, $guard = null)
     {
-        if (PbUser::find($request->route('user'))->isViewableBy(Auth::guard($guard)->user()->id)) {
-            return $next($request);
+        if ($user = PbUser::find($request->route('user'))) {
+            if ($user->isViewableBy(Auth::guard($guard)->user()->id)) {
+                return $next($request);
+            }
         }
 
         throw PbUserException::notViewable();

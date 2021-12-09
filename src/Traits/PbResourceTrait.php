@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Http\Resources;
+namespace Anibalealvarezs\Projectbuilder\Traits;
 
-use Illuminate\Http\Request;
-use Illuminate\Http\Resources\Json\JsonResource;
+use Auth;
 use Illuminate\Contracts\Support\Arrayable;
+use Illuminate\Http\Request;
 
-class PbBuilder extends JsonResource
+trait PbResourceTrait
 {
     /**
      * Transform the resource into an array.

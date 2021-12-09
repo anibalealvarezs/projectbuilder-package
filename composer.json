@@ -27,13 +27,16 @@
         "guzzlehttp/guzzle": "^7.0.1",
         "inertiajs/inertia-laravel": "^0.4.4",
         "laravel/framework": "^8.40",
-        "laravel/jetstream": "^2.3",
+        "laravel/jetstream": "^2.4",
         "laravel/sanctum": "^2.6",
         "laravel/tinker": "^2.5",
         "nesbot/carbon": "^2.46",
         "spatie/laravel-permission": "^3.17",
         "spatie/laravel-translatable": "^4.6",
         "tightenco/ziggy": "^1.0"
+    },
+    "require-dev": {
+        "barryvdh/laravel-debugbar": "^3.6"
     },
     "autoload": {
         "psr-4": {
@@ -52,7 +55,8 @@
                 "Anibalealvarezs\\Projectbuilder\\Providers\\PbMigrationServiceProvider",
                 "Anibalealvarezs\\Projectbuilder\\Providers\\PbRouteServiceProvider",
                 "Anibalealvarezs\\Projectbuilder\\Providers\\PbViewServiceProvider",
-                "Anibalealvarezs\\Projectbuilder\\Providers\\PbSeederServiceProvider"
+                "Anibalealvarezs\\Projectbuilder\\Providers\\PbSeederServiceProvider",
+                "Barryvdh\\Debugbar\\ServiceProvider::class,"
             ]
         }
     },

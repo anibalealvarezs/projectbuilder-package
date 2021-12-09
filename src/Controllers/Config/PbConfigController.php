@@ -6,18 +6,19 @@ use Anibalealvarezs\Projectbuilder\Controllers\PbBuilderController;
 
 use App\Http\Requests;
 
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 
 use Auth;
 use DB;
-use Inertia\Response;
 use Inertia\Response as InertiaResponse;
 use Session;
 
 class PbConfigController extends PbBuilderController
 {
-    function __construct($crud_perms = false)
+    function __construct(Request $request, $crud_perms = false)
     {
         // Vars Override
         $this->key = 'Config';
@@ -30,7 +31,7 @@ class PbConfigController extends PbBuilderController
         // Show ID column ?
         $this->showId = false;
         // Parent construct
-        parent::__construct(true);
+        parent::__construct($request, true);
     }
 
     /**
@@ -39,10 +40,13 @@ class PbConfigController extends PbBuilderController
      * @param null $element
      * @param bool $multiple
      * @param string $route
-     * @return Response
+     * @return InertiaResponse|JsonResponse|RedirectResponse
      */
-    public function index($element = null, bool $multiple = false, string $route = 'level'): Response
-    {
+    public function index(
+        $element = null,
+        bool $multiple = false,
+        string $route = 'level'
+    ): InertiaResponse|JsonResponse|RedirectResponse {
         $arrayElements = $this->modelPath::with('module')->get();
 
         return parent::index($arrayElements);
@@ -52,9 +56,9 @@ class PbConfigController extends PbBuilderController
      * Show the form for creating a new resource.
      *
      * @param string $route
-     * @return InertiaResponse
+     * @return InertiaResponse|JsonResponse
      */
-    public function create(string $route = 'level'): InertiaResponse
+    public function create(string $route = 'level'): InertiaResponse|JsonResponse
     {
         $this->required = array_merge($this->required, ['configkey']);
 
@@ -81,10 +85,14 @@ class PbConfigController extends PbBuilderController
      * @param null $element
      * @param bool $multiple
      * @param string $route
-     * @return InertiaResponse
+     * @return InertiaResponse|JsonResponse
      */
-    public function edit(int $id, $element = null, bool $multiple = false, string $route = 'level'): InertiaResponse
-    {
+    public function edit(
+        int $id,
+        $element = null,
+        bool $multiple = false,
+        string $route = 'level'
+    ): InertiaResponse|JsonResponse {
         $this->required = array_merge($this->required, ['configkey']);
 
         return parent::edit($id);

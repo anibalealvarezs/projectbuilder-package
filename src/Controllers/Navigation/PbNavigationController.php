@@ -6,15 +6,19 @@ use Anibalealvarezs\Projectbuilder\Controllers\PbBuilderController;
 
 use App\Http\Requests;
 
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 
 use Auth;
 use DB;
+use Inertia\Response as InertiaResponse;
 use Session;
 
 class PbNavigationController extends PbBuilderController
 {
-    function __construct($crud_perms = false)
+    function __construct(Request $request, $crud_perms = false)
     {
         // Vars Override
         $this->key = 'Navigation';
@@ -45,7 +49,7 @@ class PbNavigationController extends PbBuilderController
         // Show ID column ?
         $this->showId = false;
         // Parent construct
-        parent::__construct(true);
+        parent::__construct($request, true);
     }
 
     /**
@@ -54,9 +58,9 @@ class PbNavigationController extends PbBuilderController
      * @param null $element
      * @param bool $multiple
      * @param string $route
-     * @return void
+     * @return InertiaResponse|JsonResponse|RedirectResponse
      */
-    public function index($element = null, bool $multiple = false, string $route = 'level')
+    public function index($element = null, bool $multiple = false, string $route = 'level'): InertiaResponse|JsonResponse|RedirectResponse
     {
         $model = $this->modelPath::with(['ascendant', 'permission', 'module'])->orderBy('parent')->orderBy('position')->get();
 

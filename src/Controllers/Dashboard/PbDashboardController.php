@@ -8,17 +8,19 @@ use App\Http\Requests;
 
 use Auth;
 use DB;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Session;
 
 use Inertia\Response as InertiaResponse;
 
 class PbDashboardController extends PbBuilderController
 {
-    function __construct($crud_perms = false)
+    function __construct(Request $request, $crud_perms = false)
     {
         // Parent construct
-        parent::__construct();
+        parent::__construct($request, $crud_perms);
         // Middlewares
         $this->middleware(['role_or_permission:login']);
     }
@@ -29,10 +31,13 @@ class PbDashboardController extends PbBuilderController
      * @param null $element
      * @param bool $multiple
      * @param string $route
-     * @return void
+     * @return InertiaResponse|JsonResponse|RedirectResponse
      */
-    public function index($element = null, bool $multiple = false, string $route = 'level')
-    {
-        return $this->renderView($this->package . '/Dashboard');
+    public function index(
+        $element = null,
+        bool $multiple = false,
+        string $route = 'level'
+    ): InertiaResponse|JsonResponse|RedirectResponse {
+        return $this->renderResponse($this->package . '/Dashboard');
     }
 }

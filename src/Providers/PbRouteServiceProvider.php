@@ -6,6 +6,8 @@ use Illuminate\Support\ServiceProvider;
 
 class PbRouteServiceProvider extends ServiceProvider
 {
+    protected $namespace ='Anibalealvarezs\Projectbuilder\Controllers';
+
     /**
      * Bootstrap the application services.
      *
@@ -14,7 +16,8 @@ class PbRouteServiceProvider extends ServiceProvider
     public function boot()
     {
         // Routes
-        include __DIR__ . '/../routes.php';
+        include __DIR__ . '/../Routes/web.php';
+        include __DIR__ . '/../Routes/api.php';
     }
 
     /**

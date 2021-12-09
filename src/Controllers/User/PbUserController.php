@@ -9,6 +9,7 @@ use App\Http\Requests;
 
 use App\Models\Team;
 use Illuminate\Contracts\Foundation\Application;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Redirector;
@@ -22,7 +23,7 @@ use Inertia\Response as InertiaResponse;
 
 class PbUserController extends PbBuilderController
 {
-    function __construct($crud_perms = false)
+    function __construct(Request $request, $crud_perms = false)
     {
         // Vars Override
         $this->key = 'User';
@@ -46,7 +47,7 @@ class PbUserController extends PbBuilderController
             'country' => 'ES'
         ];
         // Parent construct
-        parent::__construct(true);
+        parent::__construct($request, true);
         // Middlewares
         $this->middleware(['is_'.$this->name.'_editable'])->only('edit', 'update');
         $this->middleware(['is_'.$this->name.'_deletable'])->only('destroy');
@@ -59,9 +60,9 @@ class PbUserController extends PbBuilderController
      * @param null $element
      * @param bool $multiple
      * @param string $route
-     * @return void
+     * @return InertiaResponse|JsonResponse|RedirectResponse
      */
-    public function index($element = null, bool $multiple = false, string $route = 'level')
+    public function index($element = null, bool $multiple = false, string $route = 'level'): InertiaResponse|JsonResponse|RedirectResponse
     {
         $this->required = array_merge($this->required, ['roles', 'email']);
 
@@ -107,9 +108,9 @@ class PbUserController extends PbBuilderController
      * Show the form for creating a new resource.
      *
      * @param string $route
-     * @return InertiaResponse
+     * @return InertiaResponse|JsonResponse
      */
-    public function create(string $route = 'level'): InertiaResponse
+    public function create(string $route = 'level'): InertiaResponse|JsonResponse
     {
         $this->allowed = [
             'create '.$this->names => 'create',
@@ -117,7 +118,7 @@ class PbUserController extends PbBuilderController
 
         $this->required = array_merge($this->required, ['roles', 'password', 'email']);
 
-        return $this->renderView($this->viewsPath.'Create'.$this->key);
+        return $this->renderResponse($this->viewsPath.'Create'.$this->key);
     }
 
     /**
@@ -173,7 +174,7 @@ class PbUserController extends PbBuilderController
                 }
             }
 
-            return $this->redirectResponseCRUDSuccess($request, $this->key.' created successfully!');
+            return $this->redirectResponseCRUDSuccess($request, $this->key.' created successfully! New access token for user: '.$model->createToken('token')->plainTextToken);
         } catch (Exception $e) {
             return $this->redirectResponseCRUDFail($request, $this->key.' could not be created!');
         }
@@ -186,11 +187,11 @@ class PbUserController extends PbBuilderController
      * @param null $element
      * @param bool $multiple
      * @param string $route
-     * @return Application|RedirectResponse|Redirector|InertiaResponse
+     * @return Application|RedirectResponse|Redirector|InertiaResponse|JsonResponse
      */
-    public function show(int $id, $element = null, bool $multiple = false, string $route = 'level')
+    public function show(int $id, $element = null, bool $multiple = false, string $route = 'level'): Application|RedirectResponse|Redirector|InertiaResponse|JsonResponse
     {
-        if (Auth::user()->id == $id) {
+        if ((Auth::user()->id == $id) && !$this->request->is('api/*')) {
             return redirect(DIRECTORY_SEPARATOR.$this->name.'/profile');
         }
 
@@ -206,9 +207,9 @@ class PbUserController extends PbBuilderController
      * @param null $element
      * @param bool $multiple
      * @param string $route
-     * @return InertiaResponse
+     * @return InertiaResponse|JsonResponse
      */
-    public function edit(int $id, $element = null, bool $multiple = false, string $route = 'level'): InertiaResponse
+    public function edit(int $id, $element = null, bool $multiple = false, string $route = 'level'): InertiaResponse|JsonResponse
     {
         if (Auth::user()->id == $id) {
             return redirect(DIRECTORY_SEPARATOR.${$this->name}.'/profile');

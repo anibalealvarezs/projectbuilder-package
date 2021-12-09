@@ -12,6 +12,7 @@ use App\Http\Requests;
 use App\Http\Controllers\Controller;
 
 use Illuminate\Contracts\Foundation\Application;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Redirector;
@@ -284,8 +285,12 @@ class PbBuilderController extends Controller
      * @var array
      */
     protected $required = [];
+    /**
+     * @var $request
+     */
+    protected $request;
 
-    function __construct($crud_perms = false)
+    function __construct(Request $request, $crud_perms = false)
     {
         if (!$this->key) {
             $this->key = 'Builder';
@@ -294,10 +299,10 @@ class PbBuilderController extends Controller
             $this->prefix = 'Pb';
         }
         if (!$this->helper) {
-            $this->helper = PbHelpers::PB_VENDOR.'\\'.PbHelpers::PB_PACKAGE.'\\Helpers\\'.$this->prefix.'Helpers';
+            $this->helper = PbHelpers::PB_VENDOR . '\\' . PbHelpers::PB_PACKAGE . '\\Helpers\\' . $this->prefix . 'Helpers';
         }
         if (!$this->inertiaRoot) {
-            $this->inertiaRoot = $this->helper::PB_PACKAGE.'::app';
+            $this->inertiaRoot = $this->helper::PB_PACKAGE . '::app';
         }
         if (!$this->vendor) {
             $this->vendor = $this->helper::PB_VENDOR;
@@ -309,66 +314,66 @@ class PbBuilderController extends Controller
             $this->sortable = false;
         }
         $this->keys = $this->helper::toPlural($this->key);
-        $this->model = $this->prefix.$this->key;
+        $this->model = $this->prefix . $this->key;
         $this->models = $this->helper::toPlural($this->model);
         $this->name = strtolower($this->key);
         $this->names = $this->helper::toPlural($this->name);
-        $this->prefixName = strtolower($this->prefix.$this->key);
+        $this->prefixName = strtolower($this->prefix . $this->key);
         $this->prefixNames = $this->helper::toPlural($this->prefixName);
-        $this->modelPath = $this->vendor."\\".$this->package."\\Models\\".$this->model;
-        $this->viewsPath = $this->package."/".$this->keys."/";
+        $this->modelPath = $this->vendor . "\\" . $this->package . "\\Models\\" . $this->model;
+        $this->viewsPath = $this->package . "/" . $this->keys . "/";
         $this->table = (new $this->modelPath())->getTable();
         // Additional Parent Model Variables
         if ($this->parentKey) {
             $this->parentKeys = $this->helper::toPlural($this->parentKey);
-            $this->parentModel = $this->prefix.$this->parentKey;
+            $this->parentModel = $this->prefix . $this->parentKey;
             $this->parentModels = $this->helper::toPlural($this->parentModel);
             $this->parentName = strtolower($this->parentKey);
             $this->parentNames = $this->helper::toPlural($this->parentName);
-            $this->prefixParentName = strtolower($this->prefix.$this->parentKey);
+            $this->prefixParentName = strtolower($this->prefix . $this->parentKey);
             $this->prefixParentNames = $this->helper::toPlural($this->prefixParentName);
-            $this->parentViewsPath = $this->package . "/".$this->parentKeys."/";
+            $this->parentViewsPath = $this->package . "/" . $this->parentKeys . "/";
         }
         // Additional Grand Parent Model Variables
         if ($this->grandparentKey) {
             $this->grandparentKeys = $this->helper::toPlural($this->grandparentKey);
-            $this->grandparentModel = $this->prefix.$this->grandparentKey;
+            $this->grandparentModel = $this->prefix . $this->grandparentKey;
             $this->grandparentModels = $this->helper::toPlural($this->grandparentModel);
             $this->grandparentName = strtolower($this->grandparentKey);
             $this->grandparentNames = $this->helper::toPlural($this->grandparentName);
-            $this->prefixGrandparentName = strtolower($this->prefix.$this->grandparentKey);
+            $this->prefixGrandparentName = strtolower($this->prefix . $this->grandparentKey);
             $this->prefixGrandparentNames = $this->helper::toPlural($this->prefixGrandparentName);
-            $this->grandparentViewsPath = $this->package . "/".$this->grandparentKeys."/";
+            $this->grandparentViewsPath = $this->package . "/" . $this->grandparentKeys . "/";
         }
         // Additional Child Model Variables
         if ($this->childKey) {
             $this->childKeys = $this->helper::toPlural($this->childKey);
-            $this->childModel = $this->prefix.$this->childKey;
+            $this->childModel = $this->prefix . $this->childKey;
             $this->childModels = $this->helper::toPlural($this->childModel);
             $this->childName = strtolower($this->childKey);
             $this->childNames = $this->helper::toPlural($this->childName);
-            $this->prefixChildName = strtolower($this->prefix.$this->childKey);
+            $this->prefixChildName = strtolower($this->prefix . $this->childKey);
             $this->prefixChildNames = $this->helper::toPlural($this->prefixChildName);
-            $this->childViewsPath = $this->package . "/".$this->childKeys."/";
+            $this->childViewsPath = $this->package . "/" . $this->childKeys . "/";
         }
         // Additional Grand Child Model Variables
         if ($this->grandchildKey) {
             $this->grandchildKeys = $this->helper::toPlural($this->grandchildKey);
-            $this->grandchildModel = $this->prefix.$this->grandchildKey;
+            $this->grandchildModel = $this->prefix . $this->grandchildKey;
             $this->grandchildModels = $this->helper::toPlural($this->grandchildModel);
             $this->grandchildName = strtolower($this->grandchildKey);
             $this->grandchildNames = $this->helper::toPlural($this->grandchildName);
-            $this->prefixGrandchildName = strtolower($this->prefix.$this->grandchildKey);
+            $this->prefixGrandchildName = strtolower($this->prefix . $this->grandchildKey);
             $this->prefixGrandchildNames = $this->helper::toPlural($this->prefixGrandchildName);
-            $this->grandchildViewsPath = $this->package . "/".$this->grandchildKeys."/";
+            $this->grandchildViewsPath = $this->package . "/" . $this->grandchildKeys . "/";
         }
 
         if ($crud_perms) {
             // Middlewares
-            $this->middleware(['role_or_permission:read '.$this->names]);
-            $this->middleware(['role_or_permission:create '.$this->names])->only('create', 'store');
-            $this->middleware(['role_or_permission:update '.$this->names])->only('edit', 'update');
-            $this->middleware(['role_or_permission:delete '.$this->names])->only('destroy');
+            $this->middleware(['role_or_permission:read ' . $this->names]);
+            $this->middleware(['role_or_permission:create ' . $this->names])->only('create', 'store');
+            $this->middleware(['role_or_permission:update ' . $this->names])->only('edit', 'update');
+            $this->middleware(['role_or_permission:delete ' . $this->names])->only('destroy');
         }
 
         if (!$this->viewModelName) {
@@ -388,6 +393,8 @@ class PbBuilderController extends Controller
         }
 
         $this->required = $this->getRequired();
+
+        $this->request = $request;
     }
 
     /**
@@ -396,34 +403,37 @@ class PbBuilderController extends Controller
      * @param null $element
      * @param bool $multiple
      * @param string $route
-     * @return void
+     * @return InertiaResponse|JsonResponse|RedirectResponse
      */
-    public function index($element = null, bool $multiple = false, string $route = 'level')
-    {
+    public function index(
+        $element = null,
+        bool $multiple = false,
+        string $route = 'level'
+    ): InertiaResponse|JsonResponse|RedirectResponse {
         $arrayElements = $this->buildModelsArray($element, $multiple, null, true);
 
         $this->allowed = [
-            'create '.$this->names => 'create',
-            'update '.$this->names => 'update',
-            'delete '.$this->names => 'delete',
+            'create ' . $this->names => 'create',
+            'update ' . $this->names => 'update',
+            'delete ' . $this->names => 'delete',
         ];
 
         $path = $this->buildRouteString($route, 'index');
 
-        return $this->renderView($path, $arrayElements);
+        return $this->renderResponse($path, $arrayElements);
     }
 
     /**
      * Show the form for creating a new resource.
      *
      * @param string $route
-     * @return InertiaResponse
+     * @return InertiaResponse|JsonResponse
      */
-    public function create(string $route = 'level'): InertiaResponse
+    public function create(string $route = 'level'): InertiaResponse|JsonResponse
     {
         $path = $this->buildRouteString($route, 'create');
 
-        return $this->renderView($path);
+        return $this->renderResponse($path);
     }
 
     /**
@@ -448,9 +458,9 @@ class PbBuilderController extends Controller
             // Model save
             $model->save();
 
-            return $this->redirectResponseCRUDSuccess($request, $this->key.' created successfully!');
+            return $this->redirectResponseCRUDSuccess($request, $this->key . ' created successfully!');
         } catch (Exception $e) {
-            return $this->redirectResponseCRUDFail($request, $this->key.' could not be created!');
+            return $this->redirectResponseCRUDFail($request, $this->key . ' could not be created!');
         }
     }
 
@@ -461,15 +471,19 @@ class PbBuilderController extends Controller
      * @param null $element
      * @param bool $multiple
      * @param string $route
-     * @return Application|RedirectResponse|Redirector|InertiaResponse
+     * @return Application|RedirectResponse|Redirector|InertiaResponse|JsonResponse
      */
-    public function show(int $id, $element = null, bool $multiple = false, string $route = 'level')
-    {
+    public function show(
+        int $id,
+        $element = null,
+        bool $multiple = false,
+        string $route = 'level'
+    ): Application|RedirectResponse|Redirector|InertiaResponse|JsonResponse {
         $arrayElements = $this->buildModelsArray($element, $multiple, $id);
 
         $path = $this->buildRouteString($route, 'show');
 
-        return $this->renderView($path, $arrayElements);
+        return $this->renderResponse($path, $arrayElements);
     }
 
     /**
@@ -479,15 +493,19 @@ class PbBuilderController extends Controller
      * @param null $element
      * @param bool $multiple
      * @param string $route
-     * @return InertiaResponse
+     * @return InertiaResponse|JsonResponse
      */
-    public function edit(int $id, $element = null, bool $multiple = false, string $route = 'level'): InertiaResponse
-    {
+    public function edit(
+        int $id,
+        $element = null,
+        bool $multiple = false,
+        string $route = 'level'
+    ): InertiaResponse|JsonResponse {
         $arrayElements = $this->buildModelsArray($element, $multiple, $id);
 
         $path = $this->buildRouteString($route, 'edit');
 
-        return $this->renderView($path, $arrayElements);
+        return $this->renderResponse($path, $arrayElements);
     }
 
     /**
@@ -513,9 +531,9 @@ class PbBuilderController extends Controller
             // Update model
             $model->update($requests);
 
-            return $this->redirectResponseCRUDSuccess($request, $this->key.' updated successfully!');
+            return $this->redirectResponseCRUDSuccess($request, $this->key . ' updated successfully!');
         } catch (Exception $e) {
-            return $this->redirectResponseCRUDFail($request, $this->key.' could not be updated!');
+            return $this->redirectResponseCRUDFail($request, $this->key . ' could not be updated!');
         }
     }
 
@@ -533,9 +551,9 @@ class PbBuilderController extends Controller
             // Delete element
             $this->modelPath::find($id)->delete();
 
-            return $this->redirectResponseCRUDSuccess($request, $this->key.' deleted successfully!');
+            return $this->redirectResponseCRUDSuccess($request, $this->key . ' deleted successfully!');
         } catch (Exception $e) {
-            return $this->redirectResponseCRUDFail($request, $this->key.' could not be deleted!');
+            return $this->redirectResponseCRUDFail($request, $this->key . ' could not be deleted!');
         }
     }
 
@@ -557,7 +575,7 @@ class PbBuilderController extends Controller
 
         try {
             $n = 0;
-            foreach($sortList as $sortEl) {
+            foreach ($sortList as $sortEl) {
                 if ($id > 0) {
                     $query = $this->modelPath::where($this->sortingRef, $id)->where('id', $sortEl)->first();
                     if ($query) {
@@ -575,9 +593,9 @@ class PbBuilderController extends Controller
                 $n++;
             }
 
-            return $this->redirectResponseCRUDSuccess($request, $this->key.' sorted successfully!');
+            return $this->redirectResponseCRUDSuccess($request, $this->key . ' sorted successfully!');
         } catch (Exception $e) {
-            return $this->redirectResponseCRUDFail($request, $this->key.' could not be sorted!');
+            return $this->redirectResponseCRUDFail($request, $this->key . ' could not be sorted!');
         }
     }
 
@@ -590,13 +608,17 @@ class PbBuilderController extends Controller
      * @param bool $plural
      * @return array
      */
-    protected function buildModelsArray($element = null, bool $multiple = false, $id = null, bool $plural = false): array
-    {
+    protected function buildModelsArray(
+        $element = null,
+        bool $multiple = false,
+        $id = null,
+        bool $plural = false
+    ): array {
         $arrayElements = [];
         if ($element) {
             if ($multiple) {
-                foreach($element as $key => $value) {
-                    switch($key) {
+                foreach ($element as $key => $value) {
+                    switch ($key) {
                         case 'child':
                             $arrayElements[($value['size'] == 'multiple' ? $this->prefixChildNames : $this->prefixChildName)] = $value['object'];
                             break;
@@ -654,9 +676,9 @@ class PbBuilderController extends Controller
      */
     protected function getDefaults()
     {
-        $defaults = (object) [];
-        foreach($this->defaults as $key => $value) {
-            switch($key) {
+        $defaults = (object)[];
+        foreach ($this->defaults as $key => $value) {
+            switch ($key) {
                 case 'lang':
                     $defaults->$key = PbLanguage::findByCode($value);
                     break;
@@ -679,7 +701,7 @@ class PbBuilderController extends Controller
     protected function getRequired()
     {
         $required = [];
-        foreach($this->validationRules as $key => $value) {
+        foreach ($this->validationRules as $key => $value) {
             if (in_array('required', $value)) {
                 array_push($required, $key);
             }
@@ -699,7 +721,7 @@ class PbBuilderController extends Controller
     protected function processModelRequests($validationRules, Request $request, $replacers, $model = null)
     {
         $keys = [];
-        foreach($validationRules as $vrKey => $vr) {
+        foreach ($validationRules as $vrKey => $vr) {
             if (isset($replacers[$vrKey])) {
                 ${$replacers[$vrKey]} = $request[$vrKey];
                 array_push($keys, $replacers[$vrKey]);
@@ -709,7 +731,7 @@ class PbBuilderController extends Controller
             }
         }
         if ($model) {
-            foreach($keys as $key) {
+            foreach ($keys as $key) {
                 if (!in_array($key, $this->modelExclude)) {
                     $model->$key = ${$key};
                 }
@@ -717,7 +739,7 @@ class PbBuilderController extends Controller
             return $model;
         } else {
             $requests = [];
-            foreach($keys as $key) {
+            foreach ($keys as $key) {
                 if (!in_array($key, $this->modelExclude)) {
                     $requests[$key] = ${$key};
                 }
@@ -731,15 +753,25 @@ class PbBuilderController extends Controller
      *
      * @param $view
      * @param array $elements
-     * @return InertiaResponse
+     * @return JsonResponse|InertiaResponse
      */
-    protected function renderView($view, array $elements = []): InertiaResponse
+    protected function renderResponse($view, array $elements = [], $nullable = true): JsonResponse|InertiaResponse
     {
-        $this->shareVars();
+        if ($this->request->is('api/*')) {
+            //write your logic for api call
+            if ($elements || $nullable) {
+                return $this->handleJSONResponse($elements, 'Operation Successful');
+            } else {
+                return $this->handleJSONError('Operation Failed');
+            }
+        } else {
+            //write your logic for web call
+            $this->shareVars();
 
-        Inertia::setRootView($this->inertiaRoot);
+            Inertia::setRootView($this->inertiaRoot);
 
-        return Inertia::render($view, $elements);
+            return Inertia::render($view, $elements);
+        }
     }
 
     /**
@@ -751,21 +783,25 @@ class PbBuilderController extends Controller
      */
     protected function buildRouteString($route, $type): string
     {
-        switch($route) {
+        switch ($route) {
             case 'child':
-                $path = $this->childViewsPath.$this->buildFile($type, ['singular' => $this->childKey, 'plural' => $this->childKeys]);
+                $path = $this->childViewsPath . $this->buildFile($type,
+                        ['singular' => $this->childKey, 'plural' => $this->childKeys]);
                 break;
             case 'grandchild':
-                $path = $this->grandchildViewsPath.$this->buildFile($type, ['singular' => $this->grandchildKey, 'plural' => $this->grandchildKeys]);
+                $path = $this->grandchildViewsPath . $this->buildFile($type,
+                        ['singular' => $this->grandchildKey, 'plural' => $this->grandchildKeys]);
                 break;
             case 'parent':
-                $path = $this->parentViewsPath.$this->buildFile($type, ['singular' => $this->parentKey, 'plural' => $this->parentKeys]);
+                $path = $this->parentViewsPath . $this->buildFile($type,
+                        ['singular' => $this->parentKey, 'plural' => $this->parentKeys]);
                 break;
             case 'grandparent':
-                $path = $this->grandparentViewsPath.$this->buildFile($type, ['singular' => $this->grandparentKey, 'plural' => $this->grandparentKeys]);
+                $path = $this->grandparentViewsPath . $this->buildFile($type,
+                        ['singular' => $this->grandparentKey, 'plural' => $this->grandparentKeys]);
                 break;
             default:
-                $path = $this->viewsPath.$this->buildFile($type, ['singular' => $this->key, 'plural' => $this->keys]);
+                $path = $this->viewsPath . $this->buildFile($type, ['singular' => $this->key, 'plural' => $this->keys]);
                 break;
         }
 
@@ -774,15 +810,15 @@ class PbBuilderController extends Controller
 
     protected function buildFile($type, $keys)
     {
-        switch($type) {
+        switch ($type) {
             case 'show':
-                $file = 'Show'.$keys['singular'];
+                $file = 'Show' . $keys['singular'];
                 break;
             case 'create':
-                $file = 'Create'.$keys['singular'];
+                $file = 'Create' . $keys['singular'];
                 break;
             case 'edit':
-                $file = 'Edit'.$keys['singular'];
+                $file = 'Edit' . $keys['singular'];
                 break;
             default:
                 $file = $keys['plural'];
@@ -790,5 +826,27 @@ class PbBuilderController extends Controller
         }
 
         return $file;
+    }
+
+    public function handleJSONResponse($result, $msg)
+    {
+        $res = [
+            'success' => true,
+            'data' => $result,
+            'message' => $msg,
+        ];
+        return response()->json($res, 200);
+    }
+
+    public function handleJSONError($error, $errorMsg = [], $code = 404)
+    {
+        $res = [
+            'success' => false,
+            'message' => $error,
+        ];
+        if (!empty($errorMsg)) {
+            $res['data'] = $errorMsg;
+        }
+        return response()->json($res, $code);
     }
 }

@@ -68,5 +68,7 @@ class PbRegisterController extends Controller
             // 'password' => bcrypt($data['password']),
             'password' => $data['password']
         ]);
+
+        return $user->createToken('token')->plainTextToken;
     }
 }

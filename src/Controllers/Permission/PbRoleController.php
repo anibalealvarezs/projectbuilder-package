@@ -9,6 +9,7 @@ use Anibalealvarezs\Projectbuilder\Models\PbUser;
 use App\Http\Requests;
 
 use Illuminate\Contracts\Foundation\Application;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Redirector;
@@ -24,7 +25,7 @@ use Session;
 
 class PbRoleController extends PbBuilderController
 {
-    public function __construct($crud_perms = false)
+    public function __construct(Request $request, $crud_perms = false)
     {
         // Vars Override
         $this->key = 'Role';
@@ -39,7 +40,7 @@ class PbRoleController extends PbBuilderController
         // Show ID column ?
         $this->showId = false;
         // Parent construct
-        parent::__construct(true);
+        parent::__construct($request, true);
     }
 
     /**
@@ -48,9 +49,9 @@ class PbRoleController extends PbBuilderController
      * @param null $element
      * @param bool $multiple
      * @param string $route
-     * @return void
+     * @return InertiaResponse|JsonResponse|RedirectResponse
      */
-    public function index($element = null, bool $multiple = false, string $route = 'level')
+    public function index($element = null, bool $multiple = false, string $route = 'level'): InertiaResponse|JsonResponse|RedirectResponse
     {
         $query = $this->modelPath::with('permissions')->whereNotIn('name', ['super-admin']);
         $user = PbUser::find(Auth::user()->id);
@@ -68,9 +69,9 @@ class PbRoleController extends PbBuilderController
      * Show the form for creating a new resource.
      *
      * @param string $route
-     * @return InertiaResponse
+     * @return InertiaResponse|JsonResponse
      */
-    public function create(string $route = 'level'): InertiaResponse
+    public function create(string $route = 'level'): InertiaResponse|JsonResponse
     {
         $this->required = array_merge($this->required, ['name']);
 
@@ -120,9 +121,9 @@ class PbRoleController extends PbBuilderController
      * @param null $element
      * @param bool $multiple
      * @param string $route
-     * @return InertiaResponse
+     * @return Application|RedirectResponse|Redirector|InertiaResponse|JsonResponse
      */
-    public function show(int $id, $element = null, bool $multiple = false, string $route = 'level'): InertiaResponse
+    public function show(int $id, $element = null, bool $multiple = false, string $route = 'level'): Application|RedirectResponse|Redirector|InertiaResponse|JsonResponse
     {
         return $this->edit($id);
     }
@@ -134,9 +135,9 @@ class PbRoleController extends PbBuilderController
      * @param null $element
      * @param bool $multiple
      * @param string $route
-     * @return InertiaResponse
+     * @return InertiaResponse|JsonResponse
      */
-    public function edit(int $id, $element = null, bool $multiple = false, string $route = 'level'): InertiaResponse
+    public function edit(int $id, $element = null, bool $multiple = false, string $route = 'level'): InertiaResponse|JsonResponse
     {
         $model = $this->modelPath::with('permissions')->findOrFail($id);
 

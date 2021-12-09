@@ -103,11 +103,25 @@ class PbInstallCommand extends Command
 
     public function publishResources()
     {
+        echo "---- Publishing Sanctum's files...\n";
+        Artisan::call(
+            'vendor:publish',
+            [
+                '--provider' => 'Laravel\Sanctum\SanctumServiceProvider'
+            ]
+        );
         echo "---- Publishing Spatie's files...\n";
         Artisan::call(
             'vendor:publish',
             [
                 '--provider' => 'Spatie\Permission\PermissionServiceProvider'
+            ]
+        );
+        echo "---- Publishing Debugbar's files...\n";
+        Artisan::call(
+            'vendor:publish',
+            [
+                '--provider' => 'Barryvdh\Debugbar\ServiceProvider'
             ]
         );
         echo "---- Publishing Project Builder's stubs... \n";
