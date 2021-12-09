@@ -174,7 +174,7 @@ class PbUserController extends PbBuilderController
                 }
             }
 
-            return $this->redirectResponseCRUDSuccess($request, $this->key.' created successfully! New access token for user: '.$model->createToken('token')->plainTextToken);
+            return $this->redirectResponseCRUDSuccess($request, $this->key.' created successfully!');
         } catch (Exception $e) {
             return $this->redirectResponseCRUDFail($request, $this->key.' could not be created!');
         }
@@ -212,7 +212,7 @@ class PbUserController extends PbBuilderController
     public function edit(int $id, $element = null, bool $multiple = false, string $route = 'level'): InertiaResponse|JsonResponse
     {
         if (Auth::user()->id == $id) {
-            return redirect(DIRECTORY_SEPARATOR.${$this->name}.'/profile');
+            return redirect(DIRECTORY_SEPARATOR.$this->name.'/profile');
         }
 
         $model = $this->modelPath::with('country', 'city', 'lang', 'roles')->find($id);

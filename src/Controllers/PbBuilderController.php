@@ -753,9 +753,10 @@ class PbBuilderController extends Controller
      *
      * @param $view
      * @param array $elements
+     * @param bool $nullable
      * @return JsonResponse|InertiaResponse
      */
-    protected function renderResponse($view, array $elements = [], $nullable = true): JsonResponse|InertiaResponse
+    protected function renderResponse($view, array $elements = [], bool $nullable = true): JsonResponse|InertiaResponse
     {
         if ($this->request->is('api/*')) {
             //write your logic for api call

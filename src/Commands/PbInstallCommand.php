@@ -64,7 +64,8 @@ class PbInstallCommand extends Command
             'jetstream:install',
             [
                 'stack' => 'inertia',
-                '--teams' => 'default'
+                '--teams' => 'default',
+                '--pest' => 'default'
             ]
         );
     }
