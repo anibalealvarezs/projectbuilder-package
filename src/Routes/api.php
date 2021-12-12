@@ -12,7 +12,7 @@ $models = [
 
 foreach($models as $model => $directory) {
     Route::prefix('api')->group(function () use ($model, $directory) {
-        Route::prefix($model.'s')->middleware(['auth:sanctum'])->group(function () use ($model, $directory) {
+        Route::prefix($model.'s')->middleware(['auth:sanctum', 'api_access'])->group(function () use ($model, $directory) {
             $class = '\\Anibalealvarezs\\Projectbuilder\\Controllers\\'.$directory.'\\Pb'.ucfirst($model).'Controller';
             Route::get('/', [$class, 'index']);
             Route::post('/', [$class, 'store']);

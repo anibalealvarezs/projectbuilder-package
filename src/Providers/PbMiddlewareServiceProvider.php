@@ -29,6 +29,7 @@ class PbMiddlewareServiceProvider extends ServiceProvider
         $router->aliasMiddleware('is_user_editable', PbHelpers::PB_VENDOR.'\\'.PbHelpers::PB_PACKAGE.'\Middleware\\'.PbHelpers::PB_PREFIX.'IsUserEditableMiddleware');
         $router->aliasMiddleware('is_user_selectable', PbHelpers::PB_VENDOR.'\\'.PbHelpers::PB_PACKAGE.'\Middleware\\'.PbHelpers::PB_PREFIX.'IsUserSelectableMiddleware');
         $router->aliasMiddleware('is_user_deletable', PbHelpers::PB_VENDOR.'\\'.PbHelpers::PB_PACKAGE.'\Middleware\\'.PbHelpers::PB_PREFIX.'IsUserDeletableMiddleware');
+        $router->aliasMiddleware('api_access', PbHelpers::PB_VENDOR.'\\'.PbHelpers::PB_PACKAGE.'\Middleware\\'.PbHelpers::PB_PREFIX.'CanAccessApiMiddleware');
     }
 
     /**
