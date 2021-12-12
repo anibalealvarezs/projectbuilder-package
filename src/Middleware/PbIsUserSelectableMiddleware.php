@@ -24,6 +24,13 @@ class PbIsUserSelectableMiddleware
             return $next($request);
         }
 
-        throw PbUserException::notSelectable();
+        if ($request->is('api/*')) {
+            return response()->json([
+                'success' => false,
+                'message' => "You don't have permission to select this user."
+            ], 403);
+        } else {
+            throw PbUserException::notSelectable();
+        }
     }
 }

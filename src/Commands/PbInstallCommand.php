@@ -38,15 +38,30 @@ class PbInstallCommand extends Command
      */
     public function handle()
     {
-        // Inertia...
-        echo "[[ Process start ]]\n";
-        if ($this->option('inertia')) {
-            echo "-- [[ Pre-requirements ]]\n";
-            $this->installInertia();
+        try {
+            echo "[[ Process start ]]\n";
+            // Inertia...
+            if ($this->option('inertia')) {
+                echo "-- [[ Installing pre-requirements ]]\n";
+                if (!$this->installInertia()) {
+                    return false;
+                }
+            }
+            // Project Builder...
+            echo "-- [[ Installing Project Builder ]]\n";
+            if (!$this->installProjectBuilder()) {
+                return false;
+            }
+            // Logging results...
+            if (\Anibalealvarezs\Projectbuilder\Models\PbLogger::updateOrCreate(['message' => 'App Created'], ['object_type' => null])) {
+                echo "---- [[ Confirmation log entry added ]]\n";
+            } else {
+                echo "---- [[ Error adding confirmation log entry ]]\n";
+            }
+            echo "[[ Process finished ]]\n";
+        } catch (Exception $e) {
+            echo "-- [[ ERROR: ".$e->getMessage()." ]]\n";
         }
-        echo "-- [[ Installing Project Builder ]]\n";
-        $this->installProjectBuilder();
-        echo "[[ Project Builder installed! ]]\n";
     }
 
     /**
@@ -57,17 +72,29 @@ class PbInstallCommand extends Command
 
     public function installInertia()
     {
-        echo "---- Requiring Jetstream...\n";
-        shell_exec("composer require laravel/jetstream");
-        echo "---- Installing Jetstream & Inertia...\n";
-        Artisan::call(
-            'jetstream:install',
-            [
-                'stack' => 'inertia',
-                '--teams' => 'default',
-                '--pest' => 'default'
-            ]
-        );
+        try {
+            echo "---- Requiring Jetstream...\n";
+            if (!shell_exec("composer require laravel/jetstream")) {
+                echo "------ [[ ERROR: composer command through shell_exec failed ]]\n";
+                return false;
+            }
+            echo "---- Installing Jetstream & Inertia...\n";
+            if (!Artisan::call(
+                'jetstream:install',
+                [
+                    'stack' => 'inertia',
+                    '--teams' => 'default',
+                    '--pest' => 'default'
+                ]
+            )) {
+                echo "------ [[ ERROR: Jetstream installation failed failed ]]\n";
+                return false;
+            }
+        } catch (Exception $e) {
+            echo "------ [[ ERROR: ".$e->getMessage()." ]]\n";
+            return false;
+        }
+        return true;
     }
 
     /**
@@ -78,10 +105,32 @@ class PbInstallCommand extends Command
 
     public function installProjectBuilder()
     {
-        $this->requirePackage();
-        $this->publishResources();
-        $this->migrateAndSeed();
-        $this->createLinks();
+        try {
+            echo "---- Looking for Project Builder's package updates...\n";
+            if (!$this->requirePackage()) {
+                return false;
+            }
+            echo "---- Publishing Resources...\n";
+            if (!$this->publishResources()) {
+                return false;
+            }
+            echo "---- Database configuiration...\n";
+            if (!$this->migrateAndSeed()) {
+                return false;
+            }
+            echo "---- Creating links...\n";
+            if (!$this->createLinks()) {
+                if (\Anibalealvarezs\Projectbuilder\Models\PbLogger::create(['severity' => 2, 'message' => 'Links creation failed', 'object_type' => null])) {
+                    echo "---- [[ Confirmation log entry added ]]\n";
+                } else {
+                    echo "---- [[ Error adding confirmation log entry ]]\n";
+                }
+            }
+        } catch (Exception $e) {
+            echo $e->getMessage();
+            return false;
+        }
+        return true;
     }
 
     /**
@@ -92,8 +141,11 @@ class PbInstallCommand extends Command
 
     public function requirePackage()
     {
-        echo "---- Requiring Project Builder...\n";
-        shell_exec("composer require anibalealvarezs/projectbuilder-package --no-cache");
+        if (!shell_exec("composer require anibalealvarezs/projectbuilder-package --no-cache")) {
+            echo "------ [[ ERROR: composer could not require Project Builder's package ]]\n";
+            return false;
+        }
+        return true;
     }
 
     /**
@@ -104,44 +156,65 @@ class PbInstallCommand extends Command
 
     public function publishResources()
     {
-        echo "---- Publishing Sanctum's files...\n";
-        Artisan::call(
-            'vendor:publish',
-            [
-                '--provider' => 'Laravel\Sanctum\SanctumServiceProvider'
-            ]
-        );
-        echo "---- Publishing Spatie's files...\n";
-        Artisan::call(
-            'vendor:publish',
-            [
-                '--provider' => 'Spatie\Permission\PermissionServiceProvider'
-            ]
-        );
-        echo "---- Publishing Debugbar's files...\n";
-        Artisan::call(
-            'vendor:publish',
-            [
-                '--provider' => 'Barryvdh\Debugbar\ServiceProvider'
-            ]
-        );
-        echo "---- Publishing Project Builder's stubs... \n";
-        Artisan::call(
-            'vendor:publish',
-            [
-                '--provider' => 'Anibalealvarezs\Projectbuilder\Providers\PbMigrationServiceProvider',
-                '--tag' => 'migrations'
-            ]
-        );
-        echo "---- Publishing Project Builder's views... \n";
-        Artisan::call(
-            'vendor:publish',
-            [
-                '--provider' => 'Anibalealvarezs\Projectbuilder\Providers\PbViewServiceProvider',
-                '--tag' => 'builder-views',
-                '--force' => 'default'
-            ]
-        );
+        try {
+            echo "------ Publishing Sanctum's resources...\n";
+            if (!Artisan::call(
+                'vendor:publish',
+                [
+                    '--provider' => 'Laravel\Sanctum\SanctumServiceProvider'
+                ]
+            )) {
+                echo "-------- [[ ERROR: Sanctum's resources could not be published ]]\n";
+                return false;
+            }
+            echo "------ Publishing Spatie's resources...\n";
+            if (!Artisan::call(
+                'vendor:publish',
+                [
+                    '--provider' => 'Spatie\Permission\PermissionServiceProvider'
+                ]
+            )) {
+                echo "-------- [[ ERROR: Spatie's resources could not be published ]]\n";
+                return false;
+            }
+            echo "------ Publishing Debugbar's resources...\n";
+            if (!Artisan::call(
+                'vendor:publish',
+                [
+                    '--provider' => 'Barryvdh\Debugbar\ServiceProvider'
+                ]
+            )) {
+                echo "-------- [[ ERROR: Debugbar's resources could not be published ]]\n";
+                return false;
+            }
+            echo "------ Publishing Project Builder's stubs... \n";
+            if (!Artisan::call(
+                'vendor:publish',
+                [
+                    '--provider' => 'Anibalealvarezs\Projectbuilder\Providers\PbMigrationServiceProvider',
+                    '--tag' => 'migrations'
+                ]
+            )) {
+                echo "-------- [[ ERROR: Project Builder's stubs could not be published ]]\n";
+                return false;
+            }
+            echo "------ Publishing Project Builder's views... \n";
+            if (!Artisan::call(
+                'vendor:publish',
+                [
+                    '--provider' => 'Anibalealvarezs\Projectbuilder\Providers\PbViewServiceProvider',
+                    '--tag' => 'builder-views',
+                    '--force' => 'default'
+                ]
+            )) {
+                echo "-------- [[ ERROR: Project Builder's views could not be published ]]\n";
+                return false;
+            }
+        } catch (Exception $e) {
+            echo "------ [[ ERROR: ".$e->getMessage()." ]]\n";
+            return false;
+        }
+        return true;
     }
 
     /**
@@ -152,17 +225,33 @@ class PbInstallCommand extends Command
 
     public function migrateAndSeed()
     {
-        echo "---- Clearing cache... \n";
-        Artisan::call('cache:clear');
-        echo "---- Migrating... \n";
-        Artisan::call('migrate');
-        echo "---- Seeding... \n";
-        Artisan::call(
-            'db:seed',
-            [
-                '--class' => '\\Anibalealvarezs\\Projectbuilder\\Database\\Seeders\\PbMainSeeder'
-            ]
-        );
+        try {
+
+            echo "------ Clearing cache... \n";
+            if (!Artisan::call('cache:clear')) {
+                echo "-------- [[ ERROR: Cache could not be cleared ]]\n";
+                return false;
+            }
+            echo "------ Migrating... \n";
+            if (!Artisan::call('migrate')) {
+                echo "-------- [[ ERROR: Migration failed ]]\n";
+                return false;
+            }
+            echo "------ Seeding... \n";
+            if (!Artisan::call(
+                'db:seed',
+                [
+                    '--class' => '\\Anibalealvarezs\\Projectbuilder\\Database\\Seeders\\PbMainSeeder'
+                ]
+            )) {
+                echo "-------- [[ ERROR: Tables could not be seeded ]]\n";
+                return false;
+            }
+        } catch (Exception $e) {
+            echo "-------- [[ ERROR: ".$e->getMessage()." ]]\n";
+            return false;
+        }
+        return true;
     }
 
     /**
@@ -173,7 +262,8 @@ class PbInstallCommand extends Command
 
     public function createLinks()
     {
-        echo "---- Creating links\n";
-        Artisan::call('storage:link');
+        if (!Artisan::call('storage:link')) {
+            echo "------ [[ WARNING: Links could not be created ]]\n";
+        }
     }
 }

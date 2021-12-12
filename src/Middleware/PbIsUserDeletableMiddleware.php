@@ -24,6 +24,13 @@ class PbIsUserDeletableMiddleware
             return $next($request);
         }
 
-        throw PbUserException::notDeletable();
+        if ($request->is('api/*')) {
+            return response()->json([
+                'success' => false,
+                'message' => "You don't have permission to delete this user."
+            ], 403);
+        } else {
+            throw PbUserException::notDeletable();
+        }
     }
 }

@@ -158,15 +158,21 @@ class PbUserController extends PbBuilderController
                 if ($model->save()) {
                     $me = PbUser::find(Auth::user()->id);
                     if ($me->hasRole(['super-admin'])) {
-                        // Add only super-admin/admin
-                        if ($model->id == Auth::user()->id) {
+                        if (in_array('super-admin', $roles)) {
+                            // Add only super-admin
                             $roles = ['super-admin'];
                         } elseif (in_array('admin', $roles)) {
-                            $roles = ['admin'];
+                            // Add admin, and change developer and api-user
+                            $roles = array_merge(['admin'], array_intersect(['developer', 'api-user'], $roles));
                         }
-                    } else {
+                    } elseif ($me->hasRole(['admin'])) {
                         // Remove super-admin/admin
                         $toExclude = ['super-admin', 'admin'];
+                        $intersect = array_intersect($roles, $toExclude);
+                        $roles = array_diff($roles, $intersect);
+                    } else {
+                        // Remove super-admin/admin/developer/api-user
+                        $toExclude = ['super-admin', 'admin', 'developer', 'api-user'];
                         $intersect = array_intersect($roles, $toExclude);
                         $roles = array_diff($roles, $intersect);
                     }
@@ -176,7 +182,7 @@ class PbUserController extends PbBuilderController
 
             return $this->redirectResponseCRUDSuccess($request, $this->key.' created successfully!');
         } catch (Exception $e) {
-            return $this->redirectResponseCRUDFail($request, $this->key.' could not be created!');
+            return $this->redirectResponseCRUDFail($request, $this->key.' could not be created! '.$e->getMessage());
         }
     }
 
@@ -262,20 +268,35 @@ class PbUserController extends PbBuilderController
             if ($model->update($requests)) {
                 $me = PbUser::find(Auth::user()->id);
                 if ($me->hasRole(['super-admin'])) {
-                    // Add only super-admin/admin
-                    if ($model->id == Auth::user()->id) {
+                    if (($model->id == Auth::user()->id) || in_array('super-admin', $roles)) {
+                        // Add only super-admin
                         $roles = ['super-admin'];
                     } elseif (in_array('admin', $roles)) {
-                        $roles = ['admin'];
+                        // Add admin, and change developer and api-user
+                        $roles = array_merge(['admin'], array_intersect(['developer', 'api-user'], $roles));
                     }
-                } else {
-                    if ($model->hasRole(['admin'])) {
-                        $roles = ['admin'];
+                } elseif ($me->hasRole(['admin'])) {
+                    if (($model->id == Auth::user()->id) || $model->hasRole(['admin'])) {
+                        // Add admin, and change developer and api-user
+                        $roles = array_merge(['admin'], array_intersect(['developer', 'api-user'], $roles));
                     } else {
                         // Remove super-admin/admin
                         $toExclude = ['super-admin', 'admin'];
                         $intersect = array_intersect($roles, $toExclude);
                         $roles = array_diff($roles, $intersect);
+                    }
+                } else {
+                    // Remove super-admin/admin/developer/api-user
+                    $toExclude = ['super-admin', 'admin', 'developer', 'api-user'];
+                    $intersect = array_intersect($roles, $toExclude);
+                    $roles = array_diff($roles, $intersect);
+                    if ($model->hasRole(['developer'])) {
+                        // Keep developer
+                        array_push($roles, 'developer');
+                    }
+                    if ($model->hasRole(['api-user'])) {
+                        // Keep api-user
+                        array_push($roles, 'api-user');
                     }
                 }
                 $model->syncRoles($roles);
@@ -284,7 +305,7 @@ class PbUserController extends PbBuilderController
             return $this->redirectResponseCRUDSuccess($request, $this->key.' updated successfully!');
         } catch (Exception $e) {
 
-            return $this->redirectResponseCRUDFail($request, $this->key.' could not be updated!');
+            return $this->redirectResponseCRUDFail($request, $this->key.' could not be updated! '.$e->getMessage());
         }
     }
 

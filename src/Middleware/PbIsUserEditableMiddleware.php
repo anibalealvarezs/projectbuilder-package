@@ -24,6 +24,13 @@ class PbIsUserEditableMiddleware
             return $next($request);
         }
 
-        throw PbUserException::notEditable();
+        if ($request->is('api/*')) {
+            return response()->json([
+                'success' => false,
+                'message' => "You don't have permission to edit this user."
+            ], 403);
+        } else {
+            throw PbUserException::notEditable();
+        }
     }
 }

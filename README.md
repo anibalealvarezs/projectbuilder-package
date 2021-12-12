@@ -62,7 +62,15 @@ ln -s ../vendor/anibalealvarezs/projectbuilder-package/src/assets pbstorage
 ],
 ```
 
-#### 6. Comment/remove the default "dashboard" route in ```/routes/web.php```
+#### 6. Add full permissions to Jetstream API by default in ```app/Providers/JetstreamServiceProvider.php``` and remove the default permissions since they will be managed by Spatie's Permissions
+```php
+protected function configurePermissions()
+{
+    Jetstream::defaultApiTokenPermissions(['create', 'read', 'update', 'delete']);
+}
+```
+
+#### 7. Comment/remove the default "dashboard" route in ```/routes/web.php```
 ```php
 /*
 Route::middleware(['auth:sanctum', 'verified'])->get('/dashboard', function () {
@@ -82,7 +90,7 @@ Route::get('/', function () {
 });
 ```
 
-#### 7. Add resources to ```/webpack.mix.js```
+#### 8. Add resources to ```/webpack.mix.js```
 ```javascript
 mix.js('node_modules/sweetalert2/dist/sweetalert2.js', 'public/js').
     js('node_modules/sortablejs/Sortable.js', 'public/js').
@@ -95,19 +103,19 @@ mix.js('node_modules/sweetalert2/dist/sweetalert2.js', 'public/js').
     .webpackConfig(require('./webpack.config'));
 ```
 
-#### 8. Install new resources as dependencies
+#### 9. Install new resources as dependencies
 ```shell
 npm i sweetalert2
 npm install @tailwindcss/forms
 npm install sortablejs --save
 ```
 
-#### 9. Add alias for public folder in ```/webpack.config.js```
+#### 10. Add alias for public folder in ```/webpack.config.js```
 ```
 Pub: path.resolve('public'),
 ```
 
-#### 10. Recompile app.js
+#### 11. Recompile app.js
 ```shell
 npm run prod
 ```

@@ -57,4 +57,12 @@ class PbConfig extends PbBuilder
         }
         return null;
     }
+
+    public static function getValueByKey($key)
+    {
+        if ($config = self::findByKey($key)) {
+            return $config->configvalue;
+        }
+        return null;
+    }
 }

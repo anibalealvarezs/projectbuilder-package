@@ -19,5 +19,6 @@ class PbConfigSeeder extends Seeder
         // Default Config
         Config::updateOrCreate(['configkey' => '_APP_NAME_'], ['configvalue' => 'Builder', 'name' => 'App Name', 'description' => 'App Description', 'module_id' => $moduleConfig->id]);
         Config::updateOrCreate(['configkey' => '_FORCE_HTTPS_'], ['configvalue' => false, 'name' => 'Force HTTPS', 'description' => 'Force HTTPS', 'module_id' => $moduleConfig->id]);
+        Config::updateOrCreate(['configkey' => '_SAVE_LOGS_'], ['configvalue' => false, 'name' => 'Save Logs', 'description' => 'Save Logs', 'module_id' => $moduleConfig->id]);
     }
 }

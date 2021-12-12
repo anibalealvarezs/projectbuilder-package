@@ -26,6 +26,13 @@ class PbIsUserViewableMiddleware
             }
         }
 
-        throw PbUserException::notViewable();
+        if ($request->is('api/*')) {
+            return response()->json([
+                'success' => false,
+                'message' => "You don't have permission to view this user."
+            ], 403);
+        } else {
+            throw PbUserException::notViewable();
+        }
     }
 }

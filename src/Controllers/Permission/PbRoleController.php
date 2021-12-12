@@ -53,7 +53,7 @@ class PbRoleController extends PbBuilderController
      */
     public function index($element = null, bool $multiple = false, string $route = 'level'): InertiaResponse|JsonResponse|RedirectResponse
     {
-        $query = $this->modelPath::with('permissions')->whereNotIn('name', ['super-admin']);
+        $query = $this->modelPath::with('permissions')->whereNotIn('name', ['super-admin', 'developer', 'api-user']);
         $user = PbUser::find(Auth::user()->id);
         if (!$user->hasRole('super-admin')) {
             $query = $query->whereNotIn('name', ['admin']);
@@ -110,7 +110,7 @@ class PbRoleController extends PbBuilderController
 
             return $this->redirectResponseCRUDSuccess($request, $this->key.' created successfully!');
         } catch (Exception $e) {
-            return $this->redirectResponseCRUDFail($request, $this->key.' could not be created!');
+            return $this->redirectResponseCRUDFail($request, $this->key.' could not be created! '.$e->getMessage());
         }
     }
 
@@ -139,7 +139,7 @@ class PbRoleController extends PbBuilderController
      */
     public function edit(int $id, $element = null, bool $multiple = false, string $route = 'level'): InertiaResponse|JsonResponse
     {
-        $model = $this->modelPath::with('permissions')->findOrFail($id);
+        $model = $this->modelPath::with('permissions')->whereNotIn('name', ['super-admin', 'developer', 'api-user'])->findOrFail($id);
 
         $this->required = array_merge($this->required, ['name']);
 
@@ -201,6 +201,11 @@ class PbRoleController extends PbBuilderController
                         'create navigations',
                         'update navigations',
                         'delete navigations',
+                        'developer options',
+                        'read loggers',
+                        'delete loggers',
+                        'config loggers',
+                        'api access',
                     ], $adminOptionalPermissions))->get()->modelKeys();
                 } elseif ($model->name == 'user') {
                     $permissions = PbPermission::whereIn('name', ['login'])->get()->modelKeys();
@@ -210,7 +215,40 @@ class PbRoleController extends PbBuilderController
 
             return $this->redirectResponseCRUDSuccess($request, $this->key.' updated successfully!');
         } catch (Exception $e) {
-            return $this->redirectResponseCRUDFail($request, $this->key.' could not be updated!');
+            return $this->redirectResponseCRUDFail($request, $this->key.' could not be updated! '.$e->getMessage());
+        }
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @param Request $request
+     * @param int $id
+     * @return void
+     */
+    public function destroy(Request $request, int $id)
+    {
+        // Process
+        try {
+            $model = $this->modelPath::findOrFail($id);
+            //Make it impossible to delete these specific permissions
+            if (in_array($model->name, [
+                'user',
+                'api-user',
+                'admin',
+                'developer',
+                'super-admin',
+            ])) {
+                $request->session()->flash('flash.banner', 'This role can not be deleted!');
+                $request->session()->flash('flash.bannerStyle', 'danger');
+
+                return redirect()->route($this->names . '.index');
+            }
+            $model->delete();
+
+            return $this->redirectResponseCRUDSuccess($request, $this->key . ' deleted successfully!');
+        } catch (Exception $e) {
+            return $this->redirectResponseCRUDFail($request, $this->key . ' could not be deleted! '.$e->getMessage());
         }
     }
 }

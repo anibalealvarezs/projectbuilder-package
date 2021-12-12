@@ -51,17 +51,31 @@ class PbPermissionController extends PbBuilderController
      * @param string $route
      * @return InertiaResponse|JsonResponse|RedirectResponse
      */
-    public function index($element = null, bool $multiple = false, string $route = 'level'): InertiaResponse|JsonResponse|RedirectResponse
-    {
+    public function index(
+        $element = null,
+        bool $multiple = false,
+        string $route = 'level'
+    ): InertiaResponse|JsonResponse|RedirectResponse {
         $me = PbUser::find(Auth::user()->id);
         $toExclude = ['crud super-admin'];
         if (!$me->hasRole('super-admin')) {
-            $toExclude = array_merge($toExclude, ['admin roles '.$this->names, 'manage app']);
+            $toExclude = array_merge($toExclude, [
+                'admin roles permissions',
+                'manage app',
+                'crud super-admin',
+                'config builder',
+                'developer options',
+                'read loggers',
+                'delete loggers',
+                'config loggers',
+                'api access',
+            ]);
             if (!$me->hasRole('admin')) {
                 $toExclude = array_merge($toExclude, ['login', 'create users', 'update users', 'delete users']);
             }
         }
-        $model = $this->modelPath::with(['roles', 'module'])->whereNotIn('name', $toExclude)->get(); //Get all permissions
+        //Get all permissions
+        $model = $this->modelPath::with(['roles', 'module'])->whereNotIn('name', $toExclude)->get();
 
         return parent::index($model);
     }
@@ -94,15 +108,15 @@ class PbPermissionController extends PbBuilderController
                 $adminRoles = PbRole::whereIn('name', ['super-admin', 'admin'])->get()->modelKeys();
                 $model->syncRoles(
                     array_merge(
-                        ($roles && is_array($roles) ? $roles : [$roles]),
-                        ($adminRoles && is_array($adminRoles) ? $adminRoles : [$adminRoles])
+                        ($roles && is_array($roles) ? $roles : ($roles ? [$roles] : [])),
+                        ($adminRoles && is_array($adminRoles) ? $adminRoles : ($adminRoles ? [$adminRoles] : []))
                     )
                 );
             }
 
-            return $this->redirectResponseCRUDSuccess($request, $this->key.' created successfully!');
+            return $this->redirectResponseCRUDSuccess($request, $this->key . ' created successfully!');
         } catch (Exception $e) {
-            return $this->redirectResponseCRUDFail($request, $this->key.' could not be created!');
+            return $this->redirectResponseCRUDFail($request, $this->key . ' could not be created! ' . $e->getMessage());
         }
     }
 
@@ -115,8 +129,12 @@ class PbPermissionController extends PbBuilderController
      * @param string $route
      * @return Application|RedirectResponse|Redirector|InertiaResponse|JsonResponse
      */
-    public function show(int $id, $element = null, bool $multiple = false, string $route = 'level'): Application|RedirectResponse|Redirector|InertiaResponse|JsonResponse
-    {
+    public function show(
+        int $id,
+        $element = null,
+        bool $multiple = false,
+        string $route = 'level'
+    ): Application|RedirectResponse|Redirector|InertiaResponse|JsonResponse {
         return $this->edit($id);
     }
 
@@ -129,8 +147,12 @@ class PbPermissionController extends PbBuilderController
      * @param string $route
      * @return InertiaResponse|JsonResponse
      */
-    public function edit(int $id, $element = null, bool $multiple = false, string $route = 'level'): InertiaResponse|JsonResponse
-    {
+    public function edit(
+        int $id,
+        $element = null,
+        bool $multiple = false,
+        string $route = 'level'
+    ): InertiaResponse|JsonResponse {
         $model = $this->modelPath::with('roles')->findOrFail($id);
 
         return parent::edit($id, $model);
@@ -163,7 +185,13 @@ class PbPermissionController extends PbBuilderController
                 if (in_array($model->name, ['crud super-admin'])) {
                     $superAdminRoles = PbRole::whereIn('name', ['super-admin'])->get()->modelKeys();
                     $model->syncRoles($superAdminRoles);
-                } elseif (in_array($model->name, ['manage app', 'admin roles permissions'])) {
+                } elseif (in_array($model->name, ['developer options', 'read loggers', 'delete loggers', 'config loggers'])) {
+                    $developerRoles = PbRole::whereIn('name', ['super-admin', 'developer'])->get()->modelKeys();
+                    $model->syncRoles($developerRoles);
+                } elseif (in_array($model->name, ['api access'])) {
+                    $apiRoles = PbRole::whereIn('name', ['super-admin', 'api-user'])->get()->modelKeys();
+                    $model->syncRoles($apiRoles);
+                } elseif (in_array($model->name, ['manage app', 'admin roles permissions', 'config builder'])) {
                     $adminRoles = PbRole::whereIn('name', ['super-admin', 'admin'])->get()->modelKeys();
                     $model->syncRoles($adminRoles);
                 } elseif (in_array($model->name, ['login'])) {
@@ -173,16 +201,16 @@ class PbPermissionController extends PbBuilderController
                     $adminRoles = PbRole::whereIn('name', ['super-admin', 'admin'])->get()->modelKeys();
                     $model->syncRoles(
                         array_merge(
-                            (is_array($roles) ? $roles : [$roles]),
-                            (is_array($adminRoles) ? $adminRoles : [$adminRoles])
+                            ($roles && is_array($roles) ? $roles : ($roles ? [$roles] : [])),
+                            ($adminRoles && is_array($adminRoles) ? $adminRoles : ($adminRoles ? [$adminRoles] : []))
                         )
                     );
                 }
             }
 
-            return $this->redirectResponseCRUDSuccess($request, $this->key.' updated successfully!');
+            return $this->redirectResponseCRUDSuccess($request, $this->key . ' updated successfully!');
         } catch (Exception $e) {
-            return $this->redirectResponseCRUDFail($request, $this->key.' could not be updated!');
+            return $this->redirectResponseCRUDFail($request, $this->key . ' could not be updated! ' . $e->getMessage());
         }
     }
 
@@ -199,7 +227,18 @@ class PbPermissionController extends PbBuilderController
         try {
             $model = $this->modelPath::findOrFail($id);
             //Make it impossible to delete these specific permissions
-            if (in_array($model->name, ['admin roles permissions', 'manage app', 'crud super-admin'])) {
+            if (in_array($model->name, [
+                'admin roles permissions',
+                'manage app',
+                'crud super-admin',
+                'config builder',
+                'developer options',
+                'read loggers',
+                'delete loggers',
+                'config loggers',
+                'api access',
+                'login'
+            ])) {
                 $request->session()->flash('flash.banner', 'This permission can not be deleted!');
                 $request->session()->flash('flash.bannerStyle', 'danger');
 
@@ -207,9 +246,9 @@ class PbPermissionController extends PbBuilderController
             }
             $model->delete();
 
-            return $this->redirectResponseCRUDSuccess($request, $this->key.' deleted successfully!');
+            return $this->redirectResponseCRUDSuccess($request, $this->key . ' deleted successfully!');
         } catch (Exception $e) {
-            return $this->redirectResponseCRUDFail($request, $this->key.' could not be deleted!');
+            return $this->redirectResponseCRUDFail($request, $this->key . ' could not be deleted! ' . $e->getMessage());
         }
     }
 }

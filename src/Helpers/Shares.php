@@ -114,6 +114,7 @@ class Shares
                 [
                     'crud super-admin',
                     'admin roles permissions',
+                    'config builder',
                     'manage app',
                     'create roles',
                     'update roles',
@@ -135,6 +136,7 @@ class Shares
                 [
                     'crud super-admin',
                     'admin roles permissions',
+                    'config builder',
                     'manage app',
                     'create users',
                     'update users',

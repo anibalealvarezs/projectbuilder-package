@@ -23,8 +23,6 @@ class PbUser extends User
 
     protected $table = 'users';
 
-    protected $appends = ['crud'];
-
     /**
      * The attributes that are mass assignable.
      *
@@ -129,7 +127,7 @@ class PbUser extends User
                     PbLogger::create([
                         'severity' => 3,
                         'code' => 1,
-                        'message' => 'Author not replaced',
+                        'message' => 'Author not replaced. '.$e->getMessage(),
                         'object_type' => 'file',
                         'user_id' => Auth::user()->id,
                         'module_id' => ($module ? $module->id : null)

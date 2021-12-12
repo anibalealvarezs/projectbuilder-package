@@ -460,7 +460,7 @@ class PbBuilderController extends Controller
 
             return $this->redirectResponseCRUDSuccess($request, $this->key . ' created successfully!');
         } catch (Exception $e) {
-            return $this->redirectResponseCRUDFail($request, $this->key . ' could not be created!');
+            return $this->redirectResponseCRUDFail($request, $this->key . ' could not be created! '.$e->getMessage());
         }
     }
 
@@ -533,7 +533,7 @@ class PbBuilderController extends Controller
 
             return $this->redirectResponseCRUDSuccess($request, $this->key . ' updated successfully!');
         } catch (Exception $e) {
-            return $this->redirectResponseCRUDFail($request, $this->key . ' could not be updated!');
+            return $this->redirectResponseCRUDFail($request, $this->key . ' could not be updated! '.$e->getMessage());
         }
     }
 
@@ -553,7 +553,7 @@ class PbBuilderController extends Controller
 
             return $this->redirectResponseCRUDSuccess($request, $this->key . ' deleted successfully!');
         } catch (Exception $e) {
-            return $this->redirectResponseCRUDFail($request, $this->key . ' could not be deleted!');
+            return $this->redirectResponseCRUDFail($request, $this->key . ' could not be deleted! '.$e->getMessage());
         }
     }
 
@@ -595,7 +595,7 @@ class PbBuilderController extends Controller
 
             return $this->redirectResponseCRUDSuccess($request, $this->key . ' sorted successfully!');
         } catch (Exception $e) {
-            return $this->redirectResponseCRUDFail($request, $this->key . ' could not be sorted!');
+            return $this->redirectResponseCRUDFail($request, $this->key . ' could not be sorted! '.$e->getMessage());
         }
     }
 
@@ -756,7 +756,7 @@ class PbBuilderController extends Controller
      * @param bool $nullable
      * @return JsonResponse|InertiaResponse
      */
-    protected function renderResponse($view, array $elements = [], bool $nullable = true): JsonResponse|InertiaResponse
+    protected function renderResponse($view, array $elements = [], bool $nullable = false): JsonResponse|InertiaResponse
     {
         if ($this->request->is('api/*')) {
             //write your logic for api call
