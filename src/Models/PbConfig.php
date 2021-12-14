@@ -52,7 +52,7 @@ class PbConfig extends PbBuilder
                 ->select('id')
                 ->where('configkey', $key)
                 ->first();
-        if ($config->id) {
+        if ($config) {
             return self::find($config->id);
         }
         return null;

@@ -112,6 +112,9 @@
 
                                         <jet-dropdown-link :href="route('api-tokens.index')" v-if="$page.props.jetstream.hasApiFeatures">
                                             API Tokens
+                                            <span class="text-xs font-semibold inline-block py-1 px-2 uppercase rounded text-pink-600 bg-pink-200 uppercase last:mr-0 mr-1" v-if="!apiData.access || !apiData.enabled">
+                                                Unauthorized
+                                            </span>
                                         </jet-dropdown-link>
 
                                         <div class="border-t border-gray-100"></div>
@@ -308,8 +311,9 @@
         setup () {
 
             let navigations = computed(() => usePage().props.value.shared.navigations.firstlevel)
+            let apiData = computed(() => usePage().props.value.shared.api_data)
 
-            return { navigations }
+            return { navigations, apiData }
         }
     }
 </script>

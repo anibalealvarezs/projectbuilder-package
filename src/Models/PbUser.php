@@ -2,7 +2,6 @@
 
 namespace Anibalealvarezs\Projectbuilder\Models;
 
-use Anibalealvarezs\Projectbuilder\Traits\PbModelMiscTrait;
 use Anibalealvarezs\Projectbuilder\Traits\PbModelTrait;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -17,11 +16,12 @@ class PbUser extends User
     use HasApiTokens;
     use HasRoles;
     use PbModelTrait;
-    use PbModelMiscTrait;
 
     protected $guard_name = 'admin';
 
     protected $table = 'users';
+
+    protected $appends = ['api'];
 
     /**
      * The attributes that are mass assignable.
@@ -56,6 +56,11 @@ class PbUser extends User
     public function lang(): BelongsTo
     {
         return $this->belongsTo(PbLanguage::class, 'language_id', 'id');
+    }
+
+    public function getApiAttribute(): bool
+    {
+        return $this->hasPermissionTo('api access');
     }
 
     public function getLocale(): string

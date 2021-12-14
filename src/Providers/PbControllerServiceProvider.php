@@ -9,6 +9,28 @@ use Illuminate\Support\ServiceProvider;
 class PbControllerServiceProvider extends ServiceProvider
 {
     /**
+     * @var string
+     */
+    protected $namespace;
+    /**
+     * @var string
+     */
+    protected $prefix;
+    /**
+     * @var string
+     */
+    private $suffix;
+
+    public function __construct($app)
+    {
+        parent::__construct($app);
+
+        $this->namespace = PbHelpers::PB_VENDOR.'\\'.PbHelpers::PB_PACKAGE.'\Controllers';
+        $this->prefix = PbHelpers::PB_PREFIX;
+        $this->suffix = 'Controller';
+    }
+
+    /**
      * Bootstrap the application services.
      *
      * @return void
@@ -25,15 +47,15 @@ class PbControllerServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        $this->app->make(PbHelpers::PB_VENDOR.'\\'.PbHelpers::PB_PACKAGE.'\Controllers\Auth\\'.PbHelpers::PB_PREFIX.'ForgotPasswordController');
-        $this->app->make(PbHelpers::PB_VENDOR.'\\'.PbHelpers::PB_PACKAGE.'\Controllers\Auth\\'.PbHelpers::PB_PREFIX.'LoginController');
-        $this->app->make(PbHelpers::PB_VENDOR.'\\'.PbHelpers::PB_PACKAGE.'\Controllers\Auth\\'.PbHelpers::PB_PREFIX.'RegisterController');
-        $this->app->make(PbHelpers::PB_VENDOR.'\\'.PbHelpers::PB_PACKAGE.'\Controllers\Auth\\'.PbHelpers::PB_PREFIX.'ResetPasswordController');
-        $this->app->make(PbHelpers::PB_VENDOR.'\\'.PbHelpers::PB_PACKAGE.'\Controllers\Config\\'.PbHelpers::PB_PREFIX.'ConfigController');
-        $this->app->make(PbHelpers::PB_VENDOR.'\\'.PbHelpers::PB_PACKAGE.'\Controllers\Logger\\'.PbHelpers::PB_PREFIX.'LoggerController');
-        $this->app->make(PbHelpers::PB_VENDOR.'\\'.PbHelpers::PB_PACKAGE.'\Controllers\Permission\\'.PbHelpers::PB_PREFIX.'PermissionController');
-        $this->app->make(PbHelpers::PB_VENDOR.'\\'.PbHelpers::PB_PACKAGE.'\Controllers\Permission\\'.PbHelpers::PB_PREFIX.'RoleController');
-        $this->app->make(PbHelpers::PB_VENDOR.'\\'.PbHelpers::PB_PACKAGE.'\Controllers\User\\'.PbHelpers::PB_PREFIX.'UserController');
-        $this->app->make(PbHelpers::PB_VENDOR.'\\'.PbHelpers::PB_PACKAGE.'\Controllers\Dashboard\\'.PbHelpers::PB_PREFIX.'DashboardController');
+        $this->app->make($this->namespace.'\Auth\\'.$this->prefix.'ForgotPassword'.$this->suffix);
+        $this->app->make($this->namespace.'\Auth\\'.$this->prefix.'Login'.$this->suffix);
+        $this->app->make($this->namespace.'\Auth\\'.$this->prefix.'Register'.$this->suffix);
+        $this->app->make($this->namespace.'\Auth\\'.$this->prefix.'ResetPassword'.$this->suffix);
+        $this->app->make($this->namespace.'\Config\\'.$this->prefix.'Config'.$this->suffix);
+        $this->app->make($this->namespace.'\Dashboard\\'.$this->prefix.'Dashboard'.$this->suffix);
+        $this->app->make($this->namespace.'\User\\'.$this->prefix.'User'.$this->suffix);
+        $this->app->make($this->namespace.'\Logger\\'.$this->prefix.'Logger'.$this->suffix);
+        $this->app->make($this->namespace.'\Permission\\'.$this->prefix.'Permission'.$this->suffix);
+        $this->app->make($this->namespace.'\Permission\\'.$this->prefix.'Role'.$this->suffix);
     }
 }

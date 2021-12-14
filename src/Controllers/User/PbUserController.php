@@ -89,6 +89,7 @@ class PbUserController extends PbBuilderController
                 'lang',
                 'roles',
                 'crud',
+                'api',
             ]);
         })->sortByDesc(['name', 'email']);
 

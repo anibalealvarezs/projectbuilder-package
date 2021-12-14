@@ -18,6 +18,8 @@ class PbRouteServiceProvider extends ServiceProvider
         // Routes
         include __DIR__ . '/../Routes/web.php';
         include __DIR__ . '/../Routes/api.php';
+        include __DIR__ . '/../Routes/inertia.php';
+        include __DIR__ . '/../Routes/livewire.php';
     }
 
     /**

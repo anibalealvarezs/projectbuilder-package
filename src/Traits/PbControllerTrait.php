@@ -11,10 +11,10 @@ use Illuminate\Support\Facades\Validator;
 
 trait PbControllerTrait
 {
-
     protected function globalInertiaShare()
     {
         return Shares::list([
+            'api_data',
             'navigations',
             'locale',
         ]);

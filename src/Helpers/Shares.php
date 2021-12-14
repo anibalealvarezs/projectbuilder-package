@@ -3,6 +3,7 @@
 namespace Anibalealvarezs\Projectbuilder\Helpers;
 
 use Anibalealvarezs\Projectbuilder\Helpers\PbHelpers;
+use Anibalealvarezs\Projectbuilder\Models\PbConfig;
 use Anibalealvarezs\Projectbuilder\Models\PbCountry;
 use Anibalealvarezs\Projectbuilder\Models\PbLanguage;
 use Anibalealvarezs\Projectbuilder\Models\PbNavigation;
@@ -44,6 +45,9 @@ class Shares
                     break;
                 case "me":
                     $list = array_merge($list, self::getMyData());
+                    break;
+                case "api_data":
+                    $list = array_merge($list, self::apiData());
                     break;
                 default:
                     break;
@@ -106,56 +110,7 @@ class Shares
 
     public static function getPermissions(): array
     {
-        $user = PbUser::find(Auth::user()->id);
-        $permissions = ([]);
-        if ($user->hasRole(['super-admin'])) {
-            $permissions = PbPermission::whereNotIn(
-                'name',
-                [
-                    'crud super-admin',
-                    'admin roles permissions',
-                    'config builder',
-                    'manage app',
-                    'create roles',
-                    'update roles',
-                    'delete roles',
-                    'create configs',
-                    'update configs',
-                    'delete configs',
-                    'create permissions',
-                    'update permissions',
-                    'delete permissions',
-                    'create navigations',
-                    'update navigations',
-                    'delete navigations',
-                ]
-            )->get();
-        } elseif($user->hasRole(['admin'])) {
-            $permissions = PbPermission::whereNotIn(
-                'name',
-                [
-                    'crud super-admin',
-                    'admin roles permissions',
-                    'config builder',
-                    'manage app',
-                    'create users',
-                    'update users',
-                    'delete users',
-                    'create roles',
-                    'update roles',
-                    'delete roles',
-                    'create configs',
-                    'update configs',
-                    'delete configs',
-                    'create permissions',
-                    'update permissions',
-                    'delete permissions',
-                    'create navigations',
-                    'update navigations',
-                    'delete navigations',
-                ]
-            )->get();
-        }
+        $permissions = PbPermission::whereIn('id', PbUser::find(Auth::user()->id)->getAllPermissions()->pluck('id'))->get();
         return [
             'permissions' => $permissions
         ];
@@ -163,8 +118,9 @@ class Shares
 
     public static function getPermissionsAll(): array
     {
+        // Temporarily all permissions will be limited to the user's
         return [
-            'permissionsall' => PbPermission::all()
+            'permissionsall' => self::getPermissions()['permissions']
         ];
     }
 
@@ -211,6 +167,16 @@ class Shares
     {
         return [
             'me' => PbUser::with('country', 'city', 'lang', 'roles')->find(Auth::user()->id)
+        ];
+    }
+
+    public static function apiData(): array
+    {
+        return [
+            'api_data' => [
+                'access' => PbUser::find(Auth::user()->id)->hasPermissionTo('api access'),
+                'enabled' => (bool) PbConfig::findByKey('_API_ENABLED_')->configvalue,
+            ]
         ];
     }
 }
