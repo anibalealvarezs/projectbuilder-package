@@ -111,7 +111,7 @@
                                         </jet-dropdown-link>
 
                                         <jet-dropdown-link :href="route('api-tokens.index')" v-if="$page.props.jetstream.hasApiFeatures">
-                                            API Tokens
+                                            API Access
                                             <span class="text-xs font-semibold inline-block py-1 px-2 uppercase rounded text-pink-600 bg-pink-200 uppercase last:mr-0 mr-1" v-if="!apiData.access || !apiData.enabled">
                                                 Unauthorized
                                             </span>
@@ -169,7 +169,10 @@
                             </jet-responsive-nav-link>
 
                             <jet-responsive-nav-link :href="route('api-tokens.index')" :active="route().current('api-tokens.index')" v-if="$page.props.jetstream.hasApiFeatures">
-                                API Tokens
+                                API Access
+                                <span class="text-xs font-semibold inline-block py-1 px-2 uppercase rounded text-pink-600 bg-pink-200 uppercase last:mr-0 mr-1" v-if="!apiData.access || !apiData.enabled">
+                                    Unauthorized
+                                </span>
                             </jet-responsive-nav-link>
 
                             <!-- Authentication -->

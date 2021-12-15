@@ -2,7 +2,6 @@
 
 namespace Anibalealvarezs\Projectbuilder\Controllers\Jetstream;
 
-use Anibalealvarezs\Projectbuilder\Helpers\PbHelpers;
 use Laravel\Jetstream\Jetstream;
 use Anibalealvarezs\Projectbuilder\Traits\PbControllerTrait;
 use Illuminate\Http\Request;

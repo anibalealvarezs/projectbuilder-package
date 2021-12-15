@@ -5,6 +5,7 @@ namespace Anibalealvarezs\Projectbuilder\Models;
 use Anibalealvarezs\Projectbuilder\Traits\PbModelTrait;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\Auth;
 use Laravel\Sanctum\HasApiTokens;
@@ -56,6 +57,20 @@ class PbUser extends User
     public function lang(): BelongsTo
     {
         return $this->belongsTo(PbLanguage::class, 'language_id', 'id');
+    }
+
+    /**
+     * A model may have multiple roles.
+     */
+    public function roles(): BelongsToMany
+    {
+        return $this->morphToMany(
+            PbRole::class,
+            'model',
+            config('permission.table_names.model_has_roles'),
+            config('permission.column_names.model_morph_key'),
+            'role_id'
+        );
     }
 
     public function getApiAttribute(): bool

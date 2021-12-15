@@ -25,6 +25,10 @@ use Session;
 
 class PbRoleController extends PbBuilderController
 {
+    protected $superAdminExclusivePermissions;
+
+    protected $adminOptionalPermissions;
+
     public function __construct(Request $request, $crud_perms = false)
     {
         // Vars Override
@@ -105,6 +109,11 @@ class PbRoleController extends PbBuilderController
             $model->guard_name = 'admin';
             // Model save
             if ($model->save()) {
+                $this->loadDefaultPermissions();
+                $permissions =
+                    PbPermission::whereNotIn('id', $this->superAdminExclusivePermissions)
+                        ->whereNotIn('id', $this->adminOptionalPermissions)
+                        ->whereIn('id', $permissions)->get();
                 $model->syncPermissions($permissions);
             }
 
@@ -164,12 +173,7 @@ class PbRoleController extends PbBuilderController
 
         $permissions = $request->input('permissions');
 
-        $optionalPermissions = [];
         $me = PbUser::find(Auth::user()->id);
-        if ($me->hasRole('super-admin')) {
-            $optionalPermissions = PbPermission::whereIn('name', ['read roles', 'read configs', 'read permissions', 'read navigations'])->get()->modelKeys();
-        }
-        $adminOptionalPermissions = array_intersect($optionalPermissions, $permissions);
 
         // Process
         try {
@@ -179,38 +183,26 @@ class PbRoleController extends PbBuilderController
             $requests = $this->processModelRequests($this->validationRules, $request, $this->replacers);
             // Update model
             if ($model->update($requests)) {
-                if ($model->name == 'super-admin') {
-                    $permissions = PbPermission::all()->modelKeys();
-                } elseif ($model->name == 'admin') {
-                    $permissions = PbPermission::whereNotIn('name', array_merge([
-                        'crud super-admin',
-                        'admin roles permissions',
-                        'read roles',
-                        'create roles',
-                        'update roles',
-                        'delete roles',
-                        'read permissions',
-                        'create permissions',
-                        'update permissions',
-                        'delete permissions',
-                        'read configs',
-                        'create configs',
-                        'update configs',
-                        'delete configs',
-                        'read navigations',
-                        'create navigations',
-                        'update navigations',
-                        'delete navigations',
-                        'developer options',
-                        'read loggers',
-                        'delete loggers',
-                        'config loggers',
-                        'api access',
-                    ], $adminOptionalPermissions))->get()->modelKeys();
-                } elseif ($model->name == 'user') {
-                    $permissions = PbPermission::whereIn('name', ['login'])->get()->modelKeys();
+                $this->loadDefaultPermissions();
+                if (
+                    (in_array($model->name, ['super-admin', 'admin']) && $me->hasRole('super-admin')) ||
+                    (($model->name == 'admin') && $me->hasRole('admin')) ||
+                    !in_array($model->name, ['super-admin', 'admin'])
+                ) {
+                    if ($model->name == 'super-admin') {
+                        $permissions = PbPermission::all();
+                    } elseif ($model->name == 'admin') {
+                        $permissions =
+                            PbPermission::whereNotIn('id', $this->superAdminExclusivePermissions)
+                                ->whereIn('id', $permissions)->get();
+                    } else {
+                        $permissions =
+                            PbPermission::whereNotIn('id', $this->superAdminExclusivePermissions)
+                                ->whereNotIn('id', $this->adminOptionalPermissions)
+                                ->whereIn('id', $permissions)->get();
+                    }
+                    $model->syncPermissions($permissions);
                 }
-                $model->syncPermissions($permissions);
             }
 
             return $this->redirectResponseCRUDSuccess($request, $this->key.' updated successfully!');
@@ -250,5 +242,48 @@ class PbRoleController extends PbBuilderController
         } catch (Exception $e) {
             return $this->redirectResponseCRUDFail($request, $this->key . ' could not be deleted! '.$e->getMessage());
         }
+    }
+
+    protected function loadDefaultPermissions()
+    {
+        $this->superAdminExclusivePermissions =
+            PbPermission::whereIn(
+                'name',
+                [
+                    'crud super-admin',
+                    'admin roles permissions',
+                    'read roles',
+                    'create roles',
+                    'update roles',
+                    'delete roles',
+                    'read permissions',
+                    'create permissions',
+                    'update permissions',
+                    'delete permissions',
+                    'read configs',
+                    'create configs',
+                    'update configs',
+                    'delete configs',
+                    'read navigations',
+                    'create navigations',
+                    'update navigations',
+                    'delete navigations',
+                    'developer options',
+                    'read loggers',
+                    'delete loggers',
+                    'config loggers',
+                    'api access',
+                ]
+            )->get()->modelKeys();
+        $this->adminOptionalPermissions =
+            PbPermission::whereIn(
+                'name',
+                [
+                    'read roles',
+                    'read configs',
+                    'read permissions',
+                    'read navigations'
+                ]
+            )->get()->modelKeys();
     }
 }

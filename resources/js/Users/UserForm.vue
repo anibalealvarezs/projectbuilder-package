@@ -64,19 +64,16 @@
                 <label class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2" :for="'grid-role-' + keyid">
                     Role
                 </label>
-                <select
-                    v-model="form.roles"
-                    :id="'grid-role-' + keyid"
-                    name="role"
-                    class="appearance-none w-full md:w-1/1 px-4 py-3 mb-3 block rounded bg-gray-200 text-gray-700 border border-gray-200 overflow-auto leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
-                    placeholder="Select role"
-                    multiple="true"
-                    :required="isRequired('role')"
-                >
-                    <option v-for="role in roles" :value="role.name">
-                        {{ role.name }}
-                    </option>
-                </select>
+                <div class="text-left" :id="'grid-roles-' + keyid" v-for="role in roles">
+                    <input
+                        type="checkbox"
+                        :id="'checkbox-role-' + role.id"
+                        :value="role.id"
+                        v-model="form.roles"
+                        class="appearance-none mx-4 px-4 py-3 mb-1 rounded bg-gray-200 text-gray-700 border border-gray-200 focus:outline-none focus:bg-white focus:border-gray-500"
+                    >
+                    <label :for="'checkbox-role-' + role.id">{{ role.alias }}</label>
+                </div>
             </div>
         </div>
         <div class="flex flex-wrap -mx-3 mb-6">
@@ -142,7 +139,7 @@ export default {
         let rolesList = [];
         if (props.data.roles) {
             for (const [k, v] of Object.entries(props.data.roles)) {
-                rolesList.push(v.name);
+                rolesList.push(v.id);
             }
         }
 

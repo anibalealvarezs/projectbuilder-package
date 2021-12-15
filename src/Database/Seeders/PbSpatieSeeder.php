@@ -3,9 +3,9 @@
 namespace Anibalealvarezs\Projectbuilder\Database\Seeders;
 
 use Anibalealvarezs\Projectbuilder\Models\PbModule;
+use Anibalealvarezs\Projectbuilder\Models\PbPermission as Permission;
+use Anibalealvarezs\Projectbuilder\Models\PbRole as Role;
 use Illuminate\Database\Seeder;
-use Spatie\Permission\Models\Role;
-use Spatie\Permission\Models\Permission;
 use Spatie\Permission\PermissionRegistrar;
 
 class PbSpatieSeeder extends Seeder

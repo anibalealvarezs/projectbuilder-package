@@ -83,7 +83,7 @@ export default {
             "roles",
             "Roles",
             {
-                key: "name",
+                key: "alias",
                 href: {
                     route: "roles.show",
                     id: "id",

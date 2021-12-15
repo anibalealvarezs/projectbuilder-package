@@ -3,12 +3,10 @@
 namespace Anibalealvarezs\Projectbuilder\Models;
 
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Spatie\Permission\Traits\HasRoles;
 use Spatie\Translatable\HasTranslations;
 
 class PbLogger extends PbBuilder
 {
-    use HasRoles;
     use HasTranslations;
 
     public $translatable = ['message'];
