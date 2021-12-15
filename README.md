@@ -2,7 +2,7 @@
 
 ***
 
-## Requierements
+## Requirements
 
 #### 0. Prepare your .env file
 Submit database connection data, site URL and project name
