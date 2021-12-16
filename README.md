@@ -70,16 +70,13 @@ protected function configurePermissions()
 }
 ```
 
-#### 7. Comment/remove the default "dashboard" route in ```/routes/web.php```
+#### 7. Comment/remove the default routes in ```/routes/web.php```
 ```php
 /*
 Route::middleware(['auth:sanctum', 'verified'])->get('/dashboard', function () {
     return Inertia::render('Dashboard');
 })->name('dashboard');
-*/
-```
-Optionally, add a default view for root path
-```php
+
 Route::get('/', function () {
     return Inertia::render('Welcome', [
         'canLogin' => Route::has('login'),
@@ -88,6 +85,7 @@ Route::get('/', function () {
         'phpVersion' => PHP_VERSION,
     ]);
 });
+*/
 ```
 
 #### 8. Add resources to ```/webpack.mix.js```
