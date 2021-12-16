@@ -2,6 +2,8 @@
 
 use Anibalealvarezs\Projectbuilder\Controllers\Navigation\PbNavigationController as NavigationController;
 use Anibalealvarezs\Projectbuilder\Controllers\Dashboard\PbDashboardController as DashboardController;
+use Illuminate\Foundation\Application;
+use Inertia\Inertia;
 
 $models = [
     /* object => Directory*/
@@ -29,4 +31,13 @@ Route::get('/dashboard', [DashboardController::class, 'index'])->middleware(['we
 Route::get('/clear-cache', function() {
     Artisan::call('cache:clear');
     return "Cache is cleared";
+});
+
+Route::get('/', function () {
+    return Inertia::render('Welcome', [
+        'canLogin' => Route::has('login'),
+        'canRegister' => Route::has('register'),
+        'laravelVersion' => Application::VERSION,
+        'phpVersion' => PHP_VERSION,
+    ]);
 });

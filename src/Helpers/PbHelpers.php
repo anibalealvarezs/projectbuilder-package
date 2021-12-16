@@ -2,6 +2,7 @@
 
 namespace Anibalealvarezs\Projectbuilder\Helpers;
 
+use Anibalealvarezs\Projectbuilder\Models\PbConfig;
 use Anibalealvarezs\Projectbuilder\Models\PbUser;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\File;
@@ -18,7 +19,7 @@ class PbHelpers
 
     function __construct()
     {
-        //
+        // TODO: Implement __construct() method.
     }
 
     /**
@@ -112,5 +113,15 @@ class PbHelpers
         return [
             'create', 'add'
         ];
+    }
+
+    /**
+     * Returns existing migration file if found, else uses the current timestamp.
+     *
+     * @return bool
+     */
+    public static function getDebugStatus(): bool
+    {
+        return (bool) PbConfig::getValueByKey('_DEBUG_MODE_');
     }
 }

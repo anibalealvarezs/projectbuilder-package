@@ -21,7 +21,7 @@ class PbCanAccessApiMiddleware
      */
     public function handle(Request $request, Closure $next, $guard = null)
     {
-        $enabled = PbConfig::findByKey('_API_ENABLED_')->configvalue;
+        $enabled = (bool) PbConfig::getValueByKey('_API_ENABLED_');
 
         if ($me = PbUser::find(Auth::guard($guard)->user()->id)) {
             if ($me->hasPermissionTo('api access') && $enabled) {

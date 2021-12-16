@@ -175,7 +175,7 @@ class Shares
         return [
             'api_data' => [
                 'access' => PbUser::find(Auth::user()->id)->hasPermissionTo('api access'),
-                'enabled' => (bool) PbConfig::findByKey('_API_ENABLED_')->configvalue,
+                'enabled' => (bool) PbConfig::getValueByKey('_API_ENABLED_'),
             ]
         ];
     }

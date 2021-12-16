@@ -43,9 +43,12 @@ class PbMiddlewareServiceProvider extends ServiceProvider
         $kernel->pushMiddleware($this->prefix.'Https'.$this->suffix);
         $kernel->prependMiddleware($this->prefix.'SingleSession'.$this->suffix);
         $kernel->pushMiddleware($this->prefix.'SingleSession'.$this->suffix);
+        $kernel->pushMiddleware($this->prefix.'IsDebugModeEnabled'.$this->suffix);
         //router middleware
         $router = $this->app['router'];
         $router->pushMiddlewareToGroup('web', $this->prefix.'Https'.$this->suffix);
+        /* $router->pushMiddlewareToGroup('auth', $this->prefix.'IsDebugModeEnabled'.$this->suffix);
+        $router->pushMiddlewareToGroup('auth:sanctum', $this->prefix.'IsDebugModeEnabled'.$this->suffix); */
         $router->aliasMiddleware('role_or_permission', $this->prefix.'RoleOrPermission'.$this->suffix);
         $router->aliasMiddleware('is_user_viewable', $this->prefix.'IsUserViewable'.$this->suffix);
         $router->aliasMiddleware('is_user_editable', $this->prefix.'IsUserEditable'.$this->suffix);
