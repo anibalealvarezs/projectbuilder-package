@@ -52,4 +52,30 @@ class PbPermission extends Permission
     {
         return $this->belongsTo(PbModule::class, 'module_id', 'id');
     }
+
+    public static function getCrudConfig()
+    {
+        $config = PbBuilder::getCrudConfig();
+
+        $config['action_routes'] = [
+            'update' => [
+                'key' => 'id',
+                'altroute' => "profile.show"
+            ],
+        ];
+
+        $config['relations'] = ['roles', 'module'];
+
+        $config['options'] = [
+            'name' => [],
+            'alias' => [],
+            'module' => [
+                'arrval' => [
+                    'key' => 'alias',
+                ],
+            ],
+        ];
+
+        return $config;
+    }
 }

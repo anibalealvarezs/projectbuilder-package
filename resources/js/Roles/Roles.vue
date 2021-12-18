@@ -16,7 +16,7 @@
                     >
                         <slot>Create Role</slot>
                     </Button>
-                    <TableRoles :roles="pbroles" :allowed="allowed" :sort="sort" :showpos="showpos" :showid="showid" :model="model" :defaults="defaults" :required="required" />
+                    <TableRoles :roles="pbroles" :allowed="allowed" :sort="sort" :showpos="showpos" :showid="showid" :model="model" :defaults="defaults" :required="required" :listing="listing" />
                 </div>
             </slot>
             <div :id="buildHiddenId" class="infinite-hidden">
@@ -51,8 +51,9 @@
             const model = computed(() => usePage().props.value.shared.model)
             const defaults = computed(() => usePage().props.value.shared.defaults)
             const required = computed(() => usePage().props.value.shared.required)
+            const listing = computed(() => usePage().props.value.shared.listing)
 
-            return { allowed, sort, model, showpos, showid, defaults, required }
+            return { allowed, sort, model, showpos, showid, defaults, required, listing }
         }
     }
 </script>

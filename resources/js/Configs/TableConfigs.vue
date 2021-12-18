@@ -62,49 +62,15 @@ export default {
         }
     },
     setup(props) {
-        const allowed = props.allowed
         const table = new Table(props.showid)
-        table.customField(
-            "name",
-            "Name"
-        )
-        table.customField(
-            "configkey",
-            "Key"
-        )
-        table.customField(
-            "configvalue",
-            "Value"
-        )
-        table.customField(
-            "module",
-            "Module",
-            {key: "name"},
-        )
-        table.customField(
-            "description",
-            "Description"
-        )
-        table.pushActions({
-            "update": {
-                text: 'Edit',
-                style: 'secondary',
-                method: 'PUT',
-                route: "configs.edit",
-                formitem: "config",
-                altforuser: {},
-                allowed: allowed.update,
-            },
-            "delete": {
-                text: 'Delete',
-                style: 'danger',
-                method: 'DELETE',
-                route: "configs.destroy",
-                formitem: "config",
-                altforuser: {},
-                allowed: allowed.delete,
+        const listing = props.listing
+        for (const [k, v] of Object.entries(listing)) {
+            if ((v.key != 'item') && (v.key != 'actions') && (v.key != 'sorthandle')) {
+                table.customField(v.key, v.name, v.arrval, v.style, v.buttons, v.href, v.size, v.status)
+            } else if (v.key == 'actions') {
+                table.pushActions(v.buttons);
             }
-        })
+        }
         let fields = table.fields
         return { fields }
     },

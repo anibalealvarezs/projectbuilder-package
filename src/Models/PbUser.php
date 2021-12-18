@@ -164,4 +164,61 @@ class PbUser extends User
     {
         return PbUser::find(1);
     }
+
+    public static function getCrudConfig()
+    {
+        $config = PbBuilder::getCrudConfig();
+
+        $config['action_routes'] = [
+            'update' => [
+                'key' => 'id',
+                'altroute' => "profile.show"
+            ],
+        ];
+
+        $config['relations'] = ['country', 'city', 'lang', 'roles'];
+
+        $config['custom_order'] = [
+            'id', 'name', 'email', 'roles', 'country', 'lang', 'created_at', 'last_session'
+        ];
+
+        $config['options'] = [
+            'name' => [
+                'href' => [
+                    'route' => 'users.show',
+                    'id' => true,
+                ],
+            ],
+            'email' => [],
+            'roles' => [
+                'arrval' => [
+                    'key' => 'alias',
+                    'href' => [
+                        'route' => 'roles.show',
+                        'id' => 'id',
+                    ],
+                ],
+                'size' => 'multiple',
+            ],
+            'country' => [
+                'arrval' => [
+                    'key' => 'name',
+                ],
+            ],
+            'lang' => [
+                'name' => 'Language',
+                'arrval' => [
+                    'key' => 'name',
+                ],
+            ],
+            'created_at' => [
+                'name' => 'Created At',
+            ],
+            'last_session' => [
+                'name' => 'Last Session',
+            ],
+        ];
+
+        return $config;
+    }
 }

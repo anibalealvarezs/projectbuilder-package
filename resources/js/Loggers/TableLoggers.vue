@@ -62,70 +62,15 @@ export default {
         }
     },
     setup(props) {
-        const allowed = props.allowed
         const table = new Table(props.showid)
-        table.customField(
-            "severity",
-            "Severity"
-        )
-        table.customField(
-            "code",
-            "Code"
-        )
-        table.customField(
-            "message",
-            "Message",
-        )
-        table.customField(
-            "object_type",
-            "Object Type",
-        )
-        table.customField(
-            "object_id",
-            "Object ID"
-        )
-        table.customField(
-            "user",
-            "User",
-            {
-                key: "name",
-                href: {
-                    route: "users.show",
-                    id: "id",
-                },
-            },
-        )
-        table.customField(
-            "module",
-            "Module",
-            {
-                key: "name",
-            },
-        )
-        table.customField(
-            "created_at",
-            "Created at"
-        )
-        table.pushActions({
-            "update": {
-                text: 'Edit',
-                style: 'secondary',
-                method: 'PUT',
-                route: "loggers.edit",
-                formitem: "logger",
-                altforuser: {},
-                allowed: allowed.update,
-            },
-            "delete": {
-                text: 'Delete',
-                style: 'danger',
-                method: 'DELETE',
-                route: "loggers.destroy",
-                formitem: "logger",
-                altforuser: {},
-                allowed: allowed.delete,
+        const listing = props.listing
+        for (const [k, v] of Object.entries(listing)) {
+            if ((v.key != 'item') && (v.key != 'actions') && (v.key != 'sorthandle')) {
+                table.customField(v.key, v.name, v.arrval, v.style, v.buttons, v.href, v.size, v.status)
+            } else if (v.key == 'actions') {
+                table.pushActions(v.buttons);
             }
-        })
+        }
         let fields = table.fields
         return { fields }
     },

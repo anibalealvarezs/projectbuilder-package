@@ -62,78 +62,15 @@ export default {
         }
     },
     setup(props) {
-        const allowed = props.allowed
-        const table = new Table(props.showid, props.sort)
-        table.customField(
-            "name",
-            "Name"
-        )
-        table.customField(
-            "destiny",
-            "Destiny"
-        )
-        table.customField(
-            "type",
-            "Type"
-        )
-        table.customField(
-            "ascendant",
-            "Parent",
-            {key: "name"},
-        )
-        table.customField(
-            "permission",
-            "Permission",
-            {key: "alias"},
-        )
-        if (props.showpos) {
-            table.customField(
-                "position",
-                "Position",
-                {},
-                {
-                    centered: true,
-                },
-            )
-        }
-        table.customField(
-            "status",
-            "Status",
-            {},
-            {
-                centered: true,
-                width: "w-12",
-            },
-            {},
-            {},
-            'single',
-            true,
-        )
-        table.customField(
-            "module",
-            "Module",
-            {key: "name"},
-        )
-        table.pushActions({
-            "update": {
-                text: 'Edit',
-                style: 'secondary',
-                method: 'PUT',
-                route: "navigations.edit",
-                formitem: "navigation",
-                altforuser: {},
-                allowed: allowed.update,
-            },
-            "delete": {
-                text: 'Delete',
-                style: 'danger',
-                method: 'DELETE',
-                route: "navigations.destroy",
-                formitem: "navigation",
-                altforuser: {},
-                allowed: allowed.delete,
+        const table = new Table(props.showid)
+        const listing = props.listing
+        for (const [k, v] of Object.entries(listing)) {
+            if ((v.key != 'item') && (v.key != 'actions') && (v.key != 'sorthandle')) {
+                table.customField(v.key, v.name, v.arrval, v.style, v.buttons, v.href, v.size, v.status)
+            } else if (v.key == 'actions') {
+                table.pushActions(v.buttons);
             }
-        })
+        }
         let fields = table.fields
         return { fields }
     },

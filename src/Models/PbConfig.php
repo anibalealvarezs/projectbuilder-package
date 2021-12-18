@@ -65,4 +65,24 @@ class PbConfig extends PbBuilder
         }
         return null;
     }
+
+    public static function getCrudConfig()
+    {
+        $config = PbBuilder::getCrudConfig();
+
+        $config['relations'] = ['module'];
+
+        $config['options'] = [
+            'name' => [],
+            'configkey' => [
+                'name' => 'Key',
+            ],
+            'configvalue' => [
+                'name' => 'Value',
+            ],
+            'description' => [],
+        ];
+
+        return $config;
+    }
 }

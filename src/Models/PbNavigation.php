@@ -53,4 +53,42 @@ class PbNavigation extends PbBuilder
     {
         return $this->belongsTo(PbModule::class, 'module_id', 'id');
     }
+
+    public static function getCrudConfig()
+    {
+        $config = PbBuilder::getCrudConfig();
+
+        $config['relations'] = ['ascendant', 'permission', 'module'];
+
+        $config['options'] = [
+            'name' => [],
+            'destiny' => [],
+            'type' => [],
+            'ascendant' => [
+                'name' => 'Parent',
+                'arrval' => [
+                    'key' => 'name',
+                ],
+            ],
+            'permission' => [
+                'arrval' => [
+                    'key' => 'alias',
+                ],
+            ],
+            'status' => [
+                'style' => [
+                    'centered' => true,
+                    'width' => 'w-12',
+                ],
+                'status' => true
+            ],
+            'module' => [
+                'arrval' => [
+                    'key' => 'alias',
+                ],
+            ],
+        ];
+
+        return $config;
+    }
 }

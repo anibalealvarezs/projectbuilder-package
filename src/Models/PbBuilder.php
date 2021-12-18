@@ -12,4 +12,19 @@ class PbBuilder extends Model
     use PbModelCrudTrait;
 
     protected $appends = ['crud'];
+
+    public static function getCrudConfig()
+    {
+        $config['default'] = [];
+        $config['relations'] = [];
+        $config['action_routes'] = [];
+        $config['enabled_actions'] = [
+            'update' => true,
+            'delete' => true,
+            'create' => true,
+        ];
+        $config['custom_order'] = [];
+
+        return $config;
+    }
 }

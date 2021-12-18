@@ -200,10 +200,10 @@ export default {
                 case "Create":
                 case "Edit":
                     let action = true;
-                    if (b.altforuser.hasOwnProperty('altroute')) {
-                        if (i[b.altforuser.key] == this.user[b.altforuser.key]) {
+                    if (b.altformodel.hasOwnProperty('altroute')) {
+                        if (i[b.altformodel.key] == this.user[b.altformodel.key]) {
                             action = false;
-                            window.location.href = route(b.altforuser.altroute);
+                            window.location.href = route(b.altformodel.altroute);
                         }
                     }
                     if (action) {

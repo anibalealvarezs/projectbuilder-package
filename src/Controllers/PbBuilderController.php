@@ -2,12 +2,14 @@
 
 namespace Anibalealvarezs\Projectbuilder\Controllers;
 
+use Anibalealvarezs\Projectbuilder\Helpers\PbDebugbar;
 use Anibalealvarezs\Projectbuilder\Helpers\PbHelpers;
 use Anibalealvarezs\Projectbuilder\Helpers\Shares;
 use Anibalealvarezs\Projectbuilder\Models\PbCountry;
 use Anibalealvarezs\Projectbuilder\Models\PbLanguage;
 use Anibalealvarezs\Projectbuilder\Traits\PbControllerTrait;
 
+use Anibalealvarezs\Projectbuilder\Traits\PbControllerListingTrait;
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
 
@@ -27,6 +29,7 @@ use Inertia\Response as InertiaResponse;
 class PbBuilderController extends Controller
 {
     use PbControllerTrait;
+    use PbControllerListingTrait;
 
     /**
      * @var string
@@ -288,6 +291,10 @@ class PbBuilderController extends Controller
      * @var $request
      */
     protected $request;
+    /**
+     * @var array
+     */
+    protected $listing;
 
     function __construct(Request $request, $crud_perms = false)
     {
@@ -391,15 +398,23 @@ class PbBuilderController extends Controller
             $this->showId = true;
         }
 
+        if (!$this->listing) {
+            $this->listing = [];
+        }
+
         $this->required = $this->getRequired();
 
         $this->request = $request;
+
+        self::$item = $this->name;
+        self::$route = $this->names;
     }
 
     /**
      * Display a listing of the resource.
      *
      * @param null $element
+     * @param array $config
      * @param bool $multiple
      * @param string $route
      * @return InertiaResponse|JsonResponse|RedirectResponse
@@ -416,6 +431,21 @@ class PbBuilderController extends Controller
             'update ' . $this->names => 'update',
             'delete ' . $this->names => 'delete',
         ];
+
+        $config = $this->modelPath::getCrudConfig();
+        if (!isset($config['options']['actions'])) {
+            $config['options']['actions'] = [
+                'update' => [],
+                'delete' => []
+            ];
+        }
+        $config['enabled_actions'] = Shares::allowed($this->allowed)['allowed'];
+        if (!isset($config['model'])) {
+            $config['model'] = $this->modelPath;
+        }
+
+        $this->listing = self::buildListingRow($config);
+        PbDebugbar::addMessage($this->listing, 'listing');
 
         $path = $this->buildRouteString($route, 'index');
 
@@ -664,6 +694,7 @@ class PbBuilderController extends Controller
                 ['model' => $this->viewModelName],
                 ['required' => $this->required],
                 ['defaults' => $this->getDefaults()],
+                ['listing' => $this->listing]
             )
         );
     }

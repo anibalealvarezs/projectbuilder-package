@@ -75,4 +75,42 @@ class PbLogger extends PbBuilder
     {
         return false;
     }
+
+    public static function getCrudConfig()
+    {
+        $config = PbBuilder::getCrudConfig();
+
+        $config['relations'] = ['user', 'module'];
+
+        $config['options'] = [
+            'severity' => [],
+            'code' => [],
+            'message' => [],
+            'object_type' => [
+                'name' => 'Object Type',
+            ],
+            'object_id' => [
+                'name' => 'Object ID',
+            ],
+            'user' => [
+                'arrval' => [
+                    'key' => 'name',
+                    'href' => [
+                        'route' => 'users.show',
+                        'id' => 'id',
+                    ],
+                ],
+            ],
+            'module' => [
+                'arrval' => [
+                    'key' => 'name',
+                ],
+            ],
+            'created_at' => [
+                'name' => 'Created At',
+            ],
+        ];
+
+        return $config;
+    }
 }
