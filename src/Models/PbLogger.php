@@ -76,13 +76,13 @@ class PbLogger extends PbBuilder
         return false;
     }
 
-    public static function getCrudConfig()
+    public static function getCrudConfig(): array
     {
         $config = PbBuilder::getCrudConfig();
 
         $config['relations'] = ['user', 'module'];
 
-        $config['options'] = [
+        $config['fields'] = [
             'severity' => [],
             'code' => [],
             'message' => [],

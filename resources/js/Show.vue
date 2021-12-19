@@ -39,23 +39,22 @@
 </template>
 
 <script>
-    import { defineComponent } from 'vue'
     import DeleteUserForm from '@/Pages/Profile/Partials/DeleteUserForm.vue'
     import JetSectionBorder from '@/Jetstream/SectionBorder.vue'
     import LogoutOtherBrowserSessionsForm from '@/Pages/Profile/Partials/LogoutOtherBrowserSessionsForm.vue'
     import TwoFactorAuthenticationForm from '@/Pages/Profile/Partials/TwoFactorAuthenticationForm.vue'
     import UpdatePasswordForm from '@/Pages/Profile/Partials/UpdatePasswordForm.vue'
     import UpdateProfileInformationForm from '@/Pages/Projectbuilder/UpdateProfileInformationForm.vue'
-    import AppLayout from "@/Pages/Projectbuilder/AppLayout"
+    import PbIndex from "Pub/js/Projectbuilder/pbindex"
 
-    export default defineComponent({
+    export default {
+        extends: PbIndex,
         props: [
             'sessions',
             'roles'
         ],
 
         components: {
-            AppLayout,
             DeleteUserForm,
             JetSectionBorder,
             LogoutOtherBrowserSessionsForm,
@@ -63,5 +62,5 @@
             UpdatePasswordForm,
             UpdateProfileInformationForm,
         },
-    })
+    }
 </script>

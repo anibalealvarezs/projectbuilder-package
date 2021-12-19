@@ -31,23 +31,16 @@ class PbRole extends Role
         return $value;
     }
 
-    public static function getCrudConfig()
+    public static function getCrudConfig(): array
     {
         $config = PbBuilder::getCrudConfig();
 
-        $config['action_routes'] = [
-            'update' => [
-                'key' => 'id',
-                'altroute' => "profile.show"
-            ],
-        ];
-
-        $config['relations'] = ['permissions'];
-
-        $config['options'] = [
+        $config['fields'] = [
             'name' => [],
             'alias' => [],
         ];
+
+        $config['relations'] = ['permissions'];
 
         return $config;
     }

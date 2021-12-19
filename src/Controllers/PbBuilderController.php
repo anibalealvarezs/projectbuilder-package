@@ -433,8 +433,8 @@ class PbBuilderController extends Controller
         ];
 
         $config = $this->modelPath::getCrudConfig();
-        if (!isset($config['options']['actions'])) {
-            $config['options']['actions'] = [
+        if (!isset($config['fields']['actions'])) {
+            $config['fields']['actions'] = [
                 'update' => [],
                 'delete' => []
             ];

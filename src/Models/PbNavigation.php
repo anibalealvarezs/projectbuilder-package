@@ -54,13 +54,13 @@ class PbNavigation extends PbBuilder
         return $this->belongsTo(PbModule::class, 'module_id', 'id');
     }
 
-    public static function getCrudConfig()
+    public static function getCrudConfig(): array
     {
         $config = PbBuilder::getCrudConfig();
 
         $config['relations'] = ['ascendant', 'permission', 'module'];
 
-        $config['options'] = [
+        $config['fields'] = [
             'name' => [],
             'destiny' => [],
             'type' => [],

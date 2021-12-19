@@ -165,7 +165,7 @@ class PbUser extends User
         return PbUser::find(1);
     }
 
-    public static function getCrudConfig()
+    public static function getCrudConfig(): array
     {
         $config = PbBuilder::getCrudConfig();
 
@@ -176,13 +176,7 @@ class PbUser extends User
             ],
         ];
 
-        $config['relations'] = ['country', 'city', 'lang', 'roles'];
-
-        $config['custom_order'] = [
-            'id', 'name', 'email', 'roles', 'country', 'lang', 'created_at', 'last_session'
-        ];
-
-        $config['options'] = [
+        $config['fields'] = [
             'name' => [
                 'href' => [
                     'route' => 'users.show',
@@ -217,6 +211,12 @@ class PbUser extends User
             'last_session' => [
                 'name' => 'Last Session',
             ],
+        ];
+
+        $config['relations'] = ['country', 'city', 'lang', 'roles'];
+
+        $config['custom_order'] = [
+            'id', 'name', 'email', 'roles', 'country', 'lang', 'created_at', 'last_session'
         ];
 
         return $config;

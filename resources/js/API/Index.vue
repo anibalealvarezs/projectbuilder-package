@@ -17,11 +17,11 @@
 </template>
 
 <script>
-    import { defineComponent } from 'vue'
     import ApiTokenManager from '@/Pages/Projectbuilder/API/ApiTokenManager.vue'
-    import AppLayout from "@/Pages/Projectbuilder/AppLayout"
+    import PbIndex from "Pub/js/Projectbuilder/pbindex"
 
-    export default defineComponent({
+    export default{
+        extends: PbIndex,
         props: [
             'tokens',
             'availablePermissions',
@@ -30,7 +30,6 @@
 
         components: {
             ApiTokenManager,
-            AppLayout,
         },
-    })
+    }
 </script>

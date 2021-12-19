@@ -13,7 +13,7 @@ class PbBuilder extends Model
 
     protected $appends = ['crud'];
 
-    public static function getCrudConfig()
+    public static function getCrudConfig(): array
     {
         $config['default'] = [];
         $config['relations'] = [];

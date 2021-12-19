@@ -66,13 +66,13 @@ class PbConfig extends PbBuilder
         return null;
     }
 
-    public static function getCrudConfig()
+    public static function getCrudConfig(): array
     {
         $config = PbBuilder::getCrudConfig();
 
         $config['relations'] = ['module'];
 
-        $config['options'] = [
+        $config['fields'] = [
             'name' => [],
             'configkey' => [
                 'name' => 'Key',

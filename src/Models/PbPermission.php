@@ -53,7 +53,7 @@ class PbPermission extends Permission
         return $this->belongsTo(PbModule::class, 'module_id', 'id');
     }
 
-    public static function getCrudConfig()
+    public static function getCrudConfig(): array
     {
         $config = PbBuilder::getCrudConfig();
 
@@ -64,9 +64,7 @@ class PbPermission extends Permission
             ],
         ];
 
-        $config['relations'] = ['roles', 'module'];
-
-        $config['options'] = [
+        $config['fields'] = [
             'name' => [],
             'alias' => [],
             'module' => [
@@ -75,6 +73,8 @@ class PbPermission extends Permission
                 ],
             ],
         ];
+
+        $config['relations'] = ['roles', 'module'];
 
         return $config;
     }

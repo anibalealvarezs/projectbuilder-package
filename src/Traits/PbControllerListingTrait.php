@@ -24,13 +24,13 @@ trait PbControllerListingTrait
         $fields = array_merge(Schema::getColumnListing((new $config['model'])->getTable()), $config['relations']);
         $fields = array_merge(array_intersect($config['custom_order'], $fields), array_diff($fields, $config['custom_order']));
         foreach ($fields as $field) {
-            if (in_array($field, array_keys($config['options']))) {
-                $config['options'][$field]['key'] = $field;
-                $row[] = self::buildListingField($config['options'][$field]);
+            if (in_array($field, array_keys($config['fields']))) {
+                $config['fields'][$field]['key'] = $field;
+                $row[] = self::buildListingField($config['fields'][$field]);
             }
         }
         // Push actions
-        $row[] = self::buildActionsField($config['options']['actions'], $config['action_routes'], $config['enabled_actions']);
+        $row[] = self::buildActionsField($config['fields']['actions'], $config['action_routes'], $config['enabled_actions']);
 
         return $row;
     }
