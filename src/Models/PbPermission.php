@@ -2,6 +2,7 @@
 
 namespace Anibalealvarezs\Projectbuilder\Models;
 
+use Anibalealvarezs\Projectbuilder\Helpers\Shares;
 use Anibalealvarezs\Projectbuilder\Traits\PbModelCrudTrait;
 use Anibalealvarezs\Projectbuilder\Traits\PbModelTrait;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -71,6 +72,19 @@ class PbPermission extends Permission
                 'arrval' => [
                     'key' => 'alias',
                 ],
+            ],
+        ];
+
+        $config['formconfig'] = [
+            'name' => [
+                'type' => 'text',
+            ],
+            'alias' => [
+                'type' => 'text',
+            ],
+            'roles' => [
+                'type' => 'select-multiple',
+                'list' => Shares::getRoles()['roles']->toArray(),
             ],
         ];
 

@@ -16,11 +16,25 @@
                     >
                         <slot>Create Permission</slot>
                     </Button>
-                    <TablePermissions :permissions="pbpermissions" :allowed="allowed" :sort="sort" :showpos="showpos" :showid="showid" :model="model" :defaults="defaults" :required="required" :listing="listing" />
+                    <TablePermissions
+                        :allowed="allowed"
+                        :defaults="defaults"
+                        :listing="listing"
+                        :model="model"
+                        :permissions="pbpermissions"
+                        :required="required"
+                        :showid="showid"
+                        :showpos="showpos"
+                        :sort="sort"
+                    />
                 </div>
             </slot>
-            <div :id="buildHiddenId" class="infinite-hidden">
-                <PermissionForm :data="{}" :defaults="defaults" :required="required" />
+            <div :id="buildHiddenIdTag" class="infinite-hidden">
+                <PermissionForm
+                    :data="{}"
+                    :defaults="defaults"
+                    :required="required"
+                />
             </div>
         </Main>
     </AppLayout>

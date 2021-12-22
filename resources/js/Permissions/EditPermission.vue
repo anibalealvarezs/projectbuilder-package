@@ -12,7 +12,7 @@
                     {{ pbpermission }}
                 </div> -->
                 <div class="p-12 sm:px-20 bg-white border-b border-gray-200">
-                    <PermissionForm :data="setItem" :defaults="defaults" :required="required" />
+                    <PermissionForm :data="setItem(pbpermission)" :defaults="defaults" :required="required" />
                 </div>
             </slot>
         </Main>
@@ -33,12 +33,6 @@
         },
         components: {
             PermissionForm,
-        },
-        computed: {
-            setItem() {
-                this.pbpermission.item = this.pbpermission.id
-                return this.pbpermission
-            },
         },
         setup () {
             const defaults = computed(() => usePage().props.value.shared.defaults)

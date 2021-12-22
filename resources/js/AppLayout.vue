@@ -18,7 +18,7 @@
                             <!-- Navigation Links -->
                             <div class="space-x-8 sm:-my-px sm:ml-10 sm:flex">
                                 <ul class="sm:flex">
-                                    <NavLink v-for="nav in navigations" :nav="nav" :active="checkActive(nav)" level="0">
+                                    <NavLink v-for="nav in navigations" :nav="nav" :active=checkActive(nav) level="0">
                                         {{ nav.name }}
                                     </NavLink>
                                 </ul>
@@ -69,7 +69,7 @@
                                                     <form @submit.prevent="switchToTeam(team)">
                                                         <jet-dropdown-link as="button">
                                                             <div class="flex items-center">
-                                                                <svg v-if="team.id == $page.props.user.current_team_id" class="mr-2 h-5 w-5 text-green-400" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" stroke="currentColor" viewBox="0 0 24 24"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                                                <svg v-if="team.id === $page.props.user.current_team_id" class="mr-2 h-5 w-5 text-green-400" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" stroke="currentColor" viewBox="0 0 24 24"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                                                                 <div>{{ team.name }}</div>
                                                             </div>
                                                         </jet-dropdown-link>
@@ -210,7 +210,7 @@
                                     <form @submit.prevent="switchToTeam(team)">
                                         <jet-responsive-nav-link as="button">
                                             <div class="flex items-center">
-                                                <svg v-if="team.id == $page.props.user.current_team_id" class="mr-2 h-5 w-5 text-green-400" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" stroke="currentColor" viewBox="0 0 24 24"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                                <svg v-if="team.id === $page.props.user.current_team_id" class="mr-2 h-5 w-5 text-green-400" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" stroke="currentColor" viewBox="0 0 24 24"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                                                 <div>{{ team.name }}</div>
                                             </div>
                                         </jet-responsive-nav-link>
@@ -245,9 +245,9 @@
     import JetNavLink from '@/Jetstream/NavLink'
     import NavLink from '@/Pages/Projectbuilder/Navigations/NavLink'
     import JetResponsiveNavLink from '@/Jetstream/ResponsiveNavLink'
-    import { Helpers } from "Pub/js/Projectbuilder/projectbuilder";
-    import {computed} from "vue";
-    import {usePage, Link} from "@inertiajs/inertia-vue3";
+    import { Helpers } from "Pub/js/Projectbuilder/projectbuilder"
+    import {computed} from "vue"
+    import {usePage, Link} from "@inertiajs/inertia-vue3"
 
     export default {
         components: {
@@ -303,7 +303,7 @@
             checkActive(nav) {
                 let href = this.getHref(nav)
                 let current = Helpers.refineURL(window.location.href)
-                return (href == current)
+                return (href === current)
             }
         },
 

@@ -13,23 +13,19 @@
                     <!-- Content -->
                 </div>
             </slot>
-            <div :id="buildHiddenId" class="infinite-hidden">
-                <UserForm :data="{}" />
-            </div>
         </Main>
     </app-layout>
 </template>
 
 <script>
-    import AppLayout from '@/Pages/Projectbuilder/AppLayout'
     import Welcome from '@/Jetstream/Welcome'
-    import Main from "@/Pages/Projectbuilder/Main";
+    import PbIndex from "Pub/js/Projectbuilder/pbindex"
 
-    export default {
+    export default{
+        extends: PbIndex,
         components: {
-            AppLayout,
             Welcome,
-            Main,
+            PbIndex,
         },
     }
 </script>

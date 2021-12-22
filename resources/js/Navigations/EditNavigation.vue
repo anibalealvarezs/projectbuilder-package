@@ -12,7 +12,7 @@
                     {{ pbnavigation }}
                 </div> -->
                 <div class="p-12 sm:px-20 bg-white border-b border-gray-200">
-                    <NavigationForm :data="setItem" :defaults="defaults" :required="required" />
+                    <NavigationForm :data="setItem(pbnavigation)" :defaults="defaults" :required="required" />
                 </div>
             </slot>
         </Main>
@@ -33,12 +33,6 @@
         },
         components: {
             NavigationForm,
-        },
-        computed: {
-            setItem() {
-                this.pbnavigation.item = this.pbnavigation.id
-                return this.pbnavigation
-            },
         },
         setup () {
             const defaults = computed(() => usePage().props.value.shared.defaults)

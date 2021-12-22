@@ -2,6 +2,7 @@
 
 namespace Anibalealvarezs\Projectbuilder\Models;
 
+use Anibalealvarezs\Projectbuilder\Helpers\Shares;
 use Anibalealvarezs\Projectbuilder\Traits\PbModelTrait;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -173,6 +174,30 @@ class PbUser extends User
             'update' => [
                 'key' => 'id',
                 'altroute' => "profile.show"
+            ],
+        ];
+
+        $config['formconfig'] = [
+            'name' => [
+                'type' => 'text',
+            ],
+            'email' => [
+                'type' => 'text',
+            ],
+            'country' => [
+                'type' => 'select',
+                'list' => Shares::getCountries()['countries']->toArray(),
+            ],
+            'lang' => [
+                'type' => 'select',
+                'list' => Shares::getLanguages()['languages']->toArray(),
+            ],
+            'roles' => [
+                'type' => 'select-multiple',
+                'list' => Shares::getRoles()['roles']->toArray(),
+            ],
+            'password' => [
+                'type' => 'password',
             ],
         ];
 

@@ -9,7 +9,7 @@
         <Main>
             <slot>
                 <div class="p-12 sm:px-20 bg-white border-b border-gray-200">
-                    <ConfigForm :data="setItem" :defaults="defaults" :required="required" />
+                    <ConfigForm :data="setItem(pbconfig)" :defaults="defaults" :required="required" />
                 </div>
             </slot>
         </Main>
@@ -30,12 +30,6 @@
         },
         components: {
             ConfigForm,
-        },
-        computed: {
-            setItem() {
-                this.pbconfig.item = this.pbconfig.id
-                return this.pbconfig
-            },
         },
         setup () {
             const defaults = computed(() => usePage().props.value.shared.defaults)

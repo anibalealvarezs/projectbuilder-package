@@ -2,7 +2,6 @@
 
 namespace Anibalealvarezs\Projectbuilder\Helpers;
 
-use Anibalealvarezs\Projectbuilder\Helpers\PbHelpers;
 use Anibalealvarezs\Projectbuilder\Models\PbConfig;
 use Anibalealvarezs\Projectbuilder\Models\PbCountry;
 use Anibalealvarezs\Projectbuilder\Models\PbLanguage;
@@ -49,6 +48,9 @@ class Shares
                 case "api_data":
                     $list = array_merge($list, self::apiData());
                     break;
+                case "debug_status":
+                    $list = array_merge($list, ['debug_enabled' => PbDebugbar::isDebugEnabled()]);
+                    break;
                 default:
                     break;
             }
@@ -67,7 +69,7 @@ class Shares
         ];
     }
 
-    public static function getUserPermissionsAndRoles()
+    public static function getUserPermissionsAndRoles(): array
     {
         $user = PbUser::find(Auth::user()->id);
         return [

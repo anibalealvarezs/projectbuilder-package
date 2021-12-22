@@ -18,7 +18,7 @@ class PbDebugbar extends Debugbar
     public static function addMessage(mixed $message, string $label = 'info')
     {
         if (self::isDebugEnabled()) {
-            Debugbar::addMessage($message, 'Listing');
+            Debugbar::addMessage($message, $label);
         }
     }
 

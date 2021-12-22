@@ -9,7 +9,11 @@
         <Main>
             <slot>
                 <div class="p-12 sm:px-20 bg-white border-b border-gray-200">
-                    <UserForm :data="setItem" :defaults="defaults" :required="required" />
+                    <UserForm
+                        :data="setItem(pbuser)"
+                        :defaults="defaults"
+                        :required="required"
+                    />
                 </div>
             </slot>
         </Main>
@@ -30,12 +34,6 @@
         },
         components: {
             UserForm,
-        },
-        computed: {
-            setItem() {
-                this.pbuser.item = this.pbuser.id
-                return this.pbuser
-            },
         },
         setup () {
             const defaults = computed(() => usePage().props.value.shared.defaults)

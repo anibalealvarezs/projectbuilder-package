@@ -25,6 +25,9 @@ export default {
         hiddenid: String,
         allowed: Object,
     },
+    emits: [
+        "clicked-edit-item"
+    ],
     data() {
         return {
             classes: "bg-white border-4 border-gray-200"

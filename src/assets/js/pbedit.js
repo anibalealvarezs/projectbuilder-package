@@ -9,4 +9,10 @@ export default {
         AppLayout,
         Main,
     },
+    methods: {
+        setItem(element) {
+            element.item = element.id
+            return element
+        },
+    },
 }

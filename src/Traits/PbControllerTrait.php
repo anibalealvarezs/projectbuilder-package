@@ -17,6 +17,7 @@ trait PbControllerTrait
             'api_data',
             'navigations',
             'locale',
+            'debug_status',
         ]);
     }
 

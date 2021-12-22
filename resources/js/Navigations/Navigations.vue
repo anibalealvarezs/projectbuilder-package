@@ -16,11 +16,25 @@
                     >
                         <slot>Create Navigation</slot>
                     </Button>
-                    <TableNavigations :navigations="pbnavigations" :allowed="allowed" :sort="sort" :showpos="showpos" :showid="showid" :model="model" :defaults="defaults" :required="required" :listing="listing" />
+                    <TableNavigations
+                        :allowed="allowed"
+                        :defaults="defaults"
+                        :listing="listing"
+                        :model="model"
+                        :navigations="pbnavigations"
+                        :required="required"
+                        :showid="showid"
+                        :showpos="showpos"
+                        :sort="sort"
+                    />
                 </div>
             </slot>
-            <div :id="buildHiddenId" class="infinite-hidden">
-                <NavigationForm :data="{}" :defaults="defaults" :required="required" />
+            <div :id="buildHiddenIdTag" class="infinite-hidden">
+                <NavigationForm
+                    :data="{}"
+                    :defaults="defaults"
+                    :required="required"
+                />
             </div>
         </Main>
     </AppLayout>

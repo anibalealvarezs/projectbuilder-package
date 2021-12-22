@@ -16,11 +16,25 @@
                     >
                         <slot>Create Config</slot>
                     </Button>
-                    <TableConfigs :configs="pbconfigs" :allowed="allowed" :sort="sort" :showpos="showpos" :showid="showid" :model="model" :defaults="defaults" :required="required" :listing="listing" />
+                    <TableConfigs
+                        :allowed="allowed"
+                        :configs="pbconfigs"
+                        :defaults="defaults"
+                        :listing="listing"
+                        :model="model"
+                        :required="required"
+                        :showid="showid"
+                        :showpos="showpos"
+                        :sort="sort"
+                    />
                 </div>
             </slot>
-            <div :id="buildHiddenId" class="infinite-hidden">
-                <ConfigForm :data="{}" :defaults="defaults" :required="required" />
+            <div :id="buildHiddenIdTag" class="infinite-hidden">
+                <ConfigForm
+                    :data="{}"
+                    :defaults="defaults"
+                    :required="required"
+                />
             </div>
         </Main>
     </AppLayout>

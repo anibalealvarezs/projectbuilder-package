@@ -2,6 +2,7 @@
 
 namespace Anibalealvarezs\Projectbuilder\Models;
 
+use Anibalealvarezs\Projectbuilder\Helpers\Shares;
 use Anibalealvarezs\Projectbuilder\Traits\PbModelCrudTrait;
 use Anibalealvarezs\Projectbuilder\Traits\PbModelTrait;
 use Spatie\Permission\Models\Role;
@@ -38,6 +39,19 @@ class PbRole extends Role
         $config['fields'] = [
             'name' => [],
             'alias' => [],
+        ];
+
+        $config['formconfig'] = [
+            'name' => [
+                'type' => 'text',
+            ],
+            'alias' => [
+                'type' => 'text',
+            ],
+            'permissions' => [
+                'type' => 'select-multiple',
+                'list' => Shares::getPermissionsAll()['permissionsall']->toArray(),
+            ],
         ];
 
         $config['relations'] = ['permissions'];

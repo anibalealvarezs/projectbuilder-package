@@ -1,61 +1,22 @@
 <template>
     <form @submit.prevent="submit" class="w-full max-w-lg">
         <div class="flex flex-wrap -mx-3 mb-6">
-            <!-- name -->
-            <div class="w-full px-3">
-                <label class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2" :for="'grid-name-' + keyid">
-                    Name
+            <div v-for="(field, key) in form" class="w-full px-3 mb-6 md:mb-0">
+                <!-- {{ key }} -->
+                <label class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
+                       :for="'grid-'+ key +'-' + keyid">
+                    {{ key }}
                 </label>
-                <input
-                    v-model="form.name"
-                    :id="'grid-name-' + keyid"
-                    name="name"
-                    type="text"
-                    placeholder="Name"
-                    class="temp-readonly appearance-none block w-full bg-gray-200 text-gray-700 border border-red-500 rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white"
-                    readonly="true"
-                    :required="isRequired('name')"
-                    @mouseover="disableReadonly"
-                    @focus="disableReadonly"
-                >
-            </div>
-        </div>
-        <div class="flex flex-wrap -mx-3 mb-6">
-            <!-- alias -->
-            <div class="w-full px-3">
-                <label class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2" :for="'grid-alias-' + keyid">
-                    Alias
-                </label>
-                <input
-                    v-model="form.alias"
-                    :id="'grid-alias-' + keyid"
-                    name="alias"
-                    type="text"
-                    placeholder="Alias"
-                    class="temp-readonly appearance-none block w-full bg-gray-200 text-gray-700 border border-red-500 rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white"
-                    readonly="true"
-                    :required="isRequired('alias')"
-                    @mouseover="disableReadonly"
-                    @focus="disableReadonly"
-                >
-            </div>
-        </div>
-        <div class="flex flex-wrap -mx-3 mb-6">
-            <!-- permissions -->
-            <div class="w-full px-3">
-                <label class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2" :for="'grid-permissions-' + keyid">
-                    Permissions
-                </label>
-                <div class="text-left" :id="'grid-roles-' + keyid" v-for="permission in permissions">
-                    <input
-                        type="checkbox"
-                        :id="'checkbox-permission-' + permission.id"
-                        :value="permission.id"
-                        v-model="form.permissions"
-                        class="appearance-none mx-4 px-4 py-3 mb-1 rounded bg-gray-200 text-gray-700 border border-gray-200 focus:outline-none focus:bg-white focus:border-gray-500"
-                    >
-                    <label :for="'checkbox-permission-' + permission.id">{{ permission.alias }}</label>
-                </div>
+                <Input
+                    :value="form[key]"
+                    :keyel="key"
+                    :keyid="keyid"
+                    :required="required"
+                    @input="updateValue($event, key)"
+                    @click="updateValue($event, key)"
+                    @select="updateValue($event, key)"
+                    @textarea="updateValue($event, key)"
+                />
             </div>
         </div>
         <div class="flex flex-wrap -mx-3 mb-2 items-center justify-between">
@@ -69,45 +30,23 @@
 
 <script>
 import {computed, reactive} from 'vue'
-import { Inertia } from '@inertiajs/inertia'
-import Swal from "sweetalert2"
 import {usePage} from "@inertiajs/inertia-vue3"
 import PbForm from "Pub/js/Projectbuilder/pbform"
+import {Helpers} from "Pub/js/Projectbuilder/projectbuilder"
 
 export default {
     extends: PbForm,
     name: "RoleForm",
     setup (props) {
-        let permissionsList = [];
-        if (props.data.permissions) {
-            for (const [k, v] of Object.entries(props.data.permissions)) {
-                permissionsList.push(v.id);
-            }
-        }
         const form = reactive({
             name: props.data.name,
-            permissions: permissionsList,
+            permissions: Helpers.getModelIdsList(props.data.permissions),
             alias: props.data['alias'],
         })
-
-        function submit() {
-            if (props.data.hasOwnProperty('item')) {
-                Inertia.put("/roles/"+ props.data.item, form, {
-                    preserveScroll: true,
-                    onSuccess: () => Swal.close()
-                })
-            } else {
-                Inertia.post("/roles", form, {
-                    preserveScroll: true,
-                    preserveState: false,
-                    onSuccess: () => Swal.close()
-                })
-            }
-        }
-
         const permissions = computed(() => usePage().props.value.shared.permissions)
+        const directory = 'roles'
 
-        return { form, submit, permissions }
+        return { form, permissions, directory }
     }
 }
 </script>

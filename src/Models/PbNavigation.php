@@ -2,6 +2,7 @@
 
 namespace Anibalealvarezs\Projectbuilder\Models;
 
+use Anibalealvarezs\Projectbuilder\Helpers\Shares;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Spatie\Translatable\HasTranslations;
@@ -57,6 +58,56 @@ class PbNavigation extends PbBuilder
     public static function getCrudConfig(): array
     {
         $config = PbBuilder::getCrudConfig();
+
+        $config['formconfig'] = [
+            'name' => [
+                'type' => 'text',
+            ],
+            'destiny' => [
+                'type' => 'textarea',
+            ],
+            'type' => [
+                'type' => 'select',
+                'list' => [
+                    [
+                        'id' => 'route',
+                        'name' => 'Route'
+                    ],
+                    [
+                        'id' => 'path',
+                        'name' => 'Path'
+                    ],
+                    [
+                        'id' => 'custom',
+                        'name' => 'Custom'
+                    ],
+                ],
+            ],
+            'parent' => [
+                'type' => 'select',
+                'list' => array_merge([['id'=>0, 'name'=>'[none]']], Shares::getNavigations()['navigations']['full']->toArray()),
+            ],
+            'permission' => [
+                'type' => 'select',
+                'list' => Shares::getPermissionsAll()['permissionsall']->toArray(),
+            ],
+            'status' => [
+                'type' => 'select',
+                'list' => [
+                    [
+                        'id' => '1',
+                        'name' => 'Enabled'
+                    ],
+                    [
+                        'id' => '0',
+                        'name' => 'Disabled'
+                    ],
+                ],
+            ],
+            'module' => [
+                'type' => 'text',
+            ],
+        ];
 
         $config['relations'] = ['ascendant', 'permission', 'module'];
 

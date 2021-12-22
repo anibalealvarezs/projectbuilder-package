@@ -70,6 +70,21 @@ class PbConfig extends PbBuilder
     {
         $config = PbBuilder::getCrudConfig();
 
+        $config['formconfig'] = [
+            'name' => [
+                'type' => 'text',
+            ],
+            'configkey' => [
+                'type' => 'text',
+            ],
+            'configvalue' => [
+                'type' => 'text',
+            ],
+            'description' => [
+                'type' => 'textarea',
+            ],
+        ];
+
         $config['relations'] = ['module'];
 
         $config['fields'] = [

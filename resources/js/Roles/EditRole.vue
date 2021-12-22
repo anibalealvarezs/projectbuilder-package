@@ -12,7 +12,7 @@
                     {{ pbrole }}
                 </div> -->
                 <div class="p-12 sm:px-20 bg-white border-b border-gray-200">
-                    <RoleForm :data="setItem" :defaults="defaults" :required="required" />
+                    <RoleForm :data="setItem(pbrole)" :defaults="defaults" :required="required" />
                 </div>
             </slot>
         </Main>
@@ -33,12 +33,6 @@
         },
         components: {
             RoleForm,
-        },
-        computed: {
-            setItem() {
-                this.pbrole.item = this.pbrole.id
-                return this.pbrole
-            },
         },
         setup () {
             const defaults = computed(() => usePage().props.value.shared.defaults)

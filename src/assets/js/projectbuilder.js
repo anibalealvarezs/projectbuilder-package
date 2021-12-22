@@ -112,16 +112,14 @@ class TableFields {
                     buttons[option]['method'] = 'PUT'
                 }
                 /* Method */
-                if (!buttons[option].hasOwnProperty('altforuser')) {
-                    buttons[option]['altforuser'] = {}
+                if (!buttons[option].hasOwnProperty('altformodel')) {
+                    buttons[option]['altformodel'] = {}
                 }
                 /* Method */
                 if (!buttons[option].hasOwnProperty('allowed')) {
                     buttons[option]['allowed'] = true
                 }
                 if (buttons[option]['allowed']) {
-                    console.log(option);
-                    console.log(buttons[option]);
                     actions['buttons'][option] = {
                         enabled: buttons[option].enabled,
                         text: buttons[option].text,
@@ -132,7 +130,7 @@ class TableFields {
                         type: buttons[option].type,
                         formitem: buttons[option].formitem,
                         method: buttons[option].method,
-                        altforuser: buttons[option].altforuser,
+                        altformodel: buttons[option].altformodel,
                     }
                 }
             }
@@ -141,7 +139,7 @@ class TableFields {
 
     static onItemClicked(value, data, key) {
         for (let i in value) {
-            if (i == "id") {
+            if (i === "id") {
                 data['item'] = value[i]
             } else {
                 data[i] = value[i]
@@ -169,12 +167,20 @@ class TableFields {
         return 'hidden-form-' + this.generateRandom()
     }
 
+    static buildHiddenIdTag(data = null) {
+        return 'hidden-form-' + ((data && data.hasOwnProperty('item') && data.item) ? 'edit' : 'create') + '-' + this.generateRandom()
+    }
+
     static generateRandom() {
-        return Math.floor((Math.random() * 999999999) + 1)
+        return Math.floor((Math.random() * 999999999) + 1).toString()
+    }
+
+    static generateRandomTag(data = null) {
+        return ((data && data.hasOwnProperty('item') && data.item) ? 'edit' : 'create') + '-' + this.generateRandom
     }
 
     static fixKey(index) {
-        if (index == "item") {
+        if (index === "item") {
             return "id"
         }
         return index
@@ -220,6 +226,17 @@ class TableFields {
         let clase = "border px-4 py-2 align-top cursor-pointer sort-handle"
         clase += this.isCentered(centered)
         return clase
+    }
+
+    buildTableFields(listing) {
+        for (const [k, v] of Object.entries(listing)) {
+            if ((v.key !== 'item') && (v.key !== 'actions') && (v.key !== 'sorthandle')) {
+                this.customField(v.key, v.name, v.arrval, v.style, v.buttons, v.href, v.size, v.status)
+            } else if (v.key === 'actions') {
+                this.pushActions(v.buttons);
+            }
+        }
+        return this.fields
     }
 
     static appendToSwal(id) {
@@ -287,6 +304,49 @@ class Helpers {
 
     static proxyToObject(proxy) {
         return Object.assign({}, proxy);
+    }
+
+    static getModelIdsList(model) {
+        let list = [];
+        if (model) {
+            for (const [k, v] of Object.entries(model)) {
+                list.push(v.id);
+            }
+        }
+        return list;
+    }
+
+    static removeIdsFromNavigations(navs, item) {
+        let n = this.proxyNavsToObject(navs)
+        let navigations = []
+        let excluded = [item]
+        excluded = excluded.concat(this.getNavChildren(n, item))
+        for (const [k, v] of Object.entries(n)) {
+            if (!excluded.includes(v.id)) {
+                navigations.push(v)
+            }
+        }
+        return navigations
+    }
+
+    static proxyNavsToObject(navs) {
+        let navigations = {}
+        let objNavs = this.proxyToObject(navs.value);
+        for (const [k, v] of Object.entries(objNavs)) {
+            navigations[k] = this.proxyToObject(v)
+        }
+        return navigations
+    }
+
+    static getNavChildren(navs, el) {
+        let arr = []
+        for (const [k, v] of Object.entries(navs)) {
+            if (v.parent === el) {
+                arr.push(v.id)
+                arr = arr.concat(this.getNavChildren(navs, v.id))
+            }
+        }
+        return arr
     }
 }
 

@@ -16,11 +16,25 @@
                     >
                         <slot>Create Logger</slot>
                     </Button>
-                    <TableLoggers :loggers="pbloggers" :allowed="allowed" :sort="sort" :showpos="showpos" :showid="showid" :model="model" :defaults="defaults" :required="required" :listing="listing" />
+                    <TableLoggers
+                        :allowed="allowed"
+                        :defaults="defaults"
+                        :listing="listing"
+                        :loggers="pbloggers"
+                        :model="model"
+                        :required="required"
+                        :showid="showid"
+                        :showpos="showpos"
+                        :sort="sort"
+                    />
                 </div>
             </slot>
-            <div :id="buildHiddenId" class="infinite-hidden">
-                <LoggerForm :data="{}" :defaults="defaults" :required="required" />
+            <div :id="buildHiddenIdTag" class="infinite-hidden">
+                <LoggerForm
+                    :data="{}"
+                    :defaults="defaults"
+                    :required="required"
+                />
             </div>
         </Main>
     </AppLayout>

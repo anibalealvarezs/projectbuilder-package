@@ -16,11 +16,25 @@
                     >
                         <slot>Create Role</slot>
                     </Button>
-                    <TableRoles :roles="pbroles" :allowed="allowed" :sort="sort" :showpos="showpos" :showid="showid" :model="model" :defaults="defaults" :required="required" :listing="listing" />
+                    <TableRoles
+                        :allowed="allowed"
+                        :defaults="defaults"
+                        :listing="listing"
+                        :model="model"
+                        :required="required"
+                        :roles="pbroles"
+                        :showid="showid"
+                        :showpos="showpos"
+                        :sort="sort"
+                    />
                 </div>
             </slot>
-            <div :id="buildHiddenId" class="infinite-hidden">
-                <RoleForm :data="{}" :defaults="defaults" :required="required" />
+            <div :id="buildHiddenIdTag" class="infinite-hidden">
+                <RoleForm
+                    :data="{}"
+                    :defaults="defaults"
+                    :required="required"
+                />
             </div>
         </Main>
     </AppLayout>

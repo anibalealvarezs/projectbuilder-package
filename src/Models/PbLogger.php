@@ -2,6 +2,7 @@
 
 namespace Anibalealvarezs\Projectbuilder\Models;
 
+use Anibalealvarezs\Projectbuilder\Helpers\Shares;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Spatie\Translatable\HasTranslations;
 
@@ -81,6 +82,21 @@ class PbLogger extends PbBuilder
         $config = PbBuilder::getCrudConfig();
 
         $config['relations'] = ['user', 'module'];
+
+        $config['formconfig'] = [
+            'name' => [
+                'type' => 'text',
+            ],
+            'loggerkey' => [
+                'type' => 'text',
+            ],
+            'loggervalue' => [
+                'type' => 'text',
+            ],
+            'description' => [
+                'type' => 'textarea',
+            ],
+        ];
 
         $config['fields'] = [
             'severity' => [],

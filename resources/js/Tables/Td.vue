@@ -1,7 +1,7 @@
 <template>
-    <td v-if="(allowed.update || allowed.delete) || (index != 'actions')" scope="row"
-        :class="(index == 'sorthandle' ? buildHandlerClasses() : buildTdClasses())">
-        <div v-if="index == 'actions'">
+    <td v-if="(allowed.update || allowed.delete) || (index !== 'actions')" scope="row"
+        :class="(index === 'sorthandle' ? buildHandlerClasses() : buildTdClasses())">
+        <div v-if="index === 'actions'">
             <!-- Actions Dropdown -->
             <div class="relative">
                 <JetDropdown align="right" width="60">
@@ -18,7 +18,7 @@
                             <!-- Actions -->
                             <div v-for="(button, i) in field.buttons" class="space-y-1" :key="i">
                                 <JetDropdownLink
-                                    v-if="(button.type == 'link') && ((i != 'update') || item.crud.editable) && ((i != 'delete') || item.crud.deletable)"
+                                    v-if="(button.type === 'link') && ((i !== 'update') || item.crud.editable) && ((i !== 'delete') || item.crud.deletable)"
                                     :href="buildRoute(button.route, item.id)"
                                 >
                                     <div :class="buildSpanClasses()">
@@ -26,7 +26,7 @@
                                     </div>
                                 </JetDropdownLink>
                                 <form
-                                    v-if="(button.type == 'form') && ((i != 'update') || item.crud.editable) && ((i != 'delete') || item.crud.deletable)"
+                                    v-if="(button.type === 'form') && ((i !== 'update') || item.crud.editable) && ((i !== 'delete') || item.crud.deletable)"
                                     :action="buildRoute(button.route, item.id)"
                                     @submit.prevent="submit"
                                     method="post"
@@ -47,7 +47,7 @@
             </div>
         </div>
         <!-- SIZE -->
-        <div v-if="field.size == 'single'" :class="(field.href.hasOwnProperty('route') ? 'bg-gray-200' : '')">
+        <div v-if="field.size === 'single'" :class="(field.href.hasOwnProperty('route') ? 'bg-gray-200' : '')">
             <!-- HREF -->
             <JetDropdownLink
                 v-if="field.href.hasOwnProperty('route')"
@@ -67,7 +67,7 @@
             <div v-else>
                 <div v-if="field.status">
                     <span
-                        v-if="cellValue == 1"
+                        v-if="cellValue === 1"
                         :class="buildSpanClasses()"
                     >
                         <svg class="h-5 w-5 text-green-400" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" stroke="currentColor" viewBox="0 0 24 24" data-v-73b67a72=""><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" data-v-73b67a72=""></path></svg>
@@ -76,7 +76,7 @@
                         </svg> -->
                     </span>
                 </div>
-                <div v-else-if="index == 'sorthandle'">
+                <div v-else-if="index === 'sorthandle'">
                     <span
                         :class="buildSpanClasses()"
                     >
@@ -94,7 +94,7 @@
                 </span>
             </div>
         </div>
-        <div v-if="field.size == 'multiple'">
+        <div v-if="field.size === 'multiple'">
             <div v-for="cv in cellValue" :class="(field.arrval.hasOwnProperty('href') ? 'bg-gray-200 space-y-1' : 'space-y-1')">
                 <!-- HREF -->
                 <JetDropdownLink
@@ -148,8 +148,11 @@ export default {
         field: Object,
         index: String,
         hiddenid: String,
-        allowed: Array,
+        allowed: Object,
     },
+    emits: [
+        'clicked-edit-item'
+    ],
     data() {
         return {
             form: {
@@ -163,7 +166,7 @@ export default {
             return Table.fixKey(this.index)
         },
         cellValue() {
-            if (this.field.arrval.hasOwnProperty('key') && (this.field.size == 'single')) {
+            if (this.field.arrval.hasOwnProperty('key') && (this.field.size === 'single')) {
                 let obj = Object.assign({}, this.item[this.fixKey]);
                 return obj[this.field.arrval.key]
             }
@@ -201,7 +204,7 @@ export default {
                 case "Edit":
                     let action = true;
                     if (b.altformodel.hasOwnProperty('altroute')) {
-                        if (i[b.altformodel.key] == this.user[b.altformodel.key]) {
+                        if (i[b.altformodel.key] === this.user[b.altformodel.key]) {
                             action = false;
                             window.location.href = route(b.altformodel.altroute);
                         }

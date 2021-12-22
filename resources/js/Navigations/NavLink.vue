@@ -4,7 +4,7 @@
             <slot></slot>
         </Link>
         <ul v-if="hasDescendants" :class="ulclasses">
-            <NavLink v-for="subnav in nav.descendants" :nav="subnav" active="false" :level="addLevel">
+            <NavLink v-for="subnav in nav.descendants" :nav="subnav" :active=false :level="addLevel">
                 {{ subnav.name }}
             </NavLink>
         </ul>
@@ -21,7 +21,8 @@ export default {
 
     props: {
         nav: Object,
-        level: Number
+        level: String,
+        active: Boolean,
     },
 
     methods: {
@@ -55,8 +56,7 @@ export default {
         },
 
         aclasses() {
-            let classes = 'items-center h-full sm:flex px-3 border-b-2 hover:ring-0 active:border-indigo-400 hover:border-gray-400 active:border-indigo-700'
-            return classes
+            return 'items-center h-full sm:flex px-3 border-b-2 hover:ring-0 active:border-indigo-400 hover:border-gray-400 active:border-indigo-700'
         },
 
         ulclasses() {
@@ -68,17 +68,13 @@ export default {
         },
 
         isRoot() {
-            if (this.level == 0) {
-                return true
-            }
-            return false
+            return parseInt(this.level) === 0;
+
         },
 
         isOdd() {
-            if (this.level % 2 == 0) {
-                return true
-            }
-            return false
+            return parseInt(this.level) % 2 === 0;
+
         },
 
         getHref() {
@@ -98,15 +94,12 @@ export default {
         },
 
         hasDescendants() {
-            console.log(this.nav.descendants)
-            if (Object.keys(this.nav.descendants).length > 0) {
-                return true
-            }
-            return false
+            return Object.keys(this.nav.descendants).length > 0;
+
         },
 
         addLevel() {
-            return (this.level + 1)
+            return (parseInt(this.level) + 1).toString()
         },
     },
 }

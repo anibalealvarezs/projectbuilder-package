@@ -9,7 +9,7 @@
         <Main>
             <slot>
                 <div class="p-12 sm:px-20 bg-white border-b border-gray-200">
-                    <LoggerForm :data="setItem" :defaults="defaults" :required="required" />
+                    <LoggerForm :data="setItem(pblogger)" :defaults="defaults" :required="required" />
                 </div>
             </slot>
         </Main>
@@ -30,12 +30,6 @@
         },
         components: {
             LoggerForm,
-        },
-        computed: {
-            setItem() {
-                this.pblogger.item = this.pblogger.id
-                return this.pblogger
-            },
         },
         setup () {
             const defaults = computed(() => usePage().props.value.shared.defaults)

@@ -16,44 +16,58 @@
                     >
                         <slot>Create User</slot>
                     </Button>
-                    <TableUsers :users="pbusers" :allowed="allowed" :sort="sort" :showpos="showpos" :showid="showid" :model="model" :defaults="defaults" :required="required" :listing="listing" />
+                    <TableUsers
+                        :allowed="allowed"
+                        :defaults="defaults"
+                        :listing="listing"
+                        :model="model"
+                        :required="required"
+                        :showid="showid"
+                        :showpos="showpos"
+                        :sort="sort"
+                        :users="pbusers"
+                    />
                 </div>
             </slot>
-            <div :id="buildHiddenId" class="infinite-hidden">
-                <UserForm :data="{}" :defaults="defaults" :required="required" />
+            <div :id="buildHiddenIdTag" class="infinite-hidden">
+                <UserForm
+                    :data="{}"
+                    :defaults="defaults"
+                    :required="required"
+                />
             </div>
         </Main>
     </AppLayout>
 </template>
 
 <script>
-    import TableUsers from "@/Pages/Projectbuilder/Users/TableUsers"
-    import UserForm from "@/Pages/Projectbuilder/Users/UserForm"
-    import {computed} from "vue"
-    import {usePage} from "@inertiajs/inertia-vue3"
-    import PbIndex from "Pub/js/Projectbuilder/pbindex"
+import TableUsers from "@/Pages/Projectbuilder/Users/TableUsers"
+import UserForm from "@/Pages/Projectbuilder/Users/UserForm"
+import {computed} from "vue"
+import {usePage} from "@inertiajs/inertia-vue3"
+import PbIndex from "Pub/js/Projectbuilder/pbindex"
 
-    export default {
-        extends: PbIndex,
-        name: "Users",
-        props: {
-            pbusers: Object,
-        },
-        components: {
-            TableUsers,
-            UserForm
-        },
-        setup () {
-            const allowed = computed(() => usePage().props.value.shared.allowed)
-            const sort = computed(() => usePage().props.value.shared.sort)
-            const showpos = computed(() => usePage().props.value.shared.showpos)
-            const showid = computed(() => usePage().props.value.shared.showid)
-            const model = computed(() => usePage().props.value.shared.model)
-            const defaults = computed(() => usePage().props.value.shared.defaults)
-            const required = computed(() => usePage().props.value.shared.required)
-            const listing = computed(() => usePage().props.value.shared.listing)
+export default {
+    extends: PbIndex,
+    name: "Users",
+    props: {
+        pbusers: Object,
+    },
+    components: {
+        TableUsers,
+        UserForm
+    },
+    setup() {
+        const allowed = computed(() => usePage().props.value.shared.allowed)
+        const sort = computed(() => usePage().props.value.shared.sort)
+        const showpos = computed(() => usePage().props.value.shared.showpos)
+        const showid = computed(() => usePage().props.value.shared.showid)
+        const model = computed(() => usePage().props.value.shared.model)
+        const defaults = computed(() => usePage().props.value.shared.defaults)
+        const required = computed(() => usePage().props.value.shared.required)
+        const listing = computed(() => usePage().props.value.shared.listing)
 
-            return { allowed, sort, model, showpos, showid, defaults, required, listing }
-        }
+        return {allowed, sort, model, showpos, showid, defaults, required, listing}
     }
+}
 </script>

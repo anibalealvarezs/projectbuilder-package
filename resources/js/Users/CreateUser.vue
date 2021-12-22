@@ -9,7 +9,11 @@
         <Main>
             <slot>
                 <div class="p-12 sm:px-20 bg-white border-b border-gray-200">
-                    <UserForm :data="{}" :defaults="defaults" :required="required" />
+                    <UserForm
+                        :data="{}"
+                        :defaults="defaults"
+                        :required="required"
+                    />
                 </div>
             </slot>
         </Main>

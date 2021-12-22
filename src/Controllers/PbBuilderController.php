@@ -295,6 +295,10 @@ class PbBuilderController extends Controller
      * @var array
      */
     protected $listing;
+    /**
+     * @var array
+     */
+    protected $formconfig;
 
     function __construct(Request $request, $crud_perms = false)
     {
@@ -402,6 +406,10 @@ class PbBuilderController extends Controller
             $this->listing = [];
         }
 
+        if (!$this->formconfig) {
+            $this->formconfig = [];
+        }
+
         $this->required = $this->getRequired();
 
         $this->request = $request;
@@ -445,7 +453,9 @@ class PbBuilderController extends Controller
         }
 
         $this->listing = self::buildListingRow($config);
+        $this->formconfig = $config['formconfig'];
         PbDebugbar::addMessage($this->listing, 'listing');
+        PbDebugbar::addMessage($this->formconfig, 'formconfig');
 
         $path = $this->buildRouteString($route, 'index');
 
@@ -460,6 +470,10 @@ class PbBuilderController extends Controller
      */
     public function create(string $route = 'level'): InertiaResponse|JsonResponse
     {
+        $config = $this->modelPath::getCrudConfig();
+        $this->formconfig = $config['formconfig'];
+        PbDebugbar::addMessage($this->formconfig, 'formconfig');
+
         $path = $this->buildRouteString($route, 'create');
 
         return $this->renderResponse($path);
@@ -531,6 +545,10 @@ class PbBuilderController extends Controller
         string $route = 'level'
     ): InertiaResponse|JsonResponse {
         $arrayElements = $this->buildModelsArray($element, $multiple, $id);
+
+        $config = $this->modelPath::getCrudConfig();
+        $this->formconfig = $config['formconfig'];
+        PbDebugbar::addMessage($this->formconfig, 'formconfig');
 
         $path = $this->buildRouteString($route, 'edit');
 
@@ -682,21 +700,21 @@ class PbBuilderController extends Controller
      */
     protected function shareVars()
     {
-        Inertia::share(
-            'shared',
-            array_merge(
-                $this->globalInertiaShare(),
-                Shares::allowed($this->allowed),
-                Shares::list($this->shares),
-                ['sort' => $this->sortable],
-                ['showpos' => $this->showPosition],
-                ['showid' => $this->showId],
-                ['model' => $this->viewModelName],
-                ['required' => $this->required],
-                ['defaults' => $this->getDefaults()],
-                ['listing' => $this->listing]
-            )
+        $shared = array_merge(
+            $this->globalInertiaShare(),
+            Shares::allowed($this->allowed),
+            Shares::list($this->shares),
+            ['sort' => $this->sortable],
+            ['showpos' => $this->showPosition],
+            ['showid' => $this->showId],
+            ['model' => $this->viewModelName],
+            ['required' => $this->required],
+            ['defaults' => $this->getDefaults()],
+            ['listing' => $this->listing],
+            ['formconfig' => $this->formconfig],
         );
+        Inertia::share('shared', $shared);
+        PbDebugbar::addMessage($shared, 'shared');
     }
 
     /**

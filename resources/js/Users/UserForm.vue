@@ -1,119 +1,22 @@
 <template>
     <form @submit.prevent="submit" class="w-full max-w-lg">
         <div class="flex flex-wrap -mx-3 mb-6">
-            <!-- name -->
-            <div class="w-full md:w-1/2 px-3 mb-6 md:mb-0">
-                <label class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2" :for="'grid-name-' + keyid">
-                    Name
+            <div v-for="(field, key) in form" class="w-full px-3 mb-6 md:mb-0">
+                <!-- {{ key }} -->
+                <label class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
+                       :for="'grid-'+ key +'-' + keyid">
+                    {{ key }}
                 </label>
-                <input
-                    v-model="form.name"
-                    :id="'grid-name-' + keyid"
-                    name="name"
-                    type="text"
-                    placeholder="Name"
-                    class="temp-readonly appearance-none block w-full bg-gray-200 text-gray-700 border border-red-500 rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white"
-                    readonly="true"
-                    :required="isRequired('name')"
-                    @mouseover="disableReadonly"
-                    @focus="disableReadonly"
-                >
-            </div>
-            <!-- email -->
-            <div class="w-full md:w-1/2 px-3">
-                <label class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2" :for="'grid-email-' + keyid">
-                    Email
-                </label>
-                <input
-                    v-model="form.email"
-                    :id="'grid-email-' + keyid"
-                    name="email"
-                    type="text"
-                    placeholder="email@email.com"
-                    class="temp-readonly appearance-none block w-full bg-gray-200 text-gray-700 border border-red-500 rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white"
-                    readonly="true"
-                    :required="isRequired('email')"
-                    @mouseover="disableReadonly"
-                    @focus="disableReadonly"
-                >
-            </div>
-        </div>
-        <div class="flex flex-wrap -mx-3 mb-6">
-            <!-- password -->
-            <div class="w-full px-3">
-                <label class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2" :for="'grid-password-' + keyid">
-                    Password
-                </label>
-                <input
-                    v-model="form.password"
-                    :id="'grid-password-' + keyid"
-                    name="password"
-                    type="password"
-                    placeholder="******************"
-                    class="temp-readonly appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
-                    readonly="true"
-                    :required="isRequired('password')"
-                    @mouseover="disableReadonly"
-                    @focus="disableReadonly"
-                >
-            </div>
-        </div>
-        <div class="flex flex-wrap -mx-3 mb-6">
-            <!-- role -->
-            <div class="w-full px-3">
-                <label class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2" :for="'grid-role-' + keyid">
-                    Role
-                </label>
-                <div class="text-left" :id="'grid-roles-' + keyid" v-for="role in roles">
-                    <input
-                        type="checkbox"
-                        :id="'checkbox-role-' + role.id"
-                        :value="role.id"
-                        v-model="form.roles"
-                        class="appearance-none mx-4 px-4 py-3 mb-1 rounded bg-gray-200 text-gray-700 border border-gray-200 focus:outline-none focus:bg-white focus:border-gray-500"
-                    >
-                    <label :for="'checkbox-role-' + role.id">{{ role.alias }}</label>
-                </div>
-            </div>
-        </div>
-        <div class="flex flex-wrap -mx-3 mb-6">
-            <!-- country -->
-            <div class="w-full px-3">
-                <label class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2" :for="'grid-country-' + keyid">
-                    Country
-                </label>
-                <select
-                    v-model="form.country"
-                    :id="'grid-country-' + keyid"
-                    name="country"
-                    class="appearance-none w-full md:w-1/1 px-4 py-3 mb-3 block rounded bg-gray-200 text-gray-700 border border-gray-200 overflow-hidden leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
-                    placeholder="Select country"
-                    :required="isRequired('country')"
-                >
-                    <option v-for="country in countries" :value="country.id">
-                        {{ country.name }}
-                    </option>
-                </select>
-            </div>
-        </div>
-        <div class="flex flex-wrap -mx-3 mb-6">
-            <!-- language -->
-            <div class="w-full px-3">
-                <label class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2" :for="'grid-language-' + keyid">
-                    Language
-                </label>
-                <select
-                    v-model="form.lang"
-                    :id="'grid-language-' + keyid"
-                    name="lang"
-                    class="appearance-none w-full md:w-1/1 px-4 py-3 mb-3 block rounded bg-gray-200 text-gray-700 border border-gray-200 overflow-hidden leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
-                    placeholder="Select language"
-                    :required="isRequired('lang')"
-                >
-                    <option v-for="language in languages" :value="language.id" :data-iso="language.code">
-                        {{ language.name }}
-                    </option>
-                </select>
+                <Input
+                    :value="form[key]"
+                    :keyel="key"
+                    :keyid="keyid"
+                    :required="required"
+                    @input="updateValue($event, key)"
+                    @click="updateValue($event, key)"
+                    @select="updateValue($event, key)"
+                    @textarea="updateValue($event, key)"
+                />
             </div>
         </div>
         <div class="flex flex-wrap -mx-3 mb-2 items-center justify-between">
@@ -127,51 +30,24 @@
 
 <script>
 import {computed, reactive} from 'vue'
-import { Inertia } from '@inertiajs/inertia'
-import Swal from "sweetalert2"
-import {usePage} from "@inertiajs/inertia-vue3"
 import PbForm from "Pub/js/Projectbuilder/pbform"
+import {Helpers} from "Pub/js/Projectbuilder/projectbuilder"
 
 export default {
     extends: PbForm,
     name: "UserForm",
-    setup (props) {
-        let rolesList = [];
-        if (props.data.roles) {
-            for (const [k, v] of Object.entries(props.data.roles)) {
-                rolesList.push(v.id);
-            }
-        }
-
+    setup(props) {
         const form = reactive({
             name: props.data.name,
             email: props.data.email,
             lang: (props.data.lang ? props.data.lang.id : (props.defaults.hasOwnProperty('lang') ? props.defaults.lang.id : 0)),
             country: (props.data.country ? props.data.country.id : (props.defaults.hasOwnProperty('country') ? props.defaults.country.id : 0)),
-            roles: rolesList,
+            roles: Helpers.getModelIdsList(props.data.roles),
             password: ""
         })
+        const directory = 'users'
 
-        function submit() {
-            if (props.data.hasOwnProperty('item')) {
-                Inertia.put("/users/"+ props.data.item, form, {
-                    preserveScroll: true,
-                    onSuccess: () => Swal.close()
-                })
-            } else {
-                Inertia.post("/users", form, {
-                    preserveScroll: true,
-                    preserveState: false,
-                    onSuccess: () => Swal.close()
-                })
-            }
-        }
-
-        const languages = computed(() => usePage().props.value.shared.languages)
-        const countries = computed(() => usePage().props.value.shared.countries)
-        const roles = computed(() => usePage().props.value.shared.roles)
-
-        return { form, submit, languages, countries, roles }
+        return {form, directory}
     }
 }
 </script>
