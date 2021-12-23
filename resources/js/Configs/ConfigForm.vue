@@ -29,9 +29,8 @@
 </template>
 
 <script>
-import {computed, reactive} from 'vue'
+import {reactive} from 'vue'
 import PbForm from "Pub/js/Projectbuilder/pbform"
-import {usePage} from "@inertiajs/inertia-vue3";
 
 export default {
     extends: PbForm,

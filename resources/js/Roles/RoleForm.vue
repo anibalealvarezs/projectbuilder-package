@@ -29,8 +29,7 @@
 </template>
 
 <script>
-import {computed, reactive} from 'vue'
-import {usePage} from "@inertiajs/inertia-vue3"
+import {reactive} from 'vue'
 import PbForm from "Pub/js/Projectbuilder/pbform"
 import {Helpers} from "Pub/js/Projectbuilder/projectbuilder"
 
@@ -43,10 +42,9 @@ export default {
             permissions: Helpers.getModelIdsList(props.data.permissions),
             alias: props.data['alias'],
         })
-        const permissions = computed(() => usePage().props.value.shared.permissions)
         const directory = 'roles'
 
-        return { form, permissions, directory }
+        return { form, directory }
     }
 }
 </script>

@@ -29,9 +29,7 @@
 </template>
 
 <script>
-import {computed, reactive} from 'vue'
-import {usePage} from "@inertiajs/inertia-vue3";
-import { Helpers } from "Pub/js/Projectbuilder/projectbuilder"
+import {reactive} from 'vue'
 import PbForm from "Pub/js/Projectbuilder/pbform"
 
 export default {
@@ -47,14 +45,9 @@ export default {
             status: props.data.status,
             permission: props.data.permission_id,
         })
-        const navigations = Helpers.removeIdsFromNavigations(
-            computed(() => usePage().props.value.shared.navigations.full),
-            props.data.item
-        )
-        const permissions = computed(() => usePage().props.value.shared.permissionsall)
         const directory = 'navigations'
 
-        return { form, navigations, permissions, directory }
+        return { form, directory }
     }
 }
 </script>

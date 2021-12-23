@@ -29,7 +29,7 @@
 </template>
 
 <script>
-import {computed, reactive} from 'vue'
+import {reactive} from 'vue'
 import PbForm from "Pub/js/Projectbuilder/pbform"
 import {Helpers} from "Pub/js/Projectbuilder/projectbuilder"
 
