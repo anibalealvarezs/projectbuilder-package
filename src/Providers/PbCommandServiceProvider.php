@@ -2,6 +2,7 @@
 
 namespace Anibalealvarezs\Projectbuilder\Providers;
 
+use Anibalealvarezs\Projectbuilder\Commands\PbAltInstallCommand;
 use Anibalealvarezs\Projectbuilder\Commands\PbHelpCommand;
 use Anibalealvarezs\Projectbuilder\Commands\PbInstallCommand;
 use Anibalealvarezs\Projectbuilder\Traits\PbServiceProviderTrait;
@@ -22,6 +23,7 @@ class PbCommandServiceProvider extends ServiceProvider
             $this->commands([
                 PbInstallCommand::class,
                 PbHelpCommand::class,
+                PbAltInstallCommand::class,
             ]);
         }
     }

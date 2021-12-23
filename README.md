@@ -37,6 +37,10 @@ If Jetstream & Inertia already installed, remove the ```--inertia``` flag from t
 ```shell
 php artisan pbuilder:install
 ```
+In case of Artisan commands failure, use the alternative installation command:
+```
+php artisan pbuilder:altinstall
+```
 In case of links failure (if "pbstorage" links show error), navigate to "public folder", manually delete the link, and create a new one with the following command:
 ```
 ln -s ../vendor/anibalealvarezs/projectbuilder-package/src/assets pbstorage
