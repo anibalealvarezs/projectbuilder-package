@@ -33,9 +33,7 @@
         "nesbot/carbon": "^2.55.2",
         "spatie/laravel-permission": "^3.18",
         "spatie/laravel-translatable": "^4.6",
-        "tightenco/ziggy": "^1.4.2"
-    },
-    "require-dev": {
+        "tightenco/ziggy": "^1.4.2",
         "barryvdh/laravel-debugbar": "^3.6.5"
     },
     "autoload": {
@@ -46,6 +44,7 @@
     "extra": {
         "laravel": {
             "providers": [
+                "Barryvdh\\Debugbar\\ServiceProvider",
                 "Anibalealvarezs\\Projectbuilder\\Providers\\PbAppServiceProvider",
                 "Anibalealvarezs\\Projectbuilder\\Providers\\PbCommandServiceProvider",
                 "Anibalealvarezs\\Projectbuilder\\Providers\\PbComposerServiceProvider",
@@ -55,8 +54,7 @@
                 "Anibalealvarezs\\Projectbuilder\\Providers\\PbMigrationServiceProvider",
                 "Anibalealvarezs\\Projectbuilder\\Providers\\PbRouteServiceProvider",
                 "Anibalealvarezs\\Projectbuilder\\Providers\\PbViewServiceProvider",
-                "Anibalealvarezs\\Projectbuilder\\Providers\\PbSeederServiceProvider",
-                "Barryvdh\\Debugbar\\ServiceProvider::class,"
+                "Anibalealvarezs\\Projectbuilder\\Providers\\PbSeederServiceProvider"
             ]
         }
     },
