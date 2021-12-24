@@ -5,10 +5,13 @@
 ## Requirements
 
 #### 0. Prepare your .env file
-Submit database connection data, site URL and project name
+Submit database connection data, site URL and project name. Then, install debugbar package manually
+```shell
+composer require barryvdh/laravel-debugbar --dev
+```
 
 #### 1. Add the following lines to composer.json:
-```json
+```json lines
 "repositories": [
     {
         "type": "composer",
