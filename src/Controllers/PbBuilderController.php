@@ -7,7 +7,7 @@ use Anibalealvarezs\Projectbuilder\Helpers\PbHelpers;
 use Anibalealvarezs\Projectbuilder\Helpers\Shares;
 use Anibalealvarezs\Projectbuilder\Models\PbCountry;
 use Anibalealvarezs\Projectbuilder\Models\PbLanguage;
-use Anibalealvarezs\Projectbuilder\Traits\PbControllerTrait;
+use Anibalealvarezs\Projectbuilder\Traits\PbInstallTrait;
 
 use Anibalealvarezs\Projectbuilder\Traits\PbControllerListingTrait;
 use App\Http\Requests;
@@ -28,7 +28,7 @@ use Inertia\Response as InertiaResponse;
 
 class PbBuilderController extends Controller
 {
-    use PbControllerTrait;
+    use PbInstallTrait;
     use PbControllerListingTrait;
 
     /**

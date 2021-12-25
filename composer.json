@@ -44,8 +44,6 @@
     "extra": {
         "laravel": {
             "providers": [
-                "Barryvdh\\Debugbar\\ServiceProvider",
-                "Anibalealvarezs\\Projectbuilder\\Providers\\PbAppServiceProvider",
                 "Anibalealvarezs\\Projectbuilder\\Providers\\PbCommandServiceProvider",
                 "Anibalealvarezs\\Projectbuilder\\Providers\\PbComposerServiceProvider",
                 "Anibalealvarezs\\Projectbuilder\\Providers\\PbConfigServiceProvider",

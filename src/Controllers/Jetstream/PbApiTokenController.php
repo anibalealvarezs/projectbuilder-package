@@ -3,7 +3,7 @@
 namespace Anibalealvarezs\Projectbuilder\Controllers\Jetstream;
 
 use Laravel\Jetstream\Jetstream;
-use Anibalealvarezs\Projectbuilder\Traits\PbControllerTrait;
+use Anibalealvarezs\Projectbuilder\Traits\PbInstallTrait;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -12,7 +12,7 @@ use Laravel\Jetstream\Http\Controllers\Inertia\ApiTokenController;
 
 class PbApiTokenController extends ApiTokenController
 {
-    use PbControllerTrait;
+    use PbInstallTrait;
 
     /**
      * The Inertia manager instance.

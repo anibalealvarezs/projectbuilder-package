@@ -2,11 +2,14 @@
 
 namespace Anibalealvarezs\Projectbuilder\Commands;
 
+use Anibalealvarezs\Projectbuilder\Traits\PbInstallTrait;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Artisan;
 
 class PbInstallCommand extends Command
 {
+    use PbInstallTrait;
+
     /**
      * The name and signature of the console command.
      *
@@ -20,53 +23,6 @@ class PbInstallCommand extends Command
      * @var string
      */
     protected $description = 'Project Builder installation';
-
-    /**
-     * Create a new command instance.
-     *
-     * @return void
-     */
-    public function __construct()
-    {
-        parent::__construct();
-    }
-
-    /**
-     * Execute the console command.
-     *
-     * @return void
-     */
-    public function handle()
-    {
-        try {
-            if (!env('DB_PASSWORD')) {
-                echo "[[ Please prepare your ENV file with the DB data before installing the package ]]\n";
-                return false;
-            }
-            echo "[[ Process start ]]\n";
-            // Inertia...
-            if ($this->option('inertia')) {
-                echo "-- [[ Installing pre-requirements ]]\n";
-                if (!$this->installInertia()) {
-                    return false;
-                }
-            }
-            // Project Builder...
-            echo "-- [[ Installing Project Builder ]]\n";
-            if (!$this->installProjectBuilder()) {
-                return false;
-            }
-            // Logging results...
-            if (\Anibalealvarezs\Projectbuilder\Models\PbLogger::updateOrCreate(['message' => 'App Created'], ['object_type' => null])) {
-                echo "---- [[ Confirmation log entry added ]]\n";
-            } else {
-                echo "---- [[ Error adding confirmation log entry ]]\n";
-            }
-            echo "[[ Process finished ]]\n";
-        } catch (Exception $e) {
-            echo "-- [[ ERROR: ".$e->getMessage()." ]]\n";
-        }
-    }
 
     /**
      * Execute the console command.
@@ -96,57 +52,6 @@ class PbInstallCommand extends Command
             }
         } catch (Exception $e) {
             echo "------ [[ ERROR: ".$e->getMessage()." ]]\n";
-            return false;
-        }
-        return true;
-    }
-
-    /**
-     * Execute the console command.
-     *
-     * @return void
-     */
-
-    public function installProjectBuilder()
-    {
-        try {
-            echo "---- Looking for Project Builder's package updates...\n";
-            if (!$this->requirePackage()) {
-                return false;
-            }
-            echo "---- Publishing Resources...\n";
-            if (!$this->publishResources()) {
-                return false;
-            }
-            echo "---- Database configuiration...\n";
-            if (!$this->migrateAndSeed()) {
-                return false;
-            }
-            echo "---- Creating links...\n";
-            if (!$this->createLinks()) {
-                if (\Anibalealvarezs\Projectbuilder\Models\PbLogger::create(['severity' => 2, 'message' => 'Links creation failed', 'object_type' => null])) {
-                    echo "---- [[ Confirmation log entry added ]]\n";
-                } else {
-                    echo "---- [[ Error adding confirmation log entry ]]\n";
-                }
-            }
-        } catch (Exception $e) {
-            echo $e->getMessage();
-            return false;
-        }
-        return true;
-    }
-
-    /**
-     * Execute the console command.
-     *
-     * @return void
-     */
-
-    public function requirePackage()
-    {
-        if (!shell_exec("composer require anibalealvarezs/projectbuilder-package --no-cache")) {
-            echo "------ [[ ERROR: composer could not require Project Builder's package ]]\n";
             return false;
         }
         return true;
