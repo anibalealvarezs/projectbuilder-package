@@ -3,7 +3,7 @@
 namespace Anibalealvarezs\Projectbuilder\Controllers\Jetstream;
 
 use Anibalealvarezs\Projectbuilder\Models\PbUser;
-use Anibalealvarezs\Projectbuilder\Traits\PbInstallTrait;
+use Anibalealvarezs\Projectbuilder\Traits\PbControllerTrait;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
@@ -13,7 +13,7 @@ use Laravel\Jetstream\Http\Controllers\Inertia\UserProfileController;
 
 class PbUserProfileController extends UserProfileController
 {
-    use PbInstallTrait;
+    use PbControllerTrait;
 
     /**
      * The Inertia manager instance.
