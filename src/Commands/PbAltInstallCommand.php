@@ -37,14 +37,14 @@ class PbAltInstallCommand extends Command
                 echo "------ [[ ERROR: composer command through shell_exec failed ]]\n";
                 return false;
             }
-            echo "---- Installing providers...\n";
-            if (!$this->installProviders()) {
-                echo "------ [[ ERROR: proviers couldn't be installed ]]\n";
-                return false;
-            }
             echo "---- Installing Jetstream & Inertia...\n";
             if (!shell_exec("php artisan jetstream:install inertia --teams --pest")) {
                 echo "------ [[ ERROR: Jetstream installation failed failed ]]\n";
+                return false;
+            }
+            echo "---- Installing providers...\n";
+            if (!$this->installProviders()) {
+                echo "------ [[ ERROR: proviers couldn't be installed ]]\n";
                 return false;
             }
         } catch (Exception $e) {

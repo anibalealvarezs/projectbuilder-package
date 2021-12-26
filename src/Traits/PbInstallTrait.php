@@ -369,7 +369,7 @@ trait PbInstallTrait
         if (! Str::contains($webpackConfig = file_get_contents(config_path('filesystems.php')), 'pbstorage')) {
             if (!file_put_contents(config_path('filesystems.php'), str_replace(
                 'public_path(\'storage\') => storage_path(\'app/public\'),',
-                'public_path(\'storage\') => storage_path(\'app/public\'),'.PHP_EOL.'        public_path(\'pbstorage\') => app_path(\'vendor/anibalealvarezs/projectbuilder-package/src/assets\'),',
+                'public_path(\'storage\') => storage_path(\'app/public\'),'.PHP_EOL.'        public_path(\'pbstorage\') => base_path(\'/vendor/anibalealvarezs/projectbuilder-package/src/assets\'),',
                 $webpackConfig
             ))) {
                 return false;
