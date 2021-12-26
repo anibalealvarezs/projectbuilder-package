@@ -54,6 +54,21 @@ class PbAltInstallCommand extends Command
         return true;
     }
 
+    public function republishJetstreamResources()
+    {
+        echo "------ Reloading classes...\n";
+        if (!shell_exec("composer dump-autoload")) {
+            echo "------ [[ ERROR: Classes could not be reloaded ]]\n";
+            return false;
+        }
+        echo "------ Republishing laravel resources...\n";
+        if (!shell_exec("php artisan vendor:publish --tag=laravel-assets --ansi --force")) {
+            echo "------ [[ ERROR: Laravel assets could not be published ]]\n";
+            return false;
+        }
+        return true;
+    }
+
     /**
      * Execute the console command.
      *

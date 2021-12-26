@@ -151,9 +151,9 @@ trait PbInstallTrait
         if (!$this->installAdditionalProviders('PbRouteServiceProvider')) {
             return false;
         }
-        echo "---- Reautoloading classes...\n";
-        if (!shell_exec("composer dump-autoload")) {
-            echo "------ [[ ERROR: Classes could not be autoloaded ]]\n";
+        echo "---- Reloading Jetstream...\n";
+        if (!$this->republishJetstreamResources()) {
+            echo "------ [[ ERROR: Laravel assets could not be published ]]\n";
             return false;
         }
         return true;
