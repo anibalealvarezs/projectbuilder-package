@@ -4,12 +4,6 @@
 
 ## Requirements
 
-#### 0. Prepare your .env file
-Submit database connection data, site URL and project name. Then, install debugbar package manually
-```shell
-composer require barryvdh/laravel-debugbar --dev
-```
-
 #### 1. Add the repository and ignore autodiscover for jetstream and fortify packages in composer.json:
 ```json lines
 "repositories": [
@@ -28,18 +22,11 @@ composer require barryvdh/laravel-debugbar --dev
 },
 ```
 
-#### 2. Add "pbstorage" link to "config/filesystems.php"
-```php
-'links' => [
-        public_path('pbstorage') => app_path('vendor/anibalealvarezs/projectbuilder-package/src/assets'),
-    ],
-```
-
 ***
 
 ## Installation
 
-#### 3. Require the package & install it
+#### 2. Require the package & install it
 ```shell
 composer require anibalealvarezs/projectbuilder-package --no-cache
 php artisan pbuilder:install --inertia
@@ -57,7 +44,7 @@ In case of links failure (if "pbstorage" links show error), navigate to "public 
 ln -s ../vendor/anibalealvarezs/projectbuilder-package/src/assets pbstorage
 ```
 
-#### 4. Add full permissions to Jetstream API by default in ```app/Providers/JetstreamServiceProvider.php``` and remove the default permissions since they will be managed by Spatie's Permissions
+#### 3. Add full permissions to Jetstream API by default in ```app/Providers/JetstreamServiceProvider.php``` and remove the default permissions since they will be managed by Spatie's Permissions
 ```php
 protected function configurePermissions()
 {
@@ -65,7 +52,7 @@ protected function configurePermissions()
 }
 ```
 
-#### 5. Comment/remove the default routes in ```/routes/web.php```
+#### 4. Comment/remove the default routes in ```/routes/web.php```
 ```php
 /*
 Route::middleware(['auth:sanctum', 'verified'])->get('/dashboard', function () {
@@ -81,29 +68,4 @@ Route::get('/', function () {
     ]);
 });
 */
-```
-
-#### 6. Add resources to ```/webpack.mix.js```
-```javascript
-mix.js('node_modules/sweetalert2/dist/sweetalert2.js', 'public/js').
-    js('node_modules/sortablejs/Sortable.js', 'public/js').
-    js('resources/js/app.js', 'public/js').vue()
-    .postCss('resources/css/app.css', 'public/css', [
-        require('postcss-import'),
-        require('tailwindcss'),
-        require('autoprefixer'),
-    ])
-    .webpackConfig(require('./webpack.config'));
-```
-
-#### 7. Install new resources as dependencies
-```shell
-npm i sweetalert2
-npm install @tailwindcss/forms
-npm install sortablejs --save
-```
-
-#### 8. Recompile app.js
-```shell
-npm run prod
 ```

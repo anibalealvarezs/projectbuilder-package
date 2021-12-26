@@ -37,6 +37,11 @@ class PbAltInstallCommand extends Command
                 echo "------ [[ ERROR: composer command through shell_exec failed ]]\n";
                 return false;
             }
+            echo "---- Installing providers...\n";
+            if (!$this->installProviders()) {
+                echo "------ [[ ERROR: proviers couldn't be installed ]]\n";
+                return false;
+            }
             echo "---- Installing Jetstream & Inertia...\n";
             if (!shell_exec("php artisan jetstream:install inertia --teams --pest")) {
                 echo "------ [[ ERROR: Jetstream installation failed failed ]]\n";
@@ -135,6 +140,11 @@ class PbAltInstallCommand extends Command
 
     public function createLinks()
     {
+        echo "------ Adding storage path...\n";
+        if (!$this->addStoragePath()) {
+            return false;
+        }
+        echo "------ Creating links...\n";
         if (!shell_exec("php artisan storage:link")) {
             echo "------ [[ WARNING: Links could not be created ]]\n";
         }

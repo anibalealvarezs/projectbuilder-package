@@ -134,6 +134,26 @@ trait PbInstallTrait
         return true;
     }
 
+    public function installProviders() {
+        // Default providers...
+        // -- Fortify
+        // -- Jetstream
+        echo "---- Installing Fortify and Jetstream service providers...\n";
+        if (!$this->installDefaultProvidersAfter('JetstreamServiceProvider')) {
+            return false;
+        }
+        // Projectbuilder's providers...
+        echo "---- Installing custom Jetstream service providers...\n";
+        if (!$this->installAdditionalProviders('PbJetstreamServiceProvider')) {
+            return false;
+        }
+        echo "---- Installing Builder's route service provider...\n";
+        if (!$this->installAdditionalProviders('PbRouteServiceProvider')) {
+            return false;
+        }
+        return true;
+    }
+
     /**
      * Execute the console command.
      *
@@ -163,22 +183,6 @@ trait PbInstallTrait
 
     public function modifyFiles()
     {
-        // Default providers...
-        // -- Fortify
-        // -- Jetstream
-        echo "---- Installing Fortify and Jetstream service providers...\n";
-        if (!$this->installDefaultProvidersAfter('JetstreamServiceProvider')) {
-            return false;
-        }
-        // Projectbuilder's providers...
-        echo "---- Installing custom Jetstream service providers...\n";
-        if (!$this->installAdditionalProviders('PbJetstreamServiceProvider')) {
-            return false;
-        }
-        echo "---- Installing Builder's route service provider...\n";
-        if (!$this->installAdditionalProviders('PbRouteServiceProvider')) {
-            return false;
-        }
         // Enable additional sanctum's middleware...
         echo "---- Enabling additional Sanctum's middleware...\n";
         if (!$this->enableAdditionalSanctumMiddleware()) {
@@ -342,6 +346,25 @@ trait PbInstallTrait
             if (!file_put_contents(base_path('/webpack.config.js'), str_replace(
                 '\'@\': path.resolve(\'resources/js\'),',
                 '\'@\': path.resolve(\'resources/js\'),'.PHP_EOL.'            Pub: path.resolve(\'public\'),',
+                $webpackConfig
+            ))) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * Install the service provider in the application configuration file.
+     *
+     * @return void
+     */
+    protected function addStoragePath()
+    {
+        if (! Str::contains($webpackConfig = file_get_contents(config_path('filesystems.php')), 'pbstorage')) {
+            if (!file_put_contents(config_path('filesystems.php'), str_replace(
+                'public_path(\'storage\') => storage_path(\'app/public\'),',
+                'public_path(\'storage\') => storage_path(\'app/public\'),'.PHP_EOL.'        public_path(\'pbstorage\') => app_path(\'vendor/anibalealvarezs/projectbuilder-package/src/assets\'),',
                 $webpackConfig
             ))) {
                 return false;
