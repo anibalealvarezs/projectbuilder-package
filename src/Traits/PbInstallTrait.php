@@ -52,35 +52,14 @@ trait PbInstallTrait
             } else {
                 echo "---- [[ Error adding confirmation log entry ]]\n";
             }
-            // Default providers...
-            // -- Fortify
-            // -- Jetstream
-            echo "-- [[ Installing Fortify and Jetstream service providers ]]\n";
-            if (!$this->installDefaultProvidersAfter('JetstreamServiceProvider')) {
+            // Config files...
+            echo "-- [[ Modifying config files ]]\n";
+            if (!$this->modifyFiles()) {
                 return false;
             }
-            // Projectbuilder's providers...
-            echo "-- [[ Installing custom Jetstream service providers ]]\n";
-            if (!$this->installAdditionalProviders('PbJetstreamServiceProvider')) {
-                return false;
-            }
-            echo "-- [[ Installing Builder's route service provider ]]\n";
-            if (!$this->installAdditionalProviders('PbRouteServiceProvider')) {
-                return false;
-            }
-            // Enable additional sanctum's middleware...
-            echo "-- [[ Enabling additional Sanctum's middleware ]]\n";
-            if (!$this->enableAdditionalSanctumMiddleware()) {
-                return false;
-            }
-            // Enable full jestream features...
-            echo "-- [[ Enabling full Jetsream's features ]]\n";
-            if (!$this->enableFullJetstreamFeatures()) {
-                return false;
-            }
-            // Add 'Pub' path to webpack...
-            echo "-- [[ Enabling 'Pub' path to webpack ]]\n";
-            if (!$this->addPubPath()) {
+            // Compilation...
+            echo "-- [[ Compiling assets ]]\n";
+            if (!$this->compileAssets()) {
                 return false;
             }
             echo "[[ Process finished ]]\n";
@@ -135,6 +114,94 @@ trait PbInstallTrait
     {
         if (!shell_exec("composer require anibalealvarezs/projectbuilder-package --no-cache")) {
             echo "------ [[ ERROR: composer could not require Project Builder's package ]]\n";
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * Execute the console command.
+     *
+     * @return void
+     */
+
+    public function compileAssets()
+    {
+        if (!shell_exec("npm run prod")) {
+            echo "------ [[ ERROR: Assets couldn't be compiled ]]\n";
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * Execute the console command.
+     *
+     * @return void
+     */
+
+    public function installNpmResources()
+    {
+        echo "---- Installing Sweetalert2.js...\n";
+        if (!shell_exec("npm i sweetalert2")) {
+            echo "------ [[ ERROR: Sweetalert2.js could't be installed ]]\n";
+            return false;
+        }
+        echo "---- Installing Sortable.js...\n";
+        if (!shell_exec("npm install sortablejs --save")) {
+            echo "------ [[ ERROR: Sortable.js could't be installed ]]\n";
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * Execute the console command.
+     *
+     * @return void
+     */
+
+    public function modifyFiles()
+    {
+        // Default providers...
+        // -- Fortify
+        // -- Jetstream
+        echo "---- Installing Fortify and Jetstream service providers...\n";
+        if (!$this->installDefaultProvidersAfter('JetstreamServiceProvider')) {
+            return false;
+        }
+        // Projectbuilder's providers...
+        echo "---- Installing custom Jetstream service providers...\n";
+        if (!$this->installAdditionalProviders('PbJetstreamServiceProvider')) {
+            return false;
+        }
+        echo "---- Installing Builder's route service provider...\n";
+        if (!$this->installAdditionalProviders('PbRouteServiceProvider')) {
+            return false;
+        }
+        // Enable additional sanctum's middleware...
+        echo "---- Enabling additional Sanctum's middleware...\n";
+        if (!$this->enableAdditionalSanctumMiddleware()) {
+            return false;
+        }
+        // Enable full jestream features...
+        echo "---- Enabling full Jetsream's features...\n";
+        if (!$this->enableFullJetstreamFeatures()) {
+            return false;
+        }
+        // Add 'Pub' path to webpack...
+        echo "---- Enabling 'Pub' path to webpack...\n";
+        if (!$this->addPubPath()) {
+            return false;
+        }
+        // Install npm resources...
+        echo "---- Installing npm resources...\n";
+        if (!$this->installNpmResources()) {
+            return false;
+        }
+        // Add resources to Mix...
+        echo "---- Adding resources to Mix...\n";
+        if (!$this->addResourcesToMix()) {
             return false;
         }
         return true;
@@ -276,6 +343,34 @@ trait PbInstallTrait
                 '\'@\': path.resolve(\'resources/js\'),',
                 '\'@\': path.resolve(\'resources/js\'),'.PHP_EOL.'            Pub: path.resolve(\'public\'),',
                 $webpackConfig
+            ))) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * Install the service provider in the application configuration file.
+     *
+     * @return void
+     */
+    protected function addResourcesToMix()
+    {
+        if (! Str::contains($webpackMix = file_get_contents(base_path('/webpack.mix.js')), 'sweetalert2.js')) {
+            if (!file_put_contents(base_path('/webpack.mix.js'), str_replace(
+                'js(\'resources/js/app.js\', \'public/js\')',
+                'js(\'node_modules/sweetalert2/dist/sweetalert2.js\', \'public/js\').'.PHP_EOL.'    js(\'resources/js/app.js\', \'public/js\')',
+                $webpackMix
+            ))) {
+                return false;
+            }
+        }
+        if (! Str::contains($webpackMix = file_get_contents(base_path('/webpack.mix.js')), 'Sortable.js')) {
+            if (!file_put_contents(base_path('/webpack.mix.js'), str_replace(
+                'js(\'resources/js/app.js\', \'public/js\')',
+                'js(\'node_modules/sortablejs/Sortable.js\', \'public/js\').'.PHP_EOL.'    js(\'resources/js/app.js\', \'public/js\')',
+                $webpackMix
             ))) {
                 return false;
             }
