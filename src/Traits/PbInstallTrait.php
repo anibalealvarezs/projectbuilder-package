@@ -190,7 +190,7 @@ trait PbInstallTrait
     protected function enableAdditionalSanctumMiddleware()
     {
         if (! Str::contains($appHttpKernel = file_get_contents(base_path('/app/Http/Kernel.php')), '\\Laravel\\Sanctum\\Http\\Middleware\\EnsureFrontendRequestsAreStateful::class,')) {
-            if (!file_put_contents(config_path('/app/Http/Kernel.php'), str_replace(
+            if (!file_put_contents(base_path('/app/Http/Kernel.php'), str_replace(
                 '\\Illuminate\\Routing\\Middleware\\SubstituteBindings::class,',
                 '\\Illuminate\\Routing\\Middleware\\SubstituteBindings::class,'.PHP_EOL.'        \\Laravel\\Sanctum\\Http\\Middleware\\EnsureFrontendRequestsAreStateful::class,',
                 $appHttpKernel
@@ -198,7 +198,7 @@ trait PbInstallTrait
                 return false;
             }
         } elseif (! Str::contains($appHttpKernel = file_get_contents(base_path('/app/Http/Kernel.php')), '// \\Laravel\\Sanctum\\Http\\Middleware\\EnsureFrontendRequestsAreStateful::class,')) {
-            if (!file_put_contents(config_path('/app/Http/Kernel.php'), str_replace(
+            if (!file_put_contents(base_path('/app/Http/Kernel.php'), str_replace(
                 '// \\Laravel\\Sanctum\\Http\\Middleware\\EnsureFrontendRequestsAreStateful::class,',
                 '\\Laravel\\Sanctum\\Http\\Middleware\\EnsureFrontendRequestsAreStateful::class,',
                 $appHttpKernel
@@ -217,7 +217,7 @@ trait PbInstallTrait
     protected function enableFullJetstreamFeatures()
     {
         if (! Str::contains($appJetstream = file_get_contents(config_path('jetstream.php')), '// Features::termsAndPrivacyPolicy(),')) {
-            if (!file_put_contents(config_path('/app/Http/Kernel.php'), str_replace(
+            if (!file_put_contents(config_path('jetstream.php'), str_replace(
                 '// Features::termsAndPrivacyPolicy(),',
                 'Features::termsAndPrivacyPolicy(),',
                 $appJetstream
@@ -226,7 +226,7 @@ trait PbInstallTrait
             }
         }
         if (! Str::contains($appJetstream = file_get_contents(config_path('jetstream.php')), '// Features::profilePhotos(),')) {
-            if (!file_put_contents(config_path('/app/Http/Kernel.php'), str_replace(
+            if (!file_put_contents(config_path('jetstream.php'), str_replace(
                 '// Features::profilePhotos(),',
                 'Features::profilePhotos(),',
                 $appJetstream
@@ -235,7 +235,7 @@ trait PbInstallTrait
             }
         }
         if (! Str::contains($appJetstream = file_get_contents(config_path('jetstream.php')), '// Features::api(),')) {
-            if (!file_put_contents(config_path('/app/Http/Kernel.php'), str_replace(
+            if (!file_put_contents(config_path('jetstream.php'), str_replace(
                 '// Features::api(),',
                 'Features::api(),',
                 $appJetstream
@@ -244,7 +244,7 @@ trait PbInstallTrait
             }
         }
         if (! Str::contains($appJetstream = file_get_contents(config_path('jetstream.php')), '// Features::teams([\'invitations\' => true]),')) {
-            if (!file_put_contents(config_path('/app/Http/Kernel.php'), str_replace(
+            if (!file_put_contents(config_path('jetstream.php'), str_replace(
                 '// Features::teams([\'invitations\' => true]),',
                 'Features::teams([\'invitations\' => true]),',
                 $appJetstream
@@ -253,7 +253,7 @@ trait PbInstallTrait
             }
         }
         if (! Str::contains($appJetstream = file_get_contents(config_path('jetstream.php')), '// Features::accountDeletion(),')) {
-            if (!file_put_contents(config_path('/app/Http/Kernel.php'), str_replace(
+            if (!file_put_contents(config_path('jetstream.php'), str_replace(
                 '// Features::accountDeletion(),',
                 'Features::accountDeletion(),',
                 $appJetstream
@@ -271,8 +271,8 @@ trait PbInstallTrait
      */
     protected function addPubPath()
     {
-        if (! Str::contains($webpackConfig = file_get_contents(base_path('webpack.config.js')), 'Pub: path.resolve(\'public\'),')) {
-            if (!file_put_contents(config_path('webpack.config.js'), str_replace(
+        if (! Str::contains($webpackConfig = file_get_contents(base_path('/webpack.config.js')), 'Pub: path.resolve(\'public\'),')) {
+            if (!file_put_contents(base_path('/webpack.config.js'), str_replace(
                 '\'@\': path.resolve(\'resources/js\'),',
                 '\'@\': path.resolve(\'resources/js\'),'.PHP_EOL.'        Pub: path.resolve(\'public\'),',
                 $webpackConfig
