@@ -191,8 +191,8 @@ trait PbInstallTrait
     {
         if (! Str::contains($appHttpKernel = file_get_contents(base_path('/app/Http/Kernel.php')), '\\Laravel\\Sanctum\\Http\\Middleware\\EnsureFrontendRequestsAreStateful::class,')) {
             if (!file_put_contents(base_path('/app/Http/Kernel.php'), str_replace(
-                '\\Illuminate\\Routing\\Middleware\\SubstituteBindings::class,',
-                '\\Illuminate\\Routing\\Middleware\\SubstituteBindings::class,'.PHP_EOL.'        \\Laravel\\Sanctum\\Http\\Middleware\\EnsureFrontendRequestsAreStateful::class,',
+                '\'throttle:api\',',
+                '\'throttle:api\','.PHP_EOL.'            \\Laravel\\Sanctum\\Http\\Middleware\\EnsureFrontendRequestsAreStateful::class,',
                 $appHttpKernel
             ))) {
                 return false;
