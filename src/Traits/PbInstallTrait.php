@@ -151,6 +151,11 @@ trait PbInstallTrait
         if (!$this->installAdditionalProviders('PbRouteServiceProvider')) {
             return false;
         }
+        echo "---- Reautoloading classes...\n";
+        if (!shell_exec("composer dump-autoload")) {
+            echo "------ [[ ERROR: Classes could not be autoloaded ]]\n";
+            return false;
+        }
         return true;
     }
 
