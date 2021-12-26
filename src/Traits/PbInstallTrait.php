@@ -197,7 +197,7 @@ trait PbInstallTrait
             ))) {
                 return false;
             }
-        } elseif (! Str::contains($appHttpKernel = file_get_contents(base_path('/app/Http/Kernel.php')), '// \\Laravel\\Sanctum\\Http\\Middleware\\EnsureFrontendRequestsAreStateful::class,')) {
+        } elseif (Str::contains($appHttpKernel = file_get_contents(base_path('/app/Http/Kernel.php')), '// \\Laravel\\Sanctum\\Http\\Middleware\\EnsureFrontendRequestsAreStateful::class,')) {
             if (!file_put_contents(base_path('/app/Http/Kernel.php'), str_replace(
                 '// \\Laravel\\Sanctum\\Http\\Middleware\\EnsureFrontendRequestsAreStateful::class,',
                 '\\Laravel\\Sanctum\\Http\\Middleware\\EnsureFrontendRequestsAreStateful::class,',
@@ -216,7 +216,7 @@ trait PbInstallTrait
      */
     protected function enableFullJetstreamFeatures()
     {
-        if (! Str::contains($appJetstream = file_get_contents(config_path('jetstream.php')), '// Features::termsAndPrivacyPolicy(),')) {
+        if (Str::contains($appJetstream = file_get_contents(config_path('jetstream.php')), '// Features::termsAndPrivacyPolicy(),')) {
             if (!file_put_contents(config_path('jetstream.php'), str_replace(
                 '// Features::termsAndPrivacyPolicy(),',
                 'Features::termsAndPrivacyPolicy(),',
@@ -225,7 +225,7 @@ trait PbInstallTrait
                 return false;
             }
         }
-        if (! Str::contains($appJetstream = file_get_contents(config_path('jetstream.php')), '// Features::profilePhotos(),')) {
+        if (Str::contains($appJetstream = file_get_contents(config_path('jetstream.php')), '// Features::profilePhotos(),')) {
             if (!file_put_contents(config_path('jetstream.php'), str_replace(
                 '// Features::profilePhotos(),',
                 'Features::profilePhotos(),',
@@ -234,7 +234,7 @@ trait PbInstallTrait
                 return false;
             }
         }
-        if (! Str::contains($appJetstream = file_get_contents(config_path('jetstream.php')), '// Features::api(),')) {
+        if (Str::contains($appJetstream = file_get_contents(config_path('jetstream.php')), '// Features::api(),')) {
             if (!file_put_contents(config_path('jetstream.php'), str_replace(
                 '// Features::api(),',
                 'Features::api(),',
@@ -243,7 +243,7 @@ trait PbInstallTrait
                 return false;
             }
         }
-        if (! Str::contains($appJetstream = file_get_contents(config_path('jetstream.php')), '// Features::teams([\'invitations\' => true]),')) {
+        if (Str::contains($appJetstream = file_get_contents(config_path('jetstream.php')), '// Features::teams([\'invitations\' => true]),')) {
             if (!file_put_contents(config_path('jetstream.php'), str_replace(
                 '// Features::teams([\'invitations\' => true]),',
                 'Features::teams([\'invitations\' => true]),',
@@ -252,7 +252,7 @@ trait PbInstallTrait
                 return false;
             }
         }
-        if (! Str::contains($appJetstream = file_get_contents(config_path('jetstream.php')), '// Features::accountDeletion(),')) {
+        if (Str::contains($appJetstream = file_get_contents(config_path('jetstream.php')), '// Features::accountDeletion(),')) {
             if (!file_put_contents(config_path('jetstream.php'), str_replace(
                 '// Features::accountDeletion(),',
                 'Features::accountDeletion(),',
@@ -274,7 +274,7 @@ trait PbInstallTrait
         if (! Str::contains($webpackConfig = file_get_contents(base_path('/webpack.config.js')), 'Pub: path.resolve(\'public\'),')) {
             if (!file_put_contents(base_path('/webpack.config.js'), str_replace(
                 '\'@\': path.resolve(\'resources/js\'),',
-                '\'@\': path.resolve(\'resources/js\'),'.PHP_EOL.'        Pub: path.resolve(\'public\'),',
+                '\'@\': path.resolve(\'resources/js\'),'.PHP_EOL.'            Pub: path.resolve(\'public\'),',
                 $webpackConfig
             ))) {
                 return false;
