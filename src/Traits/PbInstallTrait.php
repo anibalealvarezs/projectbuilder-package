@@ -151,9 +151,9 @@ trait PbInstallTrait
         if (!$this->installAdditionalProviders('PbRouteServiceProvider')) {
             return false;
         }
-        echo "---- Reloading Jetstream...\n";
-        if (!$this->republishJetstreamResources()) {
-            echo "------ [[ ERROR: Laravel assets could not be published ]]\n";
+        echo "---- Ignoring jetstream and fortify auto-discovery...\n";
+        if (!$this->ignoreJetstreamAutodiscovery()) {
+            echo "------ [[ ERROR: composer.json couldn't be editted ]]\n";
             return false;
         }
         return true;
@@ -370,6 +370,25 @@ trait PbInstallTrait
             if (!file_put_contents(config_path('filesystems.php'), str_replace(
                 'public_path(\'storage\') => storage_path(\'app/public\'),',
                 'public_path(\'storage\') => storage_path(\'app/public\'),'.PHP_EOL.'        public_path(\'pbstorage\') => app_path(\'vendor/anibalealvarezs/projectbuilder-package/src/assets\'),',
+                $webpackConfig
+            ))) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * Install the service provider in the application configuration file.
+     *
+     * @return void
+     */
+    protected function ignoreJetstreamAutodiscovery()
+    {
+        if (Str::contains($webpackConfig = file_get_contents(base_path('/composer.json')), '"dont-discover": []')) {
+            if (!file_put_contents(base_path('/composer.json'), str_replace(
+                '"dont-discover": []',
+                '"dont-discover": ['.PHP_EOL.'                "laravel/jetstream",'.PHP_EOL.'                "laravel/fortify"'.PHP_EOL.'            ]',
                 $webpackConfig
             ))) {
                 return false;

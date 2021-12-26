@@ -12,14 +12,6 @@
         "url": "https://satis.anibalalvarez.com"
     }
 ],
-"extra": {
-    "laravel": {
-        "dont-discover": [
-            "laravel/jetstream",
-            "laravel/fortify"
-        ]
-    }
-},
 ```
 
 ***
