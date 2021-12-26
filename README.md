@@ -1,8 +1,18 @@
 # Project Builder
+[![Github tag](https://badgen.net/github/tag/anibalealvarezs/projectbuilder-package)](https://github.com/anibalealvarezs/projectbuilder-package/tags/) [![GitHub license](https://img.shields.io/github/license/anibalealvarezs/projectbuilder-package.svg)](https://github.com/anibalealvarezs/projectbuilder-package/blob/master/LICENSE) [![Github all releases](https://img.shields.io/github/downloads/anibalealvarezs/projectbuilder-package/total.svg)](https://github.com/anibalealvarezs/projectbuilder-package/releases/) [![GitHub latest commit](https://badgen.net/github/last-commit/anibalealvarezs/projectbuilder-package)](https://GitHub.com/anibalealvarezs/projectbuilder-package/commit/) [![Ask Me Anything !](https://img.shields.io/badge/Ask%20me-anything-1abc9c.svg)](https://github.com/anibalealvarezs/anibalealvarezs)
+
+## About
+
+This Laravel package is a simple and easy way to create a new project with a new Laravel application, based in the default Jestream + Inertia engine.
 
 ***
 
 ## Requirements
+
+#### 0. Install Laravel 8.x
+```shell
+composer create-project laravel/laravel my-project
+```
 
 #### 1. Add the repository and ignore autodiscover for jetstream and fortify packages in composer.json:
 ```json lines
