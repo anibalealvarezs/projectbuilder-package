@@ -20,7 +20,7 @@
         }
     ],
     "require": {
-        "php": "^7.3|^8.0",
+        "php": "^8.0",
         "doctrine/dbal": "^3.2",
         "fideloper/proxy": "^4.4.1",
         "fruitcake/laravel-cors": "^2.0.4",
@@ -44,6 +44,7 @@
     "extra": {
         "laravel": {
             "providers": [
+                "Anibalealvarezs\\Projectbuilder\\Providers\\PbAppServiceProvider",
                 "Anibalealvarezs\\Projectbuilder\\Providers\\PbCommandServiceProvider",
                 "Anibalealvarezs\\Projectbuilder\\Providers\\PbComposerServiceProvider",
                 "Anibalealvarezs\\Projectbuilder\\Providers\\PbConfigServiceProvider",

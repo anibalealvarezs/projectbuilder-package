@@ -2,7 +2,6 @@
 
 namespace Anibalealvarezs\Projectbuilder\Models;
 
-use Anibalealvarezs\Projectbuilder\Helpers\Shares;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Spatie\Translatable\HasTranslations;
 
@@ -43,25 +42,12 @@ class PbLogger extends PbBuilder
 
     public function getSeverityAttribute($value)
     {
-        if (version_compare(PHP_VERSION, '8.0.0') < 0) {
-            switch($value){
-                case 1:
-                    return 'Info';
-                case 2:
-                    return 'Warning';
-                case 3:
-                    return 'Error';
-                default:
-                    return 'Debug';
-            }
-        } else {
-            return match ($value) {
-                1 => 'Info',
-                2 => 'Warning',
-                3 => 'Error',
-                default => 'Debug',
-            };
-        }
+        return match ($value) {
+            1 => 'Info',
+            2 => 'Warning',
+            3 => 'Error',
+            default => 'Debug',
+        };
     }
 
     public function save(array $options = [])
@@ -79,7 +65,7 @@ class PbLogger extends PbBuilder
 
     public static function getCrudConfig(): array
     {
-        $config = PbBuilder::getCrudConfig();
+        $config = parent::getCrudConfig();
 
         $config['relations'] = ['user', 'module'];
 

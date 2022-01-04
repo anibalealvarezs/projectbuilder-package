@@ -16,12 +16,14 @@ composer create-project laravel/laravel my-project
 
 #### 1. Add the repository and ignore autodiscover for jetstream and fortify packages in composer.json:
 ```json lines
-"repositories": [
-    {
-        "type": "composer",
-        "url": "https://satis.anibalalvarez.com"
-    }
-],
+{
+    "repositories": [
+        {
+            "type": "composer",
+            "url": "https://satis.anibalalvarez.com"
+        }
+    ],
+}
 ```
 
 ***

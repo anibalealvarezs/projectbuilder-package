@@ -2,6 +2,7 @@
 
 namespace Anibalealvarezs\Projectbuilder\Providers;
 
+use Anibalealvarezs\Projectbuilder\Models\PbModule;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\ServiceProvider;
@@ -34,7 +35,10 @@ class PbAppServiceProvider extends ServiceProvider
                 return [
                     'message' => Session::get('message')
                 ];
-            }
+            },
+            /* 'modules' => function () {
+                return PbModule::with('components')->where('status', '1')->get();
+            }, */
         ]);
     }
 

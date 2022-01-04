@@ -2,6 +2,7 @@
 
 namespace Anibalealvarezs\Projectbuilder\Models;
 
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Spatie\Translatable\HasTranslations;
 
 class PbModule extends PbBuilder
@@ -31,13 +32,14 @@ class PbModule extends PbBuilder
         return $value;
     }
 
+    public function components(): HasMany
+    {
+        return $this->hasMany(PbComponent::class, 'module', 'modulekey');
+    }
+
     public function getByKey($value): bool
     {
-        $module = self::where('modulekey', $value)->first();
-        if ($module) {
-            return self::find($module->id);
-        }
-        return false;
+        return self::firstWhere('modulekey', $value);
     }
 
     public static function isEnabled($value): bool

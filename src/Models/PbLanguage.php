@@ -4,7 +4,6 @@ namespace Anibalealvarezs\Projectbuilder\Models;
 
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
-use Illuminate\Support\Facades\DB;
 use Spatie\Translatable\HasTranslations;
 
 class PbLanguage extends PbBuilder
@@ -70,14 +69,7 @@ class PbLanguage extends PbBuilder
 
     public static function findByCode($code)
     {
-        $lang = DB::table('languages')
-                ->select('id')
-                ->where('code', $code)
-                ->first();
-        if ($lang->id) {
-            return self::find($lang->id);
-        }
-        return null;
+        return self::firstWhere('code', $code);
     }
 
     public function cities(): MorphToMany

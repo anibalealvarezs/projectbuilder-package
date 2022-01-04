@@ -81,8 +81,7 @@ class PbUser extends User
 
     public function getLocale(): string
     {
-        $locale = PbLanguage::find($this->language_id);
-        if ($locale) {
+        if ($locale = PbLanguage::find($this->language_id)) {
             return $locale->code;
         }
         return "";

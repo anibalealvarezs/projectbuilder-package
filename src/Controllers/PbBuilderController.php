@@ -34,293 +34,293 @@ class PbBuilderController extends Controller
     /**
      * @var string
      */
-    protected $vendor;
+    protected string $vendor;
     /**
      * @var string
      */
-    protected $package;
+    protected string $package;
     /**
      * @var string
      */
-    protected $helper;
+    protected string $helper;
     /**
      * @var string
      */
-    protected $viewModelName;
+    protected string $viewModelName;
     /**
      * @var string
      */
-    protected $name;
+    protected string $name;
     /**
      * @var string
      */
-    protected $names;
+    protected string $names;
     /**
      * @var string
      */
-    protected $table;
+    protected string $table;
     /**
      * @var string
      */
-    protected $prefix;
+    protected string $prefix;
     /**
      * @var string
      */
-    protected $key;
+    protected string $key;
     /**
      * @var string
      */
-    protected $keys;
+    protected string $keys;
     /**
      * @var string
      */
-    protected $model;
+    protected string $model;
     /**
      * @var string
      */
-    protected $models;
+    protected string $models;
     /**
      * @var string
      */
-    protected $modelPath;
+    protected string $modelPath;
     /**
      * @var string
      */
-    protected $viewsPath;
+    protected string $viewsPath;
     /**
      * @var string
      */
-    protected $prefixName;
+    protected string $prefixName;
     /**
      * @var string
      */
-    protected $prefixNames;
+    protected string $prefixNames;
     /**
      * @var string
      */
-    protected $parentKey;
+    protected string $parentKey;
     /**
      * @var string
      */
-    protected $parentKeys;
+    protected string $parentKeys;
     /**
      * @var string
      */
-    protected $parentModel;
+    protected string $parentModel;
     /**
      * @var string
      */
-    protected $parentModels;
+    protected string $parentModels;
     /**
      * @var string
      */
-    protected $parentName;
+    protected string $parentName;
     /**
      * @var string
      */
-    protected $parentNames;
+    protected string $parentNames;
     /**
      * @var string
      */
-    protected $parentViewsPath;
+    protected string $parentViewsPath;
     /**
      * @var string
      */
-    protected $prefixParentName;
+    protected string $prefixParentName;
     /**
      * @var string
      */
-    protected $prefixParentNames;
+    protected string $prefixParentNames;
     /**
      * @var string
      */
-    protected $grandparentKey;
+    protected string $grandparentKey;
     /**
      * @var string
      */
-    protected $grandparentKeys;
+    protected string $grandparentKeys;
     /**
      * @var string
      */
-    protected $grandparentModel;
+    protected string $grandparentModel;
     /**
      * @var string
      */
-    protected $grandparentModels;
+    protected string $grandparentModels;
     /**
      * @var string
      */
-    protected $grandparentName;
+    protected string $grandparentName;
     /**
      * @var string
      */
-    protected $grandparentNames;
+    protected string $grandparentNames;
     /**
      * @var string
      */
-    protected $grandparentViewsPath;
+    protected string $grandparentViewsPath;
     /**
      * @var string
      */
-    protected $prefixGrandparentName;
+    protected string $prefixGrandparentName;
     /**
      * @var string
      */
-    protected $prefixGrandparentNames;
+    protected string $prefixGrandparentNames;
     /**
      * @var string
      */
-    protected $childKey;
+    protected string $childKey;
     /**
      * @var string
      */
-    protected $childKeys;
+    protected string $childKeys;
     /**
      * @var string
      */
-    protected $childModel;
+    protected string $childModel;
     /**
      * @var string
      */
-    protected $childModels;
+    protected string $childModels;
     /**
      * @var string
      */
-    protected $childName;
+    protected string $childName;
     /**
      * @var string
      */
-    protected $childNames;
+    protected string $childNames;
     /**
      * @var string
      */
-    protected $childViewsPath;
+    protected string $childViewsPath;
     /**
      * @var string
      */
-    protected $prefixChildName;
+    protected string $prefixChildName;
     /**
      * @var string
      */
-    protected $prefixChildNames;
+    protected string $prefixChildNames;
     /**
      * @var string
      */
-    protected $grandchildKey;
+    protected string $grandchildKey;
     /**
      * @var string
      */
-    protected $grandchildKeys;
+    protected string $grandchildKeys;
     /**
      * @var string
      */
-    protected $grandchildModel;
+    protected string $grandchildModel;
     /**
      * @var string
      */
-    protected $grandchildModels;
+    protected string $grandchildModels;
     /**
      * @var string
      */
-    protected $grandchildName;
+    protected string $grandchildName;
     /**
      * @var string
      */
-    protected $grandchildNames;
+    protected string $grandchildNames;
     /**
      * @var string
      */
-    protected $grandchildViewsPath;
+    protected string $grandchildViewsPath;
     /**
      * @var string
      */
-    protected $prefixGrandchildName;
+    protected string $prefixGrandchildName;
     /**
      * @var string
      */
-    protected $prefixGrandchildNames;
+    protected string $prefixGrandchildNames;
     /**
      * @var array
      */
-    protected $validationRules = [];
+    protected array $validationRules = [];
     /**
      * @var array
      */
-    protected $modelExclude = [];
+    protected array $modelExclude = [];
     /**
      * @var array
      */
-    protected $replacers = [];
+    protected array $replacers = [];
     /**
      * @var array
      */
-    protected $shares = [];
+    protected array $shares = [];
     /**
      * @var array
      */
-    protected $allowed = [];
+    protected array $allowed = [];
+    /**
+     * @var boolean
+     */
+    protected bool $sortable;
     /**
      * @var string
      */
-    protected $sortable;
+    protected string $sortingRef;
+    /**
+     * @var boolean
+     */
+    protected bool $showPosition;
+    /**
+     * @var boolean
+     */
+    protected bool $showId;
+    /**
+     * @var string
+     */
+    protected string $inertiaRoot;
     /**
      * @var array
      */
-    protected $sortingRef;
+    protected array $defaults = [];
     /**
      * @var array
      */
-    protected $showPosition;
+    protected array $required = [];
+    /**
+     * @var Request
+     */
+    protected Request $request;
     /**
      * @var array
      */
-    protected $showId;
+    protected array $listing;
     /**
      * @var array
      */
-    protected $inertiaRoot;
-    /**
-     * @var array
-     */
-    protected $defaults = [];
-    /**
-     * @var array
-     */
-    protected $required = [];
-    /**
-     * @var $request
-     */
-    protected $request;
-    /**
-     * @var array
-     */
-    protected $listing;
-    /**
-     * @var array
-     */
-    protected $formconfig;
+    protected array $formconfig;
 
     function __construct(Request $request, $crud_perms = false)
     {
-        if (!$this->key) {
+        if (!isset($this->key)) {
             $this->key = 'Builder';
         }
-        if (!$this->prefix) {
+        if (!isset($this->prefix)) {
             $this->prefix = 'Pb';
         }
-        if (!$this->helper) {
+        if (!isset($this->helper)) {
             $this->helper = PbHelpers::PB_VENDOR . '\\' . PbHelpers::PB_PACKAGE . '\\Helpers\\' . $this->prefix . 'Helpers';
         }
-        if (!$this->inertiaRoot) {
+        if (!isset($this->inertiaRoot)) {
             $this->inertiaRoot = $this->helper::PB_PACKAGE . '::app';
         }
-        if (!$this->vendor) {
+        if (!isset($this->vendor)) {
             $this->vendor = $this->helper::PB_VENDOR;
         }
-        if (!$this->package) {
+        if (!isset($this->package)) {
             $this->package = $this->helper::PB_PACKAGE;
         }
-        if (!$this->sortable) {
+        if (!isset($this->sortable)) {
             $this->sortable = false;
         }
         $this->keys = $this->helper::toPlural($this->key);
@@ -334,7 +334,7 @@ class PbBuilderController extends Controller
         $this->viewsPath = $this->package . "/" . $this->keys . "/";
         $this->table = (new $this->modelPath())->getTable();
         // Additional Parent Model Variables
-        if ($this->parentKey) {
+        if (isset($this->parentKey)) {
             $this->parentKeys = $this->helper::toPlural($this->parentKey);
             $this->parentModel = $this->prefix . $this->parentKey;
             $this->parentModels = $this->helper::toPlural($this->parentModel);
@@ -345,7 +345,7 @@ class PbBuilderController extends Controller
             $this->parentViewsPath = $this->package . "/" . $this->parentKeys . "/";
         }
         // Additional Grand Parent Model Variables
-        if ($this->grandparentKey) {
+        if (isset($this->grandparentKey)) {
             $this->grandparentKeys = $this->helper::toPlural($this->grandparentKey);
             $this->grandparentModel = $this->prefix . $this->grandparentKey;
             $this->grandparentModels = $this->helper::toPlural($this->grandparentModel);
@@ -356,7 +356,7 @@ class PbBuilderController extends Controller
             $this->grandparentViewsPath = $this->package . "/" . $this->grandparentKeys . "/";
         }
         // Additional Child Model Variables
-        if ($this->childKey) {
+        if (isset($this->childKey)) {
             $this->childKeys = $this->helper::toPlural($this->childKey);
             $this->childModel = $this->prefix . $this->childKey;
             $this->childModels = $this->helper::toPlural($this->childModel);
@@ -367,7 +367,7 @@ class PbBuilderController extends Controller
             $this->childViewsPath = $this->package . "/" . $this->childKeys . "/";
         }
         // Additional Grand Child Model Variables
-        if ($this->grandchildKey) {
+        if (isset($this->grandchildKey)) {
             $this->grandchildKeys = $this->helper::toPlural($this->grandchildKey);
             $this->grandchildModel = $this->prefix . $this->grandchildKey;
             $this->grandchildModels = $this->helper::toPlural($this->grandchildModel);
@@ -386,27 +386,27 @@ class PbBuilderController extends Controller
             $this->middleware(['role_or_permission:delete ' . $this->names])->only('destroy');
         }
 
-        if (!$this->viewModelName) {
+        if (!isset($this->viewModelName)) {
             $this->viewModelName = $this->names;
         }
 
-        if (!$this->sortingRef) {
-            $this->sortingRef = null;
+        if (!isset($this->sortingRef)) {
+            $this->sortingRef = "";
         }
 
-        if (!$this->showPosition) {
+        if (!isset($this->showPosition)) {
             $this->showPosition = false;
         }
 
-        if (!$this->showId) {
+        if (!isset($this->showId)) {
             $this->showId = true;
         }
 
-        if (!$this->listing) {
+        if (!isset($this->listing)) {
             $this->listing = [];
         }
 
-        if (!$this->formconfig) {
+        if (!isset($this->formconfig)) {
             $this->formconfig = [];
         }
 
@@ -422,7 +422,6 @@ class PbBuilderController extends Controller
      * Display a listing of the resource.
      *
      * @param null $element
-     * @param array $config
      * @param bool $multiple
      * @param string $route
      * @return InertiaResponse|JsonResponse|RedirectResponse
@@ -665,23 +664,14 @@ class PbBuilderController extends Controller
         if ($element) {
             if ($multiple) {
                 foreach ($element as $key => $value) {
-                    switch ($key) {
-                        case 'child':
-                            $arrayElements[($value['size'] == 'multiple' ? $this->prefixChildNames : $this->prefixChildName)] = $value['object'];
-                            break;
-                        case 'grandchild':
-                            $arrayElements[($value['size'] == 'multiple' ? $this->prefixGrandchildNames : $this->prefixGrandchildName)] = $value['object'];
-                            break;
-                        case 'parent':
-                            $arrayElements[($value['size'] == 'multiple' ? $this->prefixParentNames : $this->prefixParentName)] = $value['object'];
-                            break;
-                        case 'grandparent':
-                            $arrayElements[($value['size'] == 'multiple' ? $this->prefixGrandparentNames : $this->prefixGrandparentName)] = $value['object'];
-                            break;
-                        default:
-                            $arrayElements[($value['size'] == 'multiple' ? $this->prefixNames : $this->prefixName)] = $value['object'];
-                            break;
-                    }
+                    $key = match ($key) {
+                        'child' => ($value['size'] == 'multiple' ? $this->prefixChildNames : $this->prefixChildName),
+                        'grandchild' => ($value['size'] == 'multiple' ? $this->prefixGrandchildNames : $this->prefixGrandchildName),
+                        'parent' => ($value['size'] == 'multiple' ? $this->prefixParentNames : $this->prefixParentName),
+                        'grandparent' => ($value['size'] == 'multiple' ? $this->prefixGrandparentNames : $this->prefixGrandparentName),
+                        default => ($value['size'] == 'multiple' ? $this->prefixNames : $this->prefixName),
+                    };
+                    $arrayElements[$key] = $value['object'];
                 }
             } else {
                 $arrayElements[($plural ? $this->prefixNames : $this->prefixName)] = $element;
@@ -726,17 +716,11 @@ class PbBuilderController extends Controller
     {
         $defaults = (object)[];
         foreach ($this->defaults as $key => $value) {
-            switch ($key) {
-                case 'lang':
-                    $defaults->$key = PbLanguage::findByCode($value);
-                    break;
-                case 'country':
-                    $defaults->$key = PbCountry::findByCode($value);
-                    break;
-                default:
-                    $defaults->$key = $value;
-                    break;
-            }
+            $defaults->$key = match ($key) {
+                'lang' => PbLanguage::findByCode($value),
+                'country' => PbCountry::findByCode($value),
+                default => $value,
+            };
         }
         return $defaults;
     }
@@ -832,49 +816,27 @@ class PbBuilderController extends Controller
      */
     protected function buildRouteString($route, $type): string
     {
-        switch ($route) {
-            case 'child':
-                $path = $this->childViewsPath . $this->buildFile($type,
-                        ['singular' => $this->childKey, 'plural' => $this->childKeys]);
-                break;
-            case 'grandchild':
-                $path = $this->grandchildViewsPath . $this->buildFile($type,
-                        ['singular' => $this->grandchildKey, 'plural' => $this->grandchildKeys]);
-                break;
-            case 'parent':
-                $path = $this->parentViewsPath . $this->buildFile($type,
-                        ['singular' => $this->parentKey, 'plural' => $this->parentKeys]);
-                break;
-            case 'grandparent':
-                $path = $this->grandparentViewsPath . $this->buildFile($type,
-                        ['singular' => $this->grandparentKey, 'plural' => $this->grandparentKeys]);
-                break;
-            default:
-                $path = $this->viewsPath . $this->buildFile($type, ['singular' => $this->key, 'plural' => $this->keys]);
-                break;
-        }
-
-        return $path;
+        return match ($route) {
+            'child' => $this->childViewsPath . $this->buildFile($type,
+                    ['singular' => $this->childKey, 'plural' => $this->childKeys]),
+            'grandchild' => $this->grandchildViewsPath . $this->buildFile($type,
+                    ['singular' => $this->grandchildKey, 'plural' => $this->grandchildKeys]),
+            'parent' => $this->parentViewsPath . $this->buildFile($type,
+                    ['singular' => $this->parentKey, 'plural' => $this->parentKeys]),
+            'grandparent' => $this->grandparentViewsPath . $this->buildFile($type,
+                    ['singular' => $this->grandparentKey, 'plural' => $this->grandparentKeys]),
+            default => $this->viewsPath . $this->buildFile($type, ['singular' => $this->key, 'plural' => $this->keys]),
+        };
     }
 
     protected function buildFile($type, $keys)
     {
-        switch ($type) {
-            case 'show':
-                $file = 'Show' . $keys['singular'];
-                break;
-            case 'create':
-                $file = 'Create' . $keys['singular'];
-                break;
-            case 'edit':
-                $file = 'Edit' . $keys['singular'];
-                break;
-            default:
-                $file = $keys['plural'];
-                break;
-        }
-
-        return $file;
+        return match ($type) {
+            'show' => 'Show' . $keys['singular'],
+            'create' => 'Create' . $keys['singular'],
+            'edit' => 'Edit' . $keys['singular'],
+            default => $keys['plural'],
+        };
     }
 
     public function handleJSONResponse($result, $msg)
@@ -884,7 +846,7 @@ class PbBuilderController extends Controller
             'data' => $result,
             'message' => $msg,
         ];
-        return response()->json($res, 200);
+        return response()->json($res);
     }
 
     public function handleJSONError($error, $errorMsg = [], $code = 404)

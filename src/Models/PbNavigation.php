@@ -57,7 +57,7 @@ class PbNavigation extends PbBuilder
 
     public static function getCrudConfig(): array
     {
-        $config = PbBuilder::getCrudConfig();
+        $config = parent::getCrudConfig();
 
         $config['formconfig'] = [
             'name' => [

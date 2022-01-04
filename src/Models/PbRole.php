@@ -58,5 +58,4 @@ class PbRole extends Role
 
         return $config;
     }
-
 }

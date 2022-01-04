@@ -3,7 +3,6 @@
 namespace Anibalealvarezs\Projectbuilder\Models;
 
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Support\Facades\DB;
 use Spatie\Translatable\HasTranslations;
 
 class PbConfig extends PbBuilder
@@ -48,14 +47,7 @@ class PbConfig extends PbBuilder
 
     public static function findByKey($key)
     {
-        $config = DB::table('config')
-                ->select('id')
-                ->where('configkey', $key)
-                ->first();
-        if ($config) {
-            return self::find($config->id);
-        }
-        return null;
+        return self::firstWhere('configkey', $key);
     }
 
     public static function getValueByKey($key)
@@ -68,7 +60,7 @@ class PbConfig extends PbBuilder
 
     public static function getCrudConfig(): array
     {
-        $config = PbBuilder::getCrudConfig();
+        $config = parent::getCrudConfig();
 
         $config['formconfig'] = [
             'name' => [
