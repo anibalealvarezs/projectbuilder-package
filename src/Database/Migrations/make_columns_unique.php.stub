@@ -14,10 +14,10 @@ class MakeColumnsUnique extends Migration
     public function up()
     {
         Schema::table('config', function (Blueprint $table) {
-            $table->string('configkey', 254)->unique();
+            $table->string('configkey', 254)->unique()->change();
         });
         Schema::table('modules', function (Blueprint $table) {
-            $table->string('modulekey', 20)->unique();
+            $table->string('modulekey', 20)->unique()->change();
         });
     }
 
@@ -29,10 +29,10 @@ class MakeColumnsUnique extends Migration
     public function down()
     {
         Schema::table('navigations', function (Blueprint $table) {
-            $table->string('configkey', 254)->nullable();
+            $table->string('configkey', 254)->nullable()->change();
         });
         Schema::table('modules', function (Blueprint $table) {
-            $table->string('modulekey', 20);
+            $table->string('modulekey', 20)->change();
         });
     }
 }
