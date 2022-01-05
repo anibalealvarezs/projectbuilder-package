@@ -15,11 +15,11 @@ class PbModulesSeeder extends Seeder
     public function run()
     {
         Module::upsert([
-            ['modulekey' => 'user', 'name' => 'Users', 'status' => 1],
-            ['modulekey' => 'config', 'name' => 'Config', 'status' => 1],
-            ['modulekey' => 'navigation', 'name' => 'Config', 'status' => 1],
-            ['modulekey' => 'permission', 'name' => 'Config', 'status' => 1],
-            ['modulekey' => 'role', 'name' => 'Config', 'status' => 1],
+            ['modulekey' => 'user', 'name' => json_encode(['en' => 'Users']), 'status' => 1],
+            ['modulekey' => 'config', 'name' => json_encode(['en' => 'Config']), 'status' => 1],
+            ['modulekey' => 'navigation', 'name' => json_encode(['en' => 'Config']), 'status' => 1],
+            ['modulekey' => 'permission', 'name' => json_encode(['en' => 'Config']), 'status' => 1],
+            ['modulekey' => 'role', 'name' => json_encode(['en' => 'Config']), 'status' => 1],
         ], ['modulekey'], ['name', 'status']);
     }
 }

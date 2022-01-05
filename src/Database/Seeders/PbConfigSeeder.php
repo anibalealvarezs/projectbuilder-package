@@ -18,11 +18,11 @@ class PbConfigSeeder extends Seeder
         $moduleConfig = PbModule::where('modulekey', 'config')->first();
         // Default Config
         Config::upsert([
-            ['configkey' => '_APP_NAME_', 'configvalue' => 'Builder', 'name' => 'App Name', 'description' => 'App Description', 'module_id' => $moduleConfig->id],
-            ['configkey' => '_FORCE_HTTPS_', 'configvalue' => false, 'name' => 'Force HTTPS', 'description' => 'Force HTTPS', 'module_id' => $moduleConfig->id],
-            ['configkey' => '_SAVE_LOGS_', 'configvalue' => false, 'name' => 'Save Logs', 'description' => 'Save Logs', 'module_id' => $moduleConfig->id],
-            ['configkey' => '_API_ENABLED_', 'configvalue' => true, 'name' => 'API Enabled', 'description' => 'API Enabled', 'module_id' => $moduleConfig->id],
-            ['configkey' => '_DEBUG_MODE_', 'configvalue' => true, 'name' => 'Debug Mode', 'description' => 'Debug Mode', 'module_id' => $moduleConfig->id]
+            ['configkey' => '_APP_NAME_', 'configvalue' => 'Builder', 'name' => json_encode(['en' => 'App Name']), 'description' => json_encode(['en' => 'App Description']), 'module_id' => $moduleConfig->id],
+            ['configkey' => '_FORCE_HTTPS_', 'configvalue' => false, 'name' => json_encode(['en' => 'Force HTTPS']), 'description' => json_encode(['en' => 'Force HTTPS']), 'module_id' => $moduleConfig->id],
+            ['configkey' => '_SAVE_LOGS_', 'configvalue' => false, 'name' => json_encode(['en' => 'Save Logs']), 'description' => json_encode(['en' => 'Save Logs']), 'module_id' => $moduleConfig->id],
+            ['configkey' => '_API_ENABLED_', 'configvalue' => true, 'name' => json_encode(['en' => 'API Enabled']), 'description' => json_encode(['en' => 'API Enabled']), 'module_id' => $moduleConfig->id],
+            ['configkey' => '_DEBUG_MODE_', 'configvalue' => true, 'name' => json_encode(['en' => 'Debug Mode']), 'description' => json_encode(['en' => 'Debug Mode']), 'module_id' => $moduleConfig->id]
         ], ['configkey'], ['configvalue', 'name', 'description', 'module_id']);
     }
 }
