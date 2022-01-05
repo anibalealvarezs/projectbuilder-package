@@ -38,7 +38,7 @@ class PbCountry extends PbBuilder
      * @var array
      */
     protected $fillable = [
-        'name', 'code'
+        'name', 'code', 'capital_id'
     ];
 
     public function getNameAttribute($value)
@@ -51,11 +51,10 @@ class PbCountry extends PbBuilder
 
     public static function findByCode($code)
     {
-        $country = DB::table('countries')
-                ->select('id')
-                ->where('code', $code)
-                ->first();
-        if ($country->id) {
+        if ($country = DB::table('countries')
+            ->select('id')
+            ->where('code', $code)
+            ->first()) {
             return self::find($country->id);
         }
         return null;
