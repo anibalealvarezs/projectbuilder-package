@@ -26,7 +26,10 @@ class PbSpatieSeeder extends Seeder
         $moduleRole = PbModule::where('modulekey', 'role')->first();
         $modulePermission = PbModule::where('modulekey', 'permission')->first();
 
-        // updateOrCreate permissions
+        Permission::query()->delete();
+        Role::query()->delete();
+
+        // upsert permissions
         Permission::upsert([
             // CRUD Super Admin
             ['guard_name' => 'admin', 'name' => 'crud super-admin', 'alias' => json_encode(['en' => 'CRUD Super Admin']), 'module_id' => null],
@@ -75,12 +78,11 @@ class PbSpatieSeeder extends Seeder
         ], ['guard_name', 'name'], ['alias', 'module_id']);
 
         // updateOrCreate roles and assign updateOrCreated permissions
-
-        Role::updateOrCreate(['guard_name' => 'admin', 'name' => 'user'], ['guard_name' => 'admin', 'name' => 'user', 'alias' => json_encode(['en' => 'User'])])
+        Role::updateOrCreate(['guard_name' => 'admin', 'name' => 'user'], ['guard_name' => 'admin', 'name' => 'user', 'alias' => 'User'])
             ->givePermissionTo(['login']);
-        Role::updateOrCreate(['guard_name' => 'admin', 'name' => 'api-user'], ['guard_name' => 'admin', 'name' => 'api-user', 'alias' => json_encode(['en' => 'API User'])])
+        Role::updateOrCreate(['guard_name' => 'admin', 'name' => 'api-user'], ['guard_name' => 'admin', 'name' => 'api-user', 'alias' => 'API User'])
             ->givePermissionTo(['api access']);
-        Role::updateOrCreate(['guard_name' => 'admin', 'name' => 'admin'], ['guard_name' => 'admin', 'name' => 'admin', 'alias' => json_encode(['en' => 'Admin'])])
+        Role::updateOrCreate(['guard_name' => 'admin', 'name' => 'admin'], ['guard_name' => 'admin', 'name' => 'admin', 'alias' => 'Admin'])
             ->givePermissionTo([
                 'create users',
                 'read users',
@@ -95,9 +97,9 @@ class PbSpatieSeeder extends Seeder
                 'config builder',
                 'login',
             ]);
-        Role::updateOrCreate(['guard_name' => 'admin', 'name' => 'developer'], ['guard_name' => 'admin', 'name' => 'developer', 'alias' => json_encode(['en' => 'Developer'])])
+        Role::updateOrCreate(['guard_name' => 'admin', 'name' => 'developer'], ['guard_name' => 'admin', 'name' => 'developer', 'alias' => 'Developer'])
             ->givePermissionTo(['developer options', 'read loggers', 'delete loggers', 'config loggers']);
-        Role::updateOrCreate(['guard_name' => 'admin', 'name' => 'super-admin'], ['guard_name' => 'admin', 'name' => 'super-admin', 'alias' => json_encode(['en' => 'Super Admin'])])
+        Role::updateOrCreate(['guard_name' => 'admin', 'name' => 'super-admin'], ['guard_name' => 'admin', 'name' => 'super-admin', 'alias' => 'Super Admin'])
             ->givePermissionTo(Permission::all());
     }
 }

@@ -19,6 +19,7 @@ class PbTeamSeeder extends Seeder
     public function run()
     {
         if ($user = PbUser::role('super-admin')->first()) {
+            Team::query()->delete();
             Team::upsert([
                 ['name' => 'SuperAdmin', 'personal_team' => true, 'user_id' => $user->id],
                 ['name' => 'Admin', 'personal_team' => true, 'user_id' => $user->id],
