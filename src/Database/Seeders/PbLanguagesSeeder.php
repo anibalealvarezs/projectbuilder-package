@@ -16,191 +16,193 @@ class PbLanguagesSeeder extends Seeder
     {
         if (Language::count() == 0) {
             // Default Languages
-            Language::updateOrCreate(['code' => 'ab'], ['name' => 'Abkhazian']);
-            Language::updateOrCreate(['code' => 'aa'], ['name' => 'Afar']);
-            Language::updateOrCreate(['code' => 'af'], ['name' => 'Afrikaans']);
-            Language::updateOrCreate(['code' => 'ak'], ['name' => 'Akan']);
-            Language::updateOrCreate(['code' => 'sq'], ['name' => 'Albanian']);
-            Language::updateOrCreate(['code' => 'am'], ['name' => 'Amharic']);
-            Language::updateOrCreate(['code' => 'ar'], ['name' => 'Arabic']);
-            Language::updateOrCreate(['code' => 'an'], ['name' => 'Aragonese']);
-            Language::updateOrCreate(['code' => 'hy'], ['name' => 'Armenian']);
-            Language::updateOrCreate(['code' => 'as'], ['name' => 'Assamese']);
-            Language::updateOrCreate(['code' => 'av'], ['name' => 'Avaric']);
-            Language::updateOrCreate(['code' => 'ae'], ['name' => 'Avestan']);
-            Language::updateOrCreate(['code' => 'ay'], ['name' => 'Aymara']);
-            Language::updateOrCreate(['code' => 'az'], ['name' => 'Azerbaijani']);
-            Language::updateOrCreate(['code' => 'bm'], ['name' => 'Bambara']);
-            Language::updateOrCreate(['code' => 'ba'], ['name' => 'Bashkir']);
-            Language::updateOrCreate(['code' => 'eu'], ['name' => 'Basque']);
-            Language::updateOrCreate(['code' => 'be'], ['name' => 'Belarusian']);
-            Language::updateOrCreate(['code' => 'bn'], ['name' => 'Bengali']);
-            Language::updateOrCreate(['code' => 'bh'], ['name' => 'Bihari languages']);
-            Language::updateOrCreate(['code' => 'bi'], ['name' => 'Bislama']);
-            Language::updateOrCreate(['code' => 'bs'], ['name' => 'Bosnian']);
-            Language::updateOrCreate(['code' => 'br'], ['name' => 'Breton']);
-            Language::updateOrCreate(['code' => 'bg'], ['name' => 'Bulgarian']);
-            Language::updateOrCreate(['code' => 'my'], ['name' => 'Burmese']);
-            Language::updateOrCreate(['code' => 'ca'], ['name' => 'Catalan, Valencian']);
-            Language::updateOrCreate(['code' => 'ch'], ['name' => 'Chamorro']);
-            Language::updateOrCreate(['code' => 'ce'], ['name' => 'Chechen']);
-            Language::updateOrCreate(['code' => 'ny'], ['name' => 'Chichewa, Chewa, Nyanja']);
-            Language::updateOrCreate(['code' => 'zh'], ['name' => 'Chinese']);
-            Language::updateOrCreate(['code' => 'cv'], ['name' => 'Chuvash']);
-            Language::updateOrCreate(['code' => 'kw'], ['name' => 'Cornish']);
-            Language::updateOrCreate(['code' => 'co'], ['name' => 'Corsican']);
-            Language::updateOrCreate(['code' => 'cr'], ['name' => 'Cree']);
-            Language::updateOrCreate(['code' => 'hr'], ['name' => 'Croatian']);
-            Language::updateOrCreate(['code' => 'cs'], ['name' => 'Czech']);
-            Language::updateOrCreate(['code' => 'da'], ['name' => 'Danish']);
-            Language::updateOrCreate(['code' => 'dv'], ['name' => 'Divehi, Dhivehi, Maldivian']);
-            Language::updateOrCreate(['code' => 'nl'], ['name' => 'Dutch, Flemish']);
-            Language::updateOrCreate(['code' => 'dz'], ['name' => 'Dzongkha']);
-            Language::updateOrCreate(['code' => 'en'], ['name' => 'English', 'status' => 1]);
-            Language::updateOrCreate(['code' => 'eo'], ['name' => 'Esperanto']);
-            Language::updateOrCreate(['code' => 'et'], ['name' => 'Estonian']);
-            Language::updateOrCreate(['code' => 'ee'], ['name' => 'Ewe']);
-            Language::updateOrCreate(['code' => 'fo'], ['name' => 'Faroese']);
-            Language::updateOrCreate(['code' => 'fj'], ['name' => 'Fijian']);
-            Language::updateOrCreate(['code' => 'fi'], ['name' => 'Finnish']);
-            Language::updateOrCreate(['code' => 'fr'], ['name' => 'French']);
-            Language::updateOrCreate(['code' => 'ff'], ['name' => 'Fulah']);
-            Language::updateOrCreate(['code' => 'gl'], ['name' => 'Galician']);
-            Language::updateOrCreate(['code' => 'ka'], ['name' => 'Georgian']);
-            Language::updateOrCreate(['code' => 'de'], ['name' => 'German']);
-            Language::updateOrCreate(['code' => 'el'], ['name' => 'Greek (modern)']);
-            Language::updateOrCreate(['code' => 'gn'], ['name' => 'Guaraní']);
-            Language::updateOrCreate(['code' => 'gu'], ['name' => 'Gujarati']);
-            Language::updateOrCreate(['code' => 'ht'], ['name' => 'Haitian, Haitian Creole']);
-            Language::updateOrCreate(['code' => 'ha'], ['name' => 'Hausa']);
-            Language::updateOrCreate(['code' => 'he'], ['name' => 'Hebrew (modern)']);
-            Language::updateOrCreate(['code' => 'hz'], ['name' => 'Herero']);
-            Language::updateOrCreate(['code' => 'hi'], ['name' => 'Hindi']);
-            Language::updateOrCreate(['code' => 'ho'], ['name' => 'Hiri Motu']);
-            Language::updateOrCreate(['code' => 'hu'], ['name' => 'Hungarian']);
-            Language::updateOrCreate(['code' => 'ia'], ['name' => 'Interlingua']);
-            Language::updateOrCreate(['code' => 'id'], ['name' => 'Indonesian']);
-            Language::updateOrCreate(['code' => 'ie'], ['name' => 'Interlingue']);
-            Language::updateOrCreate(['code' => 'ga'], ['name' => 'Irish']);
-            Language::updateOrCreate(['code' => 'ig'], ['name' => 'Igbo']);
-            Language::updateOrCreate(['code' => 'ik'], ['name' => 'Inupiaq']);
-            Language::updateOrCreate(['code' => 'io'], ['name' => 'Ido']);
-            Language::updateOrCreate(['code' => 'is'], ['name' => 'Icelandic']);
-            Language::updateOrCreate(['code' => 'it'], ['name' => 'Italian']);
-            Language::updateOrCreate(['code' => 'iu'], ['name' => 'Inuktitut']);
-            Language::updateOrCreate(['code' => 'ja'], ['name' => 'Japanese']);
-            Language::updateOrCreate(['code' => 'jv'], ['name' => 'Javanese']);
-            Language::updateOrCreate(['code' => 'kl'], ['name' => 'Kalaallisut, Greenlandic']);
-            Language::updateOrCreate(['code' => 'kn'], ['name' => 'Kannada']);
-            Language::updateOrCreate(['code' => 'kr'], ['name' => 'Kanuri']);
-            Language::updateOrCreate(['code' => 'ks'], ['name' => 'Kashmiri']);
-            Language::updateOrCreate(['code' => 'kk'], ['name' => 'Kazakh']);
-            Language::updateOrCreate(['code' => 'km'], ['name' => 'Central Khmer']);
-            Language::updateOrCreate(['code' => 'ki'], ['name' => 'Kikuyu, Gikuyu']);
-            Language::updateOrCreate(['code' => 'rw'], ['name' => 'Kinyarwanda']);
-            Language::updateOrCreate(['code' => 'ky'], ['name' => 'Kirghiz, Kyrgyz']);
-            Language::updateOrCreate(['code' => 'kv'], ['name' => 'Komi']);
-            Language::updateOrCreate(['code' => 'kg'], ['name' => 'Kongo']);
-            Language::updateOrCreate(['code' => 'ko'], ['name' => 'Korean']);
-            Language::updateOrCreate(['code' => 'ku'], ['name' => 'Kurdish']);
-            Language::updateOrCreate(['code' => 'kj'], ['name' => 'Kuanyama, Kwanyama']);
-            Language::updateOrCreate(['code' => 'la'], ['name' => 'Latin']);
-            Language::updateOrCreate(['code' => 'lb'], ['name' => 'Luxembourgish, Letzeburgesch']);
-            Language::updateOrCreate(['code' => 'lg'], ['name' => 'Ganda']);
-            Language::updateOrCreate(['code' => 'li'], ['name' => 'Limburgan, Limburger, Limburgish']);
-            Language::updateOrCreate(['code' => 'ln'], ['name' => 'Lingala']);
-            Language::updateOrCreate(['code' => 'lo'], ['name' => 'Lao']);
-            Language::updateOrCreate(['code' => 'lt'], ['name' => 'Lithuanian']);
-            Language::updateOrCreate(['code' => 'lu'], ['name' => 'Luba-Katanga']);
-            Language::updateOrCreate(['code' => 'lv'], ['name' => 'Latvian']);
-            Language::updateOrCreate(['code' => 'gv'], ['name' => 'Manx']);
-            Language::updateOrCreate(['code' => 'mk'], ['name' => 'Macedonian']);
-            Language::updateOrCreate(['code' => 'mg'], ['name' => 'Malagasy']);
-            Language::updateOrCreate(['code' => 'ms'], ['name' => 'Malay']);
-            Language::updateOrCreate(['code' => 'ml'], ['name' => 'Malayalam']);
-            Language::updateOrCreate(['code' => 'mt'], ['name' => 'Maltese']);
-            Language::updateOrCreate(['code' => 'mi'], ['name' => 'Maori']);
-            Language::updateOrCreate(['code' => 'mr'], ['name' => 'Marathi']);
-            Language::updateOrCreate(['code' => 'mh'], ['name' => 'Marshallese']);
-            Language::updateOrCreate(['code' => 'mn'], ['name' => 'Mongolian']);
-            Language::updateOrCreate(['code' => 'na'], ['name' => 'Nauru']);
-            Language::updateOrCreate(['code' => 'nv'], ['name' => 'Navajo, Navaho']);
-            Language::updateOrCreate(['code' => 'nd'], ['name' => 'North Ndebele']);
-            Language::updateOrCreate(['code' => 'ne'], ['name' => 'Nepali']);
-            Language::updateOrCreate(['code' => 'ng'], ['name' => 'Ndonga']);
-            Language::updateOrCreate(['code' => 'nb'], ['name' => 'Norwegian Bokmål']);
-            Language::updateOrCreate(['code' => 'nn'], ['name' => 'Norwegian Nynorsk']);
-            Language::updateOrCreate(['code' => 'no'], ['name' => 'Norwegian']);
-            Language::updateOrCreate(['code' => 'ii'], ['name' => 'Sichuan Yi, Nuosu']);
-            Language::updateOrCreate(['code' => 'nr'], ['name' => 'South Ndebele']);
-            Language::updateOrCreate(['code' => 'oc'], ['name' => 'Occitan']);
-            Language::updateOrCreate(['code' => 'oj'], ['name' => 'Ojibwa']);
-            Language::updateOrCreate(['code' => 'cu'], ['name' => 'Church Slavic, Church Slavonic, Old Church Slavonic, Old Slavonic, Old Bulgarian']);
-            Language::updateOrCreate(['code' => 'om'], ['name' => 'Oromo']);
-            Language::updateOrCreate(['code' => 'or'], ['name' => 'Oriya']);
-            Language::updateOrCreate(['code' => 'os'], ['name' => 'Ossetian, Ossetic']);
-            Language::updateOrCreate(['code' => 'pa'], ['name' => 'Panjabi, Punjabi']);
-            Language::updateOrCreate(['code' => 'pi'], ['name' => 'Pali']);
-            Language::updateOrCreate(['code' => 'fa'], ['name' => 'Persian']);
-            Language::updateOrCreate(['code' => 'po'], ['name' => 'Polabian']);
-            Language::updateOrCreate(['code' => 'pl'], ['name' => 'Polish']);
-            Language::updateOrCreate(['code' => 'ps'], ['name' => 'Pashto, Pushto']);
-            Language::updateOrCreate(['code' => 'pt'], ['name' => 'Portuguese']);
-            Language::updateOrCreate(['code' => 'qu'], ['name' => 'Quechua']);
-            Language::updateOrCreate(['code' => 'rm'], ['name' => 'Romansh']);
-            Language::updateOrCreate(['code' => 'rn'], ['name' => 'Rundi']);
-            Language::updateOrCreate(['code' => 'ro'], ['name' => 'Romanian, Moldavian, Moldovan']);
-            Language::updateOrCreate(['code' => 'ru'], ['name' => 'Russian']);
-            Language::updateOrCreate(['code' => 'sa'], ['name' => 'Sanskrit']);
-            Language::updateOrCreate(['code' => 'sc'], ['name' => 'Sardinian']);
-            Language::updateOrCreate(['code' => 'sd'], ['name' => 'Sindhi']);
-            Language::updateOrCreate(['code' => 'se'], ['name' => 'Northern Sami']);
-            Language::updateOrCreate(['code' => 'sm'], ['name' => 'Samoan']);
-            Language::updateOrCreate(['code' => 'sg'], ['name' => 'Sango']);
-            Language::updateOrCreate(['code' => 'sr'], ['name' => 'Serbian']);
-            Language::updateOrCreate(['code' => 'gd'], ['name' => 'Gaelic, Scottish Gaelic']);
-            Language::updateOrCreate(['code' => 'sn'], ['name' => 'Shona']);
-            Language::updateOrCreate(['code' => 'si'], ['name' => 'Sinhala, Sinhalese']);
-            Language::updateOrCreate(['code' => 'sk'], ['name' => 'Slovak']);
-            Language::updateOrCreate(['code' => 'sl'], ['name' => 'Slovenian']);
-            Language::updateOrCreate(['code' => 'so'], ['name' => 'Somali']);
-            Language::updateOrCreate(['code' => 'st'], ['name' => 'Southern Sotho']);
-            Language::updateOrCreate(['code' => 'es'], ['name' => 'Spanish, Castilian', 'status' => 1]);
-            Language::updateOrCreate(['code' => 'su'], ['name' => 'Sundanese']);
-            Language::updateOrCreate(['code' => 'sw'], ['name' => 'Swahili']);
-            Language::updateOrCreate(['code' => 'ss'], ['name' => 'Swati']);
-            Language::updateOrCreate(['code' => 'sv'], ['name' => 'Swedish']);
-            Language::updateOrCreate(['code' => 'ta'], ['name' => 'Tamil']);
-            Language::updateOrCreate(['code' => 'te'], ['name' => 'Telugu']);
-            Language::updateOrCreate(['code' => 'tg'], ['name' => 'Tajik']);
-            Language::updateOrCreate(['code' => 'th'], ['name' => 'Thai']);
-            Language::updateOrCreate(['code' => 'ti'], ['name' => 'Tigrinya']);
-            Language::updateOrCreate(['code' => 'bo'], ['name' => 'Tibetan']);
-            Language::updateOrCreate(['code' => 'tk'], ['name' => 'Turkmen']);
-            Language::updateOrCreate(['code' => 'tl'], ['name' => 'Tagalog']);
-            Language::updateOrCreate(['code' => 'tn'], ['name' => 'Tswana']);
-            Language::updateOrCreate(['code' => 'to'], ['name' => 'Tonga (Tonga Islands)']);
-            Language::updateOrCreate(['code' => 'tr'], ['name' => 'Turkish']);
-            Language::updateOrCreate(['code' => 'ts'], ['name' => 'Tsonga']);
-            Language::updateOrCreate(['code' => 'tt'], ['name' => 'Tatar']);
-            Language::updateOrCreate(['code' => 'tw'], ['name' => 'Twi']);
-            Language::updateOrCreate(['code' => 'ty'], ['name' => 'Tahitian']);
-            Language::updateOrCreate(['code' => 'ug'], ['name' => 'Uighur, Uyghur']);
-            Language::updateOrCreate(['code' => 'uk'], ['name' => 'Ukrainian']);
-            Language::updateOrCreate(['code' => 'ur'], ['name' => 'Urdu']);
-            Language::updateOrCreate(['code' => 'uz'], ['name' => 'Uzbek']);
-            Language::updateOrCreate(['code' => 've'], ['name' => 'Venda']);
-            Language::updateOrCreate(['code' => 'vi'], ['name' => 'Vietnamese']);
-            Language::updateOrCreate(['code' => 'vo'], ['name' => 'Volapük']);
-            Language::updateOrCreate(['code' => 'wa'], ['name' => 'Walloon']);
-            Language::updateOrCreate(['code' => 'cy'], ['name' => 'Welsh']);
-            Language::updateOrCreate(['code' => 'wo'], ['name' => 'Wolof']);
-            Language::updateOrCreate(['code' => 'fy'], ['name' => 'Western Frisian']);
-            Language::updateOrCreate(['code' => 'xh'], ['name' => 'Xhosa']);
-            Language::updateOrCreate(['code' => 'yi'], ['name' => 'Yiddish']);
-            Language::updateOrCreate(['code' => 'yo'], ['name' => 'Yoruba']);
-            Language::updateOrCreate(['code' => 'za'], ['name' => 'Zhuang, Chuang']);
-            Language::updateOrCreate(['code' => 'zu'], ['name' => 'Zulu']);
+            Language::upsert([
+                ['code' => 'ab', 'name' => 'Abkhazian', 'status' => false],
+                ['code' => 'aa', 'name' => 'Afar', 'status' => false],
+                ['code' => 'af', 'name' => 'Afrikaans', 'status' => false],
+                ['code' => 'ak', 'name' => 'Akan', 'status' => false],
+                ['code' => 'sq', 'name' => 'Albanian', 'status' => false],
+                ['code' => 'am', 'name' => 'Amharic', 'status' => false],
+                ['code' => 'ar', 'name' => 'Arabic', 'status' => false],
+                ['code' => 'an', 'name' => 'Aragonese', 'status' => false],
+                ['code' => 'hy', 'name' => 'Armenian', 'status' => false],
+                ['code' => 'as', 'name' => 'Assamese', 'status' => false],
+                ['code' => 'av', 'name' => 'Avaric', 'status' => false],
+                ['code' => 'ae', 'name' => 'Avestan', 'status' => false],
+                ['code' => 'ay', 'name' => 'Aymara', 'status' => false],
+                ['code' => 'az', 'name' => 'Azerbaijani', 'status' => false],
+                ['code' => 'bm', 'name' => 'Bambara', 'status' => false],
+                ['code' => 'ba', 'name' => 'Bashkir', 'status' => false],
+                ['code' => 'eu', 'name' => 'Basque', 'status' => false],
+                ['code' => 'be', 'name' => 'Belarusian', 'status' => false],
+                ['code' => 'bn', 'name' => 'Bengali', 'status' => false],
+                ['code' => 'bh', 'name' => 'Bihari languages', 'status' => false],
+                ['code' => 'bi', 'name' => 'Bislama', 'status' => false],
+                ['code' => 'bs', 'name' => 'Bosnian', 'status' => false],
+                ['code' => 'br', 'name' => 'Breton', 'status' => false],
+                ['code' => 'bg', 'name' => 'Bulgarian', 'status' => false],
+                ['code' => 'my', 'name' => 'Burmese', 'status' => false],
+                ['code' => 'ca', 'name' => 'Catalan, Valencian', 'status' => false],
+                ['code' => 'ch', 'name' => 'Chamorro', 'status' => false],
+                ['code' => 'ce', 'name' => 'Chechen', 'status' => false],
+                ['code' => 'ny', 'name' => 'Chichewa, Chewa, Nyanja', 'status' => false],
+                ['code' => 'zh', 'name' => 'Chinese', 'status' => false],
+                ['code' => 'cv', 'name' => 'Chuvash', 'status' => false],
+                ['code' => 'kw', 'name' => 'Cornish', 'status' => false],
+                ['code' => 'co', 'name' => 'Corsican', 'status' => false],
+                ['code' => 'cr', 'name' => 'Cree', 'status' => false],
+                ['code' => 'hr', 'name' => 'Croatian', 'status' => false],
+                ['code' => 'cs', 'name' => 'Czech', 'status' => false],
+                ['code' => 'da', 'name' => 'Danish', 'status' => false],
+                ['code' => 'dv', 'name' => 'Divehi, Dhivehi, Maldivian', 'status' => false],
+                ['code' => 'nl', 'name' => 'Dutch, Flemish', 'status' => false],
+                ['code' => 'dz', 'name' => 'Dzongkha', 'status' => false],
+                ['code' => 'en', 'name' => 'English', 'status' => true],
+                ['code' => 'eo', 'name' => 'Esperanto', 'status' => false],
+                ['code' => 'et', 'name' => 'Estonian', 'status' => false],
+                ['code' => 'ee', 'name' => 'Ewe', 'status' => false],
+                ['code' => 'fo', 'name' => 'Faroese', 'status' => false],
+                ['code' => 'fj', 'name' => 'Fijian', 'status' => false],
+                ['code' => 'fi', 'name' => 'Finnish', 'status' => false],
+                ['code' => 'fr', 'name' => 'French', 'status' => false],
+                ['code' => 'ff', 'name' => 'Fulah', 'status' => false],
+                ['code' => 'gl', 'name' => 'Galician', 'status' => false],
+                ['code' => 'ka', 'name' => 'Georgian', 'status' => false],
+                ['code' => 'de', 'name' => 'German', 'status' => false],
+                ['code' => 'el', 'name' => 'Greek (modern)', 'status' => false],
+                ['code' => 'gn', 'name' => 'Guaraní', 'status' => false],
+                ['code' => 'gu', 'name' => 'Gujarati', 'status' => false],
+                ['code' => 'ht', 'name' => 'Haitian, Haitian Creole', 'status' => false],
+                ['code' => 'ha', 'name' => 'Hausa', 'status' => false],
+                ['code' => 'he', 'name' => 'Hebrew (modern)', 'status' => false],
+                ['code' => 'hz', 'name' => 'Herero', 'status' => false],
+                ['code' => 'hi', 'name' => 'Hindi', 'status' => false],
+                ['code' => 'ho', 'name' => 'Hiri Motu', 'status' => false],
+                ['code' => 'hu', 'name' => 'Hungarian', 'status' => false],
+                ['code' => 'ia', 'name' => 'Interlingua', 'status' => false],
+                ['code' => 'id', 'name' => 'Indonesian', 'status' => false],
+                ['code' => 'ie', 'name' => 'Interlingue', 'status' => false],
+                ['code' => 'ga', 'name' => 'Irish', 'status' => false],
+                ['code' => 'ig', 'name' => 'Igbo', 'status' => false],
+                ['code' => 'ik', 'name' => 'Inupiaq', 'status' => false],
+                ['code' => 'io', 'name' => 'Ido', 'status' => false],
+                ['code' => 'is', 'name' => 'Icelandic', 'status' => false],
+                ['code' => 'it', 'name' => 'Italian', 'status' => false],
+                ['code' => 'iu', 'name' => 'Inuktitut', 'status' => false],
+                ['code' => 'ja', 'name' => 'Japanese', 'status' => false],
+                ['code' => 'jv', 'name' => 'Javanese', 'status' => false],
+                ['code' => 'kl', 'name' => 'Kalaallisut, Greenlandic', 'status' => false],
+                ['code' => 'kn', 'name' => 'Kannada', 'status' => false],
+                ['code' => 'kr', 'name' => 'Kanuri', 'status' => false],
+                ['code' => 'ks', 'name' => 'Kashmiri', 'status' => false],
+                ['code' => 'kk', 'name' => 'Kazakh', 'status' => false],
+                ['code' => 'km', 'name' => 'Central Khmer', 'status' => false],
+                ['code' => 'ki', 'name' => 'Kikuyu, Gikuyu', 'status' => false],
+                ['code' => 'rw', 'name' => 'Kinyarwanda', 'status' => false],
+                ['code' => 'ky', 'name' => 'Kirghiz, Kyrgyz', 'status' => false],
+                ['code' => 'kv', 'name' => 'Komi', 'status' => false],
+                ['code' => 'kg', 'name' => 'Kongo', 'status' => false],
+                ['code' => 'ko', 'name' => 'Korean', 'status' => false],
+                ['code' => 'ku', 'name' => 'Kurdish', 'status' => false],
+                ['code' => 'kj', 'name' => 'Kuanyama, Kwanyama', 'status' => false],
+                ['code' => 'la', 'name' => 'Latin', 'status' => false],
+                ['code' => 'lb', 'name' => 'Luxembourgish, Letzeburgesch', 'status' => false],
+                ['code' => 'lg', 'name' => 'Ganda', 'status' => false],
+                ['code' => 'li', 'name' => 'Limburgan, Limburger, Limburgish', 'status' => false],
+                ['code' => 'ln', 'name' => 'Lingala', 'status' => false],
+                ['code' => 'lo', 'name' => 'Lao', 'status' => false],
+                ['code' => 'lt', 'name' => 'Lithuanian', 'status' => false],
+                ['code' => 'lu', 'name' => 'Luba-Katanga', 'status' => false],
+                ['code' => 'lv', 'name' => 'Latvian', 'status' => false],
+                ['code' => 'gv', 'name' => 'Manx', 'status' => false],
+                ['code' => 'mk', 'name' => 'Macedonian', 'status' => false],
+                ['code' => 'mg', 'name' => 'Malagasy', 'status' => false],
+                ['code' => 'ms', 'name' => 'Malay', 'status' => false],
+                ['code' => 'ml', 'name' => 'Malayalam', 'status' => false],
+                ['code' => 'mt', 'name' => 'Maltese', 'status' => false],
+                ['code' => 'mi', 'name' => 'Maori', 'status' => false],
+                ['code' => 'mr', 'name' => 'Marathi', 'status' => false],
+                ['code' => 'mh', 'name' => 'Marshallese', 'status' => false],
+                ['code' => 'mn', 'name' => 'Mongolian', 'status' => false],
+                ['code' => 'na', 'name' => 'Nauru', 'status' => false],
+                ['code' => 'nv', 'name' => 'Navajo, Navaho', 'status' => false],
+                ['code' => 'nd', 'name' => 'North Ndebele', 'status' => false],
+                ['code' => 'ne', 'name' => 'Nepali', 'status' => false],
+                ['code' => 'ng', 'name' => 'Ndonga', 'status' => false],
+                ['code' => 'nb', 'name' => 'Norwegian Bokmål', 'status' => false],
+                ['code' => 'nn', 'name' => 'Norwegian Nynorsk', 'status' => false],
+                ['code' => 'no', 'name' => 'Norwegian', 'status' => false],
+                ['code' => 'ii', 'name' => 'Sichuan Yi, Nuosu', 'status' => false],
+                ['code' => 'nr', 'name' => 'South Ndebele', 'status' => false],
+                ['code' => 'oc', 'name' => 'Occitan', 'status' => false],
+                ['code' => 'oj', 'name' => 'Ojibwa', 'status' => false],
+                ['code' => 'cu', 'name' => 'Church Slavic, Church Slavonic, Old Church Slavonic, Old Slavonic, Old Bulgarian', 'status' => false],
+                ['code' => 'om', 'name' => 'Oromo', 'status' => false],
+                ['code' => 'or', 'name' => 'Oriya', 'status' => false],
+                ['code' => 'os', 'name' => 'Ossetian, Ossetic', 'status' => false],
+                ['code' => 'pa', 'name' => 'Panjabi, Punjabi', 'status' => false],
+                ['code' => 'pi', 'name' => 'Pali', 'status' => false],
+                ['code' => 'fa', 'name' => 'Persian', 'status' => false],
+                ['code' => 'po', 'name' => 'Polabian', 'status' => false],
+                ['code' => 'pl', 'name' => 'Polish', 'status' => false],
+                ['code' => 'ps', 'name' => 'Pashto, Pushto', 'status' => false],
+                ['code' => 'pt', 'name' => 'Portuguese', 'status' => false],
+                ['code' => 'qu', 'name' => 'Quechua', 'status' => false],
+                ['code' => 'rm', 'name' => 'Romansh', 'status' => false],
+                ['code' => 'rn', 'name' => 'Rundi', 'status' => false],
+                ['code' => 'ro', 'name' => 'Romanian, Moldavian, Moldovan', 'status' => false],
+                ['code' => 'ru', 'name' => 'Russian', 'status' => false],
+                ['code' => 'sa', 'name' => 'Sanskrit', 'status' => false],
+                ['code' => 'sc', 'name' => 'Sardinian', 'status' => false],
+                ['code' => 'sd', 'name' => 'Sindhi', 'status' => false],
+                ['code' => 'se', 'name' => 'Northern Sami', 'status' => false],
+                ['code' => 'sm', 'name' => 'Samoan', 'status' => false],
+                ['code' => 'sg', 'name' => 'Sango', 'status' => false],
+                ['code' => 'sr', 'name' => 'Serbian', 'status' => false],
+                ['code' => 'gd', 'name' => 'Gaelic, Scottish Gaelic', 'status' => false],
+                ['code' => 'sn', 'name' => 'Shona', 'status' => false],
+                ['code' => 'si', 'name' => 'Sinhala, Sinhalese', 'status' => false],
+                ['code' => 'sk', 'name' => 'Slovak', 'status' => false],
+                ['code' => 'sl', 'name' => 'Slovenian', 'status' => false],
+                ['code' => 'so', 'name' => 'Somali', 'status' => false],
+                ['code' => 'st', 'name' => 'Southern Sotho', 'status' => false],
+                ['code' => 'es', 'name' => 'Spanish, Castilian', 'status' => true],
+                ['code' => 'su', 'name' => 'Sundanese', 'status' => false],
+                ['code' => 'sw', 'name' => 'Swahili', 'status' => false],
+                ['code' => 'ss', 'name' => 'Swati', 'status' => false],
+                ['code' => 'sv', 'name' => 'Swedish', 'status' => false],
+                ['code' => 'ta', 'name' => 'Tamil', 'status' => false],
+                ['code' => 'te', 'name' => 'Telugu', 'status' => false],
+                ['code' => 'tg', 'name' => 'Tajik', 'status' => false],
+                ['code' => 'th', 'name' => 'Thai', 'status' => false],
+                ['code' => 'ti', 'name' => 'Tigrinya', 'status' => false],
+                ['code' => 'bo', 'name' => 'Tibetan', 'status' => false],
+                ['code' => 'tk', 'name' => 'Turkmen', 'status' => false],
+                ['code' => 'tl', 'name' => 'Tagalog', 'status' => false],
+                ['code' => 'tn', 'name' => 'Tswana', 'status' => false],
+                ['code' => 'to', 'name' => 'Tonga (Tonga Islands)', 'status' => false],
+                ['code' => 'tr', 'name' => 'Turkish', 'status' => false],
+                ['code' => 'ts', 'name' => 'Tsonga', 'status' => false],
+                ['code' => 'tt', 'name' => 'Tatar', 'status' => false],
+                ['code' => 'tw', 'name' => 'Twi', 'status' => false],
+                ['code' => 'ty', 'name' => 'Tahitian', 'status' => false],
+                ['code' => 'ug', 'name' => 'Uighur, Uyghur', 'status' => false],
+                ['code' => 'uk', 'name' => 'Ukrainian', 'status' => false],
+                ['code' => 'ur', 'name' => 'Urdu', 'status' => false],
+                ['code' => 'uz', 'name' => 'Uzbek', 'status' => false],
+                ['code' => 've', 'name' => 'Venda', 'status' => false],
+                ['code' => 'vi', 'name' => 'Vietnamese', 'status' => false],
+                ['code' => 'vo', 'name' => 'Volapük', 'status' => false],
+                ['code' => 'wa', 'name' => 'Walloon', 'status' => false],
+                ['code' => 'cy', 'name' => 'Welsh', 'status' => false],
+                ['code' => 'wo', 'name' => 'Wolof', 'status' => false],
+                ['code' => 'fy', 'name' => 'Western Frisian', 'status' => false],
+                ['code' => 'xh', 'name' => 'Xhosa', 'status' => false],
+                ['code' => 'yi', 'name' => 'Yiddish', 'status' => false],
+                ['code' => 'yo', 'name' => 'Yoruba', 'status' => false],
+                ['code' => 'za', 'name' => 'Zhuang, Chuang', 'status' => false],
+                ['code' => 'zu', 'name' => 'Zulu', 'status' => false],
+            ], ['code'], ['name', 'status']);
         }
     }
 }

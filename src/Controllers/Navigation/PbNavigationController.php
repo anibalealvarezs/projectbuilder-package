@@ -62,7 +62,7 @@ class PbNavigationController extends PbBuilderController
      */
     public function index($element = null, bool $multiple = false, string $route = 'level'): InertiaResponse|JsonResponse|RedirectResponse
     {
-        $model = $this->modelPath::with(['ascendant', 'permission', 'module'])->orderBy('parent')->orderBy('position')->get();
+        $model = $this->modelPath::withPublicRelations()->orderedByDefault()->get();
 
         return parent::index($model);
     }

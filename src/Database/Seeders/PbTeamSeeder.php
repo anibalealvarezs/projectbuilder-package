@@ -18,11 +18,12 @@ class PbTeamSeeder extends Seeder
      */
     public function run()
     {
-        $user = PbUser::role('super-admin')->first();
-        if ($user) {
-            Team::updateOrCreate(['name' => 'SuperAdmin'], ['personal_team' => true, 'user_id' => $user->id]);
-            Team::updateOrCreate(['name' => 'Admin'], ['personal_team' => true, 'user_id' => $user->id]);
-            Team::updateOrCreate(['name' => 'User'], ['personal_team' => true, 'user_id' => $user->id]);
+        if ($user = PbUser::role('super-admin')->first()) {
+            Team::upsert([
+                ['name' => 'SuperAdmin', 'personal_team' => true, 'user_id' => $user->id],
+                ['name' => 'Admin', 'personal_team' => true, 'user_id' => $user->id],
+                ['name' => 'User', 'personal_team' => true, 'user_id' => $user->id],
+            ], ['name'], ['personal_team', 'user_id']);
         }
     }
 }

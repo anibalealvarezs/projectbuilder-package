@@ -37,7 +37,7 @@ class PbAppServiceProvider extends ServiceProvider
                 ];
             },
             /* 'modules' => function () {
-                return PbModule::with('components')->where('status', '1')->get();
+                return PbModule::withPublicRelations()->active()->get();
             }, */
         ]);
     }

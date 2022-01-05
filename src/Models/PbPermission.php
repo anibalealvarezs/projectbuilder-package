@@ -24,12 +24,14 @@ class PbPermission extends Permission
 
     function __construct() {
         $this->connection = config('database.default');
+        $this->publicRelations = ['roles', 'module'];
+        $this->allRelations = ['roles', 'module'];
     }
 
     public function getAliasAttribute($value)
     {
-        if (json_decode($value)) {
-            return json_decode($value)->{app()->getLocale()};
+        if ($json = json_decode($value)) {
+            return $json->{app()->getLocale()};
         }
         return $value;
     }

@@ -5,7 +5,6 @@ namespace Anibalealvarezs\Projectbuilder\Controllers\Auth;
 use App\Http\Controllers\Controller;
 // use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 
 use Anibalealvarezs\Projectbuilder\PbUser as User;
 use Session;
@@ -27,7 +26,7 @@ class PbLoginController extends Controller
 
     protected function authenticated(Request $request, $user)
     {
-        User::find(Auth::user()->id)->update(['last_session'=>Session::getId()]);
+        User::current()->update(['last_session'=>Session::getId()]);
 
         return redirect('/dashboard');
     }

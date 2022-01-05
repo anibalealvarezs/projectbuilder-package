@@ -9,6 +9,19 @@ class PbComponent extends PbBuilder
     public $timestamps = false;
 
     /**
+     * Create a new Eloquent model instance.
+     *
+     * @param  array  $attributes
+     * @return void
+     */
+    public function __construct(array $attributes = [])
+    {
+        parent::__construct($attributes);
+        $this->publicRelations = ['module'];
+        $this->allRelations = ['module'];
+    }
+
+    /**
      * The attributes that are mass assignable.
      *
      * @var array

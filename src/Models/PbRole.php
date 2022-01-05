@@ -7,6 +7,7 @@ use Anibalealvarezs\Projectbuilder\Traits\PbModelCrudTrait;
 use Anibalealvarezs\Projectbuilder\Traits\PbModelTrait;
 use Spatie\Permission\Models\Role;
 use Spatie\Translatable\HasTranslations;
+use Illuminate\Database\Eloquent\Builder;
 
 class PbRole extends Role
 {
@@ -22,12 +23,14 @@ class PbRole extends Role
 
     function __construct() {
         $this->connection = config('database.default');
+        $this->publicRelations = ['permissions'];
+        $this->allRelations = ['permissions'];
     }
 
     public function getAliasAttribute($value)
     {
-        if (json_decode($value)) {
-            return json_decode($value)->{app()->getLocale()};
+        if ($json = json_decode($value)) {
+            return $json->{app()->getLocale()};
         }
         return $value;
     }

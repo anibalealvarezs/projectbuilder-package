@@ -66,8 +66,8 @@ class PbUserController extends PbBuilderController
     {
         $this->required = array_merge($this->required, ['roles', 'email']);
 
-        $query = $this->modelPath::with('country', 'city', 'lang', 'roles');
-        $currentUser = $this->modelPath::find(Auth::user()->id);
+        $query = $this->modelPath::withPublicRelations();
+        $currentUser = $this->modelPath::current();
         if (!$currentUser->hasRole('super-admin')) {
             $superAdmins = $this->modelPath::role('super-admin')->get()->modelKeys();
             $query = $query->whereNotIn('id', $superAdmins);
@@ -157,7 +157,7 @@ class PbUserController extends PbBuilderController
             if ($model->save()) {
                 $model->current_team_id = $this->getDefaultTeamId($model);
                 if ($model->save()) {
-                    $me = PbUser::find(Auth::user()->id);
+                    $me = PbUser::current();
                     if ($me->hasRole(['super-admin'])) {
                         if (in_array('super-admin', $roles)) {
                             // Add only super-admin
@@ -202,7 +202,7 @@ class PbUserController extends PbBuilderController
             return redirect(DIRECTORY_SEPARATOR.$this->name.'/profile');
         }
 
-        $model = $this->modelPath::with('country', 'city', 'lang', 'roles')->find($id);
+        $model = $this->modelPath::withPublicRelations()->find($id);
 
         return parent::show($id, $model);
     }
@@ -222,7 +222,7 @@ class PbUserController extends PbBuilderController
             return redirect(DIRECTORY_SEPARATOR.$this->name.'/profile');
         }
 
-        $model = $this->modelPath::with('country', 'city', 'lang', 'roles')->find($id);
+        $model = $this->modelPath::withPublicRelations()->find($id);
 
         $this->required = array_merge($this->required, ['roles', 'email']);
 
@@ -267,7 +267,7 @@ class PbUserController extends PbBuilderController
             $requests['language_id'] = $lang;
             $requests['country_id'] = $country;
             if ($model->update($requests)) {
-                $me = PbUser::find(Auth::user()->id);
+                $me = PbUser::current();
                 if ($me->hasRole(['super-admin'])) {
                     if (($model->id == Auth::user()->id) || in_array('super-admin', $roles)) {
                         // Add only super-admin

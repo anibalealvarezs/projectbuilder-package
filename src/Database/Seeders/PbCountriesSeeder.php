@@ -16,257 +16,259 @@ class PbCountriesSeeder extends Seeder
     {
         if (Country::count() == 0) {
             // Default Countries
-            Country::updateOrCreate(['code' => 'AF'], ['name' => 'Afghanistan']);
-            Country::updateOrCreate(['code' => 'AX'], ['name' => 'Aland Islands']);
-            Country::updateOrCreate(['code' => 'AL'], ['name' => 'Albania']);
-            Country::updateOrCreate(['code' => 'DZ'], ['name' => 'Algeria']);
-            Country::updateOrCreate(['code' => 'AS'], ['name' => 'American Samoa']);
-            Country::updateOrCreate(['code' => 'AD'], ['name' => 'Andorra']);
-            Country::updateOrCreate(['code' => 'AO'], ['name' => 'Angola']);
-            Country::updateOrCreate(['code' => 'AI'], ['name' => 'Anguilla']);
-            Country::updateOrCreate(['code' => 'AQ'], ['name' => 'Antarctica']);
-            Country::updateOrCreate(['code' => 'AG'], ['name' => 'Antigua']);
-            Country::updateOrCreate(['code' => 'AR'], ['name' => 'Argentina']);
-            Country::updateOrCreate(['code' => 'AM'], ['name' => 'Armenia']);
-            Country::updateOrCreate(['code' => 'AW'], ['name' => 'Aruba']);
-            Country::updateOrCreate(['code' => 'AU'], ['name' => 'Australia']);
-            Country::updateOrCreate(['code' => 'AT'], ['name' => 'Austria']);
-            Country::updateOrCreate(['code' => 'AZ'], ['name' => 'Azerbaijan']);
-            Country::updateOrCreate(['code' => 'BH'], ['name' => 'Bahrain']);
-            Country::updateOrCreate(['code' => 'BD'], ['name' => 'Bangladesh']);
-            Country::updateOrCreate(['code' => 'BB'], ['name' => 'Barbados']);
-            Country::updateOrCreate(['code' => 'BY'], ['name' => 'Belarus']);
-            Country::updateOrCreate(['code' => 'BE'], ['name' => 'Belgium']);
-            Country::updateOrCreate(['code' => 'BZ'], ['name' => 'Belize']);
-            Country::updateOrCreate(['code' => 'BJ'], ['name' => 'Benin']);
-            Country::updateOrCreate(['code' => 'BM'], ['name' => 'Bermuda']);
-            Country::updateOrCreate(['code' => 'BT'], ['name' => 'Bhutan']);
-            Country::updateOrCreate(['code' => 'BO'], ['name' => 'Bolivia']);
-            Country::updateOrCreate(['code' => 'BQ'], ['name' => 'Bonaire, Sint Eustatius and Saba']);
-            Country::updateOrCreate(['code' => 'BA'], ['name' => 'Bosnia and Herzegovina']);
-            Country::updateOrCreate(['code' => 'BW'], ['name' => 'Botswana']);
-            Country::updateOrCreate(['code' => 'BV'], ['name' => 'Bouvet Island']);
-            Country::updateOrCreate(['code' => 'BR'], ['name' => 'Brazil']);
-            Country::updateOrCreate(['code' => 'IO'], ['name' => 'British Indian Ocean Territory']);
-            Country::updateOrCreate(['code' => 'VG'], ['name' => 'British Virgin Islands']);
-            Country::updateOrCreate(['code' => 'BN'], ['name' => 'Brunei']);
-            Country::updateOrCreate(['code' => 'BG'], ['name' => 'Bulgaria']);
-            Country::updateOrCreate(['code' => 'BF'], ['name' => 'Burkina Faso']);
-            Country::updateOrCreate(['code' => 'BI'], ['name' => 'Burundi']);
-            Country::updateOrCreate(['code' => 'KH'], ['name' => 'Cambodia']);
-            Country::updateOrCreate(['code' => 'CM'], ['name' => 'Cameroon']);
-            Country::updateOrCreate(['code' => 'CA'], ['name' => 'Canada']);
-            Country::updateOrCreate(['code' => 'CV'], ['name' => 'Cape Verde']);
-            Country::updateOrCreate(['code' => 'KY'], ['name' => 'Cayman Islands']);
-            Country::updateOrCreate(['code' => 'CF'], ['name' => 'Central African Republic']);
-            Country::updateOrCreate(['code' => 'TD'], ['name' => 'Chad']);
-            Country::updateOrCreate(['code' => 'CL'], ['name' => 'Chile']);
-            Country::updateOrCreate(['code' => 'CN'], ['name' => 'China']);
-            Country::updateOrCreate(['code' => 'CX'], ['name' => 'Christmas Island']);
-            Country::updateOrCreate(['code' => 'CC'], ['name' => 'Cocos (Keeling) Islands']);
-            Country::updateOrCreate(['code' => 'CO'], ['name' => 'Colombia']);
-            Country::updateOrCreate(['code' => 'KM'], ['name' => 'Comoros']);
-            Country::updateOrCreate(['code' => 'CK'], ['name' => 'Cook Islands']);
-            Country::updateOrCreate(['code' => 'CR'], ['name' => 'Costa Rica']);
-            Country::updateOrCreate(['code' => 'CI'], ['name' => 'Côte d\'Ivoire']);
-            Country::updateOrCreate(['code' => 'HR'], ['name' => 'Croatia']);
-            Country::updateOrCreate(['code' => 'CW'], ['name' => 'Curaçao']);
-            Country::updateOrCreate(['code' => 'CY'], ['name' => 'Cyprus']);
-            Country::updateOrCreate(['code' => 'CZ'], ['name' => 'Czech Republic']);
-            Country::updateOrCreate(['code' => 'CD'], ['name' => 'Democratic Republic of the Congo']);
-            Country::updateOrCreate(['code' => 'DK'], ['name' => 'Denmark']);
-            Country::updateOrCreate(['code' => 'DJ'], ['name' => 'Djibouti']);
-            Country::updateOrCreate(['code' => 'DM'], ['name' => 'Dominica']);
-            Country::updateOrCreate(['code' => 'DO'], ['name' => 'Dominican Republic']);
-            Country::updateOrCreate(['code' => 'EC'], ['name' => 'Ecuador']);
-            Country::updateOrCreate(['code' => 'EG'], ['name' => 'Egypt']);
-            Country::updateOrCreate(['code' => 'SV'], ['name' => 'El Salvador']);
-            Country::updateOrCreate(['code' => 'GQ'], ['name' => 'Equatorial Guinea']);
-            Country::updateOrCreate(['code' => 'ER'], ['name' => 'Eritrea']);
-            Country::updateOrCreate(['code' => 'EE'], ['name' => 'Estonia']);
-            Country::updateOrCreate(['code' => 'ET'], ['name' => 'Ethiopia']);
-            Country::updateOrCreate(['code' => 'FK'], ['name' => 'Falkland Islands']);
-            Country::updateOrCreate(['code' => 'FO'], ['name' => 'Faroe Islands']);
-            Country::updateOrCreate(['code' => 'FM'], ['name' => 'Federated States of Micronesia']);
-            Country::updateOrCreate(['code' => 'FJ'], ['name' => 'Fiji']);
-            Country::updateOrCreate(['code' => 'FI'], ['name' => 'Finland']);
-            Country::updateOrCreate(['code' => 'FR'], ['name' => 'France']);
-            Country::updateOrCreate(['code' => 'GF'], ['name' => 'French Guiana']);
-            Country::updateOrCreate(['code' => 'PF'], ['name' => 'French Polynesia']);
-            Country::updateOrCreate(['code' => 'TF'], ['name' => 'French Southern Territories']);
-            Country::updateOrCreate(['code' => 'GA'], ['name' => 'Gabon']);
-            Country::updateOrCreate(['code' => 'GE'], ['name' => 'Georgia']);
-            Country::updateOrCreate(['code' => 'DE'], ['name' => 'Germany']);
-            Country::updateOrCreate(['code' => 'GH'], ['name' => 'Ghana']);
-            Country::updateOrCreate(['code' => 'GI'], ['name' => 'Gibraltar']);
-            Country::updateOrCreate(['code' => 'GR'], ['name' => 'Greece']);
-            Country::updateOrCreate(['code' => 'GL'], ['name' => 'Greenland']);
-            Country::updateOrCreate(['code' => 'GD'], ['name' => 'Grenada']);
-            Country::updateOrCreate(['code' => 'GP'], ['name' => 'Guadeloupe']);
-            Country::updateOrCreate(['code' => 'GU'], ['name' => 'Guam']);
-            Country::updateOrCreate(['code' => 'GT'], ['name' => 'Guatemala']);
-            Country::updateOrCreate(['code' => 'GG'], ['name' => 'Guernsey']);
-            Country::updateOrCreate(['code' => 'GN'], ['name' => 'Guinea']);
-            Country::updateOrCreate(['code' => 'GW'], ['name' => 'Guinea-Bissau']);
-            Country::updateOrCreate(['code' => 'GY'], ['name' => 'Guyana']);
-            Country::updateOrCreate(['code' => 'HT'], ['name' => 'Haiti']);
-            Country::updateOrCreate(['code' => 'HM'], ['name' => 'Heard Island and McDonald Islands']);
-            Country::updateOrCreate(['code' => 'HN'], ['name' => 'Honduras']);
-            Country::updateOrCreate(['code' => 'HK'], ['name' => 'Hong Kong']);
-            Country::updateOrCreate(['code' => 'HU'], ['name' => 'Hungary']);
-            Country::updateOrCreate(['code' => 'IS'], ['name' => 'Iceland']);
-            Country::updateOrCreate(['code' => 'IN'], ['name' => 'India']);
-            Country::updateOrCreate(['code' => 'ID'], ['name' => 'Indonesia']);
-            Country::updateOrCreate(['code' => 'IQ'], ['name' => 'Iraq']);
-            Country::updateOrCreate(['code' => 'IE'], ['name' => 'Ireland']);
-            Country::updateOrCreate(['code' => 'IM'], ['name' => 'Isle Of Man']);
-            Country::updateOrCreate(['code' => 'IL'], ['name' => 'Israel']);
-            Country::updateOrCreate(['code' => 'IT'], ['name' => 'Italy']);
-            Country::updateOrCreate(['code' => 'JM'], ['name' => 'Jamaica']);
-            Country::updateOrCreate(['code' => 'JP'], ['name' => 'Japan']);
-            Country::updateOrCreate(['code' => 'JE'], ['name' => 'Jersey']);
-            Country::updateOrCreate(['code' => 'JO'], ['name' => 'Jordan']);
-            Country::updateOrCreate(['code' => 'KZ'], ['name' => 'Kazakhstan']);
-            Country::updateOrCreate(['code' => 'KE'], ['name' => 'Kenya']);
-            Country::updateOrCreate(['code' => 'KI'], ['name' => 'Kiribati']);
-            Country::updateOrCreate(['code' => 'XK'], ['name' => 'Kosovo']);
-            Country::updateOrCreate(['code' => 'KW'], ['name' => 'Kuwait']);
-            Country::updateOrCreate(['code' => 'KG'], ['name' => 'Kyrgyzstan']);
-            Country::updateOrCreate(['code' => 'LA'], ['name' => 'Laos']);
-            Country::updateOrCreate(['code' => 'LV'], ['name' => 'Latvia']);
-            Country::updateOrCreate(['code' => 'LB'], ['name' => 'Lebanon']);
-            Country::updateOrCreate(['code' => 'LS'], ['name' => 'Lesotho']);
-            Country::updateOrCreate(['code' => 'LR'], ['name' => 'Liberia']);
-            Country::updateOrCreate(['code' => 'LY'], ['name' => 'Libya']);
-            Country::updateOrCreate(['code' => 'LI'], ['name' => 'Liechtenstein']);
-            Country::updateOrCreate(['code' => 'LT'], ['name' => 'Lithuania']);
-            Country::updateOrCreate(['code' => 'LU'], ['name' => 'Luxembourg']);
-            Country::updateOrCreate(['code' => 'MO'], ['name' => 'Macau']);
-            Country::updateOrCreate(['code' => 'MK'], ['name' => 'Macedonia']);
-            Country::updateOrCreate(['code' => 'MG'], ['name' => 'Madagascar']);
-            Country::updateOrCreate(['code' => 'MW'], ['name' => 'Malawi']);
-            Country::updateOrCreate(['code' => 'MY'], ['name' => 'Malaysia']);
-            Country::updateOrCreate(['code' => 'MV'], ['name' => 'Maldives']);
-            Country::updateOrCreate(['code' => 'ML'], ['name' => 'Mali']);
-            Country::updateOrCreate(['code' => 'MT'], ['name' => 'Malta']);
-            Country::updateOrCreate(['code' => 'MH'], ['name' => 'Marshall Islands']);
-            Country::updateOrCreate(['code' => 'MQ'], ['name' => 'Martinique']);
-            Country::updateOrCreate(['code' => 'MR'], ['name' => 'Mauritania']);
-            Country::updateOrCreate(['code' => 'MU'], ['name' => 'Mauritius']);
-            Country::updateOrCreate(['code' => 'YT'], ['name' => 'Mayotte']);
-            Country::updateOrCreate(['code' => 'MX'], ['name' => 'Mexico']);
-            Country::updateOrCreate(['code' => 'MD'], ['name' => 'Moldova']);
-            Country::updateOrCreate(['code' => 'MC'], ['name' => 'Monaco']);
-            Country::updateOrCreate(['code' => 'MN'], ['name' => 'Mongolia']);
-            Country::updateOrCreate(['code' => 'ME'], ['name' => 'Montenegro']);
-            Country::updateOrCreate(['code' => 'MS'], ['name' => 'Montserrat']);
-            Country::updateOrCreate(['code' => 'MA'], ['name' => 'Morocco']);
-            Country::updateOrCreate(['code' => 'MZ'], ['name' => 'Mozambique']);
-            Country::updateOrCreate(['code' => 'MM'], ['name' => 'Myanmar']);
-            Country::updateOrCreate(['code' => 'NA'], ['name' => 'Namibia']);
-            Country::updateOrCreate(['code' => 'NR'], ['name' => 'Nauru']);
-            Country::updateOrCreate(['code' => 'NP'], ['name' => 'Nepal']);
-            Country::updateOrCreate(['code' => 'NL'], ['name' => 'Netherlands']);
-            Country::updateOrCreate(['code' => 'AN'], ['name' => 'Netherlands Antilles']);
-            Country::updateOrCreate(['code' => 'NC'], ['name' => 'New Caledonia']);
-            Country::updateOrCreate(['code' => 'NZ'], ['name' => 'New Zealand']);
-            Country::updateOrCreate(['code' => 'NI'], ['name' => 'Nicaragua']);
-            Country::updateOrCreate(['code' => 'NE'], ['name' => 'Niger']);
-            Country::updateOrCreate(['code' => 'NG'], ['name' => 'Nigeria']);
-            Country::updateOrCreate(['code' => 'NU'], ['name' => 'Niue']);
-            Country::updateOrCreate(['code' => 'NF'], ['name' => 'Norfolk Island']);
-            Country::updateOrCreate(['code' => 'MP'], ['name' => 'Northern Mariana Islands']);
-            Country::updateOrCreate(['code' => 'NO'], ['name' => 'Norway']);
-            Country::updateOrCreate(['code' => 'OM'], ['name' => 'Oman']);
-            Country::updateOrCreate(['code' => 'PK'], ['name' => 'Pakistan']);
-            Country::updateOrCreate(['code' => 'PW'], ['name' => 'Palau']);
-            Country::updateOrCreate(['code' => 'PS'], ['name' => 'Palestine']);
-            Country::updateOrCreate(['code' => 'PA'], ['name' => 'Panama']);
-            Country::updateOrCreate(['code' => 'PG'], ['name' => 'Papua New Guinea']);
-            Country::updateOrCreate(['code' => 'PY'], ['name' => 'Paraguay']);
-            Country::updateOrCreate(['code' => 'PE'], ['name' => 'Peru']);
-            Country::updateOrCreate(['code' => 'PH'], ['name' => 'Philippines']);
-            Country::updateOrCreate(['code' => 'PN'], ['name' => 'Pitcairn']);
-            Country::updateOrCreate(['code' => 'PL'], ['name' => 'Poland']);
-            Country::updateOrCreate(['code' => 'PT'], ['name' => 'Portugal']);
-            Country::updateOrCreate(['code' => 'PR'], ['name' => 'Puerto Rico']);
-            Country::updateOrCreate(['code' => 'QA'], ['name' => 'Qatar']);
-            Country::updateOrCreate(['code' => 'CG'], ['name' => 'Republic of the Congo']);
-            Country::updateOrCreate(['code' => 'RO'], ['name' => 'Romania']);
-            Country::updateOrCreate(['code' => 'RU'], ['name' => 'Russia']);
-            Country::updateOrCreate(['code' => 'RW'], ['name' => 'Rwanda']);
-            Country::updateOrCreate(['code' => 'RE'], ['name' => 'Réunion']);
-            Country::updateOrCreate(['code' => 'BL'], ['name' => 'Saint Barthélemy']);
-            Country::updateOrCreate(['code' => 'SH'], ['name' => 'Saint Helena']);
-            Country::updateOrCreate(['code' => 'KN'], ['name' => 'Saint Kitts and Nevis']);
-            Country::updateOrCreate(['code' => 'MF'], ['name' => 'Saint Martin']);
-            Country::updateOrCreate(['code' => 'PM'], ['name' => 'Saint Pierre and Miquelon']);
-            Country::updateOrCreate(['code' => 'VC'], ['name' => 'Saint Vincent and the Grenadines']);
-            Country::updateOrCreate(['code' => 'SM'], ['name' => 'Samoa'], ['code' => 'WS']);
-            Country::updateOrCreate(['code' => 'SM'], ['name' => 'San Marino']);
-            Country::updateOrCreate(['code' => 'ST'], ['name' => 'Sao Tome and Principe']);
-            Country::updateOrCreate(['code' => 'SA'], ['name' => 'Saudi Arabia']);
-            Country::updateOrCreate(['code' => 'SN'], ['name' => 'Senegal']);
-            Country::updateOrCreate(['code' => 'RS'], ['name' => 'Serbia']);
-            Country::updateOrCreate(['code' => 'SC'], ['name' => 'Seychelles']);
-            Country::updateOrCreate(['code' => 'SL'], ['name' => 'Sierra Leone']);
-            Country::updateOrCreate(['code' => 'SG'], ['name' => 'Singapore']);
-            Country::updateOrCreate(['code' => 'SX'], ['name' => 'Sint Maarten']);
-            Country::updateOrCreate(['code' => 'SK'], ['name' => 'Slovakia']);
-            Country::updateOrCreate(['code' => 'SI'], ['name' => 'Slovenia']);
-            Country::updateOrCreate(['code' => 'SB'], ['name' => 'Solomon Islands']);
-            Country::updateOrCreate(['code' => 'SO'], ['name' => 'Somalia']);
-            Country::updateOrCreate(['code' => 'ZA'], ['name' => 'South Africa']);
-            Country::updateOrCreate(['code' => 'GS'], ['name' => 'South Georgia and the South Sandwich Islands']);
-            Country::updateOrCreate(['code' => 'KR'], ['name' => 'South Korea']);
-            Country::updateOrCreate(['code' => 'SS'], ['name' => 'South Sudan']);
-            Country::updateOrCreate(['code' => 'ES'], ['name' => 'Spain']);
-            Country::updateOrCreate(['code' => 'LK'], ['name' => 'Sri Lanka']);
-            Country::updateOrCreate(['code' => 'LC'], ['name' => 'St. Lucia']);
-            Country::updateOrCreate(['code' => 'SR'], ['name' => 'Suriname']);
-            Country::updateOrCreate(['code' => 'SJ'], ['name' => 'Svalbard and Jan Mayen']);
-            Country::updateOrCreate(['code' => 'SZ'], ['name' => 'Swaziland']);
-            Country::updateOrCreate(['code' => 'SE'], ['name' => 'Sweden']);
-            Country::updateOrCreate(['code' => 'CH'], ['name' => 'Switzerland']);
-            Country::updateOrCreate(['code' => 'TW'], ['name' => 'Taiwan']);
-            Country::updateOrCreate(['code' => 'TJ'], ['name' => 'Tajikistan']);
-            Country::updateOrCreate(['code' => 'TZ'], ['name' => 'Tanzania']);
-            Country::updateOrCreate(['code' => 'TH'], ['name' => 'Thailand']);
-            Country::updateOrCreate(['code' => 'BS'], ['name' => 'The Bahamas']);
-            Country::updateOrCreate(['code' => 'GM'], ['name' => 'The Gambia']);
-            Country::updateOrCreate(['code' => 'TL'], ['name' => 'Timor-Leste']);
-            Country::updateOrCreate(['code' => 'TG'], ['name' => 'Togo']);
-            Country::updateOrCreate(['code' => 'TK'], ['name' => 'Tokelau']);
-            Country::updateOrCreate(['code' => 'TO'], ['name' => 'Tonga']);
-            Country::updateOrCreate(['code' => 'TT'], ['name' => 'Trinidad and Tobago']);
-            Country::updateOrCreate(['code' => 'TN'], ['name' => 'Tunisia']);
-            Country::updateOrCreate(['code' => 'TR'], ['name' => 'Turkey']);
-            Country::updateOrCreate(['code' => 'TM'], ['name' => 'Turkmenistan']);
-            Country::updateOrCreate(['code' => 'TC'], ['name' => 'Turks and Caicos Islands']);
-            Country::updateOrCreate(['code' => 'TV'], ['name' => 'Tuvalu']);
-            Country::updateOrCreate(['code' => 'VI'], ['name' => 'US Virgin Islands']);
-            Country::updateOrCreate(['code' => 'UG'], ['name' => 'Uganda']);
-            Country::updateOrCreate(['code' => 'UA'], ['name' => 'Ukraine']);
-            Country::updateOrCreate(['code' => 'AE'], ['name' => 'United Arab Emirates']);
-            Country::updateOrCreate(['code' => 'GB'], ['name' => 'United Kingdom']);
-            Country::updateOrCreate(['code' => 'US'], ['name' => 'United States']);
-            Country::updateOrCreate(['code' => 'UM'], ['name' => 'United States Minor Outlying Islands']);
-            Country::updateOrCreate(['code' => 'UY'], ['name' => 'Uruguay']);
-            Country::updateOrCreate(['code' => 'UZ'], ['name' => 'Uzbekistan']);
-            Country::updateOrCreate(['code' => 'VU'], ['name' => 'Vanuatu']);
-            Country::updateOrCreate(['code' => 'VA'], ['name' => 'Vatican City']);
-            Country::updateOrCreate(['code' => 'VE'], ['name' => 'Venezuela']);
-            Country::updateOrCreate(['code' => 'VN'], ['name' => 'Vietnam']);
-            Country::updateOrCreate(['code' => 'WF'], ['name' => 'Wallis and Futuna']);
-            Country::updateOrCreate(['code' => 'EH'], ['name' => 'Western Sahara']);
-            Country::updateOrCreate(['code' => 'YE'], ['name' => 'Yemen']);
-            Country::updateOrCreate(['code' => 'ZM'], ['name' => 'Zambia']);
-            Country::updateOrCreate(['code' => 'ZW'], ['name' => 'Zimbabwe']);
-            Country::updateOrCreate(['code' => 'IR'], ['name' => 'Iran']);
-            Country::updateOrCreate(['code' => 'CU'], ['name' => 'Cuba']);
-            Country::updateOrCreate(['code' => 'KP'], ['name' => 'North Korea']);
-            Country::updateOrCreate(['code' => 'SY'], ['name' => 'Syria']);
-            Country::updateOrCreate(['code' => 'SD'], ['name' => 'Sudan']);
+            Country::upsert([
+                ['code' => 'AF', 'name' => 'Afghanistan'],
+                ['code' => 'AX', 'name' => 'Aland Islands'],
+                ['code' => 'AL', 'name' => 'Albania'],
+                ['code' => 'DZ', 'name' => 'Algeria'],
+                ['code' => 'AS', 'name' => 'American Samoa'],
+                ['code' => 'AD', 'name' => 'Andorra'],
+                ['code' => 'AO', 'name' => 'Angola'],
+                ['code' => 'AI', 'name' => 'Anguilla'],
+                ['code' => 'AQ', 'name' => 'Antarctica'],
+                ['code' => 'AG', 'name' => 'Antigua'],
+                ['code' => 'AR', 'name' => 'Argentina'],
+                ['code' => 'AM', 'name' => 'Armenia'],
+                ['code' => 'AW', 'name' => 'Aruba'],
+                ['code' => 'AU', 'name' => 'Australia'],
+                ['code' => 'AT', 'name' => 'Austria'],
+                ['code' => 'AZ', 'name' => 'Azerbaijan'],
+                ['code' => 'BH', 'name' => 'Bahrain'],
+                ['code' => 'BD', 'name' => 'Bangladesh'],
+                ['code' => 'BB', 'name' => 'Barbados'],
+                ['code' => 'BY', 'name' => 'Belarus'],
+                ['code' => 'BE', 'name' => 'Belgium'],
+                ['code' => 'BZ', 'name' => 'Belize'],
+                ['code' => 'BJ', 'name' => 'Benin'],
+                ['code' => 'BM', 'name' => 'Bermuda'],
+                ['code' => 'BT', 'name' => 'Bhutan'],
+                ['code' => 'BO', 'name' => 'Bolivia'],
+                ['code' => 'BQ', 'name' => 'Bonaire, Sint Eustatius and Saba'],
+                ['code' => 'BA', 'name' => 'Bosnia and Herzegovina'],
+                ['code' => 'BW', 'name' => 'Botswana'],
+                ['code' => 'BV', 'name' => 'Bouvet Island'],
+                ['code' => 'BR', 'name' => 'Brazil'],
+                ['code' => 'IO', 'name' => 'British Indian Ocean Territory'],
+                ['code' => 'VG', 'name' => 'British Virgin Islands'],
+                ['code' => 'BN', 'name' => 'Brunei'],
+                ['code' => 'BG', 'name' => 'Bulgaria'],
+                ['code' => 'BF', 'name' => 'Burkina Faso'],
+                ['code' => 'BI', 'name' => 'Burundi'],
+                ['code' => 'KH', 'name' => 'Cambodia'],
+                ['code' => 'CM', 'name' => 'Cameroon'],
+                ['code' => 'CA', 'name' => 'Canada'],
+                ['code' => 'CV', 'name' => 'Cape Verde'],
+                ['code' => 'KY', 'name' => 'Cayman Islands'],
+                ['code' => 'CF', 'name' => 'Central African Republic'],
+                ['code' => 'TD', 'name' => 'Chad'],
+                ['code' => 'CL', 'name' => 'Chile'],
+                ['code' => 'CN', 'name' => 'China'],
+                ['code' => 'CX', 'name' => 'Christmas Island'],
+                ['code' => 'CC', 'name' => 'Cocos (Keeling) Islands'],
+                ['code' => 'CO', 'name' => 'Colombia'],
+                ['code' => 'KM', 'name' => 'Comoros'],
+                ['code' => 'CK', 'name' => 'Cook Islands'],
+                ['code' => 'CR', 'name' => 'Costa Rica'],
+                ['code' => 'CI', 'name' => 'Côte d\'Ivoire'],
+                ['code' => 'HR', 'name' => 'Croatia'],
+                ['code' => 'CW', 'name' => 'Curaçao'],
+                ['code' => 'CY', 'name' => 'Cyprus'],
+                ['code' => 'CZ', 'name' => 'Czech Republic'],
+                ['code' => 'CD', 'name' => 'Democratic Republic of the Congo'],
+                ['code' => 'DK', 'name' => 'Denmark'],
+                ['code' => 'DJ', 'name' => 'Djibouti'],
+                ['code' => 'DM', 'name' => 'Dominica'],
+                ['code' => 'DO', 'name' => 'Dominican Republic'],
+                ['code' => 'EC', 'name' => 'Ecuador'],
+                ['code' => 'EG', 'name' => 'Egypt'],
+                ['code' => 'SV', 'name' => 'El Salvador'],
+                ['code' => 'GQ', 'name' => 'Equatorial Guinea'],
+                ['code' => 'ER', 'name' => 'Eritrea'],
+                ['code' => 'EE', 'name' => 'Estonia'],
+                ['code' => 'ET', 'name' => 'Ethiopia'],
+                ['code' => 'FK', 'name' => 'Falkland Islands'],
+                ['code' => 'FO', 'name' => 'Faroe Islands'],
+                ['code' => 'FM', 'name' => 'Federated States of Micronesia'],
+                ['code' => 'FJ', 'name' => 'Fiji'],
+                ['code' => 'FI', 'name' => 'Finland'],
+                ['code' => 'FR', 'name' => 'France'],
+                ['code' => 'GF', 'name' => 'French Guiana'],
+                ['code' => 'PF', 'name' => 'French Polynesia'],
+                ['code' => 'TF', 'name' => 'French Southern Territories'],
+                ['code' => 'GA', 'name' => 'Gabon'],
+                ['code' => 'GE', 'name' => 'Georgia'],
+                ['code' => 'DE', 'name' => 'Germany'],
+                ['code' => 'GH', 'name' => 'Ghana'],
+                ['code' => 'GI', 'name' => 'Gibraltar'],
+                ['code' => 'GR', 'name' => 'Greece'],
+                ['code' => 'GL', 'name' => 'Greenland'],
+                ['code' => 'GD', 'name' => 'Grenada'],
+                ['code' => 'GP', 'name' => 'Guadeloupe'],
+                ['code' => 'GU', 'name' => 'Guam'],
+                ['code' => 'GT', 'name' => 'Guatemala'],
+                ['code' => 'GG', 'name' => 'Guernsey'],
+                ['code' => 'GN', 'name' => 'Guinea'],
+                ['code' => 'GW', 'name' => 'Guinea-Bissau'],
+                ['code' => 'GY', 'name' => 'Guyana'],
+                ['code' => 'HT', 'name' => 'Haiti'],
+                ['code' => 'HM', 'name' => 'Heard Island and McDonald Islands'],
+                ['code' => 'HN', 'name' => 'Honduras'],
+                ['code' => 'HK', 'name' => 'Hong Kong'],
+                ['code' => 'HU', 'name' => 'Hungary'],
+                ['code' => 'IS', 'name' => 'Iceland'],
+                ['code' => 'IN', 'name' => 'India'],
+                ['code' => 'ID', 'name' => 'Indonesia'],
+                ['code' => 'IQ', 'name' => 'Iraq'],
+                ['code' => 'IE', 'name' => 'Ireland'],
+                ['code' => 'IM', 'name' => 'Isle Of Man'],
+                ['code' => 'IL', 'name' => 'Israel'],
+                ['code' => 'IT', 'name' => 'Italy'],
+                ['code' => 'JM', 'name' => 'Jamaica'],
+                ['code' => 'JP', 'name' => 'Japan'],
+                ['code' => 'JE', 'name' => 'Jersey'],
+                ['code' => 'JO', 'name' => 'Jordan'],
+                ['code' => 'KZ', 'name' => 'Kazakhstan'],
+                ['code' => 'KE', 'name' => 'Kenya'],
+                ['code' => 'KI', 'name' => 'Kiribati'],
+                ['code' => 'XK', 'name' => 'Kosovo'],
+                ['code' => 'KW', 'name' => 'Kuwait'],
+                ['code' => 'KG', 'name' => 'Kyrgyzstan'],
+                ['code' => 'LA', 'name' => 'Laos'],
+                ['code' => 'LV', 'name' => 'Latvia'],
+                ['code' => 'LB', 'name' => 'Lebanon'],
+                ['code' => 'LS', 'name' => 'Lesotho'],
+                ['code' => 'LR', 'name' => 'Liberia'],
+                ['code' => 'LY', 'name' => 'Libya'],
+                ['code' => 'LI', 'name' => 'Liechtenstein'],
+                ['code' => 'LT', 'name' => 'Lithuania'],
+                ['code' => 'LU', 'name' => 'Luxembourg'],
+                ['code' => 'MO', 'name' => 'Macau'],
+                ['code' => 'MK', 'name' => 'Macedonia'],
+                ['code' => 'MG', 'name' => 'Madagascar'],
+                ['code' => 'MW', 'name' => 'Malawi'],
+                ['code' => 'MY', 'name' => 'Malaysia'],
+                ['code' => 'MV', 'name' => 'Maldives'],
+                ['code' => 'ML', 'name' => 'Mali'],
+                ['code' => 'MT', 'name' => 'Malta'],
+                ['code' => 'MH', 'name' => 'Marshall Islands'],
+                ['code' => 'MQ', 'name' => 'Martinique'],
+                ['code' => 'MR', 'name' => 'Mauritania'],
+                ['code' => 'MU', 'name' => 'Mauritius'],
+                ['code' => 'YT', 'name' => 'Mayotte'],
+                ['code' => 'MX', 'name' => 'Mexico'],
+                ['code' => 'MD', 'name' => 'Moldova'],
+                ['code' => 'MC', 'name' => 'Monaco'],
+                ['code' => 'MN', 'name' => 'Mongolia'],
+                ['code' => 'ME', 'name' => 'Montenegro'],
+                ['code' => 'MS', 'name' => 'Montserrat'],
+                ['code' => 'MA', 'name' => 'Morocco'],
+                ['code' => 'MZ', 'name' => 'Mozambique'],
+                ['code' => 'MM', 'name' => 'Myanmar'],
+                ['code' => 'NA', 'name' => 'Namibia'],
+                ['code' => 'NR', 'name' => 'Nauru'],
+                ['code' => 'NP', 'name' => 'Nepal'],
+                ['code' => 'NL', 'name' => 'Netherlands'],
+                ['code' => 'AN', 'name' => 'Netherlands Antilles'],
+                ['code' => 'NC', 'name' => 'New Caledonia'],
+                ['code' => 'NZ', 'name' => 'New Zealand'],
+                ['code' => 'NI', 'name' => 'Nicaragua'],
+                ['code' => 'NE', 'name' => 'Niger'],
+                ['code' => 'NG', 'name' => 'Nigeria'],
+                ['code' => 'NU', 'name' => 'Niue'],
+                ['code' => 'NF', 'name' => 'Norfolk Island'],
+                ['code' => 'MP', 'name' => 'Northern Mariana Islands'],
+                ['code' => 'NO', 'name' => 'Norway'],
+                ['code' => 'OM', 'name' => 'Oman'],
+                ['code' => 'PK', 'name' => 'Pakistan'],
+                ['code' => 'PW', 'name' => 'Palau'],
+                ['code' => 'PS', 'name' => 'Palestine'],
+                ['code' => 'PA', 'name' => 'Panama'],
+                ['code' => 'PG', 'name' => 'Papua New Guinea'],
+                ['code' => 'PY', 'name' => 'Paraguay'],
+                ['code' => 'PE', 'name' => 'Peru'],
+                ['code' => 'PH', 'name' => 'Philippines'],
+                ['code' => 'PN', 'name' => 'Pitcairn'],
+                ['code' => 'PL', 'name' => 'Poland'],
+                ['code' => 'PT', 'name' => 'Portugal'],
+                ['code' => 'PR', 'name' => 'Puerto Rico'],
+                ['code' => 'QA', 'name' => 'Qatar'],
+                ['code' => 'CG', 'name' => 'Republic of the Congo'],
+                ['code' => 'RO', 'name' => 'Romania'],
+                ['code' => 'RU', 'name' => 'Russia'],
+                ['code' => 'RW', 'name' => 'Rwanda'],
+                ['code' => 'RE', 'name' => 'Réunion'],
+                ['code' => 'BL', 'name' => 'Saint Barthélemy'],
+                ['code' => 'SH', 'name' => 'Saint Helena'],
+                ['code' => 'KN', 'name' => 'Saint Kitts and Nevis'],
+                ['code' => 'MF', 'name' => 'Saint Martin'],
+                ['code' => 'PM', 'name' => 'Saint Pierre and Miquelon'],
+                ['code' => 'VC', 'name' => 'Saint Vincent and the Grenadines'],
+                ['code' => 'WS', 'name' => 'Samoa'],
+                ['code' => 'SM', 'name' => 'San Marino'],
+                ['code' => 'ST', 'name' => 'Sao Tome and Principe'],
+                ['code' => 'SA', 'name' => 'Saudi Arabia'],
+                ['code' => 'SN', 'name' => 'Senegal'],
+                ['code' => 'RS', 'name' => 'Serbia'],
+                ['code' => 'SC', 'name' => 'Seychelles'],
+                ['code' => 'SL', 'name' => 'Sierra Leone'],
+                ['code' => 'SG', 'name' => 'Singapore'],
+                ['code' => 'SX', 'name' => 'Sint Maarten'],
+                ['code' => 'SK', 'name' => 'Slovakia'],
+                ['code' => 'SI', 'name' => 'Slovenia'],
+                ['code' => 'SB', 'name' => 'Solomon Islands'],
+                ['code' => 'SO', 'name' => 'Somalia'],
+                ['code' => 'ZA', 'name' => 'South Africa'],
+                ['code' => 'GS', 'name' => 'South Georgia and the South Sandwich Islands'],
+                ['code' => 'KR', 'name' => 'South Korea'],
+                ['code' => 'SS', 'name' => 'South Sudan'],
+                ['code' => 'ES', 'name' => 'Spain'],
+                ['code' => 'LK', 'name' => 'Sri Lanka'],
+                ['code' => 'LC', 'name' => 'St. Lucia'],
+                ['code' => 'SR', 'name' => 'Suriname'],
+                ['code' => 'SJ', 'name' => 'Svalbard and Jan Mayen'],
+                ['code' => 'SZ', 'name' => 'Swaziland'],
+                ['code' => 'SE', 'name' => 'Sweden'],
+                ['code' => 'CH', 'name' => 'Switzerland'],
+                ['code' => 'TW', 'name' => 'Taiwan'],
+                ['code' => 'TJ', 'name' => 'Tajikistan'],
+                ['code' => 'TZ', 'name' => 'Tanzania'],
+                ['code' => 'TH', 'name' => 'Thailand'],
+                ['code' => 'BS', 'name' => 'The Bahamas'],
+                ['code' => 'GM', 'name' => 'The Gambia'],
+                ['code' => 'TL', 'name' => 'Timor-Leste'],
+                ['code' => 'TG', 'name' => 'Togo'],
+                ['code' => 'TK', 'name' => 'Tokelau'],
+                ['code' => 'TO', 'name' => 'Tonga'],
+                ['code' => 'TT', 'name' => 'Trinidad and Tobago'],
+                ['code' => 'TN', 'name' => 'Tunisia'],
+                ['code' => 'TR', 'name' => 'Turkey'],
+                ['code' => 'TM', 'name' => 'Turkmenistan'],
+                ['code' => 'TC', 'name' => 'Turks and Caicos Islands'],
+                ['code' => 'TV', 'name' => 'Tuvalu'],
+                ['code' => 'VI', 'name' => 'US Virgin Islands'],
+                ['code' => 'UG', 'name' => 'Uganda'],
+                ['code' => 'UA', 'name' => 'Ukraine'],
+                ['code' => 'AE', 'name' => 'United Arab Emirates'],
+                ['code' => 'GB', 'name' => 'United Kingdom'],
+                ['code' => 'US', 'name' => 'United States'],
+                ['code' => 'UM', 'name' => 'United States Minor Outlying Islands'],
+                ['code' => 'UY', 'name' => 'Uruguay'],
+                ['code' => 'UZ', 'name' => 'Uzbekistan'],
+                ['code' => 'VU', 'name' => 'Vanuatu'],
+                ['code' => 'VA', 'name' => 'Vatican City'],
+                ['code' => 'VE', 'name' => 'Venezuela'],
+                ['code' => 'VN', 'name' => 'Vietnam'],
+                ['code' => 'WF', 'name' => 'Wallis and Futuna'],
+                ['code' => 'EH', 'name' => 'Western Sahara'],
+                ['code' => 'YE', 'name' => 'Yemen'],
+                ['code' => 'ZM', 'name' => 'Zambia'],
+                ['code' => 'ZW', 'name' => 'Zimbabwe'],
+                ['code' => 'IR', 'name' => 'Iran'],
+                ['code' => 'CU', 'name' => 'Cuba'],
+                ['code' => 'KP', 'name' => 'North Korea'],
+                ['code' => 'SY', 'name' => 'Syria'],
+                ['code' => 'SD', 'name' => 'Sudan']
+            ], ['code'], ['name']);
         }
     }
 }

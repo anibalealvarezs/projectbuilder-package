@@ -5,6 +5,7 @@ namespace Anibalealvarezs\Projectbuilder\Models;
 use Anibalealvarezs\Projectbuilder\Helpers\Shares;
 use Anibalealvarezs\Projectbuilder\Traits\PbModelTrait;
 use App\Models\User;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Notifications\Notifiable;
@@ -24,6 +25,19 @@ class PbUser extends User
     protected $table = 'users';
 
     protected $appends = ['api'];
+
+    /**
+     * Create a new Eloquent model instance.
+     *
+     * @param  array  $attributes
+     * @return void
+     */
+    public function __construct(array $attributes = [])
+    {
+        parent::__construct($attributes);
+        $this->publicRelations = ['country', 'city', 'lang', 'roles'];
+        $this->allRelations = ['country', 'city', 'lang', 'roles'];
+    }
 
     /**
      * The attributes that are mass assignable.
@@ -72,6 +86,17 @@ class PbUser extends User
             config('permission.column_names.model_morph_key'),
             'role_id'
         );
+    }
+
+    /**
+     * Scope a query to only include popular users.
+     *
+     * @param Builder $query
+     * @return PbUser
+     */
+    public function scopeCurrent(Builder $query): PbUser
+    {
+        return $query->find(Auth::user()->id);
     }
 
     public function getApiAttribute(): bool
@@ -127,7 +152,7 @@ class PbUser extends User
 
     protected function getDeletableStatus(): bool
     {
-        $currentUser = self::find(Auth::user()->id);
+        $currentUser = self::current();
         if ($this->id == $currentUser->id) {
             return false;
         }

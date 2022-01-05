@@ -17,6 +17,19 @@ class PbLanguage extends PbBuilder
     public $timestamps = false;
 
     /**
+     * Create a new Eloquent model instance.
+     *
+     * @param  array  $attributes
+     * @return void
+     */
+    public function __construct(array $attributes = [])
+    {
+        parent::__construct($attributes);
+        $this->publicRelations = ['cities', 'countries'];
+        $this->allRelations = ['users', 'cities', 'countries'];
+    }
+
+    /**
      * The attributes that are mass assignable.
      *
      * @var array
@@ -61,8 +74,8 @@ class PbLanguage extends PbBuilder
 
     public function getNameAttribute($value)
     {
-        if (json_decode($value)) {
-            return json_decode($value)->{app()->getLocale()};
+        if ($json = json_decode($value)) {
+            return $json->{app()->getLocale()};
         }
         return $value;
     }

@@ -4,6 +4,7 @@ namespace Anibalealvarezs\Projectbuilder\Models;
 
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Spatie\Translatable\HasTranslations;
+use Illuminate\Database\Eloquent\Builder;
 
 class PbModule extends PbBuilder
 {
@@ -16,6 +17,19 @@ class PbModule extends PbBuilder
     public $timestamps = false;
 
     /**
+     * Create a new Eloquent model instance.
+     *
+     * @param  array  $attributes
+     * @return void
+     */
+    public function __construct(array $attributes = [])
+    {
+        parent::__construct($attributes);
+        $this->publicRelations = ['components'];
+        $this->allRelations = ['components'];
+    }
+
+    /**
      * The attributes that are mass assignable.
      *
      * @var array
@@ -26,8 +40,8 @@ class PbModule extends PbBuilder
 
     public function getNameAttribute($value)
     {
-        if (json_decode($value)) {
-            return json_decode($value)->{app()->getLocale()};
+        if ($json = json_decode($value)) {
+            return $json->{app()->getLocale()};
         }
         return $value;
     }
@@ -40,6 +54,17 @@ class PbModule extends PbBuilder
     public function getByKey($value): bool
     {
         return self::firstWhere('modulekey', $value);
+    }
+
+    /**
+     * Scope a query to only include popular users.
+     *
+     * @param Builder $query
+     * @return Builder
+     */
+    public function scopeActive(Builder $query): Builder
+    {
+        return $query->where('status', '1');
     }
 
     public static function isEnabled($value): bool

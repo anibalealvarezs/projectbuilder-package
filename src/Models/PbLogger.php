@@ -14,6 +14,19 @@ class PbLogger extends PbBuilder
     protected $table = 'logger';
 
     /**
+     * Create a new Eloquent model instance.
+     *
+     * @param  array  $attributes
+     * @return void
+     */
+    public function __construct(array $attributes = [])
+    {
+        parent::__construct($attributes);
+        $this->publicRelations = ['user', 'module'];
+        $this->allRelations = ['user', 'module'];
+    }
+
+    /**
      * The attributes that are mass assignable.
      *
      * @var array
@@ -34,8 +47,8 @@ class PbLogger extends PbBuilder
 
     public function getMessageAttribute($value)
     {
-        if (json_decode($value)) {
-            return json_decode($value)->{app()->getLocale()};
+        if ($json = json_decode($value)) {
+            return $json->{app()->getLocale()};
         }
         return $value;
     }

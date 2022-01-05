@@ -13,7 +13,6 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Redirector;
-use Illuminate\Support\Facades\Validator;
 
 use Auth;
 use DB;
@@ -56,7 +55,7 @@ class PbPermissionController extends PbBuilderController
         bool $multiple = false,
         string $route = 'level'
     ): InertiaResponse|JsonResponse|RedirectResponse {
-        $me = PbUser::find(Auth::user()->id);
+        $me = PbUser::current();
         $toExclude = ['crud super-admin'];
         if (!$me->hasRole('super-admin')) {
             $toExclude = array_merge($toExclude, [
@@ -75,7 +74,7 @@ class PbPermissionController extends PbBuilderController
             }
         }
         //Get all permissions
-        $model = $this->modelPath::with(['roles', 'module'])->whereNotIn('name', $toExclude)->get();
+        $model = $this->modelPath::withPublicRelations()->whereNotIn('name', $toExclude)->get();
 
         return parent::index($model);
     }
@@ -153,7 +152,7 @@ class PbPermissionController extends PbBuilderController
         bool $multiple = false,
         string $route = 'level'
     ): InertiaResponse|JsonResponse {
-        $model = $this->modelPath::with('roles')->findOrFail($id);
+        $model = $this->modelPath::withPublicRelations()->findOrFail($id);
 
         return parent::edit($id, $model);
     }

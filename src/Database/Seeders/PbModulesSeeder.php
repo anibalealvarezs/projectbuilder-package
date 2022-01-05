@@ -14,10 +14,12 @@ class PbModulesSeeder extends Seeder
      */
     public function run()
     {
-        Module::updateOrCreate(['modulekey' => 'user'], ['name' => 'Users', 'status' => 1]);
-        Module::updateOrCreate(['modulekey' => 'config'], ['name' => 'Config', 'status' => 1]);
-        Module::updateOrCreate(['modulekey' => 'navigation'], ['name' => 'Config', 'status' => 1]);
-        Module::updateOrCreate(['modulekey' => 'permission'], ['name' => 'Config', 'status' => 1]);
-        Module::updateOrCreate(['modulekey' => 'role'], ['name' => 'Config', 'status' => 1]);
+        Module::upsert([
+            ['modulekey' => 'user', 'name' => 'Users', 'status' => 1],
+            ['modulekey' => 'config', 'name' => 'Config', 'status' => 1],
+            ['modulekey' => 'navigation', 'name' => 'Config', 'status' => 1],
+            ['modulekey' => 'permission', 'name' => 'Config', 'status' => 1],
+            ['modulekey' => 'role', 'name' => 'Config', 'status' => 1],
+        ], ['modulekey'], ['name', 'status']);
     }
 }

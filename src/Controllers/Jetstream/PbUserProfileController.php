@@ -5,7 +5,6 @@ namespace Anibalealvarezs\Projectbuilder\Controllers\Jetstream;
 use Anibalealvarezs\Projectbuilder\Models\PbUser;
 use Anibalealvarezs\Projectbuilder\Traits\PbControllerTrait;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 use Inertia\Response;
 use Anibalealvarezs\Projectbuilder\Helpers\PbInertiaManager;
@@ -39,7 +38,7 @@ class PbUserProfileController extends UserProfileController
 
         return self::inertia()->render($request, 'Show', [
             'sessions' => $this->sessions($request)->all(),
-            'roles' => PbUser::find(Auth::user()->id)->roles,
+            'roles' => PbUser::current()->roles,
         ]);
     }
 

@@ -13,7 +13,6 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Redirector;
-use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 
 use Auth;
@@ -57,8 +56,8 @@ class PbRoleController extends PbBuilderController
      */
     public function index($element = null, bool $multiple = false, string $route = 'level'): InertiaResponse|JsonResponse|RedirectResponse
     {
-        $query = $this->modelPath::with('permissions')->whereNotIn('name', ['super-admin', 'developer', 'api-user']);
-        $user = PbUser::find(Auth::user()->id);
+        $query = $this->modelPath::withPublicRelations()->whereNotIn('name', ['super-admin', 'developer', 'api-user']);
+        $user = PbUser::current();
         if (!$user->hasRole('super-admin')) {
             $query = $query->whereNotIn('name', ['admin']);
         }
@@ -148,7 +147,7 @@ class PbRoleController extends PbBuilderController
      */
     public function edit(int $id, $element = null, bool $multiple = false, string $route = 'level'): InertiaResponse|JsonResponse
     {
-        $model = $this->modelPath::with('permissions')->whereNotIn('name', ['super-admin', 'developer', 'api-user'])->findOrFail($id);
+        $model = $this->modelPath::withPublicRelations()->whereNotIn('name', ['super-admin', 'developer', 'api-user'])->findOrFail($id);
 
         $this->required = array_merge($this->required, ['name']);
 
@@ -173,7 +172,7 @@ class PbRoleController extends PbBuilderController
 
         $permissions = $request->input('permissions');
 
-        $me = PbUser::find(Auth::user()->id);
+        $me = PbUser::current();
 
         // Process
         try {

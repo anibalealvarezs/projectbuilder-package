@@ -29,7 +29,7 @@ class PbLoggerController extends PbBuilderController
      */
     public function index($element = null, bool $multiple = false, string $route = 'level'): InertiaResponse|JsonResponse|RedirectResponse
     {
-        $model = $this->modelPath::with('user', 'module')->get();
+        $model = $this->modelPath::withPublicRelations()->get();
 
         $filtered = $model->map(function ($q) {
             return $q->only([

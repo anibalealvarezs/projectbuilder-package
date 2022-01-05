@@ -6,6 +6,7 @@ use Anibalealvarezs\Projectbuilder\Helpers\Shares;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Spatie\Translatable\HasTranslations;
+use Illuminate\Database\Eloquent\Builder;
 
 class PbNavigation extends PbBuilder
 {
@@ -18,6 +19,19 @@ class PbNavigation extends PbBuilder
     public $timestamps = false;
 
     /**
+     * Create a new Eloquent model instance.
+     *
+     * @param  array  $attributes
+     * @return void
+     */
+    public function __construct(array $attributes = [])
+    {
+        parent::__construct($attributes);
+        $this->publicRelations = ['ascendant', 'permission', 'module'];
+        $this->allRelations = ['ascendant', 'permission', 'module'];
+    }
+
+    /**
      * The attributes that are mass assignable.
      *
      * @var array
@@ -28,8 +42,8 @@ class PbNavigation extends PbBuilder
 
     public function getNameAttribute($value)
     {
-        if (json_decode($value)) {
-            return json_decode($value)->{app()->getLocale()};
+        if ($json = json_decode($value)) {
+            return $json->{app()->getLocale()};
         }
         return $value;
     }
@@ -53,6 +67,17 @@ class PbNavigation extends PbBuilder
     public function module(): BelongsTo
     {
         return $this->belongsTo(PbModule::class, 'module_id', 'id');
+    }
+
+    /**
+     * Scope a query to only include popular users.
+     *
+     * @param Builder $query
+     * @return Builder
+     */
+    public function scopeOrderedByDefault(Builder $query): Builder
+    {
+        return $query->orderBy('parent')->orderBy('position');
     }
 
     public static function getCrudConfig(): array

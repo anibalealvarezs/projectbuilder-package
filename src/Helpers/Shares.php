@@ -62,7 +62,7 @@ class Shares
     {
         $allowed = [];
         foreach($elements as $key => $value) {
-            $allowed[$value] = PbUser::find(Auth::user()->id)->hasPermissionTo($key);
+            $allowed[$value] = PbUser::current()->hasPermissionTo($key);
         }
         return [
             'allowed' => $allowed
@@ -71,9 +71,9 @@ class Shares
 
     public static function getUserPermissionsAndRoles(): array
     {
-        $user = PbUser::find(Auth::user()->id);
+        $user = PbUser::current();
         return [
-            'userdata' => Auth::user() ? [
+            'userdata' => $user ? [
                 'permissions' => $user->getAllPermissions(),
                 'roles' => $user->getRoleNames(),
             ] : null,
@@ -82,7 +82,7 @@ class Shares
 
     public static function getNavigations(): array
     {
-        $user = PbUser::find(Auth::user()->id);
+        $user = PbUser::current();
         $userPermissions = $user->getAllPermissions()->pluck('id');
         $navigations = PbNavigation::with(['ascendant', 'descendants'])
             ->where('parent', 0)
@@ -112,7 +112,7 @@ class Shares
 
     public static function getPermissions(): array
     {
-        $permissions = PbPermission::whereIn('id', PbUser::find(Auth::user()->id)->getAllPermissions()->pluck('id'))->get();
+        $permissions = PbPermission::whereIn('id', PbUser::current()->getAllPermissions()->pluck('id'))->get();
         return [
             'permissions' => $permissions
         ];
@@ -128,7 +128,7 @@ class Shares
 
     public static function getRoles(): array
     {
-        $user = PbUser::find(Auth::user()->id);
+        $user = PbUser::current();
         $roles = ([]);
         if ($user->hasRole(['super-admin'])) {
             $roles = PbRole::whereNotIn(
@@ -168,7 +168,7 @@ class Shares
     public static function getMyData(): array
     {
         return [
-            'me' => PbUser::with('country', 'city', 'lang', 'roles')->find(Auth::user()->id)
+            'me' => PbUser::withPublicRelations()->current()
         ];
     }
 
@@ -176,7 +176,7 @@ class Shares
     {
         return [
             'api_data' => [
-                'access' => PbUser::find(Auth::user()->id)->hasPermissionTo('api access'),
+                'access' => PbUser::current()->hasPermissionTo('api access'),
                 'enabled' => (bool) PbConfig::getValueByKey('_API_ENABLED_'),
             ]
         ];

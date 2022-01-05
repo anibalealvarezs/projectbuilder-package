@@ -27,7 +27,7 @@ class PbDebugbar extends Debugbar
         $isLogged = Auth::check();
         $canDebug = false;
         if ($isLogged) {
-            $canDebug = PbUser::find(Auth::user()->id)->hasPermissionTo('developer options');
+            $canDebug = PbUser::current()->hasPermissionTo('developer options');
         }
         return PbHelpers::getDebugStatus() && $isLogged && $canDebug;
     }

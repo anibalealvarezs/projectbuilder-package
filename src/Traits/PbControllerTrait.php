@@ -26,10 +26,10 @@ trait PbControllerTrait
         $allowed = [];
         if (is_array($permissions)) {
             foreach ($permissions as $permission) {
-                $allowed[$permission] = PbUser::find(Auth::user()->id)->hasPermissionTo($permission);
+                $allowed[$permission] = PbUser::current()->hasPermissionTo($permission);
             }
         } else {
-            $allowed[$permissions] = PbUser::find(Auth::user()->id)->hasPermissionTo($permissions);
+            $allowed[$permissions] = PbUser::current()->hasPermissionTo($permissions);
         }
 
         return $allowed;

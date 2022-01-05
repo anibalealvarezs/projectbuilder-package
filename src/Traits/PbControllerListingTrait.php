@@ -16,10 +16,8 @@ trait PbControllerListingTrait
      */
     protected static function buildListingRow($config, $default = []): array
     {
-        $row = [];
-
         // Push default fields
-        $row = array_merge($row, self::buildDefaultFields($default));
+        $row = self::buildDefaultFields($default);
         // Push custom fields
         $fields = array_merge(Schema::getColumnListing((new $config['model'])->getTable()), $config['relations']);
         $fields = array_merge(array_intersect($config['custom_order'], $fields), array_diff($fields, $config['custom_order']));

@@ -18,11 +18,9 @@ class PbUsersSeeder extends Seeder
     public function run()
     {
         // SuperAdmin
-        $user = User::updateOrCreate(['email' => 'superadmin@superadmin'], ['password' => '123456', 'name' => 'Super Admin', 'current_team_id' => 1]);
-        $user->assignRole('super-admin');
+        User::updateOrCreate(['email' => 'superadmin@superadmin'], ['password' => '123456', 'name' => 'Super Admin', 'current_team_id' => 1])->assignRole('super-admin');
 
         // Admin
-        $user = User::updateOrCreate(['email' => 'admin@admin'], ['password' => '123456', 'name' => 'Admin', 'current_team_id' => 2]);
-        $user->assignRole('admin');
+        User::updateOrCreate(['email' => 'admin@admin'], ['password' => '123456', 'name' => 'Admin', 'current_team_id' => 2])->assignRole('admin');
     }
 }

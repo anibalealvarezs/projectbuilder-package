@@ -57,7 +57,7 @@ class PbHelpers
     public static function getCustomLocale(): string
     {
         if (Auth::check()) {
-            $user = PbUser::find(Auth::user()->id);
+            $user = PbUser::current();
             return $user->getLocale();
         }
         return "";

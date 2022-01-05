@@ -47,7 +47,7 @@ class PbConfigController extends PbBuilderController
         bool $multiple = false,
         string $route = 'level'
     ): InertiaResponse|JsonResponse|RedirectResponse {
-        $arrayElements = $this->modelPath::with('module')->get();
+        $arrayElements = $this->modelPath::withPublicRelations()->get();
 
         return parent::index($arrayElements);
     }
