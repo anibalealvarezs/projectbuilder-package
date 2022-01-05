@@ -221,7 +221,7 @@ class PbCitiesSeeder extends Seeder
             ['name' => json_encode(['en' => 'Pionyang']), 'country_id' => PbCountry::findByCode('KP')->id],
             ['name' => json_encode(['en' => 'Damasco']), 'country_id' => PbCountry::findByCode('SY')->id],
             ['name' => json_encode(['en' => 'Khartoum']), 'country_id' => PbCountry::findByCode('SD')->id],
-        ], ['name'], ['country_id']);
+        ], ['country_id'], ['name']);
 
         $cities = City::all();
         foreach ($cities as $city) {
