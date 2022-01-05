@@ -46,12 +46,23 @@ class PbModule extends PbBuilder
         return $value;
     }
 
+    /**
+     * Scope a query to only include popular users.
+     *
+     * @return HasMany
+     */
     public function components(): HasMany
     {
         return $this->hasMany(PbComponent::class, 'module', 'modulekey');
     }
 
-    public function getByKey($value): bool
+    /**
+     * Scope a query to only include popular users.
+     *
+     * @param $value
+     * @return PbModule|null
+     */
+    public function getByKey($value): self|null
     {
         return self::firstWhere('modulekey', $value);
     }
@@ -67,6 +78,12 @@ class PbModule extends PbBuilder
         return $query->where('status', '1');
     }
 
+    /**
+     * Scope a query to only include popular users.
+     *
+     * @param $value
+     * @return bool
+     */
     public static function isEnabled($value): bool
     {
         $module = (new PbModule)->getByKey($value);
@@ -76,6 +93,12 @@ class PbModule extends PbBuilder
         return false;
     }
 
+    /**
+     * Scope a query to only include popular users.
+     *
+     * @param $value
+     * @return bool
+     */
     public static function exists($value): bool
     {
         $module = (new PbModule)->getByKey($value);

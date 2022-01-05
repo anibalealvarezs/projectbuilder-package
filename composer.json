@@ -57,14 +57,6 @@
             ]
         }
     },
-    "scripts": {
-        "post-package-install": [
-            "php artisan pbuilder:altinstall --all"
-        ],
-        "post-package-update": [
-            "php artisan pbuilder:altinstall --publish --migrate --seed --npm --compile"
-        ]
-    },
     "config": {
         "sort-packages": true
     },

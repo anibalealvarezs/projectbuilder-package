@@ -48,22 +48,42 @@ class PbNavigation extends PbBuilder
         return $value;
     }
 
+    /**
+     * Scope a query to only include popular users.
+     *
+     * @return BelongsTo
+     */
     public function ascendant(): BelongsTo
     {
         return $this->belongsTo(self::class, 'parent', 'id')->with('ascendant');
     }
 
+    /**
+     * Scope a query to only include popular users.
+     *
+     * @return BelongsTo
+     */
     public function permission(): BelongsTo
     {
         return $this->belongsTo(PbPermission::class);
     }
 
+    /**
+     * Scope a query to only include popular users.
+     *
+     * @return HasMany
+     */
     public function descendants(): HasMany
     {
         // Recursive Relationship
         return $this->hasMany(self::class, 'parent', 'id')->orderBy('position')->with('descendants');
     }
 
+    /**
+     * Scope a query to only include popular users.
+     *
+     * @return BelongsTo
+     */
     public function module(): BelongsTo
     {
         return $this->belongsTo(PbModule::class, 'module_id', 'id');
@@ -80,6 +100,11 @@ class PbNavigation extends PbBuilder
         return $query->orderBy('parent')->orderBy('position');
     }
 
+    /**
+     * Scope a query to only include popular users.
+     *
+     * @return array
+     */
     public static function getCrudConfig(): array
     {
         $config = parent::getCrudConfig();

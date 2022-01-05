@@ -36,7 +36,12 @@ class PbPermission extends Permission
         return $value;
     }
 
-    public function delete()
+    /**
+     * Scope a query to only include popular users.
+     *
+     * @return bool
+     */
+    public function delete(): bool
     {
         // Remove countries from users
         PbNavigation::where('permission_id', $this->id)->update(['permission_id' => null]);
@@ -45,17 +50,32 @@ class PbPermission extends Permission
         return parent::delete();
     }
 
+    /**
+     * Scope a query to only include popular users.
+     *
+     * @return HasMany
+     */
     public function navigations(): HasMany
     {
         // Recursive Relationship
         return $this->hasMany(PbNavigation::class);
     }
 
+    /**
+     * Scope a query to only include popular users.
+     *
+     * @return BelongsTo
+     */
     public function module(): BelongsTo
     {
         return $this->belongsTo(PbModule::class, 'module_id', 'id');
     }
 
+    /**
+     * Scope a query to only include popular users.
+     *
+     * @return array
+     */
     public static function getCrudConfig(): array
     {
         $config = PbBuilder::getCrudConfig();

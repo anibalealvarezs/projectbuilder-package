@@ -26,7 +26,9 @@ class PbUserController extends PbBuilderController
     function __construct(Request $request, $crud_perms = false)
     {
         // Vars Override
-        $this->key = 'User';
+        $this->keys = [
+            'level' => 'User'
+        ];
         // Validation Rules
         $this->validationRules = [
             'name' => ['required', 'max:190'],
@@ -49,9 +51,9 @@ class PbUserController extends PbBuilderController
         // Parent construct
         parent::__construct($request, true);
         // Middlewares
-        $this->middleware(['is_'.$this->name.'_editable'])->only('edit', 'update');
-        $this->middleware(['is_'.$this->name.'_deletable'])->only('destroy');
-        $this->middleware(['is_'.$this->name.'_viewable'])->only('show');
+        $this->middleware(['is_'.$this->controllerVars->level->name.'_editable'])->only('edit', 'update');
+        $this->middleware(['is_'.$this->controllerVars->level->name.'_deletable'])->only('destroy');
+        $this->middleware(['is_'.$this->controllerVars->level->name.'_viewable'])->only('show');
     }
 
     /**
@@ -66,13 +68,13 @@ class PbUserController extends PbBuilderController
     {
         $this->required = array_merge($this->required, ['roles', 'email']);
 
-        $query = $this->modelPath::withPublicRelations();
-        $currentUser = $this->modelPath::current();
+        $query = $this->controllerVars->level->modelPath::withPublicRelations();
+        $currentUser = $this->controllerVars->level->modelPath::current();
         if (!$currentUser->hasRole('super-admin')) {
-            $superAdmins = $this->modelPath::role('super-admin')->get()->modelKeys();
+            $superAdmins = $this->controllerVars->level->modelPath::role('super-admin')->get()->modelKeys();
             $query = $query->whereNotIn('id', $superAdmins);
             if (!$currentUser->hasRole('admin')) {
-                $admins = $this->modelPath::role('admin')->get()->modelKeys();
+                $admins = $this->controllerVars->level->modelPath::role('admin')->get()->modelKeys();
                 $query = $query->whereNotIn('id', $admins);
             }
         }
@@ -114,12 +116,12 @@ class PbUserController extends PbBuilderController
     public function create(string $route = 'level'): InertiaResponse|JsonResponse
     {
         $this->allowed = [
-            'create '.$this->names => 'create',
+            'create '.$this->controllerVars->level->names => 'create',
         ];
 
         $this->required = array_merge($this->required, ['roles', 'password', 'email']);
 
-        return $this->renderResponse($this->viewsPath.'Create'.$this->key);
+        return $this->renderResponse($this->controllerVars->level->viewsPath.'Create'.$this->controllerVars->level->key);
     }
 
     /**
@@ -130,7 +132,7 @@ class PbUserController extends PbBuilderController
      */
     public function store(Request $request)
     {
-        $this->validationRules['email'] = ['required', 'max:50', 'email', Rule::unique($this->table)];
+        $this->validationRules['email'] = ['required', 'max:50', 'email', Rule::unique($this->controllerVars->level->table)];
         $this->validationRules['password'] = ['required'];
 
         $validationRules2 = [
@@ -149,7 +151,7 @@ class PbUserController extends PbBuilderController
         // Process
         try {
             // Build model
-            $model = new $this->modelPath();
+            $model = new $this->controllerVars->level->modelPath();
             // Add requests
             $model = $this->processModelRequests($this->validationRules, $request, $this->replacers, $model);
             $model->language_id = $lang;
@@ -181,9 +183,9 @@ class PbUserController extends PbBuilderController
                 }
             }
 
-            return $this->redirectResponseCRUDSuccess($request, $this->key.' created successfully!');
+            return $this->redirectResponseCRUDSuccess($request, $this->controllerVars->level->key.' created successfully!');
         } catch (Exception $e) {
-            return $this->redirectResponseCRUDFail($request, $this->key.' could not be created! '.$e->getMessage());
+            return $this->redirectResponseCRUDFail($request, $this->controllerVars->level->key.' could not be created! '.$e->getMessage());
         }
     }
 
@@ -199,10 +201,10 @@ class PbUserController extends PbBuilderController
     public function show(int $id, $element = null, bool $multiple = false, string $route = 'level'): Application|RedirectResponse|Redirector|InertiaResponse|JsonResponse
     {
         if ((Auth::user()->id == $id) && !$this->request->is('api/*')) {
-            return redirect(DIRECTORY_SEPARATOR.$this->name.'/profile');
+            return redirect(DIRECTORY_SEPARATOR.$this->controllerVars->level->name.'/profile');
         }
 
-        $model = $this->modelPath::withPublicRelations()->find($id);
+        $model = $this->controllerVars->level->modelPath::withPublicRelations()->find($id);
 
         return parent::show($id, $model);
     }
@@ -219,10 +221,10 @@ class PbUserController extends PbBuilderController
     public function edit(int $id, $element = null, bool $multiple = false, string $route = 'level'): InertiaResponse|JsonResponse
     {
         if (Auth::user()->id == $id) {
-            return redirect(DIRECTORY_SEPARATOR.$this->name.'/profile');
+            return redirect(DIRECTORY_SEPARATOR.$this->controllerVars->level->name.'/profile');
         }
 
-        $model = $this->modelPath::withPublicRelations()->find($id);
+        $model = $this->controllerVars->level->modelPath::withPublicRelations()->find($id);
 
         $this->required = array_merge($this->required, ['roles', 'email']);
 
@@ -238,7 +240,7 @@ class PbUserController extends PbBuilderController
      */
     public function update(Request $request, int $id)
     {
-        $this->validationRules['email'] = ['required', 'max:50', 'email', Rule::unique($this->table)->ignore($id)];
+        $this->validationRules['email'] = ['required', 'max:50', 'email', Rule::unique($this->controllerVars->level->table)->ignore($id)];
 
         $validationRules2 = [
             'roles' => ['required'],
@@ -258,7 +260,7 @@ class PbUserController extends PbBuilderController
         // Process
         try {
             // Build model
-            $model = $this->modelPath::find($id);
+            $model = $this->controllerVars->level->modelPath::find($id);
             // Build requests
             $requests = $this->processModelRequests($this->validationRules, $request, $this->replacers);
             if ($password != "") {
@@ -303,10 +305,10 @@ class PbUserController extends PbBuilderController
                 $model->syncRoles($roles);
             }
 
-            return $this->redirectResponseCRUDSuccess($request, $this->key.' updated successfully!');
+            return $this->redirectResponseCRUDSuccess($request, $this->controllerVars->level->key.' updated successfully!');
         } catch (Exception $e) {
 
-            return $this->redirectResponseCRUDFail($request, $this->key.' could not be updated! '.$e->getMessage());
+            return $this->redirectResponseCRUDFail($request, $this->controllerVars->level->key.' could not be updated! '.$e->getMessage());
         }
     }
 

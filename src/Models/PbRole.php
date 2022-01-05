@@ -35,6 +35,11 @@ class PbRole extends Role
         return $value;
     }
 
+    /**
+     * Scope a query to only include popular users.
+     *
+     * @return array
+     */
     public static function getCrudConfig(): array
     {
         $config = PbBuilder::getCrudConfig();

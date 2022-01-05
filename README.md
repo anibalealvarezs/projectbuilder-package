@@ -33,20 +33,28 @@ composer create-project laravel/laravel my-project
 #### 2. Require the package & install it
 ```shell
 composer require anibalealvarezs/projectbuilder-package --no-cache
-php artisan pbuilder:install --inertia
+php artisan pbuilder:install --all
 ```
-If Jetstream & Inertia already installed, remove the ```--inertia``` flag from the command line
+For package updating, you can use these typical options:
 ```shell
-php artisan pbuilder:install
+php artisan pbuilder:install --publish --migrate --seed --npm --compile
 ```
 In case of Artisan commands failure, use the alternative installation command:
 ```
 php artisan pbuilder:altinstall
 ```
+For full command information, you can check the help command:
+```
+php artisan pbuilder:help
+```
 In case of links failure (if "pbstorage" links show error), navigate to "public folder", manually delete the link, and create a new one with the following command:
 ```
 ln -s ../vendor/anibalealvarezs/projectbuilder-package/src/assets pbstorage
 ```
+
+***
+
+## Last steps...
 
 #### 3. Add full permissions to Jetstream API by default in ```app/Providers/JetstreamServiceProvider.php``` and remove the default permissions since they will be managed by Spatie's Permissions
 ```php

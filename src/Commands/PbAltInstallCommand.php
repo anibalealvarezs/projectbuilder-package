@@ -33,12 +33,11 @@ class PbAltInstallCommand extends Command
     protected $description = 'Project Builder alternative installation';
 
     /**
-     * Execute the console command.
+     * Scope a query to only include popular users.
      *
-     * @return void
+     * @return bool
      */
-
-    public function installInertia()
+    public function installInertia(): bool
     {
         try {
             echo "---- Requiring Jetstream...\n";
@@ -64,12 +63,11 @@ class PbAltInstallCommand extends Command
     }
 
     /**
-     * Execute the console command.
+     * Scope a query to only include popular users.
      *
-     * @return void
+     * @return bool
      */
-
-    public function publishResources()
+    public function publishResources(): bool
     {
         try {
             echo "------ Publishing Sanctum's resources...\n";
@@ -110,12 +108,11 @@ class PbAltInstallCommand extends Command
     }
 
     /**
-     * Execute the console command.
+     * Scope a query to only include popular users.
      *
-     * @return void
+     * @return bool
      */
-
-    public function migrateAndSeed()
+    public function migrateAndSeed(): bool
     {
         try {
             if ($this->option('migrate') || $this->option('all')) {
@@ -145,12 +142,11 @@ class PbAltInstallCommand extends Command
     }
 
     /**
-     * Execute the console command.
+     * Scope a query to only include popular users.
      *
-     * @return void
+     * @return bool
      */
-
-    public function createLinks()
+    public function createLinks(): bool
     {
         echo "------ Adding storage path...\n";
         if (!$this->addStoragePath()) {
@@ -160,5 +156,6 @@ class PbAltInstallCommand extends Command
         if (!shell_exec("php artisan storage:link")) {
             echo "------ [[ WARNING: Links could not be created ]]\n";
         }
+        return true;
     }
 }

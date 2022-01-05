@@ -35,11 +35,21 @@ class PbLogger extends PbBuilder
         'severity', 'code', 'message', 'object_type', 'object_id', 'user_id', 'module_id'
     ];
 
+    /**
+     * Scope a query to only include popular users.
+     *
+     * @return BelongsTo
+     */
     public function module(): BelongsTo
     {
         return $this->belongsTo(PbModule::class, 'module_id', 'id');
     }
 
+    /**
+     * Scope a query to only include popular users.
+     *
+     * @return BelongsTo
+     */
     public function user(): BelongsTo
     {
         return $this->belongsTo(PbUser::class, 'user_id', 'id');
@@ -63,6 +73,12 @@ class PbLogger extends PbBuilder
         };
     }
 
+    /**
+     * Scope a query to only include popular users.
+     *
+     * @param array $options
+     * @return bool
+     */
     public function save(array $options = [])
     {
         if (PbConfig::getValueByKey('_SAVE_LOGS_')) {
@@ -71,11 +87,21 @@ class PbLogger extends PbBuilder
         return false;
     }
 
+    /**
+     * Scope a query to only include popular users.
+     *
+     * @return bool
+     */
     protected function getEditableStatus(): bool
     {
         return false;
     }
 
+    /**
+     * Scope a query to only include popular users.
+     *
+     * @return array
+     */
     public static function getCrudConfig(): array
     {
         $config = parent::getCrudConfig();

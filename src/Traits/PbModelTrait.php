@@ -27,26 +27,51 @@ trait PbModelTrait {
         ];
     }
 
+    /**
+     * Scope a query to only include popular users.
+     *
+     * @return bool
+     */
     protected function getReadableStatus(): bool
     {
         return true;
     }
 
+    /**
+     * Scope a query to only include popular users.
+     *
+     * @return bool
+     */
     protected function getEditableStatus(): bool
     {
         return true;
     }
 
+    /**
+     * Scope a query to only include popular users.
+     *
+     * @return bool
+     */
     protected function getSelectableStatus(): bool
     {
         return true;
     }
 
+    /**
+     * Scope a query to only include popular users.
+     *
+     * @return bool
+     */
     protected function getDeletableStatus(): bool
     {
         return true;
     }
 
+    /**
+     * Scope a query to only include popular users.
+     *
+     * @return bool
+     */
     protected function getConfigurableStatus(): bool
     {
         return true;

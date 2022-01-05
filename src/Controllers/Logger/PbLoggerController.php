@@ -14,7 +14,9 @@ class PbLoggerController extends PbBuilderController
     function __construct(Request $request, $crud_perms = false)
     {
         // Vars Override
-        $this->key = 'Logger';
+        $this->keys = [
+            'level' => 'Logger'
+        ];
         // Parent construct
         parent::__construct($request, true);
     }
@@ -29,7 +31,7 @@ class PbLoggerController extends PbBuilderController
      */
     public function index($element = null, bool $multiple = false, string $route = 'level'): InertiaResponse|JsonResponse|RedirectResponse
     {
-        $model = $this->modelPath::withPublicRelations()->get();
+        $model = $this->controllerVars->level->modelPath::withPublicRelations()->get();
 
         $filtered = $model->map(function ($q) {
             return $q->only([

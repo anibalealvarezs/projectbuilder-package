@@ -70,12 +70,11 @@ trait PbInstallTrait
     }
 
     /**
-     * Execute the console command.
+     * Scope a query to only include popular users.
      *
-     * @return void
+     * @return bool
      */
-
-    public function installProjectBuilder()
+    public function installProjectBuilder(): bool
     {
         try {
             echo "---- Looking for Project Builder's package last version...\n";
@@ -112,12 +111,11 @@ trait PbInstallTrait
     }
 
     /**
-     * Execute the console command.
+     * Scope a query to only include popular users.
      *
-     * @return void
+     * @return bool
      */
-
-    public function requirePackage()
+    public function requirePackage(): bool
     {
         if (!shell_exec("composer require anibalealvarezs/projectbuilder-package --no-cache")) {
             echo "------ [[ ERROR: composer could not require Project Builder's package ]]\n";
@@ -127,12 +125,11 @@ trait PbInstallTrait
     }
 
     /**
-     * Execute the console command.
+     * Scope a query to only include popular users.
      *
-     * @return void
+     * @return bool
      */
-
-    public function compileAssets()
+    public function compileAssets(): bool
     {
         if (!shell_exec("npm run prod")) {
             echo "------ [[ ERROR: Assets couldn't be compiled ]]\n";
@@ -141,7 +138,13 @@ trait PbInstallTrait
         return true;
     }
 
-    public function installProviders() {
+    /**
+     * Scope a query to only include popular users.
+     *
+     * @return bool
+     */
+    public function installProviders(): bool
+    {
         // Default providers...
         // -- Fortify
         // -- Jetstream
@@ -167,12 +170,11 @@ trait PbInstallTrait
     }
 
     /**
-     * Execute the console command.
+     * Scope a query to only include popular users.
      *
-     * @return void
+     * @return bool
      */
-
-    public function installNpmResources()
+    public function installNpmResources(): bool
     {
         echo "---- Installing Sweetalert2.js...\n";
         if (!shell_exec("npm i sweetalert2")) {
@@ -188,12 +190,11 @@ trait PbInstallTrait
     }
 
     /**
-     * Execute the console command.
+     * Scope a query to only include popular users.
      *
-     * @return void
+     * @return bool
      */
-
-    public function modifyFiles()
+    public function modifyFiles(): bool
     {
         if ($this->option('config') || $this->option('all')) {
             // Enable additional sanctum's middleware...
@@ -228,13 +229,12 @@ trait PbInstallTrait
     }
 
     /**
-     * Install the service provider in the application configuration file.
+     * Scope a query to only include popular users.
      *
-     * @param  string  $after
-     * @param  string  $name
-     * @return void
+     * @param $name
+     * @return bool
      */
-    protected function installAdditionalProviders($name)
+    protected function installAdditionalProviders($name): bool
     {
         if (! Str::contains($appConfig = file_get_contents(config_path('app.php')), 'Anibalealvarezs\\Projectbuilder\\Providers\\'.$name.'::class')) {
             if (!file_put_contents(config_path('app.php'), str_replace(
@@ -249,13 +249,12 @@ trait PbInstallTrait
     }
 
     /**
-     * Install the service provider in the application configuration file.
+     * Scope a query to only include popular users.
      *
-     * @param  string  $after
-     * @param  string  $name
-     * @return void
+     * @param $after
+     * @return bool
      */
-    protected function installDefaultProvidersAfter($after)
+    protected function installDefaultProvidersAfter($after): bool
     {
         if (! Str::contains($appConfig = file_get_contents(config_path('app.php')), 'Laravel\\Fortify\\FortifyServiceProvider::class')) {
             if (!file_put_contents(config_path('app.php'), str_replace(
@@ -270,11 +269,11 @@ trait PbInstallTrait
     }
 
     /**
-     * Install the service provider in the application configuration file.
+     * Scope a query to only include popular users.
      *
-     * @return void
+     * @return bool
      */
-    protected function enableAdditionalSanctumMiddleware()
+    protected function enableAdditionalSanctumMiddleware(): bool
     {
         if (! Str::contains($appHttpKernel = file_get_contents(base_path('/app/Http/Kernel.php')), '\\Laravel\\Sanctum\\Http\\Middleware\\EnsureFrontendRequestsAreStateful::class,')) {
             if (!file_put_contents(base_path('/app/Http/Kernel.php'), str_replace(
@@ -297,11 +296,11 @@ trait PbInstallTrait
     }
 
     /**
-     * Install the service provider in the application configuration file.
+     * Scope a query to only include popular users.
      *
-     * @return void
+     * @return bool
      */
-    protected function enableFullJetstreamFeatures()
+    protected function enableFullJetstreamFeatures(): bool
     {
         if (Str::contains($appJetstream = file_get_contents(config_path('jetstream.php')), '// Features::termsAndPrivacyPolicy(),')) {
             if (!file_put_contents(config_path('jetstream.php'), str_replace(
@@ -352,11 +351,11 @@ trait PbInstallTrait
     }
 
     /**
-     * Install the service provider in the application configuration file.
+     * Scope a query to only include popular users.
      *
-     * @return void
+     * @return bool
      */
-    protected function addPubPath()
+    protected function addPubPath(): bool
     {
         if (! Str::contains($webpackConfig = file_get_contents(base_path('/webpack.config.js')), 'Pub: path.resolve(\'public\'),')) {
             if (!file_put_contents(base_path('/webpack.config.js'), str_replace(
@@ -371,11 +370,11 @@ trait PbInstallTrait
     }
 
     /**
-     * Install the service provider in the application configuration file.
+     * Scope a query to only include popular users.
      *
-     * @return void
+     * @return bool
      */
-    protected function addStoragePath()
+    protected function addStoragePath(): bool
     {
         if (! Str::contains($webpackConfig = file_get_contents(config_path('filesystems.php')), 'pbstorage')) {
             if (!file_put_contents(config_path('filesystems.php'), str_replace(
@@ -390,11 +389,11 @@ trait PbInstallTrait
     }
 
     /**
-     * Install the service provider in the application configuration file.
+     * Scope a query to only include popular users.
      *
-     * @return void
+     * @return bool
      */
-    protected function ignoreJetstreamAutodiscovery()
+    protected function ignoreJetstreamAutodiscovery(): bool
     {
         if (Str::contains($webpackConfig = file_get_contents(base_path('/composer.json')), '"dont-discover": []')) {
             if (!file_put_contents(base_path('/composer.json'), str_replace(
@@ -409,11 +408,11 @@ trait PbInstallTrait
     }
 
     /**
-     * Install the service provider in the application configuration file.
+     * Scope a query to only include popular users.
      *
-     * @return void
+     * @return bool
      */
-    protected function addResourcesToMix()
+    protected function addResourcesToMix(): bool
     {
         if (! Str::contains($webpackMix = file_get_contents(base_path('/webpack.mix.js')), 'sweetalert2.js')) {
             if (!file_put_contents(base_path('/webpack.mix.js'), str_replace(

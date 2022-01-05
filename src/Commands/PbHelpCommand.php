@@ -38,13 +38,13 @@ class PbHelpCommand extends Command
     public function handle()
     {
         try {
-            echo "\n\n";
+            echo "\n";
             echo "[[ Available commands ]]\n\n";
             echo ">> pbuilder:install\n";
             echo "For package installation\n\n";
             echo ">> pbuilder:altinstall\n";
             echo "For package installation via 'shell_exec' instead of 'Artisan::call()' method\n\n";
-            echo "[[ Parameters ]]";
+            echo "[[ Parameters ]]\n\n";
             echo ">> --all      |  For performing all tasks below\n";
             echo ">> --inertia  |  For installing Jetstream and Inertia\n";
             echo ">> --publish  |  For publishing resources\n";

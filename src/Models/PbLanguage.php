@@ -5,6 +5,7 @@ namespace Anibalealvarezs\Projectbuilder\Models;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Spatie\Translatable\HasTranslations;
+use Illuminate\Database\Eloquent\Builder;
 
 class PbLanguage extends PbBuilder
 {
@@ -38,7 +39,12 @@ class PbLanguage extends PbBuilder
         'name', 'code', 'status'
     ];
 
-    public function delete()
+    /**
+     * Scope a query to only include popular users.
+     *
+     * @return bool
+     */
+    public function delete(): bool
     {
         // Remove language from users
         $this->updateUserLanguage();
@@ -47,29 +53,50 @@ class PbLanguage extends PbBuilder
         return parent::delete();
     }
 
-    public function enable()
+    /**
+     * Scope a query to only include popular users.
+     *
+     * @return bool
+     */
+    public function enable(): bool
     {
         // Remove language from users
         $this->updateUserLanguage();
 
         $this->status = true;
-        $this->update();
+        return $this->update();
     }
 
-    public static function getEnabled()
+    /**
+     * Scope a query to only include popular users.
+     *
+     * @param Builder $query
+     * @return Builder
+     */
+    public static function scopeEnabled(Builder $query): Builder
     {
-        return self::where('status', true);
+        return $query->where('status', true);
     }
 
-    protected function updateUserLanguage()
+    /**
+     * Scope a query to only include popular users.
+     *
+     * @return bool
+     */
+    protected function updateUserLanguage(): bool
     {
-        PbUser::where('language_id', $this->id)->update(['language_id' => null]);
+        return PbUser::where('language_id', $this->id)->update(['language_id' => null]);
     }
 
-    public function disable()
+    /**
+     * Scope a query to only include popular users.
+     *
+     * @return bool
+     */
+    public function disable(): bool
     {
         $this->status = false;
-        $this->update();
+        return $this->update();
     }
 
     public function getNameAttribute($value)
@@ -80,21 +107,42 @@ class PbLanguage extends PbBuilder
         return $value;
     }
 
-    public static function findByCode($code)
+    /**
+     * Scope a query to only include popular users.
+     *
+     * @param $code
+     * @return PbLanguage|null
+     */
+    public static function findByCode($code): self|null
     {
         return self::firstWhere('code', $code);
     }
 
+    /**
+     * Scope a query to only include popular users.
+     *
+     * @return MorphToMany
+     */
     public function cities(): MorphToMany
     {
         return $this->morphedByMany(PbCity::class, 'langable');
     }
 
+    /**
+     * Scope a query to only include popular users.
+     *
+     * @return MorphToMany
+     */
     public function countries(): MorphToMany
     {
         return $this->morphedByMany(PbCountry::class, 'langable');
     }
 
+    /**
+     * Scope a query to only include popular users.
+     *
+     * @return HasMany
+     */
     public function users(): HasMany
     {
         return $this->hasMany(PbUser::class);

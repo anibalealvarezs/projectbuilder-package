@@ -30,11 +30,23 @@ class PbComponent extends PbBuilder
         'name', 'module', 'path'
     ];
 
+    /**
+     * Scope a query to only include popular users.
+     *
+     * @return BelongsTo
+     */
     public function module(): BelongsTo
     {
         return $this->belongsTo(PbModule::class, 'module', 'modulekey');
     }
 
+    /**
+     * Scope a query to only include popular users.
+     *
+     * @param $name
+     * @param $module
+     * @return bool
+     */
     public static function exists($name, $module): bool
     {
         $module = self::where('name', $name)->where('module', $module)->first();

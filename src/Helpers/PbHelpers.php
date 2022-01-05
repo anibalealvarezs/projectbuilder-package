@@ -124,4 +124,31 @@ class PbHelpers
     {
         return (bool) PbConfig::getValueByKey('_DEBUG_MODE_');
     }
+
+    /**
+     * Returns existing migration file if found, else uses the current timestamp.
+     *
+     * @param $key
+     * @param $helper
+     * @param $prefix
+     * @param $vendor
+     * @param $package
+     * @return object
+     */
+    public static function buildControllerVars($key, $helper, $prefix, $vendor, $package): object
+    {
+        $object = (object) [];
+        $object->key = $key;
+        $object->keys = $helper::toPlural($key);
+        $object->model = $prefix . $key;
+        $object->models = $helper::toPlural($object->model);
+        $object->name = strtolower($key);
+        $object->names = $helper::toPlural($object->name);
+        $object->prefixName = strtolower($prefix . $key);
+        $object->prefixNames = $helper::toPlural($object->prefixName);
+        $object->modelPath = $vendor . "\\" . $package . "\\Models\\" . $object->model;
+        $object->viewsPath = $package . "/" . $object->keys . "/";
+        $object->table = (new $object->modelPath())->getTable();
+        return $object;
+    }
 }

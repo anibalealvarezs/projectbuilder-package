@@ -154,7 +154,7 @@ class Shares
     public static function getLanguages(): array
     {
         return [
-            'languages' => PbLanguage::getEnabled()->get()
+            'languages' => PbLanguage::enabled()->get()
         ];
     }
 

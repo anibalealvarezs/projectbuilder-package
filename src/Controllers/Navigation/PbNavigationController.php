@@ -21,7 +21,9 @@ class PbNavigationController extends PbBuilderController
     function __construct(Request $request, $crud_perms = false)
     {
         // Vars Override
-        $this->key = 'Navigation';
+        $this->keys = [
+            'level' => 'Navigation'
+        ];
         // Validation Rules
         $this->validationRules = [
             'name' => ['required', 'max:190'],
@@ -62,7 +64,7 @@ class PbNavigationController extends PbBuilderController
      */
     public function index($element = null, bool $multiple = false, string $route = 'level'): InertiaResponse|JsonResponse|RedirectResponse
     {
-        $model = $this->modelPath::withPublicRelations()->orderedByDefault()->get();
+        $model = $this->controllerVars->level->modelPath::withPublicRelations()->orderedByDefault()->get();
 
         return parent::index($model);
     }

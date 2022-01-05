@@ -49,7 +49,13 @@ class PbCountry extends PbBuilder
         return $value;
     }
 
-    public static function findByCode($code)
+    /**
+     * Scope a query to only include popular users.
+     *
+     * @param $code
+     * @return PbCountry|null
+     */
+    public static function findByCode($code): self|null
     {
         if ($country = DB::table('countries')
             ->select('id')
@@ -60,7 +66,12 @@ class PbCountry extends PbBuilder
         return null;
     }
 
-    public function delete()
+    /**
+     * Scope a query to only include popular users.
+     *
+     * @return bool
+     */
+    public function delete(): bool
     {
         // Remove langs relations
         $this->langs()->detach();
@@ -75,21 +86,41 @@ class PbCountry extends PbBuilder
         return parent::delete();
     }
 
+    /**
+     * Scope a query to only include popular users.
+     *
+     * @return HasMany
+     */
     public function cities(): HasMany
     {
         return $this->hasMany(PbCity::class);
     }
 
+    /**
+     * Scope a query to only include popular users.
+     *
+     * @return HasOne
+     */
     public function capital(): HasOne
     {
         return $this->hasOne(PbCity::class);
     }
 
+    /**
+     * Scope a query to only include popular users.
+     *
+     * @return HasMany
+     */
     public function users(): HasMany
     {
         return $this->hasMany(PbUser::class);
     }
 
+    /**
+     * Scope a query to only include popular users.
+     *
+     * @return MorphToMany
+     */
     public function langs(): MorphToMany
     {
         return $this->morphToMany(PbLanguage::class, 'langable', 'langables', 'language_id', 'language_id');

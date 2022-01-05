@@ -98,7 +98,7 @@ trait PbControllerTrait
             $request,
             $flashMessage,
             'route',
-            $this->names . '.index',
+            $this->controllerVars->level->names . '.index',
             'success',
             false
         );

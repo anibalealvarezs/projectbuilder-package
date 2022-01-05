@@ -34,12 +34,11 @@ class PbInstallCommand extends Command
     protected $description = 'Project Builder installation';
 
     /**
-     * Execute the console command.
+     * Scope a query to only include popular users.
      *
-     * @return void
+     * @return bool
      */
-
-    public function installInertia()
+    public function installInertia(): bool
     {
         try {
             echo "---- Requiring Jetstream...\n";
@@ -72,12 +71,11 @@ class PbInstallCommand extends Command
     }
 
     /**
-     * Execute the console command.
+     * Scope a query to only include popular users.
      *
-     * @return void
+     * @return bool
      */
-
-    public function publishResources()
+    public function publishResources(): bool
     {
         try {
             echo "------ Publishing Sanctum's resources...\n";
@@ -152,12 +150,11 @@ class PbInstallCommand extends Command
     }
 
     /**
-     * Execute the console command.
+     * Scope a query to only include popular users.
      *
-     * @return void
+     * @return bool
      */
-
-    public function migrateAndSeed()
+    public function migrateAndSeed(): bool
     {
         try {
             if ($this->option('migrate') || $this->option('all')) {
@@ -192,12 +189,11 @@ class PbInstallCommand extends Command
     }
 
     /**
-     * Execute the console command.
+     * Scope a query to only include popular users.
      *
-     * @return void
+     * @return bool
      */
-
-    public function createLinks()
+    public function createLinks(): bool
     {
         echo "------ Adding storage path...\n";
         if (!$this->addStoragePath()) {
@@ -207,5 +203,6 @@ class PbInstallCommand extends Command
         if (!Artisan::call('storage:link')) {
             echo "------ [[ WARNING: Links could not be created ]]\n";
         }
+        return true;
     }
 }

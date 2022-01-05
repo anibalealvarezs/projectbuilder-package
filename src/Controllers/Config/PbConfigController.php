@@ -21,7 +21,9 @@ class PbConfigController extends PbBuilderController
     function __construct(Request $request, $crud_perms = false)
     {
         // Vars Override
-        $this->key = 'Config';
+        $this->keys = [
+            'level' => 'Config'
+        ];
         // Validation Rules
         $this->validationRules = [
             'name' => ['required', 'max:190'],
@@ -47,7 +49,7 @@ class PbConfigController extends PbBuilderController
         bool $multiple = false,
         string $route = 'level'
     ): InertiaResponse|JsonResponse|RedirectResponse {
-        $arrayElements = $this->modelPath::withPublicRelations()->get();
+        $arrayElements = $this->controllerVars->level->modelPath::withPublicRelations()->get();
 
         return parent::index($arrayElements);
     }
@@ -73,7 +75,7 @@ class PbConfigController extends PbBuilderController
      */
     public function store(Request $request)
     {
-        $this->validationRules['configkey'] = ['required', 'max:50', Rule::unique($this->table)];
+        $this->validationRules['configkey'] = ['required', 'max:50', Rule::unique($this->controllerVars->level->table)];
 
         return parent::store($request);
     }
@@ -107,7 +109,7 @@ class PbConfigController extends PbBuilderController
      */
     public function update(Request $request, int $id)
     {
-        $this->validationRules['configkey'] = ['required', 'max:50', Rule::unique($this->table)->ignore($id)];
+        $this->validationRules['configkey'] = ['required', 'max:50', Rule::unique($this->controllerVars->level->table)->ignore($id)];
 
         return parent::update($request, $id);
     }

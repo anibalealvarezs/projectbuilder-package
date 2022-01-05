@@ -47,7 +47,12 @@ class PbCity extends PbBuilder
         return $value;
     }
 
-    public function delete()
+    /**
+     * Scope a query to only include popular users.
+     *
+     * @return bool
+     */
+    public function delete(): bool
     {
         // Remove langs relations
         $this->langs()->detach();
@@ -62,16 +67,31 @@ class PbCity extends PbBuilder
         return parent::delete();
     }
 
+    /**
+     * Scope a query to only include popular users.
+     *
+     * @return BelongsTo
+     */
     public function country(): BelongsTo
     {
         return $this->belongsTo(PbCountry::class);
     }
 
+    /**
+     * Scope a query to only include popular users.
+     *
+     * @return HasMany
+     */
     public function users(): HasMany
     {
         return $this->hasMany(PbUser::class);
     }
 
+    /**
+     * Scope a query to only include popular users.
+     *
+     * @return MorphToMany
+     */
     public function langs(): MorphToMany
     {
         return $this->morphToMany(PbLanguage::class, 'langable', 'langables', 'language_id', 'language_id');

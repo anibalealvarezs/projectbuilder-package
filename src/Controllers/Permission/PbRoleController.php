@@ -31,7 +31,9 @@ class PbRoleController extends PbBuilderController
     public function __construct(Request $request, $crud_perms = false)
     {
         // Vars Override
-        $this->key = 'Role';
+        $this->keys = [
+            'level' => 'Role'
+        ];
         // Validation Rules
         $this->validationRules = [
             'alias' => ['required', 'max:190'],
@@ -56,7 +58,7 @@ class PbRoleController extends PbBuilderController
      */
     public function index($element = null, bool $multiple = false, string $route = 'level'): InertiaResponse|JsonResponse|RedirectResponse
     {
-        $query = $this->modelPath::withPublicRelations()->whereNotIn('name', ['super-admin', 'developer', 'api-user']);
+        $query = $this->controllerVars->level->modelPath::withPublicRelations()->whereNotIn('name', ['super-admin', 'developer', 'api-user']);
         $user = PbUser::current();
         if (!$user->hasRole('super-admin')) {
             $query = $query->whereNotIn('name', ['admin']);
@@ -89,7 +91,7 @@ class PbRoleController extends PbBuilderController
      */
     public function store(Request $request)
     {
-        $this->validationRules['name'] = ['required', 'max:20', Rule::unique($this->table)];
+        $this->validationRules['name'] = ['required', 'max:20', Rule::unique($this->controllerVars->level->table)];
 
         // Validation
         if ($failed = $this->validateRequest($this->validationRules, $request)) {
@@ -101,7 +103,7 @@ class PbRoleController extends PbBuilderController
         // Process
         try {
             // Build model
-            $model = new $this->modelPath();
+            $model = new $this->controllerVars->level->modelPath();
             // Add requests
             $model = $this->processModelRequests($this->validationRules, $request, $this->replacers, $model);
             // Add additional fields values
@@ -116,9 +118,9 @@ class PbRoleController extends PbBuilderController
                 $model->syncPermissions($permissions);
             }
 
-            return $this->redirectResponseCRUDSuccess($request, $this->key.' created successfully!');
+            return $this->redirectResponseCRUDSuccess($request, $this->controllerVars->level->key.' created successfully!');
         } catch (Exception $e) {
-            return $this->redirectResponseCRUDFail($request, $this->key.' could not be created! '.$e->getMessage());
+            return $this->redirectResponseCRUDFail($request, $this->controllerVars->level->key.' could not be created! '.$e->getMessage());
         }
     }
 
@@ -147,7 +149,7 @@ class PbRoleController extends PbBuilderController
      */
     public function edit(int $id, $element = null, bool $multiple = false, string $route = 'level'): InertiaResponse|JsonResponse
     {
-        $model = $this->modelPath::withPublicRelations()->whereNotIn('name', ['super-admin', 'developer', 'api-user'])->findOrFail($id);
+        $model = $this->controllerVars->level->modelPath::withPublicRelations()->whereNotIn('name', ['super-admin', 'developer', 'api-user'])->findOrFail($id);
 
         $this->required = array_merge($this->required, ['name']);
 
@@ -163,7 +165,7 @@ class PbRoleController extends PbBuilderController
      */
     public function update(Request $request, int $id)
     {
-        $this->validationRules['name'] = ['required', 'max:20', Rule::unique($this->table)->ignore($id)];
+        $this->validationRules['name'] = ['required', 'max:20', Rule::unique($this->controllerVars->level->table)->ignore($id)];
 
         // Validation
         if ($failed = $this->validateRequest($this->validationRules, $request)) {
@@ -177,7 +179,7 @@ class PbRoleController extends PbBuilderController
         // Process
         try {
             // Build model
-            $model = $this->modelPath::find($id);
+            $model = $this->controllerVars->level->modelPath::find($id);
             // Build requests
             $requests = $this->processModelRequests($this->validationRules, $request, $this->replacers);
             // Update model
@@ -204,9 +206,9 @@ class PbRoleController extends PbBuilderController
                 }
             }
 
-            return $this->redirectResponseCRUDSuccess($request, $this->key.' updated successfully!');
+            return $this->redirectResponseCRUDSuccess($request, $this->controllerVars->level->key.' updated successfully!');
         } catch (Exception $e) {
-            return $this->redirectResponseCRUDFail($request, $this->key.' could not be updated! '.$e->getMessage());
+            return $this->redirectResponseCRUDFail($request, $this->controllerVars->level->key.' could not be updated! '.$e->getMessage());
         }
     }
 
@@ -221,7 +223,7 @@ class PbRoleController extends PbBuilderController
     {
         // Process
         try {
-            $model = $this->modelPath::findOrFail($id);
+            $model = $this->controllerVars->level->modelPath::findOrFail($id);
             //Make it impossible to delete these specific permissions
             if (in_array($model->name, [
                 'user',
@@ -233,13 +235,13 @@ class PbRoleController extends PbBuilderController
                 $request->session()->flash('flash.banner', 'This role can not be deleted!');
                 $request->session()->flash('flash.bannerStyle', 'danger');
 
-                return redirect()->route($this->names . '.index');
+                return redirect()->route($this->controllerVars->level->names . '.index');
             }
             $model->delete();
 
-            return $this->redirectResponseCRUDSuccess($request, $this->key . ' deleted successfully!');
+            return $this->redirectResponseCRUDSuccess($request, $this->controllerVars->level->key . ' deleted successfully!');
         } catch (Exception $e) {
-            return $this->redirectResponseCRUDFail($request, $this->key . ' could not be deleted! '.$e->getMessage());
+            return $this->redirectResponseCRUDFail($request, $this->controllerVars->level->key . ' could not be deleted! '.$e->getMessage());
         }
     }
 

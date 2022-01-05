@@ -37,6 +37,11 @@ class PbConfig extends PbBuilder
         'configkey', 'configvalue', 'name', 'description', 'module_id'
     ];
 
+    /**
+     * Scope a query to only include popular users.
+     *
+     * @return BelongsTo
+     */
     public function module(): BelongsTo
     {
         return $this->belongsTo(PbModule::class, 'module_id', 'id');
@@ -58,12 +63,24 @@ class PbConfig extends PbBuilder
         return $value;
     }
 
-    public static function findByKey($key)
+    /**
+     * Scope a query to only include popular users.
+     *
+     * @param $key
+     * @return PbConfig|null
+     */
+    public static function findByKey($key): self|null
     {
         return self::firstWhere('configkey', $key);
     }
 
-    public static function getValueByKey($key)
+    /**
+     * Scope a query to only include popular users.
+     *
+     * @param $key
+     * @return mixed
+     */
+    public static function getValueByKey($key): mixed
     {
         if ($config = self::findByKey($key)) {
             return $config->configvalue;
@@ -71,6 +88,11 @@ class PbConfig extends PbBuilder
         return null;
     }
 
+    /**
+     * Scope a query to only include popular users.
+     *
+     * @return array
+     */
     public static function getCrudConfig(): array
     {
         $config = parent::getCrudConfig();

@@ -13,6 +13,11 @@ class PbBuilder extends Model
 
     protected $appends = ['crud'];
 
+    /**
+     * Scope a query to only include popular users.
+     *
+     * @return array
+     */
     public static function getCrudConfig(): array
     {
         $config['default'] = [];

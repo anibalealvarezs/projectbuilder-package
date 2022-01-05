@@ -59,23 +59,40 @@ class PbUser extends User
         $this->attributes['password'] = bcrypt($password);
     }
 
+    /**
+     * Scope a query to only include popular users.
+     *
+     * @return BelongsTo
+     */
     public function country(): BelongsTo
     {
         return $this->belongsTo(PbCountry::class);
     }
 
+    /**
+     * Scope a query to only include popular users.
+     *
+     * @return BelongsTo
+     */
     public function city(): BelongsTo
     {
         return $this->belongsTo(PbCity::class);
     }
 
+    /**
+     * Scope a query to only include popular users.
+     *
+     * @return BelongsTo
+     */
     public function lang(): BelongsTo
     {
         return $this->belongsTo(PbLanguage::class, 'language_id', 'id');
     }
 
     /**
-     * A model may have multiple roles.
+     * Scope a query to only include popular users.
+     *
+     * @return BelongsToMany
      */
     public function roles(): BelongsToMany
     {
@@ -92,9 +109,9 @@ class PbUser extends User
      * Scope a query to only include popular users.
      *
      * @param Builder $query
-     * @return PbUser
+     * @return PbUser|null
      */
-    public function scopeCurrent(Builder $query): PbUser
+    public function scopeCurrent(Builder $query): self|null
     {
         return $query->find(Auth::user()->id);
     }
@@ -104,6 +121,11 @@ class PbUser extends User
         return $this->hasPermissionTo('api access');
     }
 
+    /**
+     * Scope a query to only include popular users.
+     *
+     * @return string
+     */
     public function getLocale(): string
     {
         if ($locale = PbLanguage::find($this->language_id)) {
@@ -112,6 +134,12 @@ class PbUser extends User
         return "";
     }
 
+    /**
+     * Scope a query to only include popular users.
+     *
+     * @param $id
+     * @return bool
+     */
     public function isEditableBy($id): bool
     {
         $user = self::find($id);
@@ -124,6 +152,12 @@ class PbUser extends User
         return false;
     }
 
+    /**
+     * Scope a query to only include popular users.
+     *
+     * @param $id
+     * @return bool
+     */
     public function isViewableBy($id): bool
     {
         $user = self::find($id);
@@ -136,11 +170,23 @@ class PbUser extends User
         return false;
     }
 
+    /**
+     * Scope a query to only include popular users.
+     *
+     * @param $id
+     * @return bool
+     */
     public function isSelectableBy($id): bool
     {
         return true;
     }
 
+    /**
+     * Scope a query to only include popular users.
+     *
+     * @param $id
+     * @return bool
+     */
     public function isDeletableBy($id): bool
     {
         if (!$this->hasAnyRole(['super-admin', 'admin']) && ($this->id != Auth::user()->id)) {
@@ -150,6 +196,11 @@ class PbUser extends User
         return false;
     }
 
+    /**
+     * Scope a query to only include popular users.
+     *
+     * @return bool
+     */
     protected function getDeletableStatus(): bool
     {
         $currentUser = self::current();
@@ -160,7 +211,12 @@ class PbUser extends User
         return true;
     }
 
-    public function delete()
+    /**
+     * Scope a query to only include popular users.
+     *
+     * @return bool
+     */
+    public function delete(): bool
     {
         if (PbModule::exists('filemanager') && class_exists(\Anibalealvarezs\Filemanager\Models\FmFile::class)) {
             $user = self::getDefaultUser();
@@ -185,11 +241,21 @@ class PbUser extends User
         return parent::delete();
     }
 
-    public function getDefaultUser()
+    /**
+     * Scope a query to only include popular users.
+     *
+     * @return PbUser|null
+     */
+    public function getDefaultUser(): self|null
     {
         return PbUser::find(1);
     }
 
+    /**
+     * Scope a query to only include popular users.
+     *
+     * @return array
+     */
     public static function getCrudConfig(): array
     {
         $config = PbBuilder::getCrudConfig();
