@@ -14,16 +14,10 @@ class MakeColumnsUnique extends Migration
     public function up()
     {
         Schema::table('config', function (Blueprint $table) {
-            $table->dropColumn('configkey');
-        });
-        Schema::table('config', function (Blueprint $table) {
-            $table->string('configkey', 254)->unique();
+            $table->unique('configkey');
         });
         Schema::table('modules', function (Blueprint $table) {
-            $table->dropColumn('modulekey');
-        });
-        Schema::table('modules', function (Blueprint $table) {
-            $table->string('modulekey', 20)->unique();
+            $table->unique('modulekey');
         });
     }
 
