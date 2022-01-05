@@ -15,11 +15,7 @@ class PbCitiesSeeder extends Seeder
      */
     public function run()
     {
-        if ($city = City::first()) {
-            if (!$city->country_id) {
-                City::query()->delete();
-            }
-        }
+        City::query()->delete();
         // Default Cities
         City::upsert([
             ['name' => json_encode(['en' => 'Kabul']), 'country_id' => PbCountry::findByCode('AF')->id],
