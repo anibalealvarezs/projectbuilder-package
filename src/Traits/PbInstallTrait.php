@@ -35,7 +35,7 @@ trait PbInstallTrait
             }
             echo "[[ Process start ]]\n";
             // Inertia...
-            if ($this->option('inertia')) {
+            if ($this->option('inertia') || $this->option('all')) {
                 echo "-- [[ Installing pre-requirements ]]\n";
                 if (!$this->installInertia()) {
                     return false;
@@ -53,14 +53,15 @@ trait PbInstallTrait
                 echo "---- [[ Error adding confirmation log entry ]]\n";
             }
             // Config files...
-            echo "-- [[ Modifying config files ]]\n";
             if (!$this->modifyFiles()) {
                 return false;
             }
-            // Compilation...
-            echo "-- [[ Compiling assets ]]\n";
-            if (!$this->compileAssets()) {
-                return false;
+            if ($this->option('compile') || $this->option('all')) {
+                // Compilation...
+                echo "-- [[ Compiling assets ]]\n";
+                if (!$this->compileAssets()) {
+                    return false;
+                }
             }
             echo "[[ Process finished ]]\n";
         } catch (Exception $e) {
@@ -77,24 +78,30 @@ trait PbInstallTrait
     public function installProjectBuilder()
     {
         try {
-            echo "---- Looking for Project Builder's package updates...\n";
+            echo "---- Looking for Project Builder's package last version...\n";
             if (!$this->requirePackage()) {
                 return false;
             }
-            echo "---- Publishing Resources...\n";
-            if (!$this->publishResources()) {
-                return false;
+            if ($this->option('publish') || $this->option('all')) {
+                echo "---- Publishing Resources...\n";
+                if (!$this->publishResources()) {
+                    return false;
+                }
             }
-            echo "---- Database configuiration...\n";
-            if (!$this->migrateAndSeed()) {
-                return false;
+            if ($this->option('migrate') || $this->option('seed') || $this->option('all')) {
+                echo "---- Database configuiration...\n";
+                if (!$this->migrateAndSeed()) {
+                    return false;
+                }
             }
-            echo "---- Creating links...\n";
-            if (!$this->createLinks()) {
-                if (\Anibalealvarezs\Projectbuilder\Models\PbLogger::create(['severity' => 2, 'message' => 'Links creation failed', 'object_type' => null])) {
-                    echo "---- [[ Confirmation log entry added ]]\n";
-                } else {
-                    echo "---- [[ Error adding confirmation log entry ]]\n";
+            if ($this->option('link') || $this->option('all')) {
+                echo "---- Creating links...\n";
+                if (!$this->createLinks()) {
+                    if (\Anibalealvarezs\Projectbuilder\Models\PbLogger::create(['severity' => 2, 'message' => 'Links creation failed', 'object_type' => null])) {
+                        echo "---- [[ Confirmation log entry added ]]\n";
+                    } else {
+                        echo "---- [[ Error adding confirmation log entry ]]\n";
+                    }
                 }
             }
         } catch (Exception $e) {
@@ -188,30 +195,34 @@ trait PbInstallTrait
 
     public function modifyFiles()
     {
-        // Enable additional sanctum's middleware...
-        echo "---- Enabling additional Sanctum's middleware...\n";
-        if (!$this->enableAdditionalSanctumMiddleware()) {
-            return false;
+        if ($this->option('config') || $this->option('all')) {
+            // Enable additional sanctum's middleware...
+            echo "---- Enabling additional Sanctum's middleware...\n";
+            if (!$this->enableAdditionalSanctumMiddleware()) {
+                return false;
+            }
+            // Enable full jestream features...
+            echo "---- Enabling full Jetsream's features...\n";
+            if (!$this->enableFullJetstreamFeatures()) {
+                return false;
+            }
+            // Add 'Pub' path to webpack...
+            echo "---- Enabling 'Pub' path to webpack...\n";
+            if (!$this->addPubPath()) {
+                return false;
+            }
         }
-        // Enable full jestream features...
-        echo "---- Enabling full Jetsream's features...\n";
-        if (!$this->enableFullJetstreamFeatures()) {
-            return false;
-        }
-        // Add 'Pub' path to webpack...
-        echo "---- Enabling 'Pub' path to webpack...\n";
-        if (!$this->addPubPath()) {
-            return false;
-        }
-        // Install npm resources...
-        echo "---- Installing npm resources...\n";
-        if (!$this->installNpmResources()) {
-            return false;
-        }
-        // Add resources to Mix...
-        echo "---- Adding resources to Mix...\n";
-        if (!$this->addResourcesToMix()) {
-            return false;
+        if ($this->option('npm') || $this->option('all')) {
+            // Install npm resources...
+            echo "---- Installing npm resources...\n";
+            if (!$this->installNpmResources()) {
+                return false;
+            }
+            // Add resources to Mix...
+            echo "---- Adding resources to Mix...\n";
+            if (!$this->addResourcesToMix()) {
+                return false;
+            }
         }
         return true;
     }

@@ -44,8 +44,16 @@ class PbHelpCommand extends Command
             echo "For package installation\n\n";
             echo ">> pbuilder:altinstall\n";
             echo "For package installation via 'shell_exec' instead of 'Artisan::call()' method\n\n";
-            echo ">> pbuilder:install --inertia\n";
-            echo "For package installation including Jetstream and Inertia\n\n";
+            echo "[[ Parameters ]]";
+            echo ">> --all      |  For performing all tasks below\n";
+            echo ">> --inertia  |  For installing Jetstream and Inertia\n";
+            echo ">> --publish  |  For publishing resources\n";
+            echo ">> --migrate  |  For running migrations\n";
+            echo ">> --seed     |  For seeding the database\n";
+            echo ">> --config   |  For configuring the application\n";
+            echo ">> --link     |  For creating links\n";
+            echo ">> --npm      |  For requiring npm resources\n";
+            echo ">> --compile  |  For compiling webpack\n";
         } catch (Exception $e) {
             echo "-- [[ ERROR: ".$e->getMessage()." ]]";
         }

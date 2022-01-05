@@ -14,7 +14,16 @@ class PbAltInstallCommand extends Command
      *
      * @var string
      */
-    protected $signature = 'pbuilder:altinstall {--inertia : Includes Jetstream and Inertia installation}';
+    protected $signature = 'pbuilder:altinstall
+                            {--all : All tasks will be performed}
+                            {--inertia : Includes Jetstream and Inertia installation}
+                            {--publish : Resources will be published to the application}
+                            {--migrate : Migrations will be run}
+                            {--seed : Tables will be seeded}
+                            {--config : Application wil be configured}
+                            {--link : Links will be created}
+                            {--npm : npm resources will be required}
+                            {--compile : npm will be run}';
 
     /**
      * The console command description.
@@ -109,21 +118,24 @@ class PbAltInstallCommand extends Command
     public function migrateAndSeed()
     {
         try {
-
-            echo "------ Clearing cache... \n";
-            if (!shell_exec("php artisan cache:clear")) {
-                echo "-------- [[ ERROR: Cache could not be cleared ]]\n";
-                return false;
+            if ($this->option('migrate') || $this->option('all')) {
+                echo "------ Clearing cache... \n";
+                if (!shell_exec("php artisan cache:clear")) {
+                    echo "-------- [[ ERROR: Cache could not be cleared ]]\n";
+                    return false;
+                }
+                echo "------ Migrating... \n";
+                if (!shell_exec("php artisan migrate")) {
+                    echo "-------- [[ ERROR: Migration failed ]]\n";
+                    return false;
+                }
             }
-            echo "------ Migrating... \n";
-            if (!shell_exec("php artisan migrate")) {
-                echo "-------- [[ ERROR: Migration failed ]]\n";
-                return false;
-            }
-            echo "------ Seeding... \n";
-            if (!shell_exec("php artisan db:seed --class=\"\\Anibalealvarezs\\Projectbuilder\\Database\\Seeders\\PbMainSeeder\"")) {
-                echo "-------- [[ ERROR: Tables could not be seeded ]]\n";
-                return false;
+            if ($this->option('seed') || $this->option('all')) {
+                echo "------ Seeding... \n";
+                if (!shell_exec("php artisan db:seed --class=\"\\Anibalealvarezs\\Projectbuilder\\Database\\Seeders\\PbMainSeeder\"")) {
+                    echo "-------- [[ ERROR: Tables could not be seeded ]]\n";
+                    return false;
+                }
             }
         } catch (Exception $e) {
             echo "-------- [[ ERROR: ".$e->getMessage()." ]]\n";
