@@ -25,6 +25,20 @@ class PbTeamSeeder extends Seeder
                 ['name' => 'Admin', 'personal_team' => true, 'user_id' => $user->id],
                 ['name' => 'User', 'personal_team' => true, 'user_id' => $user->id],
             ], ['name'], ['personal_team', 'user_id']);
+            if ($superAdminTeam = Team::where('name', 'SuperAdmin')->first()) {
+                $superAdmins = PbUser::role('super-admin')->get();
+                foreach ($superAdmins as $superAdmin) {
+                    $superAdmin->current_team_id = $superAdminTeam->id;
+                    $superAdmin->save();
+                }
+            }
+            if ($adminTeam = Team::where('name', 'Admin')->first()) {
+                $admins = PbUser::role('admin')->get();
+                foreach ($admins as $admin) {
+                    $admin->current_team_id = $adminTeam->id;
+                    $admin->save();
+                }
+            }
         }
     }
 }
