@@ -113,7 +113,7 @@ class PbUser extends User
      */
     public function scopeCurrent(Builder $query): self|null
     {
-        return $query->find(Auth::user()->id);
+            return $query->find(Auth::user()->id);
     }
 
     public function getApiAttribute(): bool

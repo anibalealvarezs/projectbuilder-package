@@ -56,7 +56,7 @@ trait PbInstallTrait
             if (!$this->modifyFiles()) {
                 return false;
             }
-            if ($this->option('compile') || $this->option('all') || $this->signature('pbuilder:update') || $this->signature('pbuilder:altupdate')) {
+            if ($this->option('compile') || $this->option('all') || ($this->signature == 'pbuilder:update') || ($this->signature == 'pbuilder:altupdate')) {
                 // Compilation...
                 echo "-- [[ Compiling assets ]]\n";
                 if (!$this->compileAssets()) {
@@ -81,13 +81,13 @@ trait PbInstallTrait
             if (!$this->requirePackage()) {
                 return false;
             }
-            if ($this->option('publish') || $this->option('all') || $this->signature('pbuilder:update') || $this->signature('pbuilder:altupdate')) {
+            if ($this->option('publish') || $this->option('all') || ($this->signature == 'pbuilder:update') || ($this->signature == 'pbuilder:altupdate')) {
                 echo "---- Publishing Resources...\n";
                 if (!$this->publishResources()) {
                     return false;
                 }
             }
-            if ($this->option('migrate') || $this->option('seed') || $this->option('all') || $this->signature('pbuilder:update') || $this->signature('pbuilder:altupdate')) {
+            if ($this->option('migrate') || $this->option('seed') || $this->option('all') || ($this->signature == 'pbuilder:update') || ($this->signature == 'pbuilder:altupdate')) {
                 echo "---- Database configuiration...\n";
                 if (!$this->migrateAndSeed()) {
                     return false;
@@ -213,7 +213,7 @@ trait PbInstallTrait
                 return false;
             }
         }
-        if ($this->option('npm') || $this->option('all') || $this->signature('pbuilder:update') || $this->signature('pbuilder:altupdate')) {
+        if ($this->option('npm') || $this->option('all') || ($this->signature == 'pbuilder:update') || ($this->signature == 'pbuilder:altupdate')) {
             // Install npm resources...
             echo "---- Installing npm resources...\n";
             if (!$this->installNpmResources()) {
