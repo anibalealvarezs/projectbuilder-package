@@ -9,7 +9,16 @@ class PbUpdateCommand extends PbInstallCommand
      *
      * @var string
      */
-    protected $signature = 'pbuilder:update';
+    protected $signature = 'pbuilder:update
+                            {--all : All tasks will be performed}
+                            {--inertia : Includes Jetstream and Inertia installation}
+                            {--publish : Resources will be published to the application}
+                            {--migrate : Migrations will be run}
+                            {--seed : Tables will be seeded}
+                            {--config : Application wil be configured}
+                            {--link : Links will be created}
+                            {--npm : npm resources will be required}
+                            {--compile : npm will be run}';
 
     /**
      * The console command description.

@@ -9,7 +9,16 @@ class PbAltUpdateCommand extends PbAltInstallCommand
      *
      * @var string
      */
-    protected $signature = 'pbuilder:altupdate';
+    protected $signature = 'pbuilder:altupdate
+                            {--all : All tasks will be performed}
+                            {--inertia : Includes Jetstream and Inertia installation}
+                            {--publish : Resources will be published to the application}
+                            {--migrate : Migrations will be run}
+                            {--seed : Tables will be seeded}
+                            {--config : Application wil be configured}
+                            {--link : Links will be created}
+                            {--npm : npm resources will be required}
+                            {--compile : npm will be run}';
 
     /**
      * The console command description.
