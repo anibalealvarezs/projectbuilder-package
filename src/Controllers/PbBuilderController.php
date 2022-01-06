@@ -34,27 +34,27 @@ class PbBuilderController extends Controller
     /**
      * @var string
      */
-    protected string $vendor;
+    protected string $vendor = "";
     /**
      * @var string
      */
-    protected string $package;
+    protected string $package = "";
     /**
      * @var string
      */
-    protected string $helper;
+    protected string $helper = "";
     /**
      * @var string
      */
-    protected string $viewModelName;
+    protected string $viewModelName = "";
     /**
      * @var string
      */
-    protected string $prefix;
+    protected string $prefix = "";
     /**
      * @var array
      */
-    protected array $keys;
+    protected array $keys = [];
     /**
      * @var array
      */
@@ -78,23 +78,23 @@ class PbBuilderController extends Controller
     /**
      * @var boolean
      */
-    protected bool $sortable;
+    protected bool $sortable = false;
     /**
      * @var string
      */
-    protected string $sortingRef;
+    protected string $sortingRef = "";
     /**
      * @var boolean
      */
-    protected bool $showPosition;
+    protected bool $showPosition = false;
     /**
      * @var boolean
      */
-    protected bool $showId;
+    protected bool $showId = true;
     /**
      * @var string
      */
-    protected string $inertiaRoot;
+    protected string $inertiaRoot = "";
     /**
      * @var array
      */
@@ -110,11 +110,11 @@ class PbBuilderController extends Controller
     /**
      * @var array
      */
-    protected array $listing;
+    protected array $listing = [];
     /**
      * @var array
      */
-    protected array $formconfig;
+    protected array $formconfig = [];
     /**
      * @var object
      */
@@ -122,64 +122,46 @@ class PbBuilderController extends Controller
 
     function __construct(Request $request, $crud_perms = false)
     {
-        $this->controllerVars = (object) [];
+        if (!isset($this->controllerVars)) {
+            $this->controllerVars = (object)[];
+        }
         if (!isset($this->keys['level'])) {
             $this->keys['level'] = 'Builder';
         }
-        if (!isset($this->prefix)) {
+        if (!$this->prefix) {
             $this->prefix = 'Pb';
         }
-        if (!isset($this->helper)) {
+        if (!$this->helper) {
             $this->helper = PbHelpers::PB_VENDOR . '\\' . PbHelpers::PB_PACKAGE . '\\Helpers\\' . $this->prefix . 'Helpers';
         }
-        if (!isset($this->inertiaRoot)) {
+        if (!$this->inertiaRoot) {
             $this->inertiaRoot = $this->helper::PB_PACKAGE . '::app';
         }
-        if (!isset($this->vendor)) {
+        if (!$this->vendor) {
             $this->vendor = $this->helper::PB_VENDOR;
         }
-        if (!isset($this->package)) {
+        if (!$this->package) {
             $this->package = $this->helper::PB_PACKAGE;
-        }
-        if (!isset($this->sortable)) {
-            $this->sortable = false;
         }
         foreach (['level', 'parent', 'grandparent', 'child', 'grandchild'] as $value) {
             if (isset($this->keys[$value])) {
-                $this->controllerVars->{$value} = $this->helper::buildControllerVars($this->keys[$value], $this->helper, $this->prefix, $this->vendor, $this->package);
+                $this->controllerVars->{$value} = $this->helper::buildControllerVars($this->keys[$value], $this->helper,
+                    $this->prefix, $this->vendor, $this->package);
             }
         }
 
         if ($crud_perms) {
             // Middlewares
             $this->middleware(['role_or_permission:read ' . $this->controllerVars->level->names]);
-            $this->middleware(['role_or_permission:create ' . $this->controllerVars->level->names])->only('create', 'store');
-            $this->middleware(['role_or_permission:update ' . $this->controllerVars->level->names])->only('edit', 'update');
+            $this->middleware(['role_or_permission:create ' . $this->controllerVars->level->names])->only('create',
+                'store');
+            $this->middleware(['role_or_permission:update ' . $this->controllerVars->level->names])->only('edit',
+                'update');
             $this->middleware(['role_or_permission:delete ' . $this->controllerVars->level->names])->only('destroy');
         }
 
-        if (!isset($this->viewModelName)) {
+        if (!$this->viewModelName) {
             $this->viewModelName = $this->controllerVars->level->names;
-        }
-
-        if (!isset($this->sortingRef)) {
-            $this->sortingRef = "";
-        }
-
-        if (!isset($this->showPosition)) {
-            $this->showPosition = false;
-        }
-
-        if (!isset($this->showId)) {
-            $this->showId = true;
-        }
-
-        if (!isset($this->listing)) {
-            $this->listing = [];
-        }
-
-        if (!isset($this->formconfig)) {
-            $this->formconfig = [];
         }
 
         $this->required = $this->getRequired();
@@ -265,16 +247,17 @@ class PbBuilderController extends Controller
 
         // Process
         try {
-            // Build model
-            $model = new $this->controllerVars->level->modelPath();
             // Add requests
-            $model = $this->processModelRequests($this->validationRules, $request, $this->replacers, $model);
+            $model = $this->processModelRequests($this->validationRules, $request, $this->replacers,
+                new $this->controllerVars->level->modelPath());
             // Model save
             $model->save();
 
-            return $this->redirectResponseCRUDSuccess($request, $this->controllerVars->level->key . ' created successfully!');
+            return $this->redirectResponseCRUDSuccess($request,
+                $this->controllerVars->level->key . ' created successfully!');
         } catch (Exception $e) {
-            return $this->redirectResponseCRUDFail($request, $this->controllerVars->level->key . ' could not be created! '.$e->getMessage());
+            return $this->redirectResponseCRUDFail($request,
+                $this->controllerVars->level->key . ' could not be created! ' . $e->getMessage());
         }
     }
 
@@ -349,9 +332,11 @@ class PbBuilderController extends Controller
             // Update model
             $model->update($requests);
 
-            return $this->redirectResponseCRUDSuccess($request, $this->controllerVars->level->key . ' updated successfully!');
+            return $this->redirectResponseCRUDSuccess($request,
+                $this->controllerVars->level->key . ' updated successfully!');
         } catch (Exception $e) {
-            return $this->redirectResponseCRUDFail($request, $this->controllerVars->level->key . ' could not be updated! '.$e->getMessage());
+            return $this->redirectResponseCRUDFail($request,
+                $this->controllerVars->level->key . ' could not be updated! ' . $e->getMessage());
         }
     }
 
@@ -369,9 +354,11 @@ class PbBuilderController extends Controller
             // Delete element
             $this->controllerVars->level->modelPath::find($id)->delete();
 
-            return $this->redirectResponseCRUDSuccess($request, $this->controllerVars->level->key . ' deleted successfully!');
+            return $this->redirectResponseCRUDSuccess($request,
+                $this->controllerVars->level->key . ' deleted successfully!');
         } catch (Exception $e) {
-            return $this->redirectResponseCRUDFail($request, $this->controllerVars->level->key . ' could not be deleted! '.$e->getMessage());
+            return $this->redirectResponseCRUDFail($request,
+                $this->controllerVars->level->key . ' could not be deleted! ' . $e->getMessage());
         }
     }
 
@@ -395,7 +382,8 @@ class PbBuilderController extends Controller
             $n = 0;
             foreach ($sortList as $sortEl) {
                 if ($id > 0) {
-                    $query = $this->controllerVars->level->modelPath::where($this->sortingRef, $id)->where('id', $sortEl)->first();
+                    $query = $this->controllerVars->level->modelPath::where($this->sortingRef, $id)
+                        ->where('id', $sortEl)->first();
                     if ($query) {
                         // Build model
                         $el = $this->controllerVars->level->modelPath::find($query->id);
@@ -411,9 +399,11 @@ class PbBuilderController extends Controller
                 $n++;
             }
 
-            return $this->redirectResponseCRUDSuccess($request, $this->controllerVars->level->key . ' sorted successfully!');
+            return $this->redirectResponseCRUDSuccess($request,
+                $this->controllerVars->level->key . ' sorted successfully!');
         } catch (Exception $e) {
-            return $this->redirectResponseCRUDFail($request, $this->controllerVars->level->key . ' could not be sorted! '.$e->getMessage());
+            return $this->redirectResponseCRUDFail($request,
+                $this->controllerVars->level->key . ' could not be sorted! ' . $e->getMessage());
         }
     }
 
@@ -436,9 +426,7 @@ class PbBuilderController extends Controller
         if ($element) {
             if ($multiple) {
                 foreach ($element as $key => $value) {
-                    $arrayElements[
-                        ($value['size'] == 'multiple' ? $this->controllerVars->{$key}->prefixNames : $this->controllerVars->{$key}->prefixName)
-                    ] = $value['object'];
+                    $arrayElements[($value['size'] == 'multiple' ? $this->controllerVars->{$key}->prefixNames : $this->controllerVars->{$key}->prefixName)] = $value['object'];
                 }
             } else {
                 $arrayElements[($plural ? $this->controllerVars->level->prefixNames : $this->controllerVars->level->prefixName)] = $element;
@@ -457,19 +445,19 @@ class PbBuilderController extends Controller
      */
     protected function shareVars()
     {
-        $shared = array_merge(
-            $this->globalInertiaShare(),
-            Shares::allowed($this->allowed),
-            Shares::list($this->shares),
-            ['sort' => $this->sortable],
-            ['showpos' => $this->showPosition],
-            ['showid' => $this->showId],
-            ['model' => $this->viewModelName],
-            ['required' => $this->required],
-            ['defaults' => $this->getDefaults()],
-            ['listing' => $this->listing],
-            ['formconfig' => $this->formconfig],
-        );
+        $shared = [
+            ...$this->globalInertiaShare(),
+            ...Shares::allowed($this->allowed),
+            ...Shares::list($this->shares),
+            ...['sort' => $this->sortable],
+            ...['showpos' => $this->showPosition],
+            ...['showid' => $this->showId],
+            ...['model' => $this->viewModelName],
+            ...['required' => $this->required],
+            ...['defaults' => $this->getDefaults()],
+            ...['listing' => $this->listing],
+            ...['formconfig' => $this->formconfig],
+        ];
         Inertia::share('shared', $shared);
         PbDebugbar::addMessage($shared, 'shared');
     }
@@ -584,10 +572,10 @@ class PbBuilderController extends Controller
     protected function buildRouteString($route, $type): string
     {
         return $this->controllerVars->{$route}->viewsPath .
-                $this->buildFile(
-                    $type,
-                    ['singular' => $this->controllerVars->{$route}->key, 'plural' => $this->controllerVars->{$route}->keys]
-                );
+            $this->buildFile(
+                $type,
+                ['singular' => $this->controllerVars->{$route}->key, 'plural' => $this->controllerVars->{$route}->keys]
+            );
     }
 
     protected function buildFile($type, $keys)

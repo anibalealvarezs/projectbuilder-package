@@ -4,7 +4,12 @@ namespace Anibalealvarezs\Projectbuilder\Traits;
 
 trait PbModelMiscTrait {
 
-    public function getTable()
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @return string
+     */
+    public function getTable(): string
     {
         return $this->table;
     }

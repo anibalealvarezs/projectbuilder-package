@@ -6,12 +6,20 @@ use Anibalealvarezs\Projectbuilder\Helpers\Shares;
 use Anibalealvarezs\Projectbuilder\Models\PbUser;
 
 use Auth;
+use Illuminate\Contracts\Foundation\Application;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Routing\Redirector;
 use Illuminate\Support\Facades\Validator;
 
 trait PbControllerTrait
 {
-    protected function globalInertiaShare()
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @return array
+     */
+    protected function globalInertiaShare(): array
     {
         return Shares::list([
             'api_data',
@@ -21,7 +29,13 @@ trait PbControllerTrait
         ]);
     }
 
-    protected function getAllowed($permissions)
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @param $permissions
+     * @return array
+     */
+    protected function getAllowed($permissions): array
     {
         $allowed = [];
         if (is_array($permissions)) {
@@ -40,9 +54,9 @@ trait PbControllerTrait
      *
      * @param $validationRules
      * @param Request $request
-     * @return void
+     * @return Application|Redirector|RedirectResponse|null
      */
-    protected function validateRequest($validationRules, Request $request)
+    protected function validateRequest($validationRules, Request $request): Redirector|RedirectResponse|Application|null
     {
         $validator = Validator::make($request->all(), $validationRules);
 
@@ -59,14 +73,25 @@ trait PbControllerTrait
         return null;
     }
 
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @param $request
+     * @param $flashMessage
+     * @param string $route
+     * @param bool $destiny
+     * @param string $flashStyle
+     * @param bool $withInput
+     * @return RedirectResponse|Application|Redirector
+     */
     protected function redirectResponse(
         $request,
         $flashMessage,
-        $route = 'back',
-        $destiny = false,
-        $flashStyle = 'danger',
-        $withInput = true
-    ) {
+        string $route = 'back',
+        string $destiny = "",
+        string $flashStyle = 'danger',
+        bool $withInput = true
+    ): RedirectResponse|Application|Redirector {
         $request->session()->flash('flash.banner', $flashMessage);
         $request->session()->flash('flash.bannerStyle', $flashStyle);
 
@@ -92,7 +117,14 @@ trait PbControllerTrait
         return $redirect;
     }
 
-    protected function redirectResponseCRUDSuccess($request, $flashMessage)
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @param $request
+     * @param $flashMessage
+     * @return RedirectResponse|Application|Redirector
+     */
+    protected function redirectResponseCRUDSuccess($request, $flashMessage): Redirector|Application|RedirectResponse
     {
         return $this->redirectResponse(
             $request,
@@ -104,7 +136,14 @@ trait PbControllerTrait
         );
     }
 
-    protected function redirectResponseCRUDFail($request, $flashMessage)
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @param $request
+     * @param $flashMessage
+     * @return RedirectResponse|Application|Redirector
+     */
+    protected function redirectResponseCRUDFail($request, $flashMessage): Redirector|Application|RedirectResponse
     {
         return $this->redirectResponse(
             $request,

@@ -65,7 +65,10 @@ class PbRoleController extends PbBuilderController
         }
         $model = $query->get(); //Get all permissions
 
-        $this->required = array_merge($this->required, ['name']);
+        $this->required = [
+            ...$this->required,
+            ...['name']
+        ];
 
         return parent::index($model);
     }
@@ -78,7 +81,10 @@ class PbRoleController extends PbBuilderController
      */
     public function create(string $route = 'level'): InertiaResponse|JsonResponse
     {
-        $this->required = array_merge($this->required, ['name']);
+        $this->required = [
+            ...$this->required,
+            ...['name']
+        ];
 
         return parent::create($route);
     }
@@ -151,7 +157,10 @@ class PbRoleController extends PbBuilderController
     {
         $model = $this->controllerVars->level->modelPath::withPublicRelations()->whereNotIn('name', ['super-admin', 'developer', 'api-user'])->findOrFail($id);
 
-        $this->required = array_merge($this->required, ['name']);
+        $this->required = [
+            ...$this->required,
+            ...['name']
+        ];
 
         return parent::edit($id, $model);
     }

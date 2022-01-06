@@ -62,7 +62,10 @@ class PbConfigController extends PbBuilderController
      */
     public function create(string $route = 'level'): InertiaResponse|JsonResponse
     {
-        $this->required = array_merge($this->required, ['configkey']);
+        $this->required = [
+            ...$this->required,
+            ...['configkey']
+        ];
 
         return parent::create();
     }
@@ -95,7 +98,10 @@ class PbConfigController extends PbBuilderController
         bool $multiple = false,
         string $route = 'level'
     ): InertiaResponse|JsonResponse {
-        $this->required = array_merge($this->required, ['configkey']);
+        $this->required = [
+            ...$this->required,
+            ...['configkey']
+    ];
 
         return parent::edit($id);
     }

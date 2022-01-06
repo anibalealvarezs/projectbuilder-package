@@ -5,7 +5,9 @@
         "project",
         "laravel",
         "builder",
-        "productivity"
+        "productivity",
+        "crud",
+        "api"
     ],
     "homepage": "https://anibalalvarez.com",
     "license": "MIT",

@@ -9,47 +9,86 @@ use Anibalealvarezs\Projectbuilder\Models\PbNavigation;
 use Anibalealvarezs\Projectbuilder\Models\PbPermission;
 use Anibalealvarezs\Projectbuilder\Models\PbRole;
 use Anibalealvarezs\Projectbuilder\Models\PbUser;
-use Illuminate\Support\Facades\Auth;
+use JetBrains\PhpStorm\ArrayShape;
 
 class Shares
 {
+    /**
+     * Transform the resource into an array.
+     *
+     * @param $elements
+     * @return array
+     */
     public static function list($elements): array
     {
         $list = [];
         foreach ($elements as $element) {
             switch ($element) {
                 case "user_permissions_and_roles":
-                    $list = array_merge($list, self::getUserPermissionsAndRoles());
+                    $list = [
+                        ...$list,
+                        ...self::getUserPermissionsAndRoles()
+                    ];
                     break;
                 case "navigations":
-                    $list = array_merge($list, self::getNavigations());
+                    $list = [
+                        ...$list,
+                        ...self::getNavigations()
+                    ];
                     break;
                 case "locale":
-                    $list = array_merge($list, self::getCustomLocale());
+                    $list = [
+                        ...$list,
+                        ...self::getCustomLocale()
+                    ];
                     break;
                 case "permissions":
-                    $list = array_merge($list, self::getPermissions());
+                    $list = [
+                        ...$list,
+                        ...self::getPermissions()
+                    ];
                     break;
                 case "permissionsall":
-                    $list = array_merge($list, self::getPermissionsAll());
+                    $list = [
+                        ...$list,
+                        ...self::getPermissionsAll()
+                    ];
                     break;
                 case "roles":
-                    $list = array_merge($list, self::getRoles());
+                    $list = [
+                        ...$list,
+                        ...self::getRoles()
+                    ];
                     break;
                 case "languages":
-                    $list = array_merge($list, self::getLanguages());
+                    $list = [
+                        ...$list,
+                        ...self::getLanguages()
+                    ];
                     break;
                 case "countries":
-                    $list = array_merge($list, self::getCountries());
+                    $list = [
+                        ...$list,
+                        ...self::getCountries()
+                    ];
                     break;
                 case "me":
-                    $list = array_merge($list, self::getMyData());
+                    $list = [
+                        ...$list,
+                        ...self::getMyData()
+                    ];
                     break;
                 case "api_data":
-                    $list = array_merge($list, self::apiData());
+                    $list = [
+                        ...$list,
+                        ...self::apiData()
+                    ];
                     break;
                 case "debug_status":
-                    $list = array_merge($list, ['debug_enabled' => PbDebugbar::isDebugEnabled()]);
+                    $list = [
+                        ...$list,
+                        ...['debug_enabled' => PbDebugbar::isDebugEnabled()]
+                    ];
                     break;
                 default:
                     break;
@@ -58,7 +97,13 @@ class Shares
         return $list;
     }
 
-    public static function allowed($elements): array
+    /**
+     * Transform the resource into an array.
+     *
+     * @param $elements
+     * @return array
+     */
+    #[ArrayShape(['allowed' => "array"])] public static function allowed($elements): array
     {
         $allowed = [];
         foreach($elements as $key => $value) {
@@ -69,7 +114,12 @@ class Shares
         ];
     }
 
-    public static function getUserPermissionsAndRoles(): array
+    /**
+     * Transform the resource into an array.
+     *
+     * @return array
+     */
+    #[ArrayShape(['userdata' => "array|null"])] public static function getUserPermissionsAndRoles(): array
     {
         $user = PbUser::current();
         return [
@@ -80,7 +130,12 @@ class Shares
         ];
     }
 
-    public static function getNavigations(): array
+    /**
+     * Transform the resource into an array.
+     *
+     * @return array
+     */
+    #[ArrayShape(['navigations' => "array"])] public static function getNavigations(): array
     {
         $user = PbUser::current();
         $userPermissions = $user->getAllPermissions()->pluck('id');
@@ -102,7 +157,12 @@ class Shares
         ];
     }
 
-    public static function getCustomLocale(): array
+    /**
+     * Transform the resource into an array.
+     *
+     * @return array
+     */
+    #[ArrayShape(['locale' => "string"])] public static function getCustomLocale(): array
     {
         $customLocale = PbHelpers::getCustomLocale();
         return [
@@ -110,7 +170,12 @@ class Shares
         ];
     }
 
-    public static function getPermissions(): array
+    /**
+     * Transform the resource into an array.
+     *
+     * @return array
+     */
+    #[ArrayShape(['permissions' => "mixed"])] public static function getPermissions(): array
     {
         $permissions = PbPermission::whereIn('id', PbUser::current()->getAllPermissions()->pluck('id'))->get();
         return [
@@ -118,7 +183,12 @@ class Shares
         ];
     }
 
-    public static function getPermissionsAll(): array
+    /**
+     * Transform the resource into an array.
+     *
+     * @return array
+     */
+    #[ArrayShape(['permissionsall' => "mixed"])] public static function getPermissionsAll(): array
     {
         // Temporarily all permissions will be limited to the user's
         return [
@@ -126,7 +196,12 @@ class Shares
         ];
     }
 
-    public static function getRoles(): array
+    /**
+     * Transform the resource into an array.
+     *
+     * @return array
+     */
+    #[ArrayShape(['roles' => "mixed"])] public static function getRoles(): array
     {
         $user = PbUser::current();
         $roles = ([]);
@@ -151,28 +226,48 @@ class Shares
         ];
     }
 
-    public static function getLanguages(): array
+    /**
+     * Transform the resource into an array.
+     *
+     * @return array
+     */
+    #[ArrayShape(['languages' => "mixed"])] public static function getLanguages(): array
     {
         return [
             'languages' => PbLanguage::enabled()->get()
         ];
     }
 
-    public static function getCountries(): array
+    /**
+     * Transform the resource into an array.
+     *
+     * @return array
+     */
+    #[ArrayShape(['countries' => "\Anibalealvarezs\Projectbuilder\Models\PbCountry[]|\Illuminate\Database\Eloquent\Collection"])] public static function getCountries(): array
     {
         return [
             'countries' => PbCountry::all()
         ];
     }
 
-    public static function getMyData(): array
+    /**
+     * Transform the resource into an array.
+     *
+     * @return array
+     */
+    #[ArrayShape(['me' => "mixed"])] public static function getMyData(): array
     {
         return [
             'me' => PbUser::withPublicRelations()->current()
         ];
     }
 
-    public static function apiData(): array
+    /**
+     * Transform the resource into an array.
+     *
+     * @return array
+     */
+    #[ArrayShape(['api_data' => "array"])] public static function apiData(): array
     {
         return [
             'api_data' => [

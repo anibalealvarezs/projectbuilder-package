@@ -60,19 +60,25 @@ class PbPermissionController extends PbBuilderController
         $me = PbUser::current();
         $toExclude = ['crud super-admin'];
         if (!$me->hasRole('super-admin')) {
-            $toExclude = array_merge($toExclude, [
-                'admin roles permissions',
-                'manage app',
-                'crud super-admin',
-                'config builder',
-                'developer options',
-                'read loggers',
-                'delete loggers',
-                'config loggers',
-                'api access',
-            ]);
+            $toExclude = [
+                ...$toExclude,
+                ...[
+                    'admin roles permissions',
+                    'manage app',
+                    'crud super-admin',
+                    'config builder',
+                    'developer options',
+                    'read loggers',
+                    'delete loggers',
+                    'config loggers',
+                    'api access',
+                ]
+            ];
             if (!$me->hasRole('admin')) {
-                $toExclude = array_merge($toExclude, ['login', 'create users', 'update users', 'delete users']);
+                $toExclude = [
+                    ...$toExclude,
+                    ...['login', 'create users', 'update users', 'delete users']
+                ];
             }
         }
         //Get all permissions
@@ -108,10 +114,10 @@ class PbPermissionController extends PbBuilderController
             if ($model->save()) {
                 $adminRoles = PbRole::whereIn('name', ['super-admin', 'admin'])->get()->modelKeys();
                 $model->syncRoles(
-                    array_merge(
-                        ($roles && is_array($roles) ? $roles : ($roles ? [$roles] : [])),
-                        ($adminRoles && is_array($adminRoles) ? $adminRoles : ($adminRoles ? [$adminRoles] : []))
-                    )
+                    [
+                        ...($roles && is_array($roles) ? $roles : ($roles ? [$roles] : [])),
+                        ...($adminRoles && is_array($adminRoles) ? $adminRoles : ($adminRoles ? [$adminRoles] : []))
+                    ]
                 );
             }
 
@@ -201,10 +207,10 @@ class PbPermissionController extends PbBuilderController
                 } else {
                     $adminRoles = PbRole::whereIn('name', ['super-admin', 'admin'])->get()->modelKeys();
                     $model->syncRoles(
-                        array_merge(
-                            ($roles && is_array($roles) ? $roles : ($roles ? [$roles] : [])),
-                            ($adminRoles && is_array($adminRoles) ? $adminRoles : ($adminRoles ? [$adminRoles] : []))
-                        )
+                        [
+                            ...($roles && is_array($roles) ? $roles : ($roles ? [$roles] : [])),
+                            ...($adminRoles && is_array($adminRoles) ? $adminRoles : ($adminRoles ? [$adminRoles] : []))
+                        ]
                     );
                 }
             }

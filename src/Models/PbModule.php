@@ -86,7 +86,7 @@ class PbModule extends PbBuilder
      */
     public static function isEnabled($value): bool
     {
-        $module = (new PbModule)->getByKey($value);
+        $module = (app(PbModule::class))->getByKey($value);
         if ($module) {
             return (bool) $module->status;
         }
@@ -101,7 +101,7 @@ class PbModule extends PbBuilder
      */
     public static function exists($value): bool
     {
-        $module = (new PbModule)->getByKey($value);
+        $module = (app(PbModule::class))->getByKey($value);
         if ($module) {
             return true;
         }

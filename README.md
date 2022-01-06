@@ -35,13 +35,15 @@ composer create-project laravel/laravel my-project
 composer require anibalealvarezs/projectbuilder-package --no-cache
 php artisan pbuilder:install --all
 ```
-For package updating, you can use these typical options:
+For package updating, you can use these equivalent options:
 ```shell
+php artisan pbuilder:update
 php artisan pbuilder:install --publish --migrate --seed --npm --compile
 ```
-In case of Artisan commands failure, use the alternative installation command:
+In case of Artisan commands failure, use the alternative commands:
 ```
 php artisan pbuilder:altinstall
+php artisan pbuilder:altupdate
 ```
 For full command information, you can check the help command:
 ```

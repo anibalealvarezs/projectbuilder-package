@@ -66,7 +66,10 @@ class PbUserController extends PbBuilderController
      */
     public function index($element = null, bool $multiple = false, string $route = 'level'): InertiaResponse|JsonResponse|RedirectResponse
     {
-        $this->required = array_merge($this->required, ['roles', 'email']);
+        $this->required = [
+            ...$this->required,
+            ...['roles', 'email']
+        ];
 
         $query = $this->controllerVars->level->modelPath::withPublicRelations();
         $currentUser = $this->controllerVars->level->modelPath::current();
@@ -119,7 +122,10 @@ class PbUserController extends PbBuilderController
             'create '.$this->controllerVars->level->names => 'create',
         ];
 
-        $this->required = array_merge($this->required, ['roles', 'password', 'email']);
+        $this->required = [
+            ...$this->required,
+            ...['roles', 'password', 'email']
+        ];
 
         return $this->renderResponse($this->controllerVars->level->viewsPath.'Create'.$this->controllerVars->level->key);
     }
@@ -140,7 +146,7 @@ class PbUserController extends PbBuilderController
         ];
 
         // Validation
-        if ($failed = $this->validateRequest(array_merge($this->validationRules, $validationRules2), $request)) {
+        if ($failed = $this->validateRequest([...$this->validationRules, ...$validationRules2], $request)) {
             return $failed;
         }
 
@@ -166,7 +172,10 @@ class PbUserController extends PbBuilderController
                             $roles = ['super-admin'];
                         } elseif (in_array('admin', $roles)) {
                             // Add admin, and change developer and api-user
-                            $roles = array_merge(['admin'], array_intersect(['developer', 'api-user'], $roles));
+                            $roles = [
+                                ...['admin'],
+                                ...array_intersect(['developer', 'api-user'], $roles)
+                            ];
                         }
                     } elseif ($me->hasRole(['admin'])) {
                         // Remove super-admin/admin
@@ -226,7 +235,10 @@ class PbUserController extends PbBuilderController
 
         $model = $this->controllerVars->level->modelPath::withPublicRelations()->find($id);
 
-        $this->required = array_merge($this->required, ['roles', 'email']);
+        $this->required = [
+            ...$this->required,
+            ...['roles', 'email']
+        ];
 
         return parent::edit($id, $model);
     }
@@ -247,7 +259,7 @@ class PbUserController extends PbBuilderController
         ];
 
         // Validation
-        if ($failed = $this->validateRequest(array_merge($this->validationRules, $validationRules2), $request)) {
+        if ($failed = $this->validateRequest([...$this->validationRules, ...$validationRules2], $request)) {
             return $failed;
         }
 
@@ -276,12 +288,18 @@ class PbUserController extends PbBuilderController
                         $roles = ['super-admin'];
                     } elseif (in_array('admin', $roles)) {
                         // Add admin, and change developer and api-user
-                        $roles = array_merge(['admin'], array_intersect(['developer', 'api-user'], $roles));
+                        $roles = [
+                            ...['admin'],
+                            array_intersect(['developer', 'api-user'], $roles)
+                        ];
                     }
                 } elseif ($me->hasRole(['admin'])) {
                     if (($model->id == Auth::user()->id) || $model->hasRole(['admin'])) {
                         // Add admin, and change developer and api-user
-                        $roles = array_merge(['admin'], array_intersect(['developer', 'api-user'], $roles));
+                        $roles = [
+                            ...['admin'],
+                            ...array_intersect(['developer', 'api-user'], $roles)
+                        ];
                     } else {
                         // Remove super-admin/admin
                         $toExclude = ['super-admin', 'admin'];

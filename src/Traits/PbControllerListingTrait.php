@@ -3,24 +3,33 @@
 namespace Anibalealvarezs\Projectbuilder\Traits;
 
 use Illuminate\Support\Facades\Schema;
+use JetBrains\PhpStorm\ArrayShape;
 
 trait PbControllerListingTrait
 {
     protected static $item = "";
     protected static $route = "";
 
-    /*
-     * Build default listing items.
+    /**
+     * Remove the specified resource from storage.
      *
-     * @var array
+     * @param $config
+     * @param array $default
+     * @return array
      */
-    protected static function buildListingRow($config, $default = []): array
+    protected static function buildListingRow($config, array $default = []): array
     {
         // Push default fields
         $row = self::buildDefaultFields($default);
         // Push custom fields
-        $fields = array_merge(Schema::getColumnListing((new $config['model'])->getTable()), $config['relations']);
-        $fields = array_merge(array_intersect($config['custom_order'], $fields), array_diff($fields, $config['custom_order']));
+        $fields = [
+            ...Schema::getColumnListing((new $config['model'])->getTable()),
+            ...$config['relations']
+        ];
+        $fields = [
+            ...array_intersect($config['custom_order'], $fields),
+            ...array_diff($fields, $config['custom_order'])
+        ];
         foreach ($fields as $field) {
             if (in_array($field, array_keys($config['fields']))) {
                 $config['fields'][$field]['key'] = $field;
@@ -33,12 +42,13 @@ trait PbControllerListingTrait
         return $row;
     }
 
-    /*
-     * Build default listing items.
+    /**
+     * Remove the specified resource from storage.
      *
-     * @var array
+     * @param array $options
+     * @return array
      */
-    protected static function buildDefaultFields($options = []): array
+    protected static function buildDefaultFields(array $options = []): array
     {
         $items = [];
 
@@ -82,12 +92,15 @@ trait PbControllerListingTrait
         return $items;
     }
 
-    /*
-     * Default listing data.
+    /**
+     * Remove the specified resource from storage.
      *
-     * @var array
+     * @param array $actions
+     * @param array $actionRoutes
+     * @param array $enabledActions
+     * @return array
      */
-    protected static function buildActionsField($actions = [], $actionRoutes = [], $enabledActions = []): array
+    protected static function buildActionsField(array $actions = [], array $actionRoutes = [], array $enabledActions = []): array
     {
         return self::buildListingField(
             [
@@ -102,12 +115,22 @@ trait PbControllerListingTrait
         );
     }
 
-    /*
-     * Default listing item configuration.
+    /**
+     * Remove the specified resource from storage.
      *
-     * @var array
+     * @param array $options
+     * @return array
      */
-    protected static function buildListingField($options = []): array
+    #[ArrayShape([
+        "key" => "mixed|string",
+        "name" => "mixed|string",
+        "arrval" => "array|mixed",
+        "style" => "array|mixed",
+        "buttons" => "array|mixed",
+        "href" => "array|mixed",
+        "size" => "mixed|string",
+        "status" => "false|mixed"
+    ])] protected static function buildListingField(array $options = []): array
     {
 
         /* Style */
@@ -147,10 +170,13 @@ trait PbControllerListingTrait
         ];
     }
 
-    /*
-     * Default listing item configuration.
+    /**
+     * Remove the specified resource from storage.
      *
-     * @var array
+     * @param $actions
+     * @param $actionRoutes
+     * @param $enabledActions
+     * @return array
      */
     protected static function buildActions($actions, $actionRoutes, $enabledActions): array
     {

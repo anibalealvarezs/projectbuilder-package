@@ -8,21 +8,38 @@ use Illuminate\Support\Facades\Auth;
 
 class PbDebugbar extends Debugbar
 {
-    public static function toggleStatus()
+    /**
+     * Transform the resource into an array.
+     *
+     * @return void
+     */
+    public static function toggleStatus(): void
     {
         if(!self::isDebugEnabled()) {
             self::disable();
         }
     }
 
-    public static function addMessage(mixed $message, string $label = 'info')
+    /**
+     * Transform the resource into an array.
+     *
+     * @param mixed $message
+     * @param string $label
+     * @return void
+     */
+    public static function addMessage(mixed $message, string $label = 'info'): void
     {
         if (self::isDebugEnabled()) {
             Debugbar::addMessage($message, $label);
         }
     }
 
-    public static function isDebugEnabled()
+    /**
+     * Transform the resource into an array.
+     *
+     * @return bool
+     */
+    public static function isDebugEnabled(): bool
     {
         $isLogged = Auth::check();
         $canDebug = false;

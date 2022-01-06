@@ -31,9 +31,7 @@ class PbApiTokenController extends ApiTokenController
     {
         Inertia::share(
             'shared',
-            array_merge(
-                $this->globalInertiaShare(),
-            )
+            $this->globalInertiaShare()
         );
 
         return self::inertia()->render($request, 'API/Index', [
@@ -53,7 +51,7 @@ class PbApiTokenController extends ApiTokenController
     protected static function inertia(): PbInertiaManager
     {
         if (is_null(static::$inertiaManager)) {
-            static::$inertiaManager = new PbInertiaManager();
+            static::$inertiaManager = app(PbInertiaManager::class);
         }
 
         return static::$inertiaManager;

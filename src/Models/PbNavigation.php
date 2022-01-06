@@ -135,7 +135,10 @@ class PbNavigation extends PbBuilder
             ],
             'parent' => [
                 'type' => 'select',
-                'list' => array_merge([['id'=>0, 'name'=>'[none]']], Shares::getNavigations()['navigations']['full']->toArray()),
+                'list' => [
+                    ...[['id'=>0, 'name'=>'[none]']],
+                    ...Shares::getNavigations()['navigations']['full']->toArray()
+                ],
             ],
             'permission' => [
                 'type' => 'select',

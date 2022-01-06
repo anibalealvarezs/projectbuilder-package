@@ -17,7 +17,7 @@ class PbInertiaManager extends InertiaManager
      * @param  array  $data
      * @return Response
      */
-    public function render(Request $request, string $page, array $data = [])
+    public function render(Request $request, string $page, array $data = []): Response
     {
         if (isset($this->renderingCallbacks[$page])) {
             foreach ($this->renderingCallbacks[$page] as $callback) {
