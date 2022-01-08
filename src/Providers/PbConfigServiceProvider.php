@@ -2,21 +2,11 @@
 
 namespace Anibalealvarezs\Projectbuilder\Providers;
 
-use Anibalealvarezs\Projectbuilder\Helpers\PbHelpers;
 use Illuminate\Contracts\Http\Kernel;
 use Illuminate\Support\ServiceProvider;
 
 class PbConfigServiceProvider extends ServiceProvider
 {
-    private $configPath;
-
-    public function __construct($app)
-    {
-        $this->configPath = __DIR__.DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'config';
-
-        parent::__construct($app);
-    }
-
     /**
      * Bootstrap the application services.
      *
@@ -24,9 +14,7 @@ class PbConfigServiceProvider extends ServiceProvider
      */
     public function boot(Kernel $kernel)
     {
-        $this->publishes([
-            $this->configPath.DIRECTORY_SEPARATOR.'pbuilder.php' => config_path('pbuilder.php')
-        ], 'config');
+        //
     }
 
     /**

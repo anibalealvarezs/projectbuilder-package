@@ -19,15 +19,16 @@ class PbHelpers
     public string $prefix;
     public string $name;
     public array $modulekeys;
-    public const CONFIG_PATH = 'pbuilder';
+    private const CONFIG_PATH = '../config/pbuilder.php';
     public const NON_EXISTENT_MODULES = [
         'logger'
     ];
 
     function __construct()
     {
+        $defaults = require(self::CONFIG_PATH);
         foreach (['vendor', 'package', 'directory', 'prefix', 'name', 'modulekeys'] as $var) {
-            $this->{$var} = config(self::CONFIG_PATH . '.' . $var);
+            $this->{$var} = $defaults[$var];
         }
     }
 
