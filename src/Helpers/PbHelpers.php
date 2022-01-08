@@ -19,7 +19,7 @@ class PbHelpers
     public string $prefix;
     public string $name;
     public array $modulekeys;
-    private const CONFIG_PATH = '../config/pbuilder.php';
+    private const CONFIG_PATH = __DIR__ . '/../config/pbuilder.php';
     public const NON_EXISTENT_MODULES = [
         'logger'
     ];
