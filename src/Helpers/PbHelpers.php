@@ -19,7 +19,8 @@ class PbHelpers
     public string $prefix;
     public string $name;
     public array $modulekeys;
-    private const CONFIG_PATH = __DIR__ . '/../config/pbuilder.php';
+    private array $toExtract = ['vendor', 'package', 'directory', 'prefix', 'name', 'modulekeys'];
+    private const CONFIG_PATH = __DIR__ . DIRECTORY_SEPARATOR . '..'. DIRECTORY_SEPARATOR .'config'. DIRECTORY_SEPARATOR .'pbuilder.php';
     public const NON_EXISTENT_MODULES = [
         'logger'
     ];
@@ -27,7 +28,7 @@ class PbHelpers
     function __construct()
     {
         $defaults = require(self::CONFIG_PATH);
-        foreach (['vendor', 'package', 'directory', 'prefix', 'name', 'modulekeys'] as $var) {
+        foreach ($this->toExtract as $var) {
             $this->{$var} = $defaults[$var];
         }
     }
