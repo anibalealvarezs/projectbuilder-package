@@ -18,6 +18,7 @@ class PbHelpers
     public string $directory;
     public string $prefix;
     public string $name;
+    public array $modulekeys;
     public const CONFIG_PATH = 'pbuilder';
     public const NON_EXISTENT_MODULES = [
         'logger'
@@ -25,7 +26,7 @@ class PbHelpers
 
     function __construct()
     {
-        foreach (['vendor', 'package', 'directory', 'prefix', 'name'] as $var) {
+        foreach (['vendor', 'package', 'directory', 'prefix', 'name', 'modulekeys'] as $var) {
             $this->{$var} = config(self::CONFIG_PATH . '.' . $var);
         }
     }

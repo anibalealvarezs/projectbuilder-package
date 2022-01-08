@@ -57,4 +57,15 @@ return [
 
     'name' => 'Anibalealvarezs',
 
+    /*
+    |--------------------------------------------------------------------------
+    | Modules
+    |--------------------------------------------------------------------------
+    |
+    | Modules included in package.
+    |
+    */
+
+    'modulekeys' => ['user', 'config', 'navigation', 'permission', 'role'],
+
 ];
