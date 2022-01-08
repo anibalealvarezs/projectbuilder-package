@@ -3,6 +3,8 @@
 namespace Anibalealvarezs\Projectbuilder\Providers;
 
 use Anibalealvarezs\Projectbuilder\Helpers\PbHelpers;
+use Anibalealvarezs\Projectbuilder\Models\PbModule;
+use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Contracts\Http\Kernel;
 use Illuminate\Support\ServiceProvider;
 
@@ -11,15 +13,15 @@ class PbControllerServiceProvider extends ServiceProvider
     /**
      * @var string
      */
-    protected $namespace;
+    protected string $namespace;
     /**
      * @var string
      */
-    protected $prefix;
+    protected string $prefix;
     /**
      * @var string
      */
-    private $suffix;
+    private string $suffix;
 
     public function __construct($app)
     {
@@ -34,10 +36,18 @@ class PbControllerServiceProvider extends ServiceProvider
      * Bootstrap the application services.
      *
      * @return void
+     * @throws BindingResolutionException
      */
     public function boot(Kernel $kernel)
     {
-        //
+        $this->app->make($this->namespace.'\Auth\\'.$this->prefix.'ForgotPassword'.$this->suffix);
+        $this->app->make($this->namespace.'\Auth\\'.$this->prefix.'Login'.$this->suffix);
+        $this->app->make($this->namespace.'\Auth\\'.$this->prefix.'Register'.$this->suffix);
+        $this->app->make($this->namespace.'\Auth\\'.$this->prefix.'ResetPassword'.$this->suffix);
+        $models = [...PbHelpers::NON_EXISTENT_MODULES, ...PbModule::pluck('modulekey')];
+        foreach ($models as $model) {
+            $this->app->make($this->namespace.'\\'.ucfirst($model).'\\'.$this->prefix.ucfirst($model).$this->suffix);
+        }
     }
 
     /**
@@ -47,15 +57,6 @@ class PbControllerServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        $this->app->make($this->namespace.'\Auth\\'.$this->prefix.'ForgotPassword'.$this->suffix);
-        $this->app->make($this->namespace.'\Auth\\'.$this->prefix.'Login'.$this->suffix);
-        $this->app->make($this->namespace.'\Auth\\'.$this->prefix.'Register'.$this->suffix);
-        $this->app->make($this->namespace.'\Auth\\'.$this->prefix.'ResetPassword'.$this->suffix);
-        $this->app->make($this->namespace.'\Config\\'.$this->prefix.'Config'.$this->suffix);
-        $this->app->make($this->namespace.'\Dashboard\\'.$this->prefix.'Dashboard'.$this->suffix);
-        $this->app->make($this->namespace.'\User\\'.$this->prefix.'User'.$this->suffix);
-        $this->app->make($this->namespace.'\Logger\\'.$this->prefix.'Logger'.$this->suffix);
-        $this->app->make($this->namespace.'\Permission\\'.$this->prefix.'Permission'.$this->suffix);
-        $this->app->make($this->namespace.'\Permission\\'.$this->prefix.'Role'.$this->suffix);
+        //
     }
 }

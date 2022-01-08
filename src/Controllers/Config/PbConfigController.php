@@ -6,9 +6,11 @@ use Anibalealvarezs\Projectbuilder\Controllers\PbBuilderController;
 
 use App\Http\Requests;
 
+use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Routing\Redirector;
 use Illuminate\Validation\Rule;
 
 use Auth;
@@ -74,9 +76,9 @@ class PbConfigController extends PbBuilderController
      * Store a newly created resource in storage.
      *
      * @param Request $request
-     * @return void
+     * @return Application|Redirector|RedirectResponse|null
      */
-    public function store(Request $request)
+    public function store(Request $request): Redirector|RedirectResponse|Application|null
     {
         $this->validationRules['configkey'] = ['required', 'max:50', Rule::unique($this->controllerVars->level->table)];
 
@@ -111,9 +113,9 @@ class PbConfigController extends PbBuilderController
      *
      * @param Request $request
      * @param int $id
-     * @return void
+     * @return Application|Redirector|RedirectResponse|null
      */
-    public function update(Request $request, int $id)
+    public function update(Request $request, int $id): Redirector|RedirectResponse|Application|null
     {
         $this->validationRules['configkey'] = ['required', 'max:50', Rule::unique($this->controllerVars->level->table)->ignore($id)];
 

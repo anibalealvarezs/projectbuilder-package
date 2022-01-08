@@ -1,6 +1,6 @@
 <?php
 
-namespace Anibalealvarezs\Projectbuilder\Controllers\Permission;
+namespace Anibalealvarezs\Projectbuilder\Controllers\Role;
 
 use Anibalealvarezs\Projectbuilder\Controllers\PbBuilderController;
 use Anibalealvarezs\Projectbuilder\Models\PbPermission;
@@ -24,9 +24,9 @@ use Session;
 
 class PbRoleController extends PbBuilderController
 {
-    protected $superAdminExclusivePermissions;
+    protected Array $superAdminExclusivePermissions;
 
-    protected $adminOptionalPermissions;
+    protected Array $adminOptionalPermissions;
 
     public function __construct(Request $request, $crud_perms = false)
     {
@@ -93,9 +93,9 @@ class PbRoleController extends PbBuilderController
      * Store a newly created resource in storage.
      *
      * @param Request $request
-     * @return void
+     * @return Application|Redirector|RedirectResponse|null
      */
-    public function store(Request $request)
+    public function store(Request $request): Redirector|RedirectResponse|Application|null
     {
         $this->validationRules['name'] = ['required', 'max:20', Rule::unique($this->controllerVars->level->table)];
 
@@ -170,9 +170,9 @@ class PbRoleController extends PbBuilderController
      *
      * @param Request $request
      * @param int $id
-     * @return void
+     * @return Application|Redirector|RedirectResponse|null
      */
-    public function update(Request $request, int $id)
+    public function update(Request $request, int $id): Redirector|RedirectResponse|Application|null
     {
         $this->validationRules['name'] = ['required', 'max:20', Rule::unique($this->controllerVars->level->table)->ignore($id)];
 
@@ -226,9 +226,9 @@ class PbRoleController extends PbBuilderController
      *
      * @param Request $request
      * @param int $id
-     * @return void
+     * @return Application|Redirector|RedirectResponse
      */
-    public function destroy(Request $request, int $id)
+    public function destroy(Request $request, int $id): Redirector|RedirectResponse|Application
     {
         // Process
         try {

@@ -134,9 +134,9 @@ class PbUserController extends PbBuilderController
      * Store a newly created resource in storage.
      *
      * @param Request $request
-     * @return void
+     * @return Application|Redirector|RedirectResponse|null
      */
-    public function store(Request $request)
+    public function store(Request $request): Redirector|RedirectResponse|Application|null
     {
         $this->validationRules['email'] = ['required', 'max:50', 'email', Rule::unique($this->controllerVars->level->table)];
         $this->validationRules['password'] = ['required'];
@@ -248,9 +248,9 @@ class PbUserController extends PbBuilderController
      *
      * @param Request $request
      * @param int $id
-     * @return void
+     * @return Application|Redirector|RedirectResponse|null
      */
-    public function update(Request $request, int $id)
+    public function update(Request $request, int $id): Redirector|RedirectResponse|Application|null
     {
         $this->validationRules['email'] = ['required', 'max:50', 'email', Rule::unique($this->controllerVars->level->table)->ignore($id)];
 

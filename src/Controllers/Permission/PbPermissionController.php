@@ -91,9 +91,9 @@ class PbPermissionController extends PbBuilderController
      * Store a newly created resource in storage.
      *
      * @param Request $request
-     * @return void
+     * @return Application|Redirector|RedirectResponse|null
      */
-    public function store(Request $request)
+    public function store(Request $request): Redirector|RedirectResponse|Application|null
     {
         // Validation
         if ($failed = $this->validateRequest($this->validationRules, $request)) {
@@ -170,9 +170,9 @@ class PbPermissionController extends PbBuilderController
      *
      * @param Request $request
      * @param int $id
-     * @return void
+     * @return Application|Redirector|RedirectResponse|null
      */
-    public function update(Request $request, int $id)
+    public function update(Request $request, int $id): Redirector|RedirectResponse|Application|null
     {
         // Validation
         if ($failed = $this->validateRequest($this->validationRules, $request)) {
@@ -226,9 +226,9 @@ class PbPermissionController extends PbBuilderController
      *
      * @param Request $request
      * @param int $id
-     * @return void
+     * @return Application|Redirector|RedirectResponse
      */
-    public function destroy(Request $request, int $id)
+    public function destroy(Request $request, int $id): Redirector|RedirectResponse|Application
     {
         // Process
         try {

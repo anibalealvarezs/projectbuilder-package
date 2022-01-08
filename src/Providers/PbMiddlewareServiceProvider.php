@@ -12,15 +12,15 @@ class PbMiddlewareServiceProvider extends ServiceProvider
     /**
      * @var string
      */
-    protected $namespace;
+    protected string $namespace;
     /**
      * @var string
      */
-    protected $prefix;
+    protected string $prefix;
     /**
      * @var string
      */
-    private $suffix;
+    private string $suffix;
 
     public function __construct($app)
     {

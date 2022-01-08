@@ -3,11 +3,13 @@
 namespace Anibalealvarezs\Projectbuilder\Helpers;
 
 use Anibalealvarezs\Projectbuilder\Models\PbConfig;
+use Anibalealvarezs\Projectbuilder\Models\PbModule;
 use Anibalealvarezs\Projectbuilder\Models\PbUser;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Route;
 
 class PbHelpers
 {
@@ -16,6 +18,9 @@ class PbHelpers
     public const PB_DIR = 'projectbuilder-package';
     public const PB_PREFIX = 'Pb';
     public const PB_NAME = 'builder';
+    public const NON_EXISTENT_MODULES = [
+        'logger'
+    ];
 
     function __construct()
     {
@@ -150,5 +155,45 @@ class PbHelpers
         $object->viewsPath = $package . "/" . $object->keys . "/";
         $object->table = (new $object->modelPath())->getTable();
         return $object;
+    }
+
+    /**
+     * Returns existing migration file if found, else uses the current timestamp.
+     *
+     * @param $type
+     * @return void
+     */
+    public static function buildCrudRoutes($type): void
+    {
+        $models = [...self::NON_EXISTENT_MODULES, ...PbModule::pluck('modulekey')];
+
+        foreach ($models as $model) {
+            $controller = self::PB_VENDOR . '\\' . self::PB_PACKAGE . '\\Controllers\\'.ucfirst($model).'\\' . self::PB_PREFIX .ucfirst($model).'Controller';
+            switch ($type) {
+                case 'web':
+                    Route::resource($model.'s', $controller)->middleware(['web', 'auth:sanctum', 'verified']);
+                    break;
+                default:
+                    Route::prefix('api')->group(
+                        fn () => Route::resource($model.'s', $controller)->middleware(['auth:sanctum', 'verified', 'api_access'])->names(self::getApiRoutesNames($model))
+                    );
+                    break;
+            }
+        }
+    }
+
+    /**
+     * Returns existing migration file if found, else uses the current timestamp.
+     *
+     * @param $model
+     * @return array
+     */
+    public static function getApiRoutesNames($model): array
+    {
+        $route = [];
+        foreach (['index', 'show', 'create', 'store', 'edit', 'update', 'destroy'] as $method) {
+            $route[$method] = 'api.'.$model.'s.'.$method;
+        }
+        return $route;
     }
 }

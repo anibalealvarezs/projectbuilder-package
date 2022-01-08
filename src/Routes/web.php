@@ -2,23 +2,11 @@
 
 use Anibalealvarezs\Projectbuilder\Controllers\Navigation\PbNavigationController as NavigationController;
 use Anibalealvarezs\Projectbuilder\Controllers\Dashboard\PbDashboardController as DashboardController;
+use Anibalealvarezs\Projectbuilder\Helpers\PbHelpers;
 use Illuminate\Foundation\Application;
 use Inertia\Inertia;
 
-$models = [
-    /* object => Directory*/
-    'user' => 'User',
-    'config' => 'Config',
-    'navigation' => 'Navigation',
-    'role' => 'Permission',
-    'permission' => 'Permission',
-    'logger' => 'Logger'
-];
-
-foreach($models as $model => $directory) {
-    $class = '\\Anibalealvarezs\\Projectbuilder\\Controllers\\'.$directory.'\\Pb'.ucfirst($model).'Controller';
-    Route::resource($model.'s', $class)->middleware(['web', 'auth:sanctum', 'verified'])->name('*', $model.'s');
-}
+PbHelpers::buildCrudRoutes('web');
 
 Route::group(['middleware' => ['web', 'auth:sanctum', 'verified']], function () {
     Route::prefix('navigations')->group(function () {
