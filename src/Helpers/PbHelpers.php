@@ -23,14 +23,18 @@ class PbHelpers
     /* Configurable */
     private array $toExtract = ['package', 'directory', 'prefix', 'name', 'modulekeys', 'nonmodules'];
     private array $toExtractCustom = ['vendor'];
-    private const CONFIG_PATH = __DIR__ . DIRECTORY_SEPARATOR . '..'. DIRECTORY_SEPARATOR .'config'. DIRECTORY_SEPARATOR .'pbuilder.php';
+    private string $fileName = 'pbuilder.php';
     /* End Configurable */
 
     function __construct()
     {
-        $defaults = require(self::CONFIG_PATH);
+        $defaults = require(__DIR__ . DIRECTORY_SEPARATOR . '..'. DIRECTORY_SEPARATOR .'config'. DIRECTORY_SEPARATOR . $this->fileName);
+        $overrided = [];
+        if (file_exists(config_path($this->fileName))) {
+            $overrided = require(config_path($this->fileName));
+        }
         foreach ([...$this->toExtract, ...$this->toExtractCustom] as $var) {
-            $this->{$var} = $defaults[$var];
+            $this->{$var} = $overrided[$var] ?? $defaults[$var];
         }
     }
 
