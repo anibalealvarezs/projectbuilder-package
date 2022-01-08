@@ -19,16 +19,17 @@ class PbHelpers
     public string $prefix;
     public string $name;
     public array $modulekeys;
-    private array $toExtract = ['vendor', 'package', 'directory', 'prefix', 'name', 'modulekeys'];
+    public array $nonmodules;
+    /* Configurable */
+    private array $toExtract = ['package', 'directory', 'prefix', 'name', 'modulekeys', 'nonmodules'];
+    private array $toExtractCustom = ['vendor'];
     private const CONFIG_PATH = __DIR__ . DIRECTORY_SEPARATOR . '..'. DIRECTORY_SEPARATOR .'config'. DIRECTORY_SEPARATOR .'pbuilder.php';
-    public const NON_EXISTENT_MODULES = [
-        'logger'
-    ];
+    /* End Configurable */
 
     function __construct()
     {
         $defaults = require(self::CONFIG_PATH);
-        foreach ($this->toExtract as $var) {
+        foreach ([...$this->toExtract, ...$this->toExtractCustom] as $var) {
             $this->{$var} = $defaults[$var];
         }
     }
@@ -163,7 +164,7 @@ class PbHelpers
      */
     public static function buildCrudRoutes($type): void
     {
-        $models = [...self::NON_EXISTENT_MODULES, ...PbModule::pluck('modulekey')];
+        $models = [...self::getDefault('nonmodules'), ...PbModule::pluck('modulekey')];
 
         foreach ($models as $model) {
             $controller = self::getDefault('vendor') . '\\' . self::getDefault('package') . '\\Controllers\\'.ucfirst($model).'\\' . self::getDefault('prefix') .ucfirst($model).'Controller';

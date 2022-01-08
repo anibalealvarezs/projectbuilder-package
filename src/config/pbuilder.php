@@ -68,4 +68,15 @@ return [
 
     'modulekeys' => ['user', 'config', 'navigation', 'permission', 'role'],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Non-modules
+    |--------------------------------------------------------------------------
+    |
+    | Models not registered as modules.
+    |
+    */
+
+    'nonmodules' => ['logger'],
+
 ];
