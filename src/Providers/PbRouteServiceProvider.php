@@ -2,13 +2,10 @@
 
 namespace Anibalealvarezs\Projectbuilder\Providers;
 
-use Anibalealvarezs\Projectbuilder\Helpers\PbHelpers;
 use Illuminate\Support\ServiceProvider;
 
 class PbRouteServiceProvider extends ServiceProvider
 {
-    protected string $namespace = PbHelpers::PB_VENDOR . '\\' . PbHelpers::PB_PACKAGE . '\\Controllers';
-
     /**
      * Bootstrap the application services.
      *

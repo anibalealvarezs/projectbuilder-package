@@ -13,18 +13,42 @@ use Illuminate\Support\Facades\Route;
 
 class PbHelpers
 {
-    public const PB_VENDOR = 'Anibalealvarezs';
-    public const PB_PACKAGE = 'Projectbuilder';
-    public const PB_DIR = 'projectbuilder-package';
-    public const PB_PREFIX = 'Pb';
-    public const PB_NAME = 'builder';
+    public string $vendor;
+    public string $package;
+    public string $directory;
+    public string $prefix;
+    public string $name;
+    public const CONFIG_PATH = 'pbuilder';
     public const NON_EXISTENT_MODULES = [
         'logger'
     ];
 
     function __construct()
     {
-        // TODO: Implement __construct() method.
+        foreach (['vendor', 'package', 'directory', 'prefix', 'name'] as $var) {
+            $this->{$var} = config(self::CONFIG_PATH . '.' . $var);
+        }
+    }
+
+    public static function getDefault($key)
+    {
+        $self = new self();
+        return $self->{$key};
+    }
+
+    public static function getMethodsByPermission()
+    {
+        return [
+            'read' => [],
+            'create' => ['only' => ['create', 'store']],
+            'update' => ['only' => ['edit', 'update']],
+            'delate' => ['only' => ['destroy']],
+        ];
+    }
+
+    public static function getModelsLevels()
+    {
+        return ['level', 'parent', 'grandparent', 'child', 'grandchild'];
     }
 
     /**
@@ -115,9 +139,7 @@ class PbHelpers
      */
     public static function getMigrationsKeyWords(): array
     {
-        return [
-            'create', 'add'
-        ];
+        return ['create', 'add'];
     }
 
     /**
@@ -133,33 +155,6 @@ class PbHelpers
     /**
      * Returns existing migration file if found, else uses the current timestamp.
      *
-     * @param $key
-     * @param $helper
-     * @param $prefix
-     * @param $vendor
-     * @param $package
-     * @return object
-     */
-    public static function buildControllerVars($key, $helper, $prefix, $vendor, $package): object
-    {
-        $object = (object) [];
-        $object->key = $key;
-        $object->keys = $helper::toPlural($key);
-        $object->model = $prefix . $key;
-        $object->models = $helper::toPlural($object->model);
-        $object->name = strtolower($key);
-        $object->names = $helper::toPlural($object->name);
-        $object->prefixName = strtolower($prefix . $key);
-        $object->prefixNames = $helper::toPlural($object->prefixName);
-        $object->modelPath = $vendor . "\\" . $package . "\\Models\\" . $object->model;
-        $object->viewsPath = $package . "/" . $object->keys . "/";
-        $object->table = (new $object->modelPath())->getTable();
-        return $object;
-    }
-
-    /**
-     * Returns existing migration file if found, else uses the current timestamp.
-     *
      * @param $type
      * @return void
      */
@@ -168,7 +163,7 @@ class PbHelpers
         $models = [...self::NON_EXISTENT_MODULES, ...PbModule::pluck('modulekey')];
 
         foreach ($models as $model) {
-            $controller = self::PB_VENDOR . '\\' . self::PB_PACKAGE . '\\Controllers\\'.ucfirst($model).'\\' . self::PB_PREFIX .ucfirst($model).'Controller';
+            $controller = self::getDefault('vendor') . '\\' . self::getDefault('package') . '\\Controllers\\'.ucfirst($model).'\\' . self::getDefault('prefix') .ucfirst($model).'Controller';
             switch ($type) {
                 case 'web':
                     Route::resource($model.'s', $controller)->middleware(['web', 'auth:sanctum', 'verified']);

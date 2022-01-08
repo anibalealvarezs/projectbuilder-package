@@ -130,7 +130,8 @@ trait PbControllerListingTrait
         "href" => "array|mixed",
         "size" => "mixed|string",
         "status" => "false|mixed"
-    ])] protected static function buildListingField(array $options = []): array
+    ])]
+    protected static function buildListingField(array $options = []): array
     {
 
         /* Style */

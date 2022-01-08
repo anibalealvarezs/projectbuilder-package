@@ -92,7 +92,7 @@ class PbPermission extends Permission
             'alias' => [],
             'module' => [
                 'arrval' => [
-                    'key' => 'alias',
+                    'key' => 'name',
                 ],
             ],
         ];

@@ -25,8 +25,10 @@ class PbInertiaManager extends InertiaManager
             }
         }
 
-        Inertia::setRootView(PbHelpers::PB_PACKAGE . '::app');
+        $package = PbHelpers::getDefault('package');
 
-        return Inertia::render(PbHelpers::PB_PACKAGE . '/' . $page, $data);
+        Inertia::setRootView($package . '::app');
+
+        return Inertia::render($package . '/' . $page, $data);
     }
 }

@@ -82,7 +82,7 @@ class PbPermissionController extends PbBuilderController
             }
         }
         //Get all permissions
-        $model = $this->controllerVars->level->modelPath::withPublicRelations()->whereNotIn('name', $toExclude)->get();
+        $model = $this->controllerVars->level->modelPath::whereNotIn('name', $toExclude)->withPublicRelations()->get();
 
         return parent::index($model);
     }

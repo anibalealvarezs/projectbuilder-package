@@ -51,9 +51,9 @@ class PbUserController extends PbBuilderController
         // Parent construct
         parent::__construct($request, true);
         // Middlewares
-        $this->middleware(['is_'.$this->controllerVars->level->name.'_editable'])->only('edit', 'update');
-        $this->middleware(['is_'.$this->controllerVars->level->name.'_deletable'])->only('destroy');
-        $this->middleware(['is_'.$this->controllerVars->level->name.'_viewable'])->only('show');
+        $this->middleware(['is_user_editable'])->only('edit', 'update');
+        $this->middleware(['is_user_deletable'])->only('destroy');
+        $this->middleware(['is_user_viewable'])->only('show');
     }
 
     /**

@@ -23,76 +23,19 @@ class Shares
     {
         $list = [];
         foreach ($elements as $element) {
-            switch ($element) {
-                case "user_permissions_and_roles":
-                    $list = [
-                        ...$list,
-                        ...self::getUserPermissionsAndRoles()
-                    ];
-                    break;
-                case "navigations":
-                    $list = [
-                        ...$list,
-                        ...self::getNavigations()
-                    ];
-                    break;
-                case "locale":
-                    $list = [
-                        ...$list,
-                        ...self::getCustomLocale()
-                    ];
-                    break;
-                case "permissions":
-                    $list = [
-                        ...$list,
-                        ...self::getPermissions()
-                    ];
-                    break;
-                case "permissionsall":
-                    $list = [
-                        ...$list,
-                        ...self::getPermissionsAll()
-                    ];
-                    break;
-                case "roles":
-                    $list = [
-                        ...$list,
-                        ...self::getRoles()
-                    ];
-                    break;
-                case "languages":
-                    $list = [
-                        ...$list,
-                        ...self::getLanguages()
-                    ];
-                    break;
-                case "countries":
-                    $list = [
-                        ...$list,
-                        ...self::getCountries()
-                    ];
-                    break;
-                case "me":
-                    $list = [
-                        ...$list,
-                        ...self::getMyData()
-                    ];
-                    break;
-                case "api_data":
-                    $list = [
-                        ...$list,
-                        ...self::apiData()
-                    ];
-                    break;
-                case "debug_status":
-                    $list = [
-                        ...$list,
-                        ...['debug_enabled' => PbDebugbar::isDebugEnabled()]
-                    ];
-                    break;
-                default:
-                    break;
-            }
+            $list = match ($element) {
+                "user_permissions_and_roles" => [...$list, ...self::getUserPermissionsAndRoles()],
+                "navigations" => [...$list, ...self::getNavigations()],
+                "locale" => [...$list, ...self::getCustomLocale()],
+                "permissions" => [...$list, ...self::getPermissions()],
+                "permissionsall" => [...$list, ...self::getPermissionsAll()],
+                "roles" => [...$list, ...self::getRoles()],
+                "languages" => [...$list, ...self::getLanguages()],
+                "countries" => [...$list, ...self::getCountries()],
+                "me" => [...$list, ...self::getMyData()],
+                "api_data" => [...$list, ...self::apiData()],
+                "debug_status" => [...$list, ...['debug_enabled' => PbDebugbar::isDebugEnabled()]],
+            };
         }
         return $list;
     }
@@ -103,10 +46,11 @@ class Shares
      * @param $elements
      * @return array
      */
-    #[ArrayShape(['allowed' => "array"])] public static function allowed($elements): array
+    #[ArrayShape(['allowed' => "array"])]
+    public static function allowed($elements): array
     {
         $allowed = [];
-        foreach($elements as $key => $value) {
+        foreach ($elements as $key => $value) {
             $allowed[$value] = PbUser::current()->hasPermissionTo($key);
         }
         return [
@@ -119,7 +63,8 @@ class Shares
      *
      * @return array
      */
-    #[ArrayShape(['userdata' => "array|null"])] public static function getUserPermissionsAndRoles(): array
+    #[ArrayShape(['userdata' => "array|null"])]
+    public static function getUserPermissionsAndRoles(): array
     {
         $user = PbUser::current();
         return [
@@ -135,7 +80,8 @@ class Shares
      *
      * @return array
      */
-    #[ArrayShape(['navigations' => "array"])] public static function getNavigations(): array
+    #[ArrayShape(['navigations' => "array"])]
+    public static function getNavigations(): array
     {
         $user = PbUser::current();
         $userPermissions = $user->getAllPermissions()->pluck('id');
@@ -162,7 +108,8 @@ class Shares
      *
      * @return array
      */
-    #[ArrayShape(['locale' => "string"])] public static function getCustomLocale(): array
+    #[ArrayShape(['locale' => "string"])]
+    public static function getCustomLocale(): array
     {
         $customLocale = PbHelpers::getCustomLocale();
         return [
@@ -175,7 +122,8 @@ class Shares
      *
      * @return array
      */
-    #[ArrayShape(['permissions' => "mixed"])] public static function getPermissions(): array
+    #[ArrayShape(['permissions' => "mixed"])]
+    public static function getPermissions(): array
     {
         $permissions = PbPermission::whereIn('id', PbUser::current()->getAllPermissions()->pluck('id'))->get();
         return [
@@ -188,7 +136,8 @@ class Shares
      *
      * @return array
      */
-    #[ArrayShape(['permissionsall' => "mixed"])] public static function getPermissionsAll(): array
+    #[ArrayShape(['permissionsall' => "mixed"])]
+    public static function getPermissionsAll(): array
     {
         // Temporarily all permissions will be limited to the user's
         return [
@@ -201,7 +150,8 @@ class Shares
      *
      * @return array
      */
-    #[ArrayShape(['roles' => "mixed"])] public static function getRoles(): array
+    #[ArrayShape(['roles' => "mixed"])]
+    public static function getRoles(): array
     {
         $user = PbUser::current();
         $roles = ([]);
@@ -212,7 +162,7 @@ class Shares
                     'super-admin'
                 ]
             )->get();
-        } elseif($user->hasRole(['admin'])) {
+        } elseif ($user->hasRole(['admin'])) {
             $roles = PbRole::whereNotIn(
                 'name',
                 [
@@ -231,7 +181,8 @@ class Shares
      *
      * @return array
      */
-    #[ArrayShape(['languages' => "mixed"])] public static function getLanguages(): array
+    #[ArrayShape(['languages' => "mixed"])]
+    public static function getLanguages(): array
     {
         return [
             'languages' => PbLanguage::enabled()->get()
@@ -243,7 +194,10 @@ class Shares
      *
      * @return array
      */
-    #[ArrayShape(['countries' => "\Anibalealvarezs\Projectbuilder\Models\PbCountry[]|\Illuminate\Database\Eloquent\Collection"])] public static function getCountries(): array
+    #[ArrayShape([
+        'countries' => "\Anibalealvarezs\Projectbuilder\Models\PbCountry[]|\Illuminate\Database\Eloquent\Collection"
+    ])]
+    public static function getCountries(): array
     {
         return [
             'countries' => PbCountry::all()
@@ -255,7 +209,8 @@ class Shares
      *
      * @return array
      */
-    #[ArrayShape(['me' => "mixed"])] public static function getMyData(): array
+    #[ArrayShape(['me' => "mixed"])]
+    public static function getMyData(): array
     {
         return [
             'me' => PbUser::withPublicRelations()->current()
@@ -267,12 +222,13 @@ class Shares
      *
      * @return array
      */
-    #[ArrayShape(['api_data' => "array"])] public static function apiData(): array
+    #[ArrayShape(['api_data' => "array"])]
+    public static function apiData(): array
     {
         return [
             'api_data' => [
                 'access' => PbUser::current()->hasPermissionTo('api access'),
-                'enabled' => (bool) PbConfig::getValueByKey('_API_ENABLED_'),
+                'enabled' => (bool)PbConfig::getValueByKey('_API_ENABLED_'),
             ]
         ];
     }

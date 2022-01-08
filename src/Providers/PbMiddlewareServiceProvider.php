@@ -26,8 +26,8 @@ class PbMiddlewareServiceProvider extends ServiceProvider
     {
         parent::__construct($app);
 
-        $this->namespace = PbHelpers::PB_VENDOR.'\\'.PbHelpers::PB_PACKAGE.'\Middleware';
-        $this->prefix = $this->namespace.'\\'.PbHelpers::PB_PREFIX;
+        $this->namespace = PbHelpers::getDefault('vendor').'\\'.PbHelpers::getDefault('package').'\Middleware';
+        $this->prefix = $this->namespace.'\\'.PbHelpers::getDefault('prefix');
         $this->suffix = 'Middleware';
     }
 

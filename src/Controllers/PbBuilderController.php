@@ -128,36 +128,33 @@ class PbBuilderController extends Controller
         if (!isset($this->keys['level'])) {
             $this->keys['level'] = 'Builder';
         }
-        if (!$this->helper) {
-            $this->helper = PbHelpers::PB_VENDOR . '\\' . PbHelpers::PB_PACKAGE . '\\Helpers\\' . PbHelpers::PB_PREFIX . 'Helpers';
-        }
         if (!$this->prefix) {
-            $this->prefix = $this->helper::PB_PREFIX;
-        }
-        if (!$this->inertiaRoot) {
-            $this->inertiaRoot = $this->helper::PB_PACKAGE . '::app';
+            $this->prefix = PbHelpers::getDefault('prefix');
         }
         if (!$this->vendor) {
-            $this->vendor = $this->helper::PB_VENDOR;
+            $this->vendor = PbHelpers::getDefault('vendor');
         }
         if (!$this->package) {
-            $this->package = $this->helper::PB_PACKAGE;
+            $this->package = PbHelpers::getDefault('package');
         }
-        foreach (['level', 'parent', 'grandparent', 'child', 'grandchild'] as $value) {
+        if (!$this->helper) {
+            $this->helper = $this->vendor . '\\' . $this->package . '\\Helpers\\' . $this->prefix . 'Helpers';
+        }
+        if (!$this->inertiaRoot) {
+            $this->inertiaRoot = $this->package . '::app';
+        }
+
+        foreach ($this->helper::getModelsLevels() as $value) {
             if (isset($this->keys[$value])) {
-                $this->controllerVars->{$value} = $this->helper::buildControllerVars($this->keys[$value], $this->helper,
-                    $this->prefix, $this->vendor, $this->package);
+                $this->controllerVars->{$value} = $this->buildControllerVars($this->keys[$value]);
             }
         }
 
         if ($crud_perms) {
             // Middlewares
-            $this->middleware(['role_or_permission:read ' . $this->controllerVars->level->names]);
-            $this->middleware(['role_or_permission:create ' . $this->controllerVars->level->names])->only('create',
-                'store');
-            $this->middleware(['role_or_permission:update ' . $this->controllerVars->level->names])->only('edit',
-                'update');
-            $this->middleware(['role_or_permission:delete ' . $this->controllerVars->level->names])->only('destroy');
+            foreach($this->helper::getMethodsByPermission() as $key => $value) {
+                $this->middleware('role_or_permission:' . $key . ' ' . $this->controllerVars->level->names, $value);
+            }
         }
 
         if (!$this->viewModelName) {
@@ -608,5 +605,28 @@ class PbBuilderController extends Controller
             $res['data'] = $errorMsg;
         }
         return response()->json($res, $code);
+    }
+
+    /**
+     * Returns existing migration file if found, else uses the current timestamp.
+     *
+     * @param $level
+     * @return object
+     */
+    public function buildControllerVars($key): object
+    {
+        $object = (object) [];
+        $object->key = $key;
+        $object->keys = $this->helper::toPlural($key);
+        $object->model = $this->prefix . $key;
+        $object->models = $this->helper::toPlural($object->model);
+        $object->name = strtolower($key);
+        $object->names = $this->helper::toPlural($object->name);
+        $object->prefixName = strtolower($this->prefix . $key);
+        $object->prefixNames = $this->helper::toPlural($object->prefixName);
+        $object->modelPath = $this->vendor . "\\" . $this->package . "\\Models\\" . $object->model;
+        $object->viewsPath = $this->package . "/" . $object->keys . "/";
+        $object->table = (new $object->modelPath())->getTable();
+        return $object;
     }
 }
