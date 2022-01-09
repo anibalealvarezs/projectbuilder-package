@@ -7,7 +7,6 @@ use Anibalealvarezs\Projectbuilder\Models\PbModule;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Contracts\Http\Kernel;
 use Illuminate\Support\ServiceProvider;
-use JetBrains\PhpStorm\Pure;
 
 class PbControllerServiceProvider extends ServiceProvider
 {
@@ -24,7 +23,7 @@ class PbControllerServiceProvider extends ServiceProvider
      */
     private string $suffix;
 
-    #[Pure] public function __construct($app)
+    public function __construct($app)
     {
         parent::__construct($app);
 

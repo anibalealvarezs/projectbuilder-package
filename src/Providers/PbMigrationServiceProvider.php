@@ -11,7 +11,7 @@ class PbMigrationServiceProvider extends ServiceProvider
 
     public function __construct($app)
     {
-        $this->migrationPath = __DIR__.DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'Database/Migrations';
+        $this->migrationPath = __DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'Database/Migrations';
 
         parent::__construct($app);
     }
@@ -29,9 +29,10 @@ class PbMigrationServiceProvider extends ServiceProvider
             $offset = 0;
             foreach ($keyWords as $value) {
                 foreach ($stubFiles as $ks => $sf) {
-                    if (substr($sf, 0 , strlen($value)) == $value) {
+                    if (str_starts_with($sf, $value)) {
                         $this->publishes([
-                            $this->migrationPath.DIRECTORY_SEPARATOR.$sf => PbHelpers::getMigrationFileName($sf, $offset)
+                            $this->migrationPath . DIRECTORY_SEPARATOR . $sf => PbHelpers::getMigrationFileName($sf,
+                                $offset)
                         ], 'migrations');
                         unset($stubFiles[$ks]);
                     }
@@ -40,7 +41,7 @@ class PbMigrationServiceProvider extends ServiceProvider
             }
             foreach ($stubFiles as $sf) {
                 $this->publishes([
-                    $this->migrationPath.DIRECTORY_SEPARATOR.$sf => PbHelpers::getMigrationFileName($sf, $offset)
+                    $this->migrationPath . DIRECTORY_SEPARATOR . $sf => PbHelpers::getMigrationFileName($sf, $offset)
                 ], 'migrations');
             }
         }

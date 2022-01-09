@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\File;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
+use JetBrains\PhpStorm\ArrayShape;
 
 class PbHelpers
 {
@@ -39,13 +40,29 @@ class PbHelpers
         }
     }
 
-    public static function getDefault($key)
+    /**
+     * Returns existing migration file if found, else uses the current timestamp.
+     *
+     * @param $key
+     * @return mixed
+     */
+    public static function getDefault($key): mixed
     {
         $self = new self();
         return $self->{$key};
     }
 
-    public static function getMethodsByPermission()
+    /**
+     * Returns existing migration file if found, else uses the current timestamp.
+     *
+     * @return array
+     */
+    #[ArrayShape([
+        'read' => "array",
+        'create' => "\string[][]",
+        'update' => "\string[][]",
+        'delete' => "\string[][]"
+    ])] public static function getMethodsByPermission(): array
     {
         return [
             'read' => [],
@@ -55,7 +72,12 @@ class PbHelpers
         ];
     }
 
-    public static function getModelsLevels()
+    /**
+     * Returns existing migration file if found, else uses the current timestamp.
+     *
+     * @return array
+     */
+    public static function getModelsLevels(): array
     {
         return ['level', 'parent', 'grandparent', 'child', 'grandchild'];
     }
