@@ -20,16 +20,16 @@ class PbBuilder extends Model
      */
     public static function getCrudConfig(): array
     {
-        $config['default'] = [];
-        $config['relations'] = [];
-        $config['action_routes'] = [];
-        $config['enabled_actions'] = [
-            'update' => true,
-            'delete' => true,
-            'create' => true,
+        return [
+            'default' => [],
+            'relations' => [],
+            'action_routes' => [],
+            'enabled_actions' => [
+                'update' => true,
+                'delete' => true,
+                'create' => true,
+            ],
+            'custom_order' => [],
         ];
-        $config['custom_order'] = [];
-
-        return $config;
     }
 }

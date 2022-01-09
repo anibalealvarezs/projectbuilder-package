@@ -20,36 +20,29 @@ class PbNavigationController extends PbBuilderController
 {
     function __construct(Request $request, $crud_perms = false)
     {
-        // Vars Override
-        $this->keys = [
-            'level' => 'Navigation'
-        ];
-        // Validation Rules
-        $this->validationRules = [
-            'name' => ['required', 'max:190'],
-            'destiny' => ['required', 'max:254'],
-            'type' => ['required', 'max:254', Rule::in(['route', 'path', 'custom'])],
-            'parent' => ['required', 'integer'],
-            'permission' => ['required', 'integer'],
-            'module' => [],
-            'status' => [],
-        ];
-        // Model fields name replacing
-        $this->replacers = [
-            'permission' => 'permission_id'
-        ];
-        // Additional variables to share
-        $this->shares = [
-            'permissionsall',
-        ];
-        // Sortable model ?
-        $this->sortable = true;
-        // Sortable model
-        $this->sortingRef = 'parent';
-        // Show position column ?
-        // $this->showPosition = true;
-        // Show ID column ?
-        $this->showId = false;
+        $this->varsObject([
+            'keys' => [
+                'level' => 'Navigation'
+            ],
+            'validationRules' => [
+                'name' => ['required', 'max:190'],
+                'destiny' => ['required', 'max:254'],
+                'type' => ['required', 'max:254', Rule::in(['route', 'path', 'custom'])],
+                'parent' => ['required', 'integer'],
+                'permission' => ['required', 'integer'],
+                'module' => [],
+                'status' => [],
+            ],
+            'replacers' => [
+                'permission' => 'permission_id'
+            ],
+            'shares' => [
+                'permissionsall',
+            ],
+            'sortable' => true,
+            'sortingRef' => 'parent',
+            'showId' => false,
+        ]);
         // Parent construct
         parent::__construct($request, true);
     }
@@ -64,7 +57,7 @@ class PbNavigationController extends PbBuilderController
      */
     public function index($element = null, bool $multiple = false, string $route = 'level'): InertiaResponse|JsonResponse|RedirectResponse
     {
-        $model = $this->controllerVars->level->modelPath::withPublicRelations()->orderedByDefault()->get();
+        $model = $this->vars->level->modelPath::withPublicRelations()->orderedByDefault()->get();
 
         return parent::index($model);
     }

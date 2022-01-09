@@ -7,8 +7,8 @@ use JetBrains\PhpStorm\ArrayShape;
 
 trait PbControllerListingTrait
 {
-    protected static $item = "";
-    protected static $route = "";
+    protected static string $item = "";
+    protected static string $route = "";
 
     /**
      * Remove the specified resource from storage.

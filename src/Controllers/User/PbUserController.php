@@ -4,6 +4,7 @@ namespace Anibalealvarezs\Projectbuilder\Controllers\User;
 
 use Anibalealvarezs\Projectbuilder\Controllers\PbBuilderController;
 
+use Anibalealvarezs\Projectbuilder\Helpers\PbHelpers;
 use Anibalealvarezs\Projectbuilder\Models\PbUser;
 use App\Http\Requests;
 
@@ -25,29 +26,26 @@ class PbUserController extends PbBuilderController
 {
     function __construct(Request $request, $crud_perms = false)
     {
-        // Vars Override
-        $this->keys = [
-            'level' => 'User'
-        ];
-        // Validation Rules
-        $this->validationRules = [
-            'name' => ['required', 'max:190'],
-        ];
-        // Model fields name replacing
-        $this->replacers = [
-            'permission' => 'permission_id'
-        ];
-        // Additional variables to share
-        $this->shares = [
-            'languages',
-            'countries',
-            'roles',
-        ];
-        // Default values
-        $this->defaults = [
-            'lang' => 'es',
-            'country' => 'ES'
-        ];
+        $this->varsObject([
+            'keys' => [
+                'level' => 'User'
+            ],
+            'validationRules' => [
+                'name' => ['required', 'max:190'],
+            ],
+            'replacers' => [
+                'permission' => 'permission_id'
+            ],
+            'shares' => [
+                'languages',
+                'countries',
+                'roles',
+            ],
+            'defaults' => [
+                'lang' => 'es',
+                'country' => 'ES'
+            ],
+        ]);
         // Parent construct
         parent::__construct($request, true);
         // Middlewares
@@ -66,22 +64,9 @@ class PbUserController extends PbBuilderController
      */
     public function index($element = null, bool $multiple = false, string $route = 'level'): InertiaResponse|JsonResponse|RedirectResponse
     {
-        $this->required = [
-            ...$this->required,
-            ...['roles', 'email']
-        ];
+        $this->pushRequired(['roles', 'email']);
 
-        $query = $this->controllerVars->level->modelPath::withPublicRelations();
-        $currentUser = $this->controllerVars->level->modelPath::current();
-        if (!$currentUser->hasRole('super-admin')) {
-            $superAdmins = $this->controllerVars->level->modelPath::role('super-admin')->get()->modelKeys();
-            $query = $query->whereNotIn('id', $superAdmins);
-            if (!$currentUser->hasRole('admin')) {
-                $admins = $this->controllerVars->level->modelPath::role('admin')->get()->modelKeys();
-                $query = $query->whereNotIn('id', $admins);
-            }
-        }
-        $model = $query->get();
+        $model = $this->vars->level->modelPath::withPublicRelations()->removeAdmins()->get();
         $filtered = $model->map(function ($q) {
             return $q->only([
                 'id',
@@ -98,14 +83,14 @@ class PbUserController extends PbBuilderController
             ]);
         })->sortByDesc(['name', 'email']);
 
-        $filtered = $this->helper::setCollectionAttributeDatetimeFormat(
+        $filtered = $this->vars->helper->class::setCollectionAttributeDatetimeFormat(
             $filtered,
             ['created_at', 'last_session'],
             "custom",
             "d/m/y"
         );
 
-        $this->shares[] = 'me';
+        $this->vars->shares[] = 'me';
 
         return parent::index($filtered);
     }
@@ -118,16 +103,13 @@ class PbUserController extends PbBuilderController
      */
     public function create(string $route = 'level'): InertiaResponse|JsonResponse
     {
-        $this->allowed = [
-            'create '.$this->controllerVars->level->names => 'create',
+        $this->vars->allowed = [
+            'create '.$this->vars->level->names => 'create',
         ];
 
-        $this->required = [
-            ...$this->required,
-            ...['roles', 'password', 'email']
-        ];
+        $this->pushRequired(['roles', 'password', 'email']);
 
-        return $this->renderResponse($this->controllerVars->level->viewsPath.'Create'.$this->controllerVars->level->key);
+        return $this->renderResponse($this->vars->level->viewsPath.'Create'.$this->vars->level->key);
     }
 
     /**
@@ -138,15 +120,13 @@ class PbUserController extends PbBuilderController
      */
     public function store(Request $request): Redirector|RedirectResponse|Application|null
     {
-        $this->validationRules['email'] = ['required', 'max:50', 'email', Rule::unique($this->controllerVars->level->table)];
-        $this->validationRules['password'] = ['required'];
-
-        $validationRules2 = [
-            'roles' => ['required'],
-        ];
+        $this->pushValidationRules([
+            'password' => ['required'],
+            'email' => ['required', 'email', 'max:50', Rule::unique($this->vars->level->table)],
+        ]);
 
         // Validation
-        if ($failed = $this->validateRequest([...$this->validationRules, ...$validationRules2], $request)) {
+        if ($failed = $this->validateRequest([...$this->vars->validationRules, ...['roles' => ['required']]], $request)) {
             return $failed;
         }
 
@@ -157,9 +137,9 @@ class PbUserController extends PbBuilderController
         // Process
         try {
             // Build model
-            $model = new $this->controllerVars->level->modelPath();
+            $model = new $this->vars->level->modelPath();
             // Add requests
-            $model = $this->processModelRequests($this->validationRules, $request, $this->replacers, $model);
+            $model = $this->processModelRequests($this->vars->validationRules, $request, $this->vars->replacers, $model);
             $model->language_id = $lang;
             $model->country_id = $country;
             if ($model->save()) {
@@ -192,9 +172,9 @@ class PbUserController extends PbBuilderController
                 }
             }
 
-            return $this->redirectResponseCRUDSuccess($request, $this->controllerVars->level->key.' created successfully!');
+            return $this->redirectResponseCRUDSuccess($request, 'create');
         } catch (Exception $e) {
-            return $this->redirectResponseCRUDFail($request, $this->controllerVars->level->key.' could not be created! '.$e->getMessage());
+            return $this->redirectResponseCRUDFail($request, 'create', $e->getMessage());
         }
     }
 
@@ -209,11 +189,11 @@ class PbUserController extends PbBuilderController
      */
     public function show(int $id, $element = null, bool $multiple = false, string $route = 'level'): Application|RedirectResponse|Redirector|InertiaResponse|JsonResponse
     {
-        if ((Auth::user()->id == $id) && !$this->request->is('api/*')) {
-            return redirect(DIRECTORY_SEPARATOR.$this->controllerVars->level->name.'/profile');
+        if ((Auth::user()->id == $id) && !$this->vars->request->is('api/*')) {
+            return redirect(DIRECTORY_SEPARATOR.$this->vars->level->name.'/profile');
         }
 
-        $model = $this->controllerVars->level->modelPath::withPublicRelations()->find($id);
+        $model = $this->vars->level->modelPath::withPublicRelations()->find($id);
 
         return parent::show($id, $model);
     }
@@ -230,15 +210,12 @@ class PbUserController extends PbBuilderController
     public function edit(int $id, $element = null, bool $multiple = false, string $route = 'level'): InertiaResponse|JsonResponse
     {
         if (Auth::user()->id == $id) {
-            return redirect(DIRECTORY_SEPARATOR.$this->controllerVars->level->name.'/profile');
+            return redirect(DIRECTORY_SEPARATOR.$this->vars->level->name.'/profile');
         }
 
-        $model = $this->controllerVars->level->modelPath::withPublicRelations()->find($id);
+        $model = $this->vars->level->modelPath::withPublicRelations()->find($id);
 
-        $this->required = [
-            ...$this->required,
-            ...['roles', 'email']
-        ];
+        $this->pushRequired(['roles', 'email']);
 
         return parent::edit($id, $model);
     }
@@ -252,14 +229,12 @@ class PbUserController extends PbBuilderController
      */
     public function update(Request $request, int $id): Redirector|RedirectResponse|Application|null
     {
-        $this->validationRules['email'] = ['required', 'max:50', 'email', Rule::unique($this->controllerVars->level->table)->ignore($id)];
-
-        $validationRules2 = [
-            'roles' => ['required'],
-        ];
+        $this->pushValidationRules([
+            'email' => ['required', 'max:50', 'email', Rule::unique($this->vars->level->table)->ignore($id)],
+        ]);
 
         // Validation
-        if ($failed = $this->validateRequest([...$this->validationRules, ...$validationRules2], $request)) {
+        if ($failed = $this->validateRequest([...$this->vars->validationRules, ...['roles' => ['required']]], $request)) {
             return $failed;
         }
 
@@ -272,9 +247,9 @@ class PbUserController extends PbBuilderController
         // Process
         try {
             // Build model
-            $model = $this->controllerVars->level->modelPath::find($id);
+            $model = $this->vars->level->modelPath::find($id);
             // Build requests
-            $requests = $this->processModelRequests($this->validationRules, $request, $this->replacers);
+            $requests = $this->processModelRequests($this->vars->validationRules, $request, $this->vars->replacers);
             if ($password != "") {
                 $requests['password'] = $password;
             }
@@ -323,10 +298,9 @@ class PbUserController extends PbBuilderController
                 $model->syncRoles($roles);
             }
 
-            return $this->redirectResponseCRUDSuccess($request, $this->controllerVars->level->key.' updated successfully!');
+            return $this->redirectResponseCRUDSuccess($request, 'update');
         } catch (Exception $e) {
-
-            return $this->redirectResponseCRUDFail($request, $this->controllerVars->level->key.' could not be updated! '.$e->getMessage());
+            return $this->redirectResponseCRUDFail($request, 'update', $e->getMessage());
         }
     }
 

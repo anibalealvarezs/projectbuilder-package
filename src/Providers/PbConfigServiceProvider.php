@@ -2,20 +2,12 @@
 
 namespace Anibalealvarezs\Projectbuilder\Providers;
 
+use Anibalealvarezs\Projectbuilder\Helpers\PbHelpers;
 use Illuminate\Contracts\Http\Kernel;
 use Illuminate\Support\ServiceProvider;
 
 class PbConfigServiceProvider extends ServiceProvider
 {
-    private $configPath;
-
-    public function __construct($app)
-    {
-        $this->configPath = __DIR__.DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'config';
-
-        parent::__construct($app);
-    }
-
     /**
      * Bootstrap the application services.
      *
@@ -24,7 +16,7 @@ class PbConfigServiceProvider extends ServiceProvider
     public function boot(Kernel $kernel)
     {
         $this->publishes([
-            $this->configPath.DIRECTORY_SEPARATOR.'pbuilder.php' => config_path('pbuilder.php')
+            __DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'config' . DIRECTORY_SEPARATOR . PbHelpers::$configFileName => config_path(PbHelpers::$configFileName)
         ], 'config');
     }
 
@@ -35,10 +27,10 @@ class PbConfigServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        $this->app->config["filesystems.disks.pb"] = [
+        $this->app->config["filesystems.disks." . strtolower(PbHelpers::getDefault('prefix'))] = [
             'driver' => 'local',
-            'root' => __DIR__ . '/../assets',
-            'url' => env('APP_URL').'/pbstorage',
+            'root' => __DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'assets',
+            'url' => config('app.url') . DIRECTORY_SEPARATOR . PbHelpers::$storageDirName,
             'visibility' => 'public',
         ];
     }

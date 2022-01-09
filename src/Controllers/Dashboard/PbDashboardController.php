@@ -38,6 +38,6 @@ class PbDashboardController extends PbBuilderController
         bool $multiple = false,
         string $route = 'level'
     ): InertiaResponse|JsonResponse|RedirectResponse {
-        return $this->renderResponse($this->package . '/Dashboard');
+        return $this->renderResponse($this->vars->helper->package . '/Dashboard');
     }
 }

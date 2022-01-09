@@ -32,141 +32,37 @@ class PbBuilderController extends Controller
     use PbControllerListingTrait;
 
     /**
-     * @var string
-     */
-    protected string $vendor = "";
-    /**
-     * @var string
-     */
-    protected string $package = "";
-    /**
-     * @var string
-     */
-    protected string $helper = "";
-    /**
-     * @var string
-     */
-    protected string $viewModelName = "";
-    /**
-     * @var string
-     */
-    protected string $prefix = "";
-    /**
-     * @var array
-     */
-    protected array $keys = [];
-    /**
-     * @var array
-     */
-    protected array $validationRules = [];
-    /**
-     * @var array
-     */
-    protected array $modelExclude = [];
-    /**
-     * @var array
-     */
-    protected array $replacers = [];
-    /**
-     * @var array
-     */
-    protected array $shares = [];
-    /**
-     * @var array
-     */
-    protected array $allowed = [];
-    /**
-     * @var boolean
-     */
-    protected bool $sortable = false;
-    /**
-     * @var string
-     */
-    protected string $sortingRef = "";
-    /**
-     * @var boolean
-     */
-    protected bool $showPosition = false;
-    /**
-     * @var boolean
-     */
-    protected bool $showId = true;
-    /**
-     * @var string
-     */
-    protected string $inertiaRoot = "";
-    /**
-     * @var array
-     */
-    protected array $defaults = [];
-    /**
-     * @var array
-     */
-    protected array $required = [];
-    /**
-     * @var Request
-     */
-    protected Request $request;
-    /**
-     * @var array
-     */
-    protected array $listing = [];
-    /**
-     * @var array
-     */
-    protected array $formconfig = [];
-    /**
      * @var object
      */
-    protected object $controllerVars;
+    protected object $vars;
 
     function __construct(Request $request, $crud_perms = false)
     {
-        if (!isset($this->controllerVars)) {
-            $this->controllerVars = (object)[];
+        $this->initVars();
+        $this->vars->helper->prefix = ($this->vars->helper->prefix ?? $this->vars->helper->class::getDefault('prefix'));
+        $this->vars->helper->vendor = ($this->vars->helper->vendor ?? $this->vars->helper->class::getDefault('vendor'));
+        $this->vars->helper->package = ($this->vars->helper->package ?? $this->vars->helper->class::getDefault('package'));
+        if (!isset($this->vars->helper->keys['level'])) {
+            $this->vars->helper->keys['level'] = ($this->vars->keys['level'] ?? 'Builder');
         }
-        if (!isset($this->keys['level'])) {
-            $this->keys['level'] = 'Builder';
-        }
-        if (!$this->prefix) {
-            $this->prefix = PbHelpers::getDefault('prefix');
-        }
-        if (!$this->vendor) {
-            $this->vendor = PbHelpers::getDefault('vendor');
-        }
-        if (!$this->package) {
-            $this->package = PbHelpers::getDefault('package');
-        }
-        if (!$this->helper) {
-            $this->helper = $this->vendor . '\\' . $this->package . '\\Helpers\\' . $this->prefix . 'Helpers';
-        }
-        if (!$this->inertiaRoot) {
-            $this->inertiaRoot = $this->package . '::app';
-        }
-
-        foreach ($this->helper::getModelsLevels() as $value) {
-            if (isset($this->keys[$value])) {
-                $this->controllerVars->{$value} = $this->buildControllerVars($this->keys[$value]);
+        foreach ($this->vars->helper->class::getModelsLevels() as $value) {
+            if (isset($this->vars->helper->keys[$value])) {
+                $this->vars->{$value} = $this->buildControllerVars($this->vars->helper->keys[$value]);
             }
         }
-
+        $this->vars->inertiaRoot = ($this->vars->inertiaRoot ?? $this->vars->helper->package . '::app');
+        $this->vars->viewModelName = ($this->vars->viewModelName ?? $this->vars->level->names);
         if ($crud_perms) {
             // Middlewares
-            foreach($this->helper::getMethodsByPermission() as $key => $value) {
-                $this->middleware('role_or_permission:' . $key . ' ' . $this->controllerVars->level->names, $value);
+            foreach ($this->vars->helper->class::getMethodsByPermission() as $key => $value) {
+                $this->middleware('role_or_permission:' . $key . ' ' . $this->vars->level->names, $value);
             }
         }
+        $this->vars->required = $this->getRequired();
+        $this->vars->request = $request;
 
-        if (!$this->viewModelName) {
-            $this->viewModelName = $this->controllerVars->level->names;
-        }
-
-        $this->required = $this->getRequired();
-
-        $this->request = $request;
-
-        self::$item = $this->controllerVars->level->name;
-        self::$route = $this->controllerVars->level->names;
+        self::$item = $this->vars->level->name;
+        self::$route = $this->vars->level->names;
     }
 
     /**
@@ -184,28 +80,28 @@ class PbBuilderController extends Controller
     ): InertiaResponse|JsonResponse|RedirectResponse {
         $arrayElements = $this->buildModelsArray($element, $multiple, null, true);
 
-        $this->allowed = [
-            'create ' . $this->controllerVars->level->names => 'create',
-            'update ' . $this->controllerVars->level->names => 'update',
-            'delete ' . $this->controllerVars->level->names => 'delete',
+        $this->vars->allowed = [
+            'create ' . $this->vars->level->names => 'create',
+            'update ' . $this->vars->level->names => 'update',
+            'delete ' . $this->vars->level->names => 'delete',
         ];
 
-        $config = $this->controllerVars->level->modelPath::getCrudConfig();
+        $config = $this->vars->level->modelPath::getCrudConfig();
         if (!isset($config['fields']['actions'])) {
             $config['fields']['actions'] = [
                 'update' => [],
                 'delete' => []
             ];
         }
-        $config['enabled_actions'] = Shares::allowed($this->allowed)['allowed'];
+        $config['enabled_actions'] = Shares::allowed($this->vars->allowed)['allowed'];
         if (!isset($config['model'])) {
-            $config['model'] = $this->controllerVars->level->modelPath;
+            $config['model'] = $this->vars->level->modelPath;
         }
 
-        $this->listing = self::buildListingRow($config);
-        $this->formconfig = $config['formconfig'];
-        PbDebugbar::addMessage($this->listing, 'listing');
-        PbDebugbar::addMessage($this->formconfig, 'formconfig');
+        $this->vars->listing = self::buildListingRow($config);
+        $this->vars->formconfig = $config['formconfig'];
+        PbDebugbar::addMessage($this->vars->listing, 'listing');
+        PbDebugbar::addMessage($this->vars->formconfig, 'formconfig');
 
         $path = $this->buildRouteString($route, 'index');
 
@@ -220,9 +116,9 @@ class PbBuilderController extends Controller
      */
     public function create(string $route = 'level'): InertiaResponse|JsonResponse
     {
-        $config = $this->controllerVars->level->modelPath::getCrudConfig();
-        $this->formconfig = $config['formconfig'];
-        PbDebugbar::addMessage($this->formconfig, 'formconfig');
+        $config = $this->vars->level->modelPath::getCrudConfig();
+        $this->vars->formconfig = $config['formconfig'];
+        PbDebugbar::addMessage($this->vars->formconfig, 'formconfig');
 
         $path = $this->buildRouteString($route, 'create');
 
@@ -238,23 +134,21 @@ class PbBuilderController extends Controller
     public function store(Request $request): Redirector|RedirectResponse|Application|null
     {
         // Validation
-        if ($failed = $this->validateRequest($this->validationRules, $request)) {
+        if ($failed = $this->validateRequest($this->vars->validationRules, $request)) {
             return $failed;
         }
 
         // Process
         try {
             // Add requests
-            $model = $this->processModelRequests($this->validationRules, $request, $this->replacers,
-                new $this->controllerVars->level->modelPath());
+            $model = $this->processModelRequests($this->vars->validationRules, $request, $this->vars->replacers,
+                new $this->vars->level->modelPath());
             // Model save
             $model->save();
 
-            return $this->redirectResponseCRUDSuccess($request,
-                $this->controllerVars->level->key . ' created successfully!');
+            return $this->redirectResponseCRUDSuccess($request, 'create');
         } catch (Exception $e) {
-            return $this->redirectResponseCRUDFail($request,
-                $this->controllerVars->level->key . ' could not be created! ' . $e->getMessage());
+            return $this->redirectResponseCRUDFail($request, 'create', $e->getMessage());
         }
     }
 
@@ -297,9 +191,9 @@ class PbBuilderController extends Controller
     ): InertiaResponse|JsonResponse {
         $arrayElements = $this->buildModelsArray($element, $multiple, $id);
 
-        $config = $this->controllerVars->level->modelPath::getCrudConfig();
-        $this->formconfig = $config['formconfig'];
-        PbDebugbar::addMessage($this->formconfig, 'formconfig');
+        $config = $this->vars->level->modelPath::getCrudConfig();
+        $this->vars->formconfig = $config['formconfig'];
+        PbDebugbar::addMessage($this->vars->formconfig, 'formconfig');
 
         $path = $this->buildRouteString($route, 'edit');
 
@@ -316,24 +210,22 @@ class PbBuilderController extends Controller
     public function update(Request $request, int $id): Redirector|RedirectResponse|Application|null
     {
         // Validation
-        if ($failed = $this->validateRequest($this->validationRules, $request)) {
+        if ($failed = $this->validateRequest($this->vars->validationRules, $request)) {
             return $failed;
         }
 
         // Process
         try {
             // Build model
-            $model = $this->controllerVars->level->modelPath::find($id);
+            $model = $this->vars->level->modelPath::find($id);
             // Build requests
-            $requests = $this->processModelRequests($this->validationRules, $request, $this->replacers);
+            $requests = $this->processModelRequests($this->vars->validationRules, $request, $this->vars->replacers);
             // Update model
             $model->update($requests);
 
-            return $this->redirectResponseCRUDSuccess($request,
-                $this->controllerVars->level->key . ' updated successfully!');
+            return $this->redirectResponseCRUDSuccess($request, 'update');
         } catch (Exception $e) {
-            return $this->redirectResponseCRUDFail($request,
-                $this->controllerVars->level->key . ' could not be updated! ' . $e->getMessage());
+            return $this->redirectResponseCRUDFail($request, 'update', $e->getMessage());
         }
     }
 
@@ -349,13 +241,11 @@ class PbBuilderController extends Controller
         // Process
         try {
             // Delete element
-            $this->controllerVars->level->modelPath::find($id)->delete();
+            $this->vars->level->modelPath::find($id)->delete();
 
-            return $this->redirectResponseCRUDSuccess($request,
-                $this->controllerVars->level->key . ' deleted successfully!');
+            return $this->redirectResponseCRUDSuccess($request, 'delete');
         } catch (Exception $e) {
-            return $this->redirectResponseCRUDFail($request,
-                $this->controllerVars->level->key . ' could not be deleted! ' . $e->getMessage());
+            return $this->redirectResponseCRUDFail($request, 'update', $e->getMessage());
         }
     }
 
@@ -379,15 +269,15 @@ class PbBuilderController extends Controller
             $n = 0;
             foreach ($sortList as $sortEl) {
                 if ($id > 0) {
-                    $query = $this->controllerVars->level->modelPath::where($this->sortingRef, $id)
+                    $query = $this->vars->level->modelPath::where($this->vars->sortingRef, $id)
                         ->where('id', $sortEl)->first();
                     if ($query) {
                         // Build model
-                        $el = $this->controllerVars->level->modelPath::find($query->id);
+                        $el = $this->vars->level->modelPath::find($query->id);
                     }
                 } else {
                     // Build model
-                    $el = $this->controllerVars->level->modelPath::find($sortEl);
+                    $el = $this->vars->level->modelPath::find($sortEl);
                 }
                 if ($el) {
                     $el->position = $n;
@@ -397,10 +287,10 @@ class PbBuilderController extends Controller
             }
 
             return $this->redirectResponseCRUDSuccess($request,
-                $this->controllerVars->level->key . ' sorted successfully!');
+                $this->vars->level->key . ' sorted successfully!');
         } catch (Exception $e) {
             return $this->redirectResponseCRUDFail($request,
-                $this->controllerVars->level->key . ' could not be sorted! ' . $e->getMessage());
+                $this->vars->level->key . ' could not be sorted! ' . $e->getMessage());
         }
     }
 
@@ -423,13 +313,13 @@ class PbBuilderController extends Controller
         if ($element) {
             if ($multiple) {
                 foreach ($element as $key => $value) {
-                    $arrayElements[($value['size'] == 'multiple' ? $this->controllerVars->{$key}->prefixNames : $this->controllerVars->{$key}->prefixName)] = $value['object'];
+                    $arrayElements[($value['size'] == 'multiple' ? $this->vars->{$key}->prefixNames : $this->vars->{$key}->prefixName)] = $value['object'];
                 }
             } else {
-                $arrayElements[($plural ? $this->controllerVars->level->prefixNames : $this->controllerVars->level->prefixName)] = $element;
+                $arrayElements[($plural ? $this->vars->level->prefixNames : $this->vars->level->prefixName)] = $element;
             }
         } else {
-            $arrayElements[($plural ? $this->controllerVars->level->prefixNames : $this->controllerVars->level->prefixName)] = ($id ? $this->controllerVars->level->modelPath::find($id) : $this->controllerVars->level->modelPath::all());
+            $arrayElements[($plural ? $this->vars->level->prefixNames : $this->vars->level->prefixName)] = ($id ? $this->vars->level->modelPath::find($id) : $this->vars->level->modelPath::all());
         }
 
         return $arrayElements;
@@ -444,16 +334,16 @@ class PbBuilderController extends Controller
     {
         $shared = [
             ...$this->globalInertiaShare(),
-            ...Shares::allowed($this->allowed),
-            ...Shares::list($this->shares),
-            ...['sort' => $this->sortable],
-            ...['showpos' => $this->showPosition],
-            ...['showid' => $this->showId],
-            ...['model' => $this->viewModelName],
-            ...['required' => $this->required],
+            ...Shares::allowed($this->vars->allowed),
+            ...Shares::list($this->vars->shares),
+            ...['sort' => $this->vars->sortable],
+            ...['showpos' => $this->vars->showPosition],
+            ...['showid' => $this->vars->showId],
+            ...['model' => $this->vars->viewModelName],
+            ...['required' => $this->vars->required],
             ...['defaults' => $this->getDefaults()],
-            ...['listing' => $this->listing],
-            ...['formconfig' => $this->formconfig],
+            ...['listing' => $this->vars->listing],
+            ...['formconfig' => $this->vars->formconfig],
         ];
         Inertia::share('shared', $shared);
         PbDebugbar::addMessage($shared, 'shared');
@@ -467,7 +357,7 @@ class PbBuilderController extends Controller
     protected function getDefaults()
     {
         $defaults = (object)[];
-        foreach ($this->defaults as $key => $value) {
+        foreach ($this->vars->defaults as $key => $value) {
             $defaults->$key = match ($key) {
                 'lang' => PbLanguage::findByCode($value),
                 'country' => PbCountry::findByCode($value),
@@ -485,7 +375,7 @@ class PbBuilderController extends Controller
     protected function getRequired()
     {
         $required = [];
-        foreach ($this->validationRules as $key => $value) {
+        foreach ($this->vars->validationRules as $key => $value) {
             if (in_array('required', $value)) {
                 array_push($required, $key);
             }
@@ -496,13 +386,13 @@ class PbBuilderController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param $validationRules
+     * @param array $validationRules
      * @param Request $request
-     * @param $replacers
+     * @param array $replacers
      * @param null $model
-     * @return void
+     * @return array|object
      */
-    protected function processModelRequests($validationRules, Request $request, $replacers, $model = null)
+    protected function processModelRequests(array $validationRules, Request $request, array $replacers, $model = null): array|object
     {
         $keys = [];
         foreach ($validationRules as $vrKey => $vr) {
@@ -516,7 +406,7 @@ class PbBuilderController extends Controller
         }
         if ($model) {
             foreach ($keys as $key) {
-                if (!in_array($key, $this->modelExclude)) {
+                if (!in_array($key, $this->vars->modelExclude)) {
                     $model->$key = ${$key};
                 }
             }
@@ -524,7 +414,7 @@ class PbBuilderController extends Controller
         } else {
             $requests = [];
             foreach ($keys as $key) {
-                if (!in_array($key, $this->modelExclude)) {
+                if (!in_array($key, $this->vars->modelExclude)) {
                     $requests[$key] = ${$key};
                 }
             }
@@ -542,7 +432,7 @@ class PbBuilderController extends Controller
      */
     protected function renderResponse($view, array $elements = [], bool $nullable = false): JsonResponse|InertiaResponse
     {
-        if ($this->request->is('api/*')) {
+        if ($this->vars->request->is('api/*')) {
             //write your logic for api call
             if ($elements || $nullable) {
                 return $this->handleJSONResponse($elements, 'Operation Successful');
@@ -552,9 +442,7 @@ class PbBuilderController extends Controller
         } else {
             //write your logic for web call
             $this->shareVars();
-
-            Inertia::setRootView($this->inertiaRoot);
-
+            Inertia::setRootView($this->vars->inertiaRoot);
             return Inertia::render($view, $elements);
         }
     }
@@ -568,65 +456,100 @@ class PbBuilderController extends Controller
      */
     protected function buildRouteString($route, $type): string
     {
-        return $this->controllerVars->{$route}->viewsPath .
+        return $this->vars->{$route}->viewsPath .
             $this->buildFile(
                 $type,
-                ['singular' => $this->controllerVars->{$route}->key, 'plural' => $this->controllerVars->{$route}->keys]
+                ['singular' => $this->vars->{$route}->key, 'plural' => $this->vars->{$route}->keys]
             );
-    }
-
-    protected function buildFile($type, $keys)
-    {
-        return match ($type) {
-            'show' => 'Show' . $keys['singular'],
-            'create' => 'Create' . $keys['singular'],
-            'edit' => 'Edit' . $keys['singular'],
-            default => $keys['plural'],
-        };
-    }
-
-    public function handleJSONResponse($result, $msg)
-    {
-        $res = [
-            'success' => true,
-            'data' => $result,
-            'message' => $msg,
-        ];
-        return response()->json($res);
-    }
-
-    public function handleJSONError($error, $errorMsg = [], $code = 404)
-    {
-        $res = [
-            'success' => false,
-            'message' => $error,
-        ];
-        if (!empty($errorMsg)) {
-            $res['data'] = $errorMsg;
-        }
-        return response()->json($res, $code);
     }
 
     /**
      * Returns existing migration file if found, else uses the current timestamp.
      *
-     * @param $level
+     * @param $key
      * @return object
      */
     public function buildControllerVars($key): object
     {
-        $object = (object) [];
+        $object = (object)[];
         $object->key = $key;
-        $object->keys = $this->helper::toPlural($key);
-        $object->model = $this->prefix . $key;
-        $object->models = $this->helper::toPlural($object->model);
+        $object->keys = $this->vars->helper->class::toPlural($key);
         $object->name = strtolower($key);
-        $object->names = $this->helper::toPlural($object->name);
-        $object->prefixName = strtolower($this->prefix . $key);
-        $object->prefixNames = $this->helper::toPlural($object->prefixName);
-        $object->modelPath = $this->vendor . "\\" . $this->package . "\\Models\\" . $object->model;
-        $object->viewsPath = $this->package . "/" . $object->keys . "/";
+        $object->names = $this->vars->helper->class::toPlural($object->name);
+        $object->prefixName = strtolower($this->vars->helper->prefix . $key);
+        $object->prefixNames = $this->vars->helper->class::toPlural($object->prefixName);
+        $object->modelPath = $this->vars->helper->vendor . "\\" . $this->vars->helper->package . "\\Models\\" . $this->vars->helper->prefix . $key;
+        $object->viewsPath = $this->vars->helper->package . "/" . $object->keys . "/";
         $object->table = (new $object->modelPath())->getTable();
         return $object;
+    }
+
+    /**
+     * Returns existing migration file if found, else uses the current timestamp.
+     *
+     * @param $vars
+     * @return void
+     */
+    public function varsObject($vars)
+    {
+        if (!isset($this->vars)) {
+            $this->vars = (object)[];
+        }
+        foreach ($vars as $key => $value) {
+            $this->vars->{$key} = $value;
+        }
+    }
+
+    /**
+     * Returns existing migration file if found, else uses the current timestamp.
+     *
+     * @return void
+     */
+    public function initVars()
+    {
+        $this->vars = ($this->vars ?? (object)[]);
+        $this->vars->helper = ($this->vars->helper ?? (object)[]);
+        $this->vars->helper->class =
+            ($this->vars->helper->class ??
+                PbHelpers::getDefault('vendor') . '\\' . PbHelpers::getDefault('package') . '\\Helpers\\' . PbHelpers::getDefault('prefix') . 'Helpers'
+            );
+        $this->vars->validationRules = ($this->vars->validationRules ?? []);
+        $this->vars->allowed = ($this->vars->allowed ?? []);
+        $this->vars->shares = ($this->vars->shares ?? []);
+        $this->vars->modelExclude = ($this->vars->modelExclude ?? []);
+        $this->vars->listing = ($this->vars->listing ?? []);
+        $this->vars->formconfig = ($this->vars->formconfig ?? []);
+        $this->vars->replacers = ($this->vars->replacers ?? []);
+        $this->vars->defaults = ($this->vars->defaults ?? (object)[]);
+        $this->vars->sortable = ($this->vars->sortable ?? false);
+        $this->vars->showPosition = ($this->vars->showPosition ?? false);
+        $this->vars->showId = ($this->vars->showId ?? true);
+        $this->vars->sortingRef = ($this->vars->sortingRef ?? "");
+    }
+
+    /**
+     * Returns existing migration file if found, else uses the current timestamp.
+     *
+     * @return void
+     */
+    public function pushRequired($array)
+    {
+        $this->vars->required = [
+            ...$this->vars->required,
+            ...$array
+        ];
+    }
+
+    /**
+     * Returns existing migration file if found, else uses the current timestamp.
+     *
+     * @return void
+     */
+    public function pushValidationRules($array)
+    {
+        $this->vars->validationRules = [
+            ...$this->vars->validationRules,
+            ...$array
+        ];
     }
 }

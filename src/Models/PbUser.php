@@ -113,7 +113,27 @@ class PbUser extends User
      */
     public function scopeCurrent(Builder $query): self|null
     {
-            return $query->find(Auth::user()->id);
+        return $query->find(Auth::user()->id);
+    }
+
+    /**
+     * Scope a query to only include popular users.
+     *
+     * @param Builder $query
+     * @return Builder
+     */
+    public function scopeRemoveAdmins(Builder $query): Builder
+    {
+        $currentUser = self::current();
+        if (!$currentUser->hasRole('super-admin')) {
+            $superAdmins = self::role('super-admin')->get()->modelKeys();
+            $query->whereNotIn('id', $superAdmins);
+            if (!$currentUser->hasRole('admin')) {
+                $admins = self::role('admin')->get()->modelKeys();
+                $query->whereNotIn('id', $admins);
+            }
+        }
+        return $query;
     }
 
     public function getApiAttribute(): bool
@@ -231,7 +251,7 @@ class PbUser extends User
                         'message' => 'Author not replaced. '.$e->getMessage(),
                         'object_type' => 'file',
                         'user_id' => Auth::user()->id,
-                        'module_id' => ($module ? $module->id : null)
+                        'module_id' => $module?->id
                     ]);
                 }
             }

@@ -25,21 +25,19 @@ class PbPermissionController extends PbBuilderController
 {
     public function __construct(Request $request, $crud_perms = false)
     {
-        // Vars Override
-        $this->keys = [
-            'level' => 'Permission'
-        ];
-        // Validation Rules
-        $this->validationRules = [
-            'name' => ['required', 'max:40'],
-            'alias' => ['required', 'max:190'],
-        ];
-        // Additional variables to share
-        $this->shares = [
-            'roles',
-        ];
-        // Show ID column ?
-        $this->showId = false;
+        $this->varsObject([
+            'keys' => [
+                'level' => 'Permission'
+            ],
+            'validationRules' => [
+                'name' => ['required', 'max:40'],
+                'alias' => ['required', 'max:190'],
+            ],
+            'shares' => [
+                'roles',
+            ],
+            'showId' => false,
+        ]);
         // Parent construct
         parent::__construct($request, true);
     }
@@ -82,7 +80,7 @@ class PbPermissionController extends PbBuilderController
             }
         }
         //Get all permissions
-        $model = $this->controllerVars->level->modelPath::whereNotIn('name', $toExclude)->withPublicRelations()->get();
+        $model = $this->vars->level->modelPath::whereNotIn('name', $toExclude)->withPublicRelations()->get();
 
         return parent::index($model);
     }
@@ -96,7 +94,7 @@ class PbPermissionController extends PbBuilderController
     public function store(Request $request): Redirector|RedirectResponse|Application|null
     {
         // Validation
-        if ($failed = $this->validateRequest($this->validationRules, $request)) {
+        if ($failed = $this->validateRequest($this->vars->validationRules, $request)) {
             return $failed;
         }
 
@@ -105,9 +103,9 @@ class PbPermissionController extends PbBuilderController
         // Process
         try {
             // Build model
-            $model = new $this->controllerVars->level->modelPath();
+            $model = new $this->vars->level->modelPath();
             // Add requests
-            $model = $this->processModelRequests($this->validationRules, $request, $this->replacers, $model);
+            $model = $this->processModelRequests($this->vars->validationRules, $request, $this->vars->replacers, $model);
             // Add additional fields values
             $model->guard_name = 'admin';
             // Model save
@@ -121,9 +119,9 @@ class PbPermissionController extends PbBuilderController
                 );
             }
 
-            return $this->redirectResponseCRUDSuccess($request, $this->controllerVars->level->key . ' created successfully!');
+            return $this->redirectResponseCRUDSuccess($request, 'create');
         } catch (Exception $e) {
-            return $this->redirectResponseCRUDFail($request, $this->controllerVars->level->key . ' could not be created! ' . $e->getMessage());
+            return $this->redirectResponseCRUDFail($request, 'create', $e->getMessage());
         }
     }
 
@@ -160,7 +158,7 @@ class PbPermissionController extends PbBuilderController
         bool $multiple = false,
         string $route = 'level'
     ): InertiaResponse|JsonResponse {
-        $model = $this->controllerVars->level->modelPath::withPublicRelations()->findOrFail($id);
+        $model = $this->vars->level->modelPath::withPublicRelations()->findOrFail($id);
 
         return parent::edit($id, $model);
     }
@@ -175,7 +173,7 @@ class PbPermissionController extends PbBuilderController
     public function update(Request $request, int $id): Redirector|RedirectResponse|Application|null
     {
         // Validation
-        if ($failed = $this->validateRequest($this->validationRules, $request)) {
+        if ($failed = $this->validateRequest($this->vars->validationRules, $request)) {
             return $failed;
         }
 
@@ -184,9 +182,9 @@ class PbPermissionController extends PbBuilderController
         // Process
         try {
             // Build model
-            $model = $this->controllerVars->level->modelPath::find($id);
+            $model = $this->vars->level->modelPath::find($id);
             // Build requests
-            $requests = $this->processModelRequests($this->validationRules, $request, $this->replacers);
+            $requests = $this->processModelRequests($this->vars->validationRules, $request, $this->vars->replacers);
             // Update model
             if ($model->update($requests)) {
                 if (in_array($model->name, ['crud super-admin'])) {
@@ -215,9 +213,9 @@ class PbPermissionController extends PbBuilderController
                 }
             }
 
-            return $this->redirectResponseCRUDSuccess($request, $this->controllerVars->level->key . ' updated successfully!');
+            return $this->redirectResponseCRUDSuccess($request, 'update');
         } catch (Exception $e) {
-            return $this->redirectResponseCRUDFail($request, $this->controllerVars->level->key . ' could not be updated! ' . $e->getMessage());
+            return $this->redirectResponseCRUDFail($request, 'update', $e->getMessage());
         }
     }
 
@@ -232,7 +230,7 @@ class PbPermissionController extends PbBuilderController
     {
         // Process
         try {
-            $model = $this->controllerVars->level->modelPath::findOrFail($id);
+            $model = $this->vars->level->modelPath::findOrFail($id);
             //Make it impossible to delete these specific permissions
             if (in_array($model->name, [
                 'admin roles permissions',
@@ -249,13 +247,13 @@ class PbPermissionController extends PbBuilderController
                 $request->session()->flash('flash.banner', 'This permission can not be deleted!');
                 $request->session()->flash('flash.bannerStyle', 'danger');
 
-                return redirect()->route($this->controllerVars->level->names . '.index');
+                return redirect()->route($this->vars->level->names . '.index');
             }
             $model->delete();
 
-            return $this->redirectResponseCRUDSuccess($request, $this->controllerVars->level->key . ' deleted successfully!');
+            return $this->redirectResponseCRUDSuccess($request, 'delete');
         } catch (Exception $e) {
-            return $this->redirectResponseCRUDFail($request, $this->controllerVars->level->key . ' could not be deleted! ' . $e->getMessage());
+            return $this->redirectResponseCRUDFail($request, 'delete', $e->getMessage());
         }
     }
 }

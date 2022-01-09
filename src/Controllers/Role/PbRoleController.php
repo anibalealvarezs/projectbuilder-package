@@ -30,20 +30,18 @@ class PbRoleController extends PbBuilderController
 
     public function __construct(Request $request, $crud_perms = false)
     {
-        // Vars Override
-        $this->keys = [
-            'level' => 'Role'
-        ];
-        // Validation Rules
-        $this->validationRules = [
-            'alias' => ['required', 'max:190'],
-        ];
-        // Additional variables to share
-        $this->shares = [
-            'permissions',
-        ];
-        // Show ID column ?
-        $this->showId = false;
+        $this->varsObject([
+            'keys' => [
+                'level' => 'Role'
+            ],
+            'validationRules' => [
+                'alias' => ['required', 'max:190'],
+            ],
+            'shares' => [
+                'permissions',
+            ],
+            'showId' => false,
+        ]);
         // Parent construct
         parent::__construct($request, true);
     }
@@ -58,17 +56,14 @@ class PbRoleController extends PbBuilderController
      */
     public function index($element = null, bool $multiple = false, string $route = 'level'): InertiaResponse|JsonResponse|RedirectResponse
     {
-        $query = $this->controllerVars->level->modelPath::withPublicRelations()->whereNotIn('name', ['super-admin', 'developer', 'api-user']);
+        $query = $this->vars->level->modelPath::withPublicRelations()->whereNotIn('name', ['super-admin', 'developer', 'api-user']);
         $user = PbUser::current();
         if (!$user->hasRole('super-admin')) {
             $query = $query->whereNotIn('name', ['admin']);
         }
         $model = $query->get(); //Get all permissions
 
-        $this->required = [
-            ...$this->required,
-            ...['name']
-        ];
+        $this->pushRequired(['name']);
 
         return parent::index($model);
     }
@@ -81,10 +76,7 @@ class PbRoleController extends PbBuilderController
      */
     public function create(string $route = 'level'): InertiaResponse|JsonResponse
     {
-        $this->required = [
-            ...$this->required,
-            ...['name']
-        ];
+        $this->pushRequired(['name']);
 
         return parent::create($route);
     }
@@ -97,10 +89,10 @@ class PbRoleController extends PbBuilderController
      */
     public function store(Request $request): Redirector|RedirectResponse|Application|null
     {
-        $this->validationRules['name'] = ['required', 'max:20', Rule::unique($this->controllerVars->level->table)];
+        $this->vars->validationRules['name'] = ['required', 'max:20', Rule::unique($this->vars->level->table)];
 
         // Validation
-        if ($failed = $this->validateRequest($this->validationRules, $request)) {
+        if ($failed = $this->validateRequest($this->vars->validationRules, $request)) {
             return $failed;
         }
 
@@ -109,9 +101,9 @@ class PbRoleController extends PbBuilderController
         // Process
         try {
             // Build model
-            $model = new $this->controllerVars->level->modelPath();
+            $model = new $this->vars->level->modelPath();
             // Add requests
-            $model = $this->processModelRequests($this->validationRules, $request, $this->replacers, $model);
+            $model = $this->processModelRequests($this->vars->validationRules, $request, $this->vars->replacers, $model);
             // Add additional fields values
             $model->guard_name = 'admin';
             // Model save
@@ -124,9 +116,9 @@ class PbRoleController extends PbBuilderController
                 $model->syncPermissions($permissions);
             }
 
-            return $this->redirectResponseCRUDSuccess($request, $this->controllerVars->level->key.' created successfully!');
+            return $this->redirectResponseCRUDSuccess($request, 'create');
         } catch (Exception $e) {
-            return $this->redirectResponseCRUDFail($request, $this->controllerVars->level->key.' could not be created! '.$e->getMessage());
+            return $this->redirectResponseCRUDFail($request, 'create', $e->getMessage());
         }
     }
 
@@ -155,12 +147,9 @@ class PbRoleController extends PbBuilderController
      */
     public function edit(int $id, $element = null, bool $multiple = false, string $route = 'level'): InertiaResponse|JsonResponse
     {
-        $model = $this->controllerVars->level->modelPath::withPublicRelations()->whereNotIn('name', ['super-admin', 'developer', 'api-user'])->findOrFail($id);
+        $model = $this->vars->level->modelPath::withPublicRelations()->whereNotIn('name', ['super-admin', 'developer', 'api-user'])->findOrFail($id);
 
-        $this->required = [
-            ...$this->required,
-            ...['name']
-        ];
+        $this->pushRequired(['name']);
 
         return parent::edit($id, $model);
     }
@@ -174,10 +163,10 @@ class PbRoleController extends PbBuilderController
      */
     public function update(Request $request, int $id): Redirector|RedirectResponse|Application|null
     {
-        $this->validationRules['name'] = ['required', 'max:20', Rule::unique($this->controllerVars->level->table)->ignore($id)];
+        $this->vars->validationRules['name'] = ['required', 'max:20', Rule::unique($this->vars->level->table)->ignore($id)];
 
         // Validation
-        if ($failed = $this->validateRequest($this->validationRules, $request)) {
+        if ($failed = $this->validateRequest($this->vars->validationRules, $request)) {
             return $failed;
         }
 
@@ -188,9 +177,9 @@ class PbRoleController extends PbBuilderController
         // Process
         try {
             // Build model
-            $model = $this->controllerVars->level->modelPath::find($id);
+            $model = $this->vars->level->modelPath::find($id);
             // Build requests
-            $requests = $this->processModelRequests($this->validationRules, $request, $this->replacers);
+            $requests = $this->processModelRequests($this->vars->validationRules, $request, $this->vars->replacers);
             // Update model
             if ($model->update($requests)) {
                 $this->loadDefaultPermissions();
@@ -215,9 +204,9 @@ class PbRoleController extends PbBuilderController
                 }
             }
 
-            return $this->redirectResponseCRUDSuccess($request, $this->controllerVars->level->key.' updated successfully!');
+            return $this->redirectResponseCRUDSuccess($request, 'update');
         } catch (Exception $e) {
-            return $this->redirectResponseCRUDFail($request, $this->controllerVars->level->key.' could not be updated! '.$e->getMessage());
+            return $this->redirectResponseCRUDFail($request, 'update', $e->getMessage());
         }
     }
 
@@ -232,7 +221,7 @@ class PbRoleController extends PbBuilderController
     {
         // Process
         try {
-            $model = $this->controllerVars->level->modelPath::findOrFail($id);
+            $model = $this->vars->level->modelPath::findOrFail($id);
             //Make it impossible to delete these specific permissions
             if (in_array($model->name, [
                 'user',
@@ -244,13 +233,13 @@ class PbRoleController extends PbBuilderController
                 $request->session()->flash('flash.banner', 'This role can not be deleted!');
                 $request->session()->flash('flash.bannerStyle', 'danger');
 
-                return redirect()->route($this->controllerVars->level->names . '.index');
+                return redirect()->route($this->vars->level->names . '.index');
             }
             $model->delete();
 
-            return $this->redirectResponseCRUDSuccess($request, $this->controllerVars->level->key . ' deleted successfully!');
+            return $this->redirectResponseCRUDSuccess($request, 'delete');
         } catch (Exception $e) {
-            return $this->redirectResponseCRUDFail($request, $this->controllerVars->level->key . ' could not be deleted! '.$e->getMessage());
+            return $this->redirectResponseCRUDFail($request, 'delete', $e->getMessage());
         }
     }
 

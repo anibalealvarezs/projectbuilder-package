@@ -13,10 +13,11 @@ class PbLoggerController extends PbBuilderController
 {
     function __construct(Request $request, $crud_perms = false)
     {
-        // Vars Override
-        $this->keys = [
-            'level' => 'Logger'
-        ];
+        $this->varsObject([
+            'keys' => [
+                'level' => 'Logger'
+            ],
+        ]);
         // Parent construct
         parent::__construct($request, true);
     }
@@ -31,7 +32,7 @@ class PbLoggerController extends PbBuilderController
      */
     public function index($element = null, bool $multiple = false, string $route = 'level'): InertiaResponse|JsonResponse|RedirectResponse
     {
-        $model = $this->controllerVars->level->modelPath::withPublicRelations()->get();
+        $model = $this->vars->level->modelPath::withPublicRelations()->get();
 
         $filtered = $model->map(function ($q) {
             return $q->only([
@@ -48,7 +49,7 @@ class PbLoggerController extends PbBuilderController
             ]);
         });
 
-        $filtered = $this->helper::setCollectionAttributeDatetimeFormat(
+        $filtered = $this->vars->helper->class::setCollectionAttributeDatetimeFormat(
             $filtered,
             ['created_at'],
             "custom",

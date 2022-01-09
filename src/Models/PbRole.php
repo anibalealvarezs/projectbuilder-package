@@ -7,7 +7,6 @@ use Anibalealvarezs\Projectbuilder\Traits\PbModelCrudTrait;
 use Anibalealvarezs\Projectbuilder\Traits\PbModelTrait;
 use Spatie\Permission\Models\Role;
 use Spatie\Translatable\HasTranslations;
-use Illuminate\Database\Eloquent\Builder;
 
 class PbRole extends Role
 {

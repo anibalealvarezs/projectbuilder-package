@@ -32,10 +32,10 @@ trait PbControllerTrait
     /**
      * Remove the specified resource from storage.
      *
-     * @param $permissions
+     * @param array|string $permissions
      * @return array
      */
-    protected function getAllowed($permissions): array
+    protected function getAllowed(array|string $permissions): array
     {
         $allowed = [];
         if (is_array($permissions)) {
@@ -52,11 +52,11 @@ trait PbControllerTrait
     /**
      * Remove the specified resource from storage.
      *
-     * @param $validationRules
+     * @param array $validationRules
      * @param Request $request
      * @return Application|Redirector|RedirectResponse|null
      */
-    protected function validateRequest($validationRules, Request $request): Redirector|RedirectResponse|Application|null
+    protected function validateRequest(array $validationRules, Request $request): Redirector|RedirectResponse|Application|null
     {
         $validator = Validator::make($request->all(), $validationRules);
 
@@ -76,17 +76,17 @@ trait PbControllerTrait
     /**
      * Remove the specified resource from storage.
      *
-     * @param $request
-     * @param $flashMessage
+     * @param Request $request
+     * @param string $flashMessage
      * @param string $route
-     * @param bool $destiny
+     * @param string $destiny
      * @param string $flashStyle
      * @param bool $withInput
      * @return RedirectResponse|Application|Redirector
      */
     protected function redirectResponse(
-        $request,
-        $flashMessage,
+        Request $request,
+        string $flashMessage,
         string $route = 'back',
         string $destiny = "",
         string $flashStyle = 'danger',
@@ -120,17 +120,19 @@ trait PbControllerTrait
     /**
      * Remove the specified resource from storage.
      *
-     * @param $request
-     * @param $flashMessage
+     * @param Request $request
+     * @param string $process
      * @return RedirectResponse|Application|Redirector
      */
-    protected function redirectResponseCRUDSuccess($request, $flashMessage): Redirector|Application|RedirectResponse
-    {
+    protected function redirectResponseCRUDSuccess(
+        Request $request,
+        string $process
+    ): Redirector|Application|RedirectResponse {
         return $this->redirectResponse(
             $request,
-            $flashMessage,
+            $this->buildCRUDResponseMessage($process, 'success'),
             'route',
-            $this->controllerVars->level->names . '.index',
+            $this->vars->level->names . '.index',
             'success',
             false
         );
@@ -139,15 +141,100 @@ trait PbControllerTrait
     /**
      * Remove the specified resource from storage.
      *
-     * @param $request
-     * @param $flashMessage
+     * @param Request $request
+     * @param string $process
+     * @param string $error
      * @return RedirectResponse|Application|Redirector
      */
-    protected function redirectResponseCRUDFail($request, $flashMessage): Redirector|Application|RedirectResponse
-    {
+    protected function redirectResponseCRUDFail(
+        Request $request,
+        string $process,
+        string $error
+    ): Redirector|Application|RedirectResponse {
         return $this->redirectResponse(
             $request,
-            $flashMessage
+            $this->buildCRUDResponseMessage($process, 'fail', $error)
         );
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @param string $process
+     * @param string $result
+     * @param string $error
+     * @return string
+     */
+    public function buildCRUDResponseMessage(string $process, string $result, string $error = ""): string
+    {
+        return $this->vars->level->key . match ($process) {
+                'create' => match ($result) {
+                    'success' => ' created successfully!',
+                    'fail' => ' could not be created! ' . $error,
+                },
+                'update' => match ($result) {
+                    'success' => ' updated successfully!',
+                    'fail' => ' could not be updated! ' . $error,
+                },
+                'delete' => match ($result) {
+                    'success' => ' deleted successfully!',
+                    'fail' => ' could not be deleted! ' . $error,
+                },
+                default => ' model task has no valid response. Error: ' . $error,
+            };
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @param string $type
+     * @param array $keys
+     * @return string
+     */
+    protected function buildFile(string $type, array $keys): string
+    {
+        return match ($type) {
+            'show' => 'Show' . $keys['singular'],
+            'create' => 'Create' . $keys['singular'],
+            'edit' => 'Edit' . $keys['singular'],
+            default => $keys['plural'],
+        };
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @param $result
+     * @param $msg
+     * @return JsonResponse
+     */
+    public function handleJSONResponse($result, $msg): JsonResponse
+    {
+        $res = [
+            'success' => true,
+            'data' => $result,
+            'message' => $msg,
+        ];
+        return response()->json($res);
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @param $error
+     * @param array $errorMsg
+     * @param int $code
+     * @return JsonResponse
+     */
+    public function handleJSONError($error, array $errorMsg = [], int $code = 404): JsonResponse
+    {
+        $res = [
+            'success' => false,
+            'message' => $error,
+        ];
+        if (!empty($errorMsg)) {
+            $res['data'] = $errorMsg;
+        }
+        return response()->json($res, $code);
     }
 }

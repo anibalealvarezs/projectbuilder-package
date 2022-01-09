@@ -23,15 +23,16 @@ class PbHelpers
     /* Configurable */
     private array $toExtract = ['package', 'directory', 'prefix', 'name', 'modulekeys', 'nonmodules'];
     private array $toExtractCustom = ['vendor'];
-    private string $fileName = 'pbuilder.php';
+    public static string $configFileName = 'pbuilder.php';
+    public static string $storageDirName = 'pbstorage';
     /* End Configurable */
 
     function __construct()
     {
-        $defaults = require(__DIR__ . DIRECTORY_SEPARATOR . '..'. DIRECTORY_SEPARATOR .'config'. DIRECTORY_SEPARATOR . $this->fileName);
+        $defaults = require(__DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'config' . DIRECTORY_SEPARATOR . self::$configFileName);
         $overrided = [];
-        if (file_exists(config_path($this->fileName))) {
-            $overrided = require(config_path($this->fileName));
+        if (file_exists(config_path(self::$configFileName))) {
+            $overrided = require(config_path(self::$configFileName));
         }
         foreach ([...$this->toExtract, ...$this->toExtractCustom] as $var) {
             $this->{$var} = $overrided[$var] ?? $defaults[$var];
@@ -50,7 +51,7 @@ class PbHelpers
             'read' => [],
             'create' => ['only' => ['create', 'store']],
             'update' => ['only' => ['edit', 'update']],
-            'delate' => ['only' => ['destroy']],
+            'delete' => ['only' => ['destroy']],
         ];
     }
 
@@ -108,7 +109,7 @@ class PbHelpers
      */
     public static function toPlural($string): string
     {
-        return $string.'s';
+        return $string . 's';
     }
 
     /**
@@ -119,7 +120,7 @@ class PbHelpers
      */
     public static function getStubsList($route): array
     {
-        return array_map('basename', File::glob($route.DIRECTORY_SEPARATOR.'*.stub'));
+        return array_map('basename', File::glob($route . DIRECTORY_SEPARATOR . '*.stub'));
     }
 
     /**
@@ -131,12 +132,12 @@ class PbHelpers
      */
     public static function getMigrationFileName($filename, $offset): string
     {
-        $timestamp = date("Y_m_d_His", $offset ? strtotime("+".$offset." seconds") : strtotime("now"));
+        $timestamp = date("Y_m_d_His", $offset ? strtotime("+" . $offset . " seconds") : strtotime("now"));
         $phpFile = str_replace(".stub", "", $filename);
-        return Collection::make(database_path('migrations'.DIRECTORY_SEPARATOR))
+        return Collection::make(database_path('migrations' . DIRECTORY_SEPARATOR))
             ->flatMap(function ($path) use ($phpFile) {
-                return File::glob($path.'*_'.$phpFile);
-            })->push(database_path('migrations'.DIRECTORY_SEPARATOR.$timestamp.'_'.$phpFile))
+                return File::glob($path . '*_' . $phpFile);
+            })->push(database_path('migrations' . DIRECTORY_SEPARATOR . $timestamp . '_' . $phpFile))
             ->first();
     }
 
@@ -157,7 +158,7 @@ class PbHelpers
      */
     public static function getDebugStatus(): bool
     {
-        return (bool) PbConfig::getValueByKey('_DEBUG_MODE_');
+        return (bool)PbConfig::getValueByKey('_DEBUG_MODE_');
     }
 
     /**
@@ -171,14 +172,18 @@ class PbHelpers
         $models = [...self::getDefault('nonmodules'), ...PbModule::pluck('modulekey')];
 
         foreach ($models as $model) {
-            $controller = self::getDefault('vendor') . '\\' . self::getDefault('package') . '\\Controllers\\'.ucfirst($model).'\\' . self::getDefault('prefix') .ucfirst($model).'Controller';
+            $controller = self::getDefault('vendor') . '\\' . self::getDefault('package') . '\\Controllers\\' . ucfirst($model) . '\\' . self::getDefault('prefix') . ucfirst($model) . 'Controller';
             switch ($type) {
                 case 'web':
-                    Route::resource($model.'s', $controller)->middleware(['web', 'auth:sanctum', 'verified']);
+                    Route::resource($model . 's', $controller)->middleware(['web', 'auth:sanctum', 'verified']);
                     break;
                 default:
                     Route::prefix('api')->group(
-                        fn () => Route::resource($model.'s', $controller)->middleware(['auth:sanctum', 'verified', 'api_access'])->names(self::getApiRoutesNames($model))
+                        fn() => Route::resource($model . 's', $controller)->middleware([
+                            'auth:sanctum',
+                            'verified',
+                            'api_access'
+                        ])->names(self::getApiRoutesNames($model))
                     );
                     break;
             }
@@ -195,8 +200,27 @@ class PbHelpers
     {
         $route = [];
         foreach (['index', 'show', 'create', 'store', 'edit', 'update', 'destroy'] as $method) {
-            $route[$method] = 'api.'.$model.'s.'.$method;
+            $route[$method] = 'api.' . $model . 's.' . $method;
         }
         return $route;
+    }
+
+    /**
+     * Returns existing migration file if found, else uses the current timestamp.
+     *
+     * @param $var
+     * @return string
+     */
+    public static function pretty($var): string
+    {
+        header('Content-Type: application/json; charset=utf-8');
+        die(gettype($var) . ' ' . json_encode(
+            $var,
+            JSON_UNESCAPED_SLASHES |
+            JSON_UNESCAPED_UNICODE |
+            JSON_PRETTY_PRINT |
+            JSON_PARTIAL_OUTPUT_ON_ERROR |
+            JSON_INVALID_UTF8_SUBSTITUTE
+        ));
     }
 }
