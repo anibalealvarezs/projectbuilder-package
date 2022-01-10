@@ -41,16 +41,16 @@ php artisan pbuilder:update
 php artisan pbuilder:install --publish --migrate --seed --npm --compile
 ```
 In case of Artisan commands failure, use the alternative commands:
-```
+```shell
 php artisan pbuilder:altinstall
 php artisan pbuilder:altupdate
 ```
 For full command information, you can check the help command:
-```
+```shell
 php artisan pbuilder:help
 ```
 In case of links failure (if "pbstorage" links show error), navigate to "public folder", manually delete the link, and create a new one with the following command:
-```
+```shell
 ln -s ../vendor/anibalealvarezs/projectbuilder-package/src/assets pbstorage
 ```
 
