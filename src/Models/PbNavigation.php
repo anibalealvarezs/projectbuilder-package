@@ -2,6 +2,7 @@
 
 namespace Anibalealvarezs\Projectbuilder\Models;
 
+use Anibalealvarezs\Projectbuilder\Helpers\PbHelpers;
 use Anibalealvarezs\Projectbuilder\Helpers\Shares;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -42,10 +43,7 @@ class PbNavigation extends PbBuilder
 
     public function getNameAttribute($value)
     {
-        if ($json = json_decode($value)) {
-            return $json->{app()->getLocale()};
-        }
-        return $value;
+        return PbHelpers::translateString($value);
     }
 
     /**

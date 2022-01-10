@@ -2,6 +2,7 @@
 
 namespace Anibalealvarezs\Projectbuilder\Models;
 
+use Anibalealvarezs\Projectbuilder\Helpers\PbHelpers;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Spatie\Translatable\HasTranslations;
 
@@ -57,10 +58,7 @@ class PbLogger extends PbBuilder
 
     public function getMessageAttribute($value)
     {
-        if ($json = json_decode($value)) {
-            return $json->{app()->getLocale()};
-        }
-        return $value;
+        return PbHelpers::translateString($value);
     }
 
     public function getSeverityAttribute($value)

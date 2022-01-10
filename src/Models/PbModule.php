@@ -2,6 +2,7 @@
 
 namespace Anibalealvarezs\Projectbuilder\Models;
 
+use Anibalealvarezs\Projectbuilder\Helpers\PbHelpers;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Spatie\Translatable\HasTranslations;
 use Illuminate\Database\Eloquent\Builder;
@@ -40,10 +41,7 @@ class PbModule extends PbBuilder
 
     public function getNameAttribute($value)
     {
-        if ($json = json_decode($value)) {
-            return $json->{app()->getLocale()};
-        }
-        return $value;
+        return PbHelpers::translateString($value);
     }
 
     /**

@@ -2,6 +2,7 @@
 
 namespace Anibalealvarezs\Projectbuilder\Models;
 
+use Anibalealvarezs\Projectbuilder\Helpers\PbHelpers;
 use Anibalealvarezs\Projectbuilder\Helpers\Shares;
 use Anibalealvarezs\Projectbuilder\Traits\PbModelCrudTrait;
 use Anibalealvarezs\Projectbuilder\Traits\PbModelTrait;
@@ -28,10 +29,7 @@ class PbRole extends Role
 
     public function getAliasAttribute($value)
     {
-        if ($json = json_decode($value)) {
-            return $json->{app()->getLocale()};
-        }
-        return $value;
+        return PbHelpers::translateString($value);
     }
 
     /**

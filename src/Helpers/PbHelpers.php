@@ -251,4 +251,18 @@ class PbHelpers
                 JSON_INVALID_UTF8_SUBSTITUTE
             ));
     }
+
+    /**
+     * Scope a query to only include popular users.
+     *
+     * @param string $value
+     * @return string
+     */
+    public static function translateString(string $value): string
+    {
+        if ($json = json_decode($value)) {
+            return ($json->{app()->getLocale()} ?? ($json->en ?? $json->es));
+        }
+        return $value;
+    }
 }

@@ -49,7 +49,7 @@ For full command information, you can check the help command:
 ```shell
 php artisan pbuilder:help
 ```
-In case of links failure (if "pbstorage" links show error), navigate to "public folder", manually delete the link, and create a new one with the following command:
+In case of links failure (if "pbstorage" links show error), navigate to ```/public``` folder, manually delete the link, and create a new one with the following command:
 ```shell
 ln -s ../vendor/anibalealvarezs/projectbuilder-package/src/assets pbstorage
 ```
