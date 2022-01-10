@@ -15,9 +15,7 @@ class PbConfigServiceProvider extends ServiceProvider
      */
     public function boot(Kernel $kernel)
     {
-        $this->publishes([
-            __DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'config' . DIRECTORY_SEPARATOR . PbHelpers::getDefault('configFileName') => config_path(PbHelpers::getDefault('storageDirName'))
-        ], 'config');
+        //
     }
 
     /**

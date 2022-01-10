@@ -90,14 +90,9 @@ class PbAltInstallCommand extends Command
                 echo "-------- [[ ERROR: Project Builder's stubs could not be published ]]\n";
                 return false;
             }
-            echo "------ Publishing Project Builder's views... \n";
-            if (!shell_exec("php artisan vendor:publish --provider=\"Anibalealvarezs\Projectbuilder\Providers\PbViewServiceProvider\" --tag=\"builder-views\" --force")) {
+            echo "------ Publishing Project Builder's views and config files... \n";
+            if (!shell_exec("php artisan vendor:publish --provider=\"Anibalealvarezs\Projectbuilder\Providers\PbViewServiceProvider\" --tag=\"Pb-views\" --force")) {
                 echo "-------- [[ ERROR: Project Builder's views could not be published ]]\n";
-                return false;
-            }
-            echo "------ Publishing Project Builder's config file... \n";
-            if (!shell_exec("php artisan vendor:publish --provider=\"Anibalealvarezs\Projectbuilder\Providers\PbConfigServiceProvider\" --tag=\"config\"")) {
-                echo "-------- [[ ERROR: Project Builder's config file could not be published ]]\n";
                 return false;
             }
         } catch (Exception $e) {

@@ -119,27 +119,16 @@ class PbInstallCommand extends Command
                 echo "-------- [[ ERROR: Project Builder's stubs could not be published ]]\n";
                 return false;
             }
-            echo "------ Publishing Project Builder's views... \n";
+            echo "------ Publishing Project Builder's views and config files... \n";
             if (!Artisan::call(
                 'vendor:publish',
                 [
                     '--provider' => 'Anibalealvarezs\Projectbuilder\Providers\PbViewServiceProvider',
-                    '--tag' => 'builder-views',
+                    '--tag' => 'Pb-views',
                     '--force' => 'default'
                 ]
             )) {
                 echo "-------- [[ ERROR: Project Builder's views could not be published ]]\n";
-                return false;
-            }
-            echo "------ Publishing Project Builder's config file... \n";
-            if (!Artisan::call(
-                'vendor:publish',
-                [
-                    '--provider' => 'Anibalealvarezs\Projectbuilder\Providers\PbConfigServiceProvider',
-                    '--tag' => 'config'
-                ]
-            )) {
-                echo "-------- [[ ERROR: Project Builder's config file could not be published ]]\n";
                 return false;
             }
         } catch (Exception $e) {

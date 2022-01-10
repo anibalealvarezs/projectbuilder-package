@@ -14,6 +14,7 @@ trait PbServiceProviderTrait {
             'assets_fonts' => __DIR__ . '/../../../'.$dir.'/src/assets/fonts',
             'assets_img' => __DIR__ . '/../../../'.$dir.'/src/assets/img',
             'blade' => __DIR__ . '/../../../'.$dir.'/resources/views',
+            'config' => __DIR__ . '/../../../'.$dir.'/src/config',
         ];
         // Views
         $views = resource_path('views/'.$package);
@@ -28,6 +29,7 @@ trait PbServiceProviderTrait {
             $dirs['assets_img'] => public_path('img/'.$package),
             $dirs['blade'] => resource_path('views/'.$package),
             /* $dirs['core'] => resource_path('js'), */
+            $dirs['config'] => base_path('config'),
         ];
         $this->publishes($allPublish, $name.'-views');
         // Specific
@@ -59,5 +61,9 @@ trait PbServiceProviderTrait {
         $this->publishes([
             $dirs['assets_img'] => public_path('img/'.$package),
         ], $name.'-img');
+        // Only Configs
+        $this->publishes([
+            $dirs['config'] => base_path('config'),
+        ], $name.'-config');
     }
 }
