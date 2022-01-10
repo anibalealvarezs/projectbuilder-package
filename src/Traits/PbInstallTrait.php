@@ -8,16 +8,6 @@ use Illuminate\Support\Str;
 trait PbInstallTrait
 {
     /**
-     * Create a new command instance.
-     *
-     * @return void
-     */
-    public function __construct()
-    {
-        parent::__construct();
-    }
-
-    /**
      * Execute the console command.
      *
      * @return void
@@ -56,7 +46,7 @@ trait PbInstallTrait
             if (!$this->modifyFiles()) {
                 return false;
             }
-            if ($this->option('compile') || $this->option('all') || ($this->signature == 'pbuilder:update') || ($this->signature == 'pbuilder:altupdate')) {
+            if ($this->option('compile') || $this->option('all') || (str_starts_with($this->signature,  'pbuilder:update')) || (str_starts_with($this->signature,  'pbuilder:altupdate'))) {
                 // Compilation...
                 echo "-- [[ Compiling assets ]]\n";
                 if (!$this->compileAssets()) {
@@ -81,13 +71,13 @@ trait PbInstallTrait
             if (!$this->requirePackage()) {
                 return false;
             }
-            if ($this->option('publish') || $this->option('all') || ($this->signature == 'pbuilder:update') || ($this->signature == 'pbuilder:altupdate')) {
+            if ($this->option('publish') || $this->option('all') || (str_starts_with($this->signature,  'pbuilder:update')) || (str_starts_with($this->signature,  'pbuilder:altupdate'))) {
                 echo "---- Publishing Resources...\n";
                 if (!$this->publishResources()) {
                     return false;
                 }
             }
-            if ($this->option('migrate') || $this->option('seed') || $this->option('all') || ($this->signature == 'pbuilder:update') || ($this->signature == 'pbuilder:altupdate')) {
+            if ($this->option('migrate') || $this->option('seed') || $this->option('all') || (str_starts_with($this->signature,  'pbuilder:update')) || (str_starts_with($this->signature,  'pbuilder:altupdate'))) {
                 echo "---- Database configuiration...\n";
                 if (!$this->migrateAndSeed()) {
                     return false;
@@ -97,9 +87,9 @@ trait PbInstallTrait
                 echo "---- Creating links...\n";
                 if (!$this->createLinks()) {
                     if (\Anibalealvarezs\Projectbuilder\Models\PbLogger::create(['severity' => 2, 'message' => 'Links creation failed', 'object_type' => null])) {
-                        echo "---- [[ Confirmation log entry added ]]\n";
+                        echo "---- [[ Error creating links ]]\n";
                     } else {
-                        echo "---- [[ Error adding confirmation log entry ]]\n";
+                        echo "---- [[ Failure registering links creation error log ]]\n";
                     }
                 }
             }
@@ -213,7 +203,7 @@ trait PbInstallTrait
                 return false;
             }
         }
-        if ($this->option('npm') || $this->option('all') || ($this->signature == 'pbuilder:update') || ($this->signature == 'pbuilder:altupdate')) {
+        if ($this->option('npm') || $this->option('all') || (str_starts_with($this->signature,  'pbuilder:update')) || (str_starts_with($this->signature,  'pbuilder:altupdate'))) {
             // Install npm resources...
             echo "---- Installing npm resources...\n";
             if (!$this->installNpmResources()) {
