@@ -6,7 +6,7 @@ use Anibalealvarezs\Projectbuilder\Helpers\PbHelpers;
 use Illuminate\Foundation\Application;
 use Inertia\Inertia;
 
-PbHelpers::buildCrudRoutes('web');
+(new PbHelpers())->buildCrudRoutes('web');
 
 Route::group(['middleware' => ['web', 'auth:sanctum', 'verified']], function () {
     Route::prefix('navigations')->group(function () {

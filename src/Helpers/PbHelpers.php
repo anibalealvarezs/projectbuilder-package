@@ -20,23 +20,32 @@ class PbHelpers
     public string $prefix;
     public string $name;
     public array $modulekeys;
-    public array $nonmodules;
     /* Configurable */
-    private array $toExtract = ['package', 'directory', 'prefix', 'name', 'modulekeys', 'nonmodules'];
-    private array $toExtractCustom = ['vendor'];
-    public static string $configFileName = 'pbuilder.php';
-    public static string $storageDirName = 'pbstorage';
+    public array $nonmodules;
+    public string $storageDirName;
+    protected array $toExtract;
+    protected array $defaults;
+    protected string $configFileName;
     /* End Configurable */
 
-    function __construct()
+    function __construct(
+        $configFileName = "",
+        $storageDirName = "",
+        $nonmodules = [],
+        $defaults = []
+    )
     {
-        $defaults = require(__DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'config' . DIRECTORY_SEPARATOR . self::$configFileName);
+        $this->configFileName = $configFileName ?: 'pbuilder.php';
+        $this->storageDirName = $storageDirName ?: 'pbstorage';
+        $this->nonmodules = $nonmodules ?: ['logger'];
+        $this->defaults = $defaults ?: require(__DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'config' . DIRECTORY_SEPARATOR . $this->configFileName);
+        $this->toExtract = ['vendor', 'package', 'directory', 'prefix', 'modulekeys'];
         $overrided = [];
-        if (file_exists(config_path(self::$configFileName))) {
-            $overrided = require(config_path(self::$configFileName));
+        if (file_exists(config_path($this->configFileName))) {
+            $overrided = require(config_path($this->configFileName));
         }
-        foreach ([...$this->toExtract, ...$this->toExtractCustom] as $var) {
-            $this->{$var} = $overrided[$var] ?? $defaults[$var];
+        foreach ($this->toExtract as $var) {
+            $this->{$var} = $overrided[$var] ?? $this->defaults[$var];
         }
     }
 
@@ -189,9 +198,9 @@ class PbHelpers
      * @param $type
      * @return void
      */
-    public static function buildCrudRoutes($type): void
+    public function buildCrudRoutes($type): void
     {
-        $models = [...self::getDefault('nonmodules'), ...PbModule::pluck('modulekey')];
+        $models = [...$this->nonmodules, ...PbModule::whereIn('modulekey', $this->modulekeys)->pluck('modulekey')];
 
         foreach ($models as $model) {
             $controller = self::getDefault('vendor') . '\\' . self::getDefault('package') . '\\Controllers\\' . ucfirst($model) . '\\' . self::getDefault('prefix') . ucfirst($model) . 'Controller';
@@ -237,12 +246,12 @@ class PbHelpers
     {
         header('Content-Type: application/json; charset=utf-8');
         die(gettype($var) . ' ' . json_encode(
-            $var,
-            JSON_UNESCAPED_SLASHES |
-            JSON_UNESCAPED_UNICODE |
-            JSON_PRETTY_PRINT |
-            JSON_PARTIAL_OUTPUT_ON_ERROR |
-            JSON_INVALID_UTF8_SUBSTITUTE
-        ));
+                $var,
+                JSON_UNESCAPED_SLASHES |
+                JSON_UNESCAPED_UNICODE |
+                JSON_PRETTY_PRINT |
+                JSON_PARTIAL_OUTPUT_ON_ERROR |
+                JSON_INVALID_UTF8_SUBSTITUTE
+            ));
     }
 }

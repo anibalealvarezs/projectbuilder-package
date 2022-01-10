@@ -238,13 +238,13 @@ class PbUser extends User
      */
     public function delete(): bool
     {
-        if (PbModule::exists('filemanager') && class_exists(\Anibalealvarezs\Filemanager\Models\FmFile::class)) {
+        if (PbModule::exists('file') && class_exists(\Anibalealvarezs\Filemanager\Models\FmFile::class)) {
             $user = self::getDefaultUser();
             if ($user) {
                 try {
                     \Anibalealvarezs\Filemanager\Models\FmFile::replaceAuthor($this->id, $user->id);
                 } catch (Exception $e) {
-                    $module = PbModule::getByKey('filemanager');
+                    $module = PbModule::getByKey('file');
                     PbLogger::create([
                         'severity' => 3,
                         'code' => 1,

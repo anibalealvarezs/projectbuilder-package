@@ -16,7 +16,7 @@ class PbConfigServiceProvider extends ServiceProvider
     public function boot(Kernel $kernel)
     {
         $this->publishes([
-            __DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'config' . DIRECTORY_SEPARATOR . PbHelpers::$configFileName => config_path(PbHelpers::$configFileName)
+            __DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'config' . DIRECTORY_SEPARATOR . PbHelpers::getDefault('configFileName') => config_path(PbHelpers::getDefault('storageDirName'))
         ], 'config');
     }
 
@@ -30,7 +30,7 @@ class PbConfigServiceProvider extends ServiceProvider
         $this->app->config["filesystems.disks." . strtolower(PbHelpers::getDefault('prefix'))] = [
             'driver' => 'local',
             'root' => __DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'assets',
-            'url' => config('app.url') . DIRECTORY_SEPARATOR . PbHelpers::$storageDirName,
+            'url' => config('app.url') . DIRECTORY_SEPARATOR . PbHelpers::getDefault('storageDirName'),
             'visibility' => 'public',
         ];
     }

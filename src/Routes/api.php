@@ -2,4 +2,4 @@
 
 use Anibalealvarezs\Projectbuilder\Helpers\PbHelpers;
 
-PbHelpers::buildCrudRoutes('api');
+(new PbHelpers())->buildCrudRoutes('api');
