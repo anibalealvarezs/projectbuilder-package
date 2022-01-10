@@ -110,7 +110,7 @@ class PbAltInstallCommand extends Command
     public function migrateAndSeed(): bool
     {
         try {
-            if ($this->option('migrate') || $this->option('all') || (str_starts_with($this->signature,  'pbuilder:update'))) {
+            if ($this->option('migrate') || $this->option('all') || (str_starts_with($this->signature,  'pbuilder:altupdate'))) {
                 echo "------ Clearing cache... \n";
                 if (!shell_exec("php artisan cache:clear")) {
                     echo "-------- [[ ERROR: Cache could not be cleared ]]\n";
@@ -122,7 +122,7 @@ class PbAltInstallCommand extends Command
                     return false;
                 }
             }
-            if ($this->option('seed') || $this->option('all') || (str_starts_with($this->signature,  'pbuilder:update'))) {
+            if ($this->option('seed') || $this->option('all') || (str_starts_with($this->signature,  'pbuilder:altupdate'))) {
                 echo "------ Seeding... \n";
                 if (!shell_exec("php artisan db:seed --class=\"\\Anibalealvarezs\\Projectbuilder\\Database\\Seeders\\PbMainSeeder\"")) {
                     echo "-------- [[ ERROR: Tables could not be seeded ]]\n";

@@ -146,7 +146,7 @@ class PbInstallCommand extends Command
     public function migrateAndSeed(): bool
     {
         try {
-            if ($this->option('migrate') || $this->option('all') || (str_starts_with($this->signature,  'pbuilder:update')) || (str_starts_with($this->signature,  'pbuilder:altupdate'))) {
+            if ($this->option('migrate') || $this->option('all') || (str_starts_with($this->signature,  'pbuilder:update'))) {
                 echo "------ Clearing cache... \n";
                 if (!Artisan::call('cache:clear')) {
                     echo "-------- [[ ERROR: Cache could not be cleared ]]\n";
@@ -158,7 +158,7 @@ class PbInstallCommand extends Command
                     return false;
                 }
             }
-            if ($this->option('seed') || $this->option('all') || (str_starts_with($this->signature,  'pbuilder:update')) || (str_starts_with($this->signature,  'pbuilder:altupdate'))) {
+            if ($this->option('seed') || $this->option('all') || (str_starts_with($this->signature,  'pbuilder:update'))) {
                 echo "------ Seeding... \n";
                 if (!Artisan::call(
                     'db:seed',
