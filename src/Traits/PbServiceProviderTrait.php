@@ -4,18 +4,8 @@ namespace Anibalealvarezs\Projectbuilder\Traits;
 
 trait PbServiceProviderTrait {
 
-    protected function booter($name, $package, $dir)
+    protected function booter($name, $package, $dirs)
     {
-        $dirs = [
-            'core' => __DIR__ . '/../../../'.$dir.'/resources/core',
-            'components' => __DIR__ . '/../../../'.$dir.'/resources/js',
-            'assets_js' => __DIR__ . '/../../../'.$dir.'/src/assets/js',
-            'assets_css' => __DIR__ . '/../../../'.$dir.'/src/assets/css',
-            'assets_fonts' => __DIR__ . '/../../../'.$dir.'/src/assets/fonts',
-            'assets_img' => __DIR__ . '/../../../'.$dir.'/src/assets/img',
-            'blade' => __DIR__ . '/../../../'.$dir.'/resources/views',
-            'config' => __DIR__ . '/../../../'.$dir.'/src/config',
-        ];
         // Views
         $views = resource_path('views/'.$package);
         $this->loadViewsFrom($views, $package);
