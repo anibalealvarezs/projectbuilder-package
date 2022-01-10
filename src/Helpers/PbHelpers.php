@@ -21,7 +21,6 @@ class PbHelpers
     public string $name;
     public array $modulekeys;
     /* Configurable */
-    public array $nonmodules;
     public string $storageDirName;
     protected array $toExtract;
     protected array $defaults;
@@ -31,13 +30,11 @@ class PbHelpers
     function __construct(
         $configFileName = "",
         $storageDirName = "",
-        $nonmodules = [],
         $defaults = []
     )
     {
         $this->configFileName = $configFileName ?: 'pbuilder.php';
         $this->storageDirName = $storageDirName ?: 'pbstorage';
-        $this->nonmodules = $nonmodules ?: ['logger'];
         $this->defaults = $defaults ?: require(__DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'config' . DIRECTORY_SEPARATOR . $this->configFileName);
         $this->toExtract = ['vendor', 'package', 'directory', 'prefix', 'modulekeys'];
         $overrided = [];
@@ -200,7 +197,7 @@ class PbHelpers
      */
     public function buildCrudRoutes($type): void
     {
-        $models = [...$this->nonmodules, ...PbModule::whereIn('modulekey', $this->modulekeys)->pluck('modulekey')];
+        $models = PbModule::whereIn('modulekey', $this->modulekeys)->pluck('modulekey');
 
         foreach ($models as $model) {
             $controller = self::getDefault('vendor') . '\\' . self::getDefault('package') . '\\Controllers\\' . ucfirst($model) . '\\' . self::getDefault('prefix') . ucfirst($model) . 'Controller';

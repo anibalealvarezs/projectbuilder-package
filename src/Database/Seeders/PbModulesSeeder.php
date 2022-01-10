@@ -20,6 +20,7 @@ class PbModulesSeeder extends Seeder
             ['modulekey' => 'navigation', 'name' => json_encode(['en' => 'Navigations']), 'status' => 1],
             ['modulekey' => 'permission', 'name' => json_encode(['en' => 'Permission']), 'status' => 1],
             ['modulekey' => 'role', 'name' => json_encode(['en' => 'Roles']), 'status' => 1],
+            ['modulekey' => 'logger', 'name' => json_encode(['en' => 'Logger']), 'status' => 1],
         ], ['modulekey'], ['name', 'status']);
     }
 }

@@ -44,7 +44,7 @@ class PbControllerServiceProvider extends ServiceProvider
         $this->app->make($this->namespace.'\Auth\\'.$this->prefix.'Login'.$this->suffix);
         $this->app->make($this->namespace.'\Auth\\'.$this->prefix.'Register'.$this->suffix);
         $this->app->make($this->namespace.'\Auth\\'.$this->prefix.'ResetPassword'.$this->suffix);
-        $models = [...PbHelpers::getDefault('nonmodules'), ...PbModule::whereIn('modulekey', PbHelpers::getDefault('modulekeys'))->pluck('modulekey')];
+        $models = PbModule::whereIn('modulekey', PbHelpers::getDefault('modulekeys'))->pluck('modulekey');
         foreach ($models as $model) {
             $this->app->make($this->namespace.'\\'.ucfirst($model).'\\'.$this->prefix.ucfirst($model).$this->suffix);
         }
