@@ -56,16 +56,37 @@ class PbBuilder extends Model
         return $this->getRawOriginal('name');
     }
 
+    /**
+     * The attributes that are mass assignable.
+     *
+     *
+     * @return array|string
+     * @var array
+     */
     public function getAliasesAttribute($value)
     {
         return $this->getRawOriginal('alias');
     }
 
+    /**
+     * The attributes that are mass assignable.
+     *
+     *
+     * @return array|string
+     * @var array
+     */
     public function getMessagesAttribute($value)
     {
         return $this->getRawOriginal('message');
     }
 
+    /**
+     * The attributes that are mass assignable.
+     *
+     *
+     * @return array|string
+     * @var array
+     */
     public function getDescriptionsAttribute($value)
     {
         return $this->getRawOriginal('description');

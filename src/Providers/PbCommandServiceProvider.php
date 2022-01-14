@@ -7,13 +7,10 @@ use Anibalealvarezs\Projectbuilder\Commands\PbAltUpdateCommand;
 use Anibalealvarezs\Projectbuilder\Commands\PbHelpCommand;
 use Anibalealvarezs\Projectbuilder\Commands\PbInstallCommand;
 use Anibalealvarezs\Projectbuilder\Commands\PbUpdateCommand;
-use Anibalealvarezs\Projectbuilder\Traits\PbServiceProviderTrait;
 use Illuminate\Support\ServiceProvider;
 
 class PbCommandServiceProvider extends ServiceProvider
 {
-    use PbServiceProviderTrait;
-
     /**
      * Bootstrap the application services.
      *
