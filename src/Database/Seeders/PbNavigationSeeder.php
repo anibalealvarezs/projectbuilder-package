@@ -32,10 +32,20 @@ class PbNavigationSeeder extends Seeder
 
         Navigation::query()->delete();
 
-        // Parents
-        Navigation::upsert(['destiny' => 'dashboard', 'module_id' => null], ['name' => json_encode(['en' => 'Dashboard', 'es' => 'Escritorio']), 'type' => 'route', 'parent' => 0, 'permission_id' => $loginPermission->id, 'position' => 0]);
+        // Dashboard
+        if ($dashboard = Navigation::updateOrCreate(['destiny' => 'dashboard', 'module_id' => null], ['name' => 'Dashboard', 'type' => 'route', 'parent' => 0, 'permission_id' => $loginPermission->id, 'position' => 0])->setLocale('en')) {
+            // Spanish name update
+            $dashboard->setLocale('es');
+            $dashboard->name = 'Escritorio';
+            $dashboard->save();
+        }
 
-        if ($usersParent = Navigation::upsert(['destiny' => '#navigation-users-roles', 'module_id' => $moduleUser->id], ['name' => json_encode(['en' => 'Users & Roles', 'es' => 'Usuarios y Roles']), 'type' => 'custom', 'parent' => 0, 'permission_id' => $readUsersPermission->id, 'position' => 1])) {
+        // Users & Roles
+        if ($usersParent = Navigation::updateOrCreate(['destiny' => '#navigation-users-roles', 'module_id' => $moduleUser->id], ['name' => 'Users & Roles', 'type' => 'custom', 'parent' => 0, 'permission_id' => $readUsersPermission->id, 'position' => 1])->setLocale('en')) {
+            // Spanish name update
+            $usersParent->setLocale('es');
+            $usersParent->name = 'Usuarios y Roles';
+            $usersParent->save();
             // Children
             Navigation::upsert([
                 ['destiny' => 'users.index', 'module_id' => $moduleUser->id, 'name' => json_encode(['en' => 'Users', 'es' => 'Usuarios']), 'type' => 'route', 'parent' => $usersParent->id, 'permission_id' => $readUsersPermission->id, 'position' => 0],
@@ -43,7 +53,13 @@ class PbNavigationSeeder extends Seeder
                 ['destiny' => 'permissions.index', 'module_id' => $modulePermission->id, 'name' => json_encode(['en' => 'Permissions', 'es' => 'Permisos']), 'type' => 'route', 'parent' => $usersParent->id, 'permission_id' => $readPermissionsPermission->id, 'position' => 2],
             ], ['destiny', 'module_id'], ['name', 'type', 'parent', 'permission_id', 'position']);
         }
-        if ($settingsParent = Navigation::upsert(['destiny' => '#navigation-settings', 'module_id' => null], ['name' => json_encode(['en' => 'Settings', 'es' => 'Ajustes']), 'type' => 'custom', 'parent' => 0, 'permission_id' => $readConfigsPermission->id, 'position' => 2])) {
+
+        // Settings
+        if ($settingsParent = Navigation::updateOrCreate(['destiny' => '#navigation-settings', 'module_id' => null], ['name' => 'Settings', 'type' => 'custom', 'parent' => 0, 'permission_id' => $readConfigsPermission->id, 'position' => 2])->setLocale('en')) {
+            // Spanish name update
+            $settingsParent->setLocale('es');
+            $settingsParent->name = 'Navegación';
+            $settingsParent->save();
             // Children
             Navigation::upsert([
                 ['destiny' => 'loggers.index', 'module_id' => null, 'name' => json_encode(['en' => 'Logger', 'es' => 'Logger']), 'type' => 'route', 'parent' => $settingsParent->id, 'permission_id' => $readLoggersPermission->id, 'position' => 2],
