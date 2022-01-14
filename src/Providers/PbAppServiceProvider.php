@@ -38,7 +38,14 @@ class PbAppServiceProvider extends ServiceProvider
                     'message' => Session::get('message')
                 ];
             },
-            'locale' => function () {
+            'locale' => function (Request $request) {
+                if (!app()->getLocale()) {
+                    if ($request->session()->has('locale')) {
+                        app()->setLocale($request->session()->get('locale'));
+                    } else {
+                        app()->setLocale('en');
+                    }
+                }
                 $locale = PbHelpers::getDefaultCountry(app()->getLocale());
                 PbDebugbar::addMessage($locale, 'locale');
                 return $locale;

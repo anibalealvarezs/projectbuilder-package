@@ -33,9 +33,9 @@ class PbNavigationSeeder extends Seeder
         Navigation::query()->delete();
 
         // Parents
-        Navigation::updateOrCreate(['destiny' => 'dashboard', 'module_id' => null], ['name' => json_encode(['en' => 'Dashboard', 'es' => 'Escritorio']), 'type' => 'route', 'parent' => 0, 'permission_id' => $loginPermission->id, 'position' => 0]);
+        Navigation::upsert(['destiny' => 'dashboard', 'module_id' => null], ['name' => json_encode(['en' => 'Dashboard', 'es' => 'Escritorio']), 'type' => 'route', 'parent' => 0, 'permission_id' => $loginPermission->id, 'position' => 0]);
 
-        if ($usersParent = Navigation::updateOrCreate(['destiny' => '#navigation-users-roles', 'module_id' => $moduleUser->id], ['name' => json_encode(['en' => 'Users & Roles', 'es' => 'Usuarios y Roles']), 'type' => 'custom', 'parent' => 0, 'permission_id' => $readUsersPermission->id, 'position' => 1])) {
+        if ($usersParent = Navigation::upsert(['destiny' => '#navigation-users-roles', 'module_id' => $moduleUser->id], ['name' => json_encode(['en' => 'Users & Roles', 'es' => 'Usuarios y Roles']), 'type' => 'custom', 'parent' => 0, 'permission_id' => $readUsersPermission->id, 'position' => 1])) {
             // Children
             Navigation::upsert([
                 ['destiny' => 'users.index', 'module_id' => $moduleUser->id, 'name' => json_encode(['en' => 'Users', 'es' => 'Usuarios']), 'type' => 'route', 'parent' => $usersParent->id, 'permission_id' => $readUsersPermission->id, 'position' => 0],
@@ -43,7 +43,7 @@ class PbNavigationSeeder extends Seeder
                 ['destiny' => 'permissions.index', 'module_id' => $modulePermission->id, 'name' => json_encode(['en' => 'Permissions', 'es' => 'Permisos']), 'type' => 'route', 'parent' => $usersParent->id, 'permission_id' => $readPermissionsPermission->id, 'position' => 2],
             ], ['destiny', 'module_id'], ['name', 'type', 'parent', 'permission_id', 'position']);
         }
-        if ($settingsParent = Navigation::updateOrCreate(['destiny' => '#navigation-settings', 'module_id' => null], ['name' => json_encode(['en' => 'Settings', 'es' => 'Ajustes']), 'type' => 'custom', 'parent' => 0, 'permission_id' => $readConfigsPermission->id, 'position' => 2])) {
+        if ($settingsParent = Navigation::upsert(['destiny' => '#navigation-settings', 'module_id' => null], ['name' => json_encode(['en' => 'Settings', 'es' => 'Ajustes']), 'type' => 'custom', 'parent' => 0, 'permission_id' => $readConfigsPermission->id, 'position' => 2])) {
             // Children
             Navigation::upsert([
                 ['destiny' => 'loggers.index', 'module_id' => null, 'name' => json_encode(['en' => 'Logger', 'es' => 'Logger']), 'type' => 'route', 'parent' => $settingsParent->id, 'permission_id' => $readLoggersPermission->id, 'position' => 2],
