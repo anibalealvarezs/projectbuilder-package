@@ -11,13 +11,24 @@
             :selected="isSelected(value, list[k].id)"
             :data-iso="list[k].hasOwnProperty('code') ? list[k].code : ''"
         >
-            {{ list[k].hasOwnProperty('alias') ? list[k].alias : list[k]['name'] }}
+            {{ list[k].hasOwnProperty('alias') ?
+                ((typeof list[k].alias === 'object') ?
+                    (list[k].alias[locale.code] ? list[k].alias[locale.code] : '[no translation] ['+locale.code+']') :
+                    list[k].alias
+                ) :
+                ((typeof list[k]['name'] === 'object') ?
+                    (list[k]['name'][locale.code] ? list[k]['name'][locale.code] : '[no translation] ['+locale.code+']') :
+                    list[k]['name']
+                )
+            }}
         </option>
     </select>
 </template>
 
 <script>
 import PbInput from "Pub/js/Projectbuilder/pbinput"
+import {computed} from "vue";
+import {usePage} from "@inertiajs/inertia-vue3";
 
 export default {
     extends: PbInput,
@@ -41,6 +52,11 @@ export default {
             this.$emit('select', el.target.value)
         },
     },
+    setup() {
+        const locale = computed(() => usePage().props.value.locale)
+
+        return {locale}
+    }
 }
 </script>
 

@@ -5,14 +5,27 @@
         </Link>
         <ul v-if="hasDescendants" :class="ulclasses">
             <NavLink v-for="subnav in nav.descendants" :nav="subnav" :active=false :level="addLevel">
-                {{ subnav.name }}
+                <span v-if="subnav.name">
+                    <span v-if="typeof subnav.name === 'object'">
+                        <span v-if="subnav.name[locale.code]">
+                            {{ subnav.name[locale.code] }}
+                        </span>
+                        <span v-else>
+                            [no translation] <span v-if="locale.country" :class="'fi fi-'+locale.country.code"></span>
+                        </span>
+                    </span>
+                    <span v-else>
+                        {{ nav.name }}
+                    </span>
+                </span>
             </NavLink>
         </ul>
     </li>
 </template>
 
 <script>
-import {Link} from "@inertiajs/inertia-vue3";
+import {Link, usePage} from "@inertiajs/inertia-vue3";
+import {computed} from "vue";
 
 export default {
     components: {
@@ -102,5 +115,16 @@ export default {
             return (parseInt(this.level) + 1).toString()
         },
     },
+
+    setup () {
+
+        const locale = computed(() => usePage().props.value.locale)
+
+        return { locale }
+    }
 }
 </script>
+
+<style scoped>
+@import "/public/css/flag-icons.css";
+</style>

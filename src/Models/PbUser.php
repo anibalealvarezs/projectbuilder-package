@@ -12,6 +12,7 @@ use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\Auth;
 use Laravel\Sanctum\HasApiTokens;
 use Spatie\Permission\Traits\HasRoles;
+use Spatie\Translatable\HasTranslations;
 
 class PbUser extends User
 {
@@ -19,12 +20,15 @@ class PbUser extends User
     use HasApiTokens;
     use HasRoles;
     use PbModelTrait;
+    use HasTranslations;
 
     protected $guard_name = 'admin';
 
     protected $table = 'users';
 
     protected $appends = ['api'];
+
+    public $translatable = [];
 
     /**
      * Create a new Eloquent model instance.
@@ -152,6 +156,16 @@ class PbUser extends User
             return $locale->code;
         }
         return "";
+    }
+
+    /**
+     * Scope a query to only include popular users.
+     *
+     * @return string
+     */
+    public function scopeGetMyLocale(): string
+    {
+        return $this->current()->getLocale();
     }
 
     /**

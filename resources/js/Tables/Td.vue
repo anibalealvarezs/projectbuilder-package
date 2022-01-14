@@ -87,15 +87,22 @@
                     v-else
                     :class="buildSpanClasses()"
                 >
-                        {{ cellValue }}
-                    <!-- <svg class="h-4 w-4"  width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">  <path stroke="none" d="M0 0h24v24H0z"/>  <path d="M14 8v-2a2 2 0 0 0 -2 -2h-7a2 2 0 0 0 -2 2v12a2 2 0 0 0 2 2h7a2 2 0 0 0 2 -2v-2" />
-                        <path d="M7 12h14l-3 -3m0 6l3 -3" />
-                    </svg> -->
+                    <span v-if="cellValue">
+                        <span v-if="typeof cellValue === 'object'" :class="cellValue[locale.code] ? '' : 'opacity-25 italic'">
+                            {{ (cellValue[locale.code] ? cellValue[locale.code] : '[no translation]') }} <span v-if="!cellValue[locale.code] && locale.country" :class="'fi fi-'+locale.country.code"></span>
+                        </span>
+                        <span v-else>
+                            {{ cellValue }}
+                        </span>
+                        <!-- <svg class="h-4 w-4"  width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">  <path stroke="none" d="M0 0h24v24H0z"/>  <path d="M14 8v-2a2 2 0 0 0 -2 -2h-7a2 2 0 0 0 -2 2v12a2 2 0 0 0 2 2h7a2 2 0 0 0 2 -2v-2" />
+                            <path d="M7 12h14l-3 -3m0 6l3 -3" />
+                        </svg> -->
+                    </span>
                 </span>
             </div>
         </div>
         <div v-if="field.size === 'multiple'">
-            <div v-for="cv in cellValue" :class="(field.arrval.hasOwnProperty('href') ? 'bg-gray-200 space-y-1' : 'space-y-1')">
+            <div v-for="cv in cellValue" :class="(field.arrval.hasOwnProperty('href') ? 'bg-gray-200 space-y-1 mb-px' : 'space-y-1')">
                 <!-- HREF -->
                 <JetDropdownLink
                     v-if="field.arrval.hasOwnProperty('href')"
@@ -103,12 +110,26 @@
                 >
                     <!-- HREF CONTENT -->
                     <span
+                        v-if="field.arrval.hasOwnProperty('key')"
                         class="inline-flex items-center"
                     >
-                        {{ (field.arrval.hasOwnProperty('key') ? cv[field.arrval.key] : cv) }}
-                        <!-- <svg class="h-4 w-4"  width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">  <path stroke="none" d="M0 0h24v24H0z"/>  <path d="M14 8v-2a2 2 0 0 0 -2 -2h-7a2 2 0 0 0 -2 2v12a2 2 0 0 0 2 2h7a2 2 0 0 0 2 -2v-2" />
-                            <path d="M7 12h14l-3 -3m0 6l3 -3" />
-                        </svg> -->
+                        <span v-if="cv[field.arrval.key]">
+                            <span v-if="typeof cv[field.arrval.key] === 'object'">
+                                {{ cv[field.arrval.key][locale.code] ? cv[field.arrval.key][locale.code] : '[no translation]' }}  <span v-if="!cv[field.arrval.key][locale.code] && locale.country" :class="'fi fi-'+locale.country.code"></span>
+                            </span>
+                            <span v-else>
+                                {{ cv[field.arrval.key] }}
+                            </span>
+                            <!-- <svg class="h-4 w-4"  width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">  <path stroke="none" d="M0 0h24v24H0z"/>  <path d="M14 8v-2a2 2 0 0 0 -2 -2h-7a2 2 0 0 0 -2 2v12a2 2 0 0 0 2 2h7a2 2 0 0 0 2 -2v-2" />
+                                <path d="M7 12h14l-3 -3m0 6l3 -3" />
+                            </svg> -->
+                        </span>
+                    </span>
+                    <span
+                        v-else
+                        class="inline-flex items-center"
+                    >
+                        {{ typeof cv === 'object' ? (cv[locale.code] ? cv[locale.code] : '[no translation]') : cv }} <span v-if="!cv[locale.code] && locale.country" :class="'fi fi-'+locale.country.code"></span>
                     </span>
                 </JetDropdownLink>
                 <!-- NO HREF CONTENT -->
@@ -116,7 +137,22 @@
                     class="inline-flex items-center"
                     v-if="!field.arrval.hasOwnProperty('href')"
                 >
-                    {{ (field.arrval.hasOwnProperty('key') ? cv[field.arrval.key] : cv) }}
+                    <span v-if="field.arrval.hasOwnProperty('key')">
+                        <span v-if="cv[field.arrval.key]">
+                            <span v-if="typeof cv[field.arrval.key] === 'object'">
+                                {{ cv[field.arrval.key][locale.code] ? cv[field.arrval.key][locale.code] : '[no translation]' }}  <span v-if="!cv[field.arrval.key][locale.code] && locale.country" :class="'fi fi-'+locale.country.code"></span>
+                            </span>
+                            <span v-else>
+                                {{ cv[field.arrval.key] }}
+                            </span>
+                            <!-- <svg class="h-4 w-4"  width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">  <path stroke="none" d="M0 0h24v24H0z"/>  <path d="M14 8v-2a2 2 0 0 0 -2 -2h-7a2 2 0 0 0 -2 2v12a2 2 0 0 0 2 2h7a2 2 0 0 0 2 -2v-2" />
+                                <path d="M7 12h14l-3 -3m0 6l3 -3" />
+                            </svg> -->
+                        </span>
+                    </span>
+                    <span v-else>
+                        {{ typeof cv === 'object' ? (cv[locale.code] ? cv[locale.code] : '[no translation]') : cv }} <span v-if="!cv[locale.code] && locale.country" :class="'fi fi-'+locale.country.code"></span>
+                    </span>
                 </span>
             </div>
         </div>
@@ -247,11 +283,12 @@ export default {
     },
     setup() {
         const user = computed(() => usePage().props.value.auth.user)
-        return { user }
+        const locale = computed(() => usePage().props.value.locale)
+        return { user, locale }
     }
 }
 </script>
 
 <style scoped>
-
+@import "/public/css/flag-icons.css";
 </style>

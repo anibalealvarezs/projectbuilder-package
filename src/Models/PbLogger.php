@@ -4,14 +4,9 @@ namespace Anibalealvarezs\Projectbuilder\Models;
 
 use Anibalealvarezs\Projectbuilder\Helpers\PbHelpers;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Spatie\Translatable\HasTranslations;
 
 class PbLogger extends PbBuilder
 {
-    use HasTranslations;
-
-    public $translatable = ['message'];
-
     protected $table = 'logger';
 
     /**
@@ -25,6 +20,8 @@ class PbLogger extends PbBuilder
         parent::__construct($attributes);
         $this->publicRelations = ['user', 'module'];
         $this->allRelations = ['user', 'module'];
+        $this->translatable = ['message'];
+        $this->appends = [...$this->appends, ...['messages']];
     }
 
     /**

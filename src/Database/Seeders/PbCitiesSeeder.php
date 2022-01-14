@@ -224,6 +224,7 @@ class PbCitiesSeeder extends Seeder
             $country = PbCountry::find($city->country_id);
             $country->capital_id = $city->id;
             $country->save();
+            City::find($city->id)->setLocale('es')->update(['name' => $city->name]);
         }
     }
 }

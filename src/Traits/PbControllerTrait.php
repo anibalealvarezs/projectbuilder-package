@@ -25,6 +25,7 @@ trait PbControllerTrait
         return Shares::list([
             'api_data',
             'navigations',
+            'languages',
             'locale',
             'debug_status',
         ]);

@@ -7,16 +7,10 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Illuminate\Support\Facades\DB;
-use Spatie\Translatable\HasTranslations;
-
 
 class PbCountry extends PbBuilder
 {
-    use HasTranslations;
-
     protected $table = 'countries';
-
-    public $translatable = ['name'];
 
     public $timestamps = false;
 
@@ -31,6 +25,8 @@ class PbCountry extends PbBuilder
         parent::__construct($attributes);
         $this->publicRelations = ['cities', 'capital', 'langs'];
         $this->allRelations = ['users', 'cities', 'capital', 'langs'];
+        $this->translatable = ['name'];
+        $this->appends = [...$this->appends,...['names']];
     }
 
     /**

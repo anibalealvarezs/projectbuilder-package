@@ -8,12 +8,25 @@
             :checked="isChecked(value, list[k].id)"
             @click="emitCheckboxValue"
         >
-        <span>{{ list[k].hasOwnProperty('alias') ? list[k].alias : list[k]['name'] }}</span>
+        <span>
+            {{ list[k].hasOwnProperty('alias') ?
+                ((typeof list[k].alias === 'object') ?
+                    (list[k].alias[locale.code] ? list[k].alias[locale.code] : '[no translation] ['+locale.code+']') :
+                    list[k].alias
+                ) :
+                ((typeof list[k]['name'] === 'object') ?
+                    (list[k]['name'][locale.code] ? list[k]['name'][locale.code] : '[no translation] ['+locale.code+']') :
+                    list[k]['name']
+                )
+            }}
+        </span>
     </div>
 </template>
 
 <script>
 import PbInput from "Pub/js/Projectbuilder/pbinput"
+import {computed} from "vue";
+import {usePage} from "@inertiajs/inertia-vue3";
 
 export default {
     extends: PbInput,
@@ -46,6 +59,11 @@ export default {
             this.$emit('click', values)
         },
     },
+    setup() {
+        const locale = computed(() => usePage().props.value.locale)
+
+        return {locale}
+    }
 }
 </script>
 

@@ -138,17 +138,9 @@ trait PbInstallTrait
         // Default providers...
         // -- Fortify
         // -- Jetstream
-        echo "---- Installing Fortify and Jetstream service providers...\n";
-        if (!$this->installDefaultProvidersAfter('JetstreamServiceProvider')) {
-            return false;
-        }
-        // Projectbuilder's providers...
-        echo "---- Installing custom Jetstream service providers...\n";
-        if (!$this->installAdditionalProviders('PbJetstreamServiceProvider')) {
-            return false;
-        }
-        echo "---- Installing Builder's route service provider...\n";
-        if (!$this->installAdditionalProviders('PbRouteServiceProvider')) {
+        // -- Project Builder
+        echo "---- Installing service providers...\n";
+        if (!$this->putProviders()) {
             return false;
         }
         echo "---- Ignoring jetstream and fortify auto-discovery...\n";
@@ -174,6 +166,11 @@ trait PbInstallTrait
         echo "---- Installing Sortable.js...\n";
         if (!shell_exec("npm install sortablejs --save")) {
             echo "------ [[ ERROR: Sortable.js could't be installed ]]\n";
+            return false;
+        }
+        echo "---- Installing Flag Icons...\n";
+        if (!shell_exec("npm install --dev flag-icons")) {
+            echo "------ [[ ERROR: Flag Icons could't be installed ]]\n";
             return false;
         }
         return true;
@@ -221,37 +218,52 @@ trait PbInstallTrait
     /**
      * Scope a query to only include popular users.
      *
-     * @param $name
-     * @return bool
-     */
-    protected function installAdditionalProviders($name): bool
-    {
-        if (! Str::contains($appConfig = file_get_contents(config_path('app.php')), 'Anibalealvarezs\\Projectbuilder\\Providers\\'.$name.'::class')) {
-            if (!file_put_contents(config_path('app.php'), str_replace(
-                'Anibalealvarezs\\Projectbuilder\\Providers\\PbJetstreamServiceProvider::class,',
-                'Anibalealvarezs\\Projectbuilder\\Providers\\PbJetstreamServiceProvider::class,'.PHP_EOL.'        Anibalealvarezs\\Projectbuilder\\Providers\\'.$name.'::class,',
-                $appConfig
-            ))) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    /**
-     * Scope a query to only include popular users.
-     *
      * @param $after
      * @return bool
      */
-    protected function installDefaultProvidersAfter($after): bool
+    protected function putProviders(): bool
     {
-        if (! Str::contains($appConfig = file_get_contents(config_path('app.php')), 'Laravel\\Fortify\\FortifyServiceProvider::class')) {
-            if (!file_put_contents(config_path('app.php'), str_replace(
-                'App\\Providers\\'.$after.'::class,',
-                'App\\Providers\\'.$after.'::class,'.PHP_EOL.'        Laravel\\Fortify\\FortifyServiceProvider::class,'.PHP_EOL.'        Anibalealvarezs\\Projectbuilder\\Providers\\PbJetstreamServiceProvider::class,',
-                $appConfig
-            ))) {
+        $appConfig = file_get_contents(config_path('app.php'));
+        $newAppConfig = $appConfig;
+        if (! Str::contains($newAppConfig, 'Anibalealvarezs\\Projectbuilder\\Providers\\PbFortifyServiceProvider::class')) {
+            if (Str::contains($newAppConfig, 'Laravel\\Fortify\\FortifyServiceProvider::class')) {
+                $newAppConfig = str_replace(
+                    'Laravel\\Fortify\\FortifyServiceProvider::class,',
+                    'Anibalealvarezs\\Projectbuilder\\Providers\\PbFortifyServiceProvider::class,',
+                    $newAppConfig
+                );
+            } else {
+                $newAppConfig = str_replace(
+                     'App\\Providers\\JetstreamServiceProvider::class,',
+                     'App\\Providers\\JetstreamServiceProvider::class,'.PHP_EOL.'        Anibalealvarezs\\Projectbuilder\\Providers\\PbFortifyServiceProvider::class,',
+                    $newAppConfig
+                 );
+            }
+        }
+        if (! Str::contains($newAppConfig, 'Anibalealvarezs\\Projectbuilder\\Providers\\PbJetstreamServiceProvider::class')) {
+            if (Str::contains($newAppConfig, 'Laravel\\Jetstream\\JetstreamServiceProvider::class')) {
+                $newAppConfig = str_replace(
+                    'Laravel\\Jetstream\\JetstreamServiceProvider::class,',
+                    'Anibalealvarezs\\Projectbuilder\\Providers\\PbJetstreamServiceProvider::class,',
+                    $newAppConfig
+                );
+            } else {
+                $newAppConfig = str_replace(
+                    'Anibalealvarezs\\Projectbuilder\\Providers\\PbFortifyServiceProvider::class,',
+                    'Anibalealvarezs\\Projectbuilder\\Providers\\PbFortifyServiceProvider::class,'.PHP_EOL.'        Anibalealvarezs\\Projectbuilder\\Providers\\PbJetstreamServiceProvider::class,',
+                    $newAppConfig
+                );
+            }
+        }
+        if (! Str::contains($newAppConfig, 'Anibalealvarezs\\Projectbuilder\\Providers\\PbRouteServiceProvider::class')) {
+            $newAppConfig = str_replace(
+                'Anibalealvarezs\\Projectbuilder\\Providers\\PbJetstreamServiceProvider::class,',
+                'Anibalealvarezs\\Projectbuilder\\Providers\\PbJetstreamServiceProvider::class,'.PHP_EOL.'        Anibalealvarezs\\Projectbuilder\\Providers\\PbRouteServiceProvider::class,',
+                $newAppConfig
+            );
+        }
+        if ($appConfig !== $newAppConfig) {
+            if (!file_put_contents(config_path('app.php'), $newAppConfig)) {
                 return false;
             }
         }
@@ -417,6 +429,15 @@ trait PbInstallTrait
             if (!file_put_contents(base_path('/webpack.mix.js'), str_replace(
                 'js(\'resources/js/app.js\', \'public/js\')',
                 'js(\'node_modules/sortablejs/Sortable.js\', \'public/js\').'.PHP_EOL.'    js(\'resources/js/app.js\', \'public/js\')',
+                $webpackMix
+            ))) {
+                return false;
+            }
+        }
+        if (! Str::contains($webpackMix = file_get_contents(base_path('/webpack.mix.js')), 'flag-icons.css')) {
+            if (!file_put_contents(base_path('/webpack.mix.js'), str_replace(
+                '.webpackConfig(require(\'./webpack.config\'));',
+                '.postCss(\'node_modules/flag-icons/css/flag-icons.css\', \'public/css\')'.PHP_EOL.'    .webpackConfig(require(\'./webpack.config\'));',
                 $webpackMix
             ))) {
                 return false;

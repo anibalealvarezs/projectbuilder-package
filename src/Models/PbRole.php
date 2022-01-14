@@ -19,7 +19,7 @@ class PbRole extends Role
 
     public $translatable = ['alias'];
 
-    protected $appends = ['crud'];
+    protected $appends = ['crud', 'aliases'];
 
     function __construct() {
         $this->connection = config('database.default');
@@ -30,6 +30,11 @@ class PbRole extends Role
     public function getAliasAttribute($value)
     {
         return PbHelpers::translateString($value);
+    }
+
+    public function getAliasesAttribute($value)
+    {
+        return $this->getRawOriginal('alias');
     }
 
     /**

@@ -9,6 +9,7 @@
                     <div class="flex justify-between h-16">
                         <div class="flex">
                             <!-- Logo -->
+
                             <div class="flex-shrink-0 flex items-center">
                                 <Link :href="route('dashboard')">
                                     <jet-application-mark class="block h-9 w-auto" />
@@ -19,16 +20,56 @@
                             <div class="space-x-8 sm:-my-px sm:ml-10 sm:flex">
                                 <ul class="sm:flex">
                                     <NavLink v-for="nav in navigations" :nav="nav" :active=checkActive(nav) level="0">
-                                        {{ nav.name }}
+                                        <span v-if="nav.name">
+                                            <span v-if="typeof nav.name === 'object'">
+                                                <span v-if="nav.name[locale.code]">
+                                                    {{ nav.name[locale.code] }}
+                                                </span>
+                                                <span v-else>
+                                                    [no translation] <span v-if="locale.country" :class="'fi fi-'+locale.country.code"></span>
+                                                </span>
+                                            </span>
+                                            <span v-else>
+                                                {{ nav.name }}
+                                            </span>
+                                        </span>
                                     </NavLink>
                                 </ul>
                             </div>
                         </div>
 
                         <div class="hidden sm:flex sm:items-center sm:ml-6">
+                            <!-- Languages Dropdown -->
                             <div class="ml-3 relative">
-                                <!-- Teams Dropdown -->
-                                <jet-dropdown align="right" width="60" v-if="$page.props.jetstream.hasTeamFeatures">
+                                <jet-dropdown align="right" width="auto">
+                                    <template #trigger>
+                                        <span class="inline-flex rounded-md">
+                                            <button type="button" class="inline-flex items-center px-4 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 bg-white hover:bg-gray-50 hover:text-gray-700 focus:outline-none focus:bg-gray-50 active:bg-gray-50 transition ease-in-out duration-150">
+                                                <span v-if="locale.country" :class="'fi fi-'+locale.country.code"></span>
+                                            </button>
+                                        </span>
+                                    </template>
+
+                                    <template #content>
+                                        <!-- Languages Management -->
+                                        <template v-for="language in languages">
+                                            <template v-if="language.code != locale.code" :key="language.code">
+                                                <form @submit.prevent="updateLocale(language.code)">
+                                                    <jet-dropdown-link as="button">
+                                                        <div class="flex items-center">
+                                                            <span v-if="language.country" :class="'fi fi-'+language.country.code"></span>
+                                                        </div>
+                                                    </jet-dropdown-link>
+                                                </form>
+                                            </template>
+                                        </template>
+                                    </template>
+                                </jet-dropdown>
+                            </div>
+
+                            <!-- Teams Dropdown -->
+                            <div class="ml-3 relative">
+                                <jet-dropdown align="right" width="60" v-if="$page.props.jetstream.hasTeamFeatures && teamsEnabled">
                                     <template #trigger>
                                         <span class="inline-flex rounded-md">
                                             <button type="button" class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 bg-white hover:bg-gray-50 hover:text-gray-700 focus:outline-none focus:bg-gray-50 active:bg-gray-50 transition ease-in-out duration-150">
@@ -112,8 +153,11 @@
 
                                         <jet-dropdown-link :href="route('api-tokens.index')" v-if="$page.props.jetstream.hasApiFeatures">
                                             API Access
-                                            <span class="text-xs font-semibold inline-block py-1 px-2 uppercase rounded text-pink-600 bg-pink-200 uppercase last:mr-0 mr-1" v-if="!apiData.access || !apiData.enabled">
+                                            <span v-if="!apiData.access || !apiData.enabled" class="text-xs font-semibold inline-block py-1 px-2 uppercase rounded text-pink-600 bg-pink-200 uppercase last:mr-0 mr-1">
                                                 Unauthorized
+                                            </span>
+                                            <span v-else class="text-xs font-semibold inline-block py-1 px-2 uppercase rounded text-green-600 bg-green-200 uppercase last:mr-0 mr-1">
+                                                Authorized
                                             </span>
                                         </jet-dropdown-link>
 
@@ -146,7 +190,19 @@
                 <div :class="{'block': showingNavigationDropdown, 'hidden': ! showingNavigationDropdown}" class="sm:hidden">
                     <div class="pt-2 pb-3 space-y-1">
                         <jet-responsive-nav-link v-for="nav in navigations" :href="getHref(nav)" :active="checkActive(nav)">
-                            {{ nav.name }}
+                            <span v-if="nav.name">
+                                <span v-if="typeof nav.name === 'object'">
+                                    <span v-if="nav.name[locale.code]">
+                                        {{ nav.name[locale.code] }}
+                                    </span>
+                                    <span v-else>
+                                        [no translation] <span v-if="locale.country" :class="'fi fi-'+locale.country.code"></span>
+                                    </span>
+                                </span>
+                                <span v-else>
+                                    {{ nav.name }}
+                                </span>
+                            </span>
                         </jet-responsive-nav-link>
                     </div>
 
@@ -183,7 +239,7 @@
                             </form>
 
                             <!-- Team Management -->
-                            <template v-if="$page.props.jetstream.hasTeamFeatures">
+                            <template v-if="$page.props.jetstream.hasTeamFeatures && teamsEnabled">
                                 <div class="border-t border-gray-200"></div>
 
                                 <div class="block px-4 py-2 text-xs text-gray-400">
@@ -261,10 +317,6 @@
             Link,
         },
 
-        props: {
-            locale: String
-        },
-
         data() {
             return {
                 showingNavigationDropdown: false,
@@ -304,7 +356,15 @@
                 let href = this.getHref(nav)
                 let current = Helpers.refineURL(window.location.href)
                 return (href === current)
-            }
+            },
+
+            updateLocale(locale) {
+                this.$inertia.post(route('locale'), {
+                    'locale': locale
+                }, {
+                    preserveState: false
+                })
+            },
         },
 
         computed: {
@@ -314,13 +374,16 @@
         setup () {
 
             let navigations = computed(() => usePage().props.value.shared.navigations.firstlevel)
+            let languages = computed(() => usePage().props.value.shared.languages)
             let apiData = computed(() => usePage().props.value.shared.api_data)
+            const locale = computed(() => usePage().props.value.locale)
+            const teamsEnabled = computed(() => usePage().props.value.teams)
 
-            return { navigations, apiData }
+            return { navigations, apiData, locale, teamsEnabled, languages }
         }
     }
 </script>
 
 <style scoped>
-
+@import "/public/css/flag-icons.css";
 </style>

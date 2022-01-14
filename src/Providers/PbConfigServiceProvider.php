@@ -31,5 +31,8 @@ class PbConfigServiceProvider extends ServiceProvider
             'url' => config('app.url') . DIRECTORY_SEPARATOR . PbHelpers::getDefault('storageDirName'),
             'visibility' => 'public',
         ];
+        if (session('locale')) {
+            $this->app->setLocale(session('locale'));
+        }
     }
 }

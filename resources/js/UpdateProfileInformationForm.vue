@@ -58,7 +58,67 @@
             <!-- Roles -->
             <div class="col-span-6 sm:col-span-4">
                 <jet-label for="roles" value="Roles" />
-                <jet-input id="roles" type="text" class="mt-1 block w-full" v-model="rolesList" disabled />
+                <jet-input id="roles" type="text" class="mt-1 block w-full bg-gray-200" v-model="rolesList" disabled />
+            </div>
+
+            <!-- Locale -->
+            <div class="col-span-6 sm:col-span-4">
+                <jet-label for="language" value="Language" />
+                <select
+                    name="language"
+                    id="language"
+                    class="mt-1 block w-full rounded text-gray-700 border border-gray-300"
+                    v-model="form.language"
+                >
+                    <option
+                        v-for="language in languages"
+                        :value="language.id"
+                    >
+                        {{ typeof language.name === 'object' ?
+                            (language.name[locale.code] ?
+                                language.name[locale.code] :
+                                (language.name['en'] ?
+                                    language.name['en'] :
+                                    (language.name['es'] ?
+                                        language.name['es'] :
+                                        '[no translation] ['+locale.code+']'
+                                    )
+                                )
+                            ) :
+                            language.name
+                        }}
+                    </option>
+                </select>
+            </div>
+
+            <!-- Country -->
+            <div class="col-span-6 sm:col-span-4">
+                <jet-label for="country" value="Country" />
+                <select
+                    name="country"
+                    id="country"
+                    class="mt-1 block w-full rounded text-gray-700 border border-gray-300"
+                    v-model="form.country"
+                >
+                    <option
+                        v-for="country in countries"
+                        :value="country.id"
+                    >
+                        {{ typeof country.name === 'object' ?
+                            (country.name[locale.code] ?
+                                country.name[locale.code] :
+                                (country.name['en'] ?
+                                    country.name['en'] :
+                                    (country.name['es'] ?
+                                        country.name['es'] :
+                                        '[no translation] ['+locale.code+']'
+                                    )
+                                )
+                        ) :
+                        country.name
+                        }}
+                    </option>
+                </select>
             </div>
         </template>
 
@@ -82,6 +142,8 @@
     import JetLabel from '@/Jetstream/Label'
     import JetActionMessage from '@/Jetstream/ActionMessage'
     import JetSecondaryButton from '@/Jetstream/SecondaryButton'
+    import {computed} from "vue";
+    import {usePage} from "@inertiajs/inertia-vue3";
 
     export default {
         components: {
@@ -91,10 +153,13 @@
             JetInput,
             JetInputError,
             JetLabel,
-            JetSecondaryButton,
+            JetSecondaryButton
         },
 
-        props: ['user', 'roles'],
+        props: [
+            'user',
+            'roles',
+        ],
 
         data() {
             return {
@@ -103,11 +168,13 @@
                     name: this.user.name,
                     email: this.user.email,
                     photo: null,
+                    language: this.user.language_id,
+                    country: this.user.country_id,
                 }),
 
                 photoPreview: null,
 
-                rolesList: this.roles.map(role => role.alias).join(' | '),
+                rolesList: this.roles.map(role => (typeof role.alias === 'object' ? (role.alias[this.locale.code] ? role.alias[this.locale.code] : '[no translation] ['+this.locale.code+']') : role.alias)).join(' | '),
             }
         },
 
@@ -144,5 +211,14 @@
                 });
             },
         },
+
+        setup () {
+
+            const locale = computed(() => usePage().props.value.locale)
+            const languages = computed(() => usePage().props.value.shared.languages)
+            const countries = computed(() => usePage().props.value.shared.countries)
+
+            return { languages, countries, locale }
+        }
     }
 </script>

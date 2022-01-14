@@ -6,15 +6,10 @@ use Anibalealvarezs\Projectbuilder\Helpers\PbHelpers;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
-use Spatie\Translatable\HasTranslations;
 
 class PbCity extends PbBuilder
 {
-    use HasTranslations;
-
     protected $table = 'cities';
-
-    public $translatable = ['name'];
 
     public $timestamps = false;
 
@@ -29,6 +24,8 @@ class PbCity extends PbBuilder
         parent::__construct($attributes);
         $this->publicRelations = ['country', 'langs'];
         $this->allRelations = ['country', 'langs', 'users'];
+        $this->translatable = ['name'];
+        $this->appends = [...$this->appends, ...['names']];
     }
 
     /**

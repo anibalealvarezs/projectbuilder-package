@@ -142,7 +142,7 @@ class PbBuilderController extends Controller
         try {
             // Add requests
             $model = $this->processModelRequests($this->vars->validationRules, $request, $this->vars->replacers,
-                new $this->vars->level->modelPath());
+                (new $this->vars->level->modelPath())->setLocale(app()->getLocale()));
             // Model save
             $model->save();
 
@@ -217,7 +217,7 @@ class PbBuilderController extends Controller
         // Process
         try {
             // Build model
-            $model = $this->vars->level->modelPath::find($id);
+            $model = $this->vars->level->modelPath::find($id)->setLocale(app()->getLocale());
             // Build requests
             $requests = $this->processModelRequests($this->vars->validationRules, $request, $this->vars->replacers);
             // Update model
@@ -319,7 +319,18 @@ class PbBuilderController extends Controller
                 $arrayElements[($plural ? $this->vars->level->prefixNames : $this->vars->level->prefixName)] = $element;
             }
         } else {
-            $arrayElements[($plural ? $this->vars->level->prefixNames : $this->vars->level->prefixName)] = ($id ? $this->vars->level->modelPath::find($id) : $this->vars->level->modelPath::all());
+            $arrayElements[
+                ($plural ? $this->vars->level->prefixNames : $this->vars->level->prefixName)] =
+                    ($id ? $this->vars->level->modelPath::find($id) : $this->vars->level->modelPath::all());
+                    /* ($this->vars->request->is('api/*') ?
+                            $this->vars->level->modelPath::find($id)->getRawOriginal() :
+                            $this->vars->level->modelPath::find($id)
+                        ) :
+                        ($this->vars->request->is('api/*') ?
+                            $this->vars->level->modelPath::all()->getRawOriginal() :
+                            $this->vars->level->modelPath::all()
+                        )
+                    ); */
         }
 
         return $arrayElements;

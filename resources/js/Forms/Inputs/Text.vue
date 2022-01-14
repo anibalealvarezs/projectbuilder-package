@@ -1,6 +1,6 @@
 <template>
     <input
-        :value="value"
+        :value="(value && typeof value === 'object') ? (value[locale.code] ? value[locale.code] : '[no translation] ['+locale.code+']') : value"
         :id="'grid-'+ keyel +'-' + keyid"
         :type="type"
         :placeholder="type==='password' ? '******************' : keyel"
@@ -16,6 +16,8 @@
 
 <script>
 import PbInput from "Pub/js/Projectbuilder/pbinput"
+import {computed} from "vue";
+import {usePage} from "@inertiajs/inertia-vue3";
 
 export default {
     extends: PbInput,
@@ -36,6 +38,11 @@ export default {
             this.$emit('input', el.target.value)
         },
     },
+    setup() {
+        const locale = computed(() => usePage().props.value.locale)
+
+        return {locale}
+    }
 }
 </script>
 

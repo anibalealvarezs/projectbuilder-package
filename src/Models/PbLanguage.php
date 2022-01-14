@@ -5,16 +5,11 @@ namespace Anibalealvarezs\Projectbuilder\Models;
 use Anibalealvarezs\Projectbuilder\Helpers\PbHelpers;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
-use Spatie\Translatable\HasTranslations;
 use Illuminate\Database\Eloquent\Builder;
 
 class PbLanguage extends PbBuilder
 {
-    use HasTranslations;
-
     protected $table = 'languages';
-
-    public $translatable = ['name'];
 
     public $timestamps = false;
 
@@ -29,6 +24,8 @@ class PbLanguage extends PbBuilder
         parent::__construct($attributes);
         $this->publicRelations = ['cities', 'countries'];
         $this->allRelations = ['users', 'cities', 'countries'];
+        $this->translatable = ['name'];
+        $this->appends = [...$this->appends, ...['names']];
     }
 
     /**
@@ -77,6 +74,16 @@ class PbLanguage extends PbBuilder
     public static function scopeEnabled(Builder $query): Builder
     {
         return $query->where('status', true);
+    }
+
+    /**
+     * Scope a query to only include popular users.
+     *
+     * @return void
+     */
+    public function putCountry()
+    {
+        $this->country = PbHelpers::getDefaultCountry($this->code);
     }
 
     /**

@@ -6,16 +6,11 @@ use Anibalealvarezs\Projectbuilder\Helpers\PbHelpers;
 use Anibalealvarezs\Projectbuilder\Helpers\Shares;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Spatie\Translatable\HasTranslations;
 use Illuminate\Database\Eloquent\Builder;
 
 class PbNavigation extends PbBuilder
 {
-    use HasTranslations;
-
     protected $table = 'navigations';
-
-    public $translatable = ['name'];
 
     public $timestamps = false;
 
@@ -30,6 +25,8 @@ class PbNavigation extends PbBuilder
         parent::__construct($attributes);
         $this->publicRelations = ['ascendant', 'permission', 'module'];
         $this->allRelations = ['ascendant', 'permission', 'module'];
+        $this->translatable = ['name'];
+        $this->appends = [...$this->appends, ...['names']];
     }
 
     /**
@@ -41,6 +38,13 @@ class PbNavigation extends PbBuilder
         'name', 'destiny', 'type', 'parent', 'permission_id', 'module_id', 'position', 'status'
     ];
 
+    /**
+     * The attributes that are mass assignable.
+     *
+     *
+     * @return array|string
+     * @var array
+     */
     public function getNameAttribute($value)
     {
         return PbHelpers::translateString($value);

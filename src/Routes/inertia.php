@@ -7,7 +7,7 @@ use Laravel\Jetstream\Jetstream;
 
 Route::group(['middleware' => config('jetstream.middleware', ['web'])], function () {
 
-    Route::group(['middleware' => ['auth', 'verified']], function () {
+    Route::group(['middleware' => ['auth', 'verified', 'set_locale']], function () {
         // User & Profile...
         Route::get('/user/profile', [PbUserProfileController::class, 'show'])
                     ->name('profile.show');

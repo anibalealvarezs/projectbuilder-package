@@ -12,22 +12,16 @@ class PbSingleSessionMiddleware
     /**
      * Handle an incoming request.
      *
-     * @param  Request  $request
+     * @param Request $request
      * @param Closure $next
      * @return mixed
      */
-    public function handle($request, Closure $next)
+    public function handle($request, Closure $next): mixed
     {
-        if(Auth::check())
-        {
-            // If current session id is not same with last_session column
-            if(Auth::user()->last_session != Session::getId())
-            {
-                // do logout
+        if (Auth::check()) {
+            if (Auth::user()->last_session != Session::getId()) {
                 Auth::logout();
-
-                // Redirecto login page
-                return redirect('/login');
+                return redirect()->route('login');
             }
         }
 

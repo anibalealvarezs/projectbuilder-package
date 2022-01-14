@@ -4,15 +4,10 @@ namespace Anibalealvarezs\Projectbuilder\Models;
 
 use Anibalealvarezs\Projectbuilder\Helpers\PbHelpers;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Spatie\Translatable\HasTranslations;
 
 class PbConfig extends PbBuilder
 {
-    use HasTranslations;
-
     protected $table = 'config';
-
-    public $translatable = ['name', 'description'];
 
     public $timestamps = false;
 
@@ -27,6 +22,8 @@ class PbConfig extends PbBuilder
         parent::__construct($attributes);
         $this->publicRelations = ['module'];
         $this->allRelations = ['module'];
+        $this->translatable = ['name', 'description'];
+        $this->appends = [...$this->appends, ...['names', 'descriptions']];
     }
 
     /**

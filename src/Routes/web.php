@@ -1,5 +1,6 @@
 <?php
 
+use Anibalealvarezs\Projectbuilder\Controllers\Config\PbLocaleController as LocaleController;
 use Anibalealvarezs\Projectbuilder\Controllers\Navigation\PbNavigationController as NavigationController;
 use Anibalealvarezs\Projectbuilder\Controllers\Dashboard\PbDashboardController as DashboardController;
 use Anibalealvarezs\Projectbuilder\Helpers\PbHelpers;
@@ -14,7 +15,9 @@ Route::group(['middleware' => ['web', 'auth:sanctum', 'verified']], function () 
     });
 });
 
-Route::get('/dashboard', [DashboardController::class, 'index'])->middleware(['web', 'auth:sanctum', 'verified'])->name('dashboard');
+Route::get('/dashboard', [DashboardController::class, 'index'])->middleware(['web', 'auth:sanctum', 'verified', 'set_locale'])->name('dashboard');
+
+Route::post('/locale', [LocaleController::class, 'update'])->middleware(['web'])->name('locale');
 
 Route::get('/clear-cache', function() {
     Artisan::call('cache:clear');

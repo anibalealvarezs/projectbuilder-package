@@ -4,7 +4,6 @@ namespace Anibalealvarezs\Projectbuilder\Controllers\User;
 
 use Anibalealvarezs\Projectbuilder\Controllers\PbBuilderController;
 
-use Anibalealvarezs\Projectbuilder\Helpers\PbHelpers;
 use Anibalealvarezs\Projectbuilder\Models\PbUser;
 use App\Http\Requests;
 
@@ -137,7 +136,7 @@ class PbUserController extends PbBuilderController
         // Process
         try {
             // Build model
-            $model = new $this->vars->level->modelPath();
+            $model = (new $this->vars->level->modelPath())->setLocale(app()->getLocale());
             // Add requests
             $model = $this->processModelRequests($this->vars->validationRules, $request, $this->vars->replacers, $model);
             $model->language_id = $lang;
@@ -247,7 +246,7 @@ class PbUserController extends PbBuilderController
         // Process
         try {
             // Build model
-            $model = $this->vars->level->modelPath::find($id);
+            $model = $this->vars->level->modelPath::find($id)->setLocale(app()->getLocale());
             // Build requests
             $requests = $this->processModelRequests($this->vars->validationRules, $request, $this->vars->replacers);
             if ($password != "") {

@@ -184,8 +184,12 @@ class Shares
     #[ArrayShape(['languages' => "mixed"])]
     public static function getLanguages(): array
     {
+        $languages = PbLanguage::enabled()->get();
+        $languages->each(function ($trainee) {
+            $trainee->putCountry();
+        });
         return [
-            'languages' => PbLanguage::enabled()->get()
+            'languages' => $languages
         ];
     }
 

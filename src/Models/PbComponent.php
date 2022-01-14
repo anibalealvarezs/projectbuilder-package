@@ -19,6 +19,7 @@ class PbComponent extends PbBuilder
         parent::__construct($attributes);
         $this->publicRelations = ['module'];
         $this->allRelations = ['module'];
+        $this->translatable = [];
     }
 
     /**

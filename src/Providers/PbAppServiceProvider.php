@@ -2,7 +2,9 @@
 
 namespace Anibalealvarezs\Projectbuilder\Providers;
 
-use Anibalealvarezs\Projectbuilder\Models\PbModule;
+use Anibalealvarezs\Projectbuilder\Helpers\PbDebugbar;
+use Anibalealvarezs\Projectbuilder\Helpers\PbHelpers;
+use Anibalealvarezs\Projectbuilder\Models\PbConfig;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\ServiceProvider;
@@ -36,9 +38,14 @@ class PbAppServiceProvider extends ServiceProvider
                     'message' => Session::get('message')
                 ];
             },
-            /* 'modules' => function () {
-                return PbModule::withPublicRelations()->active()->get();
-            }, */
+            'locale' => function () {
+                $locale = PbHelpers::getDefaultCountry(app()->getLocale());
+                PbDebugbar::addMessage($locale, 'locale');
+                return $locale;
+            },
+            'teams' => function () {
+                return (bool) PbConfig::getValueByKey('_TEAM_SELECTOR_');
+            },
         ]);
     }
 

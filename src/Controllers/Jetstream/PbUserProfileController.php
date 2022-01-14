@@ -2,6 +2,7 @@
 
 namespace Anibalealvarezs\Projectbuilder\Controllers\Jetstream;
 
+use Anibalealvarezs\Projectbuilder\Helpers\Shares;
 use Anibalealvarezs\Projectbuilder\Models\PbUser;
 use Anibalealvarezs\Projectbuilder\Traits\PbControllerTrait;
 use Illuminate\Http\Request;
@@ -31,12 +32,16 @@ class PbUserProfileController extends UserProfileController
     {
         Inertia::share(
             'shared',
-            $this->globalInertiaShare(),
+            [
+                ...$this->globalInertiaShare(),
+                ...Shares::list(['languages']),
+                ...Shares::list(['countries']),
+            ]
         );
 
         return self::inertia()->render($request, 'Show', [
             'sessions' => $this->sessions($request)->all(),
-            'roles' => PbUser::current()->roles,
+            'roles' => PbUser::current()->roles
         ]);
     }
 

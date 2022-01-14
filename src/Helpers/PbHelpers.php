@@ -203,14 +203,15 @@ class PbHelpers
             $controller = self::getDefault('vendor') . '\\' . self::getDefault('package') . '\\Controllers\\' . ucfirst($model) . '\\' . self::getDefault('prefix') . ucfirst($model) . 'Controller';
             switch ($type) {
                 case 'web':
-                    Route::resource($model . 's', $controller)->middleware(['web', 'auth:sanctum', 'verified']);
+                    Route::resource($model . 's', $controller)->middleware(['web', 'auth:sanctum', 'verified', 'set_locale']);
                     break;
                 default:
                     Route::prefix('api')->group(
                         fn() => Route::resource($model . 's', $controller)->middleware([
                             'auth:sanctum',
                             'verified',
-                            'api_access'
+                            'api_access',
+                            'set_locale'
                         ])->names(self::getApiRoutesNames($model))
                     );
                     break;
@@ -256,13 +257,52 @@ class PbHelpers
      * Scope a query to only include popular users.
      *
      * @param string $value
-     * @return string
+     * @return string|array
      */
-    public static function translateString(string $value): string
+    public static function translateString(string $value): string|array
     {
         if ($json = json_decode($value)) {
-            return ($json->{app()->getLocale()} ?? ($json->en ?? $json->es));
+            return (
+                isset($json->{app()->getLocale()}) && $json->{app()->getLocale()} ?
+                    [app()->getLocale() => $json->{app()->getLocale()}] :
+                    [app()->getLocale() => ""]
+            );
         }
         return $value;
+    }
+
+    /**
+     * Scope a query to only include popular users.
+     *
+     * @param string $code
+     * @return array
+     */
+    #[ArrayShape(['code' => "string", 'country' => "string"])] public static function getDefaultCountry(string $code): array
+    {
+        if (file_exists(base_path('/node_modules/flag-icons/country.json'))) {
+            $data = json_decode(file_get_contents(base_path('/node_modules/flag-icons/country.json')), true);
+            $countries = [];
+            foreach ($data as $country) {
+                if ($country['iso'] === true) {
+                    $countries[$country['code']] = [
+                        '1x1' => $country['flag_1x1'],
+                        '4x3' => $country['flag_4x3'],
+                    ];
+                }
+            }
+        }
+        $default = ($countries['gb'] ?? ($countries['es'] ) ?? ['1x1' => "" , '4x3' => ""]);
+        return [
+            'code' => $code,
+            'country' => match ($code) {
+                    'es' => ['code' => 'es', 'flags' => (isset($countries['es']) ?? $default)],
+                    'fr' => ['code' => 'fr', 'flags' => (isset($countries['fr']) ?? $default)],
+                    'de' => ['code' => 'de', 'flags' => (isset($countries['de']) ?? $default)],
+                    'it' => ['code' => 'it', 'flags' => (isset($countries['it']) ?? $default)],
+                    'pt' => ['code' => 'pt', 'flags' => (isset($countries['pt']) ?? $default)],
+                    'ru' => ['code' => 'ru', 'flags' => (isset($countries['ru']) ?? $default)],
+                    default => ['code' => 'gb', 'flags' => (isset($countries['gb']) ?? $default)],
+                }
+        ];
     }
 }
