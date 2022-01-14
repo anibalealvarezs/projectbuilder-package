@@ -18,7 +18,7 @@ class PbSetLocaleMiddleware
      */
     public function handle(Request $request, Closure $next)
     {
-        if ($request->session() && (app()->getLocale() != $request->session()->get('locale'))) {
+        if (!$request->is('api/*') && $request->session() && (app()->getLocale() != $request->session()->get('locale'))) {
             app()->setLocale($request->session()->get('locale'));
         } else {
             if ($request->user()) {
