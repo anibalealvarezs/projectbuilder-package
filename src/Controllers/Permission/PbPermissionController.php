@@ -109,15 +109,17 @@ class PbPermissionController extends PbBuilderController
             // Add additional fields values
             $model->guard_name = 'admin';
             // Model save
-            if ($model->save()) {
-                $adminRoles = PbRole::whereIn('name', ['super-admin', 'admin'])->get()->modelKeys();
-                $model->syncRoles(
-                    [
-                        ...($roles && is_array($roles) ? $roles : ($roles ? [$roles] : [])),
-                        ...($adminRoles && is_array($adminRoles) ? $adminRoles : ($adminRoles ? [$adminRoles] : []))
-                    ]
-                );
+            if (!$model->save()) {
+                return $this->redirectResponseCRUDFail($request, 'create', "Error saving {$this->vars->level->name}");
             }
+            // Add roles
+            $adminRoles = PbRole::whereIn('name', ['super-admin', 'admin'])->get()->modelKeys();
+            $model->syncRoles(
+                [
+                    ...($roles && is_array($roles) ? $roles : ($roles ? [$roles] : [])),
+                    ...($adminRoles && is_array($adminRoles) ? $adminRoles : ($adminRoles ? [$adminRoles] : []))
+                ]
+            );
 
             return $this->redirectResponseCRUDSuccess($request, 'create');
         } catch (Exception $e) {
@@ -185,32 +187,34 @@ class PbPermissionController extends PbBuilderController
             $model = $this->vars->level->modelPath::find($id)->setLocale(app()->getLocale());
             // Build requests
             $requests = $this->processModelRequests($this->vars->validationRules, $request, $this->vars->replacers);
-            // Update model
-            if ($model->update($requests)) {
-                if (in_array($model->name, ['crud super-admin'])) {
-                    $superAdminRoles = PbRole::whereIn('name', ['super-admin'])->get()->modelKeys();
-                    $model->syncRoles($superAdminRoles);
-                } elseif (in_array($model->name, ['developer options', 'read loggers', 'delete loggers', 'config loggers'])) {
-                    $developerRoles = PbRole::whereIn('name', ['super-admin', 'developer'])->get()->modelKeys();
-                    $model->syncRoles($developerRoles);
-                } elseif (in_array($model->name, ['api access'])) {
-                    $apiRoles = PbRole::whereIn('name', ['super-admin', 'api-user'])->get()->modelKeys();
-                    $model->syncRoles($apiRoles);
-                } elseif (in_array($model->name, ['manage app', 'admin roles permissions', 'config builder'])) {
-                    $adminRoles = PbRole::whereIn('name', ['super-admin', 'admin'])->get()->modelKeys();
-                    $model->syncRoles($adminRoles);
-                } elseif (in_array($model->name, ['login'])) {
-                    $adminRoles = PbRole::all()->modelKeys();
-                    $model->syncRoles($adminRoles);
-                } else {
-                    $adminRoles = PbRole::whereIn('name', ['super-admin', 'admin'])->get()->modelKeys();
-                    $model->syncRoles(
-                        [
-                            ...($roles && is_array($roles) ? $roles : ($roles ? [$roles] : [])),
-                            ...($adminRoles && is_array($adminRoles) ? $adminRoles : ($adminRoles ? [$adminRoles] : []))
-                        ]
-                    );
-                }
+            // Model update
+            if (!$model->update($requests)) {
+                return $this->redirectResponseCRUDFail($request, 'update', "Error updating {$this->vars->level->name}");
+            }
+            // Update roles
+            if (in_array($model->name, ['crud super-admin'])) {
+                $superAdminRoles = PbRole::whereIn('name', ['super-admin'])->get()->modelKeys();
+                $model->syncRoles($superAdminRoles);
+            } elseif (in_array($model->name, ['developer options', 'read loggers', 'delete loggers', 'config loggers'])) {
+                $developerRoles = PbRole::whereIn('name', ['super-admin', 'developer'])->get()->modelKeys();
+                $model->syncRoles($developerRoles);
+            } elseif (in_array($model->name, ['api access'])) {
+                $apiRoles = PbRole::whereIn('name', ['super-admin', 'api-user'])->get()->modelKeys();
+                $model->syncRoles($apiRoles);
+            } elseif (in_array($model->name, ['manage app', 'admin roles permissions', 'config builder'])) {
+                $adminRoles = PbRole::whereIn('name', ['super-admin', 'admin'])->get()->modelKeys();
+                $model->syncRoles($adminRoles);
+            } elseif (in_array($model->name, ['login'])) {
+                $adminRoles = PbRole::all()->modelKeys();
+                $model->syncRoles($adminRoles);
+            } else {
+                $adminRoles = PbRole::whereIn('name', ['super-admin', 'admin'])->get()->modelKeys();
+                $model->syncRoles(
+                    [
+                        ...($roles && is_array($roles) ? $roles : ($roles ? [$roles] : [])),
+                        ...($adminRoles && is_array($adminRoles) ? $adminRoles : ($adminRoles ? [$adminRoles] : []))
+                    ]
+                );
             }
 
             return $this->redirectResponseCRUDSuccess($request, 'update');
@@ -249,7 +253,10 @@ class PbPermissionController extends PbBuilderController
 
                 return redirect()->route($this->vars->level->names . '.index');
             }
-            $model->delete();
+            // Model delete
+            if (!$model->delete()) {
+                return $this->redirectResponseCRUDFail($request, 'delete', "Error deleting {$this->vars->level->name}");
+            }
 
             return $this->redirectResponseCRUDSuccess($request, 'delete');
         } catch (Exception $e) {

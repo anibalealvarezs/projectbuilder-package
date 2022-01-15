@@ -3,6 +3,7 @@
 namespace Anibalealvarezs\Projectbuilder\Middleware;
 
 use Anibalealvarezs\Projectbuilder\Exceptions\PbUserException;
+use Anibalealvarezs\Projectbuilder\Helpers\PbHelpers;
 use Anibalealvarezs\Projectbuilder\Models\PbConfig;
 use Anibalealvarezs\Projectbuilder\Models\PbUser;
 use Illuminate\Support\Facades\Auth;
@@ -31,13 +32,13 @@ class PbCanAccessApiMiddleware
 
         $message = (!$enabled ? "API service is currently disabled" : "You don't have permission to access the API");
 
-        if ($request->is('api/*')) {
-            return response()->json([
-                'success' => false,
-                'message' => $message
-            ], 403);
-        } else {
+        if (!PbHelpers::isApi($request)) {
             throw PbUserException::custom(403, $message);
         }
+
+        return response()->json([
+            'success' => false,
+            'message' => $message
+        ], 403);
     }
 }

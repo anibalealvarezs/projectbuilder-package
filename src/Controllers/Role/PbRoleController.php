@@ -107,14 +107,16 @@ class PbRoleController extends PbBuilderController
             // Add additional fields values
             $model->guard_name = 'admin';
             // Model save
-            if ($model->save()) {
-                $this->loadDefaultPermissions();
-                $permissions =
-                    PbPermission::whereNotIn('id', $this->superAdminExclusivePermissions)
-                        ->whereNotIn('id', $this->adminOptionalPermissions)
-                        ->whereIn('id', $permissions)->get();
-                $model->syncPermissions($permissions);
+            if (!$model->save()) {
+                return $this->redirectResponseCRUDFail($request, 'create', "Error saving {$this->vars->level->name}");
             }
+            // Permissions save
+            $this->loadDefaultPermissions();
+            $permissions =
+                PbPermission::whereNotIn('id', $this->superAdminExclusivePermissions)
+                    ->whereNotIn('id', $this->adminOptionalPermissions)
+                    ->whereIn('id', $permissions)->get();
+            $model->syncPermissions($permissions);
 
             return $this->redirectResponseCRUDSuccess($request, 'create');
         } catch (Exception $e) {
@@ -180,28 +182,30 @@ class PbRoleController extends PbBuilderController
             $model = $this->vars->level->modelPath::find($id)->setLocale(app()->getLocale());
             // Build requests
             $requests = $this->processModelRequests($this->vars->validationRules, $request, $this->vars->replacers);
-            // Update model
-            if ($model->update($requests)) {
-                $this->loadDefaultPermissions();
-                if (
-                    (in_array($model->name, ['super-admin', 'admin']) && $me->hasRole('super-admin')) ||
-                    (($model->name == 'admin') && $me->hasRole('admin')) ||
-                    !in_array($model->name, ['super-admin', 'admin'])
-                ) {
-                    if ($model->name == 'super-admin') {
-                        $permissions = PbPermission::all();
-                    } elseif ($model->name == 'admin') {
-                        $permissions =
-                            PbPermission::whereNotIn('id', $this->superAdminExclusivePermissions)
-                                ->whereIn('id', $permissions)->get();
-                    } else {
-                        $permissions =
-                            PbPermission::whereNotIn('id', $this->superAdminExclusivePermissions)
-                                ->whereNotIn('id', $this->adminOptionalPermissions)
-                                ->whereIn('id', $permissions)->get();
-                    }
-                    $model->syncPermissions($permissions);
+            // Model update
+            if (!$model->update($requests)) {
+                return $this->redirectResponseCRUDFail($request, 'update', "Error updating {$this->vars->level->name}");
+            }
+            // Update permissions
+            $this->loadDefaultPermissions();
+            if (
+                (in_array($model->name, ['super-admin', 'admin']) && $me->hasRole('super-admin')) ||
+                (($model->name == 'admin') && $me->hasRole('admin')) ||
+                !in_array($model->name, ['super-admin', 'admin'])
+            ) {
+                if ($model->name == 'super-admin') {
+                    $permissions = PbPermission::all();
+                } elseif ($model->name == 'admin') {
+                    $permissions =
+                        PbPermission::whereNotIn('id', $this->superAdminExclusivePermissions)
+                            ->whereIn('id', $permissions)->get();
+                } else {
+                    $permissions =
+                        PbPermission::whereNotIn('id', $this->superAdminExclusivePermissions)
+                            ->whereNotIn('id', $this->adminOptionalPermissions)
+                            ->whereIn('id', $permissions)->get();
                 }
+                $model->syncPermissions($permissions);
             }
 
             return $this->redirectResponseCRUDSuccess($request, 'update');
@@ -235,7 +239,10 @@ class PbRoleController extends PbBuilderController
 
                 return redirect()->route($this->vars->level->names . '.index');
             }
-            $model->delete();
+            // Model delete
+            if (!$model->delete()) {
+                return $this->redirectResponseCRUDFail($request, 'delete', "Error deleting {$this->vars->level->name}");
+            }
 
             return $this->redirectResponseCRUDSuccess($request, 'delete');
         } catch (Exception $e) {

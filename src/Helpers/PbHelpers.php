@@ -6,6 +6,7 @@ use Anibalealvarezs\Projectbuilder\Models\PbConfig;
 use Anibalealvarezs\Projectbuilder\Models\PbModule;
 use Anibalealvarezs\Projectbuilder\Models\PbUser;
 use Carbon\Carbon;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
@@ -304,5 +305,16 @@ class PbHelpers
                     default => ['code' => 'gb', 'flags' => (isset($countries['gb']) ?? $default)],
                 }
         ];
+    }
+
+    /**
+     * Scope a query to only include popular users.
+     *
+     * @param Request $request
+     * @return bool
+     */
+    public static function isApi(Request $request): bool
+    {
+        return $request->is('api/*');
     }
 }

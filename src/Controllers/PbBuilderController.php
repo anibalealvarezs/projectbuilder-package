@@ -144,7 +144,9 @@ class PbBuilderController extends Controller
             $model = $this->processModelRequests($this->vars->validationRules, $request, $this->vars->replacers,
                 (new $this->vars->level->modelPath())->setLocale(app()->getLocale()));
             // Model save
-            $model->save();
+            if (!$model->save()) {
+                return $this->redirectResponseCRUDFail($request, 'create', "Error saving {$this->vars->level->name}");
+            }
 
             return $this->redirectResponseCRUDSuccess($request, 'create');
         } catch (Exception $e) {
@@ -220,8 +222,10 @@ class PbBuilderController extends Controller
             $model = $this->vars->level->modelPath::find($id)->setLocale(app()->getLocale());
             // Build requests
             $requests = $this->processModelRequests($this->vars->validationRules, $request, $this->vars->replacers);
-            // Update model
-            $model->update($requests);
+            // Model update
+            if (!$model->update($requests)) {
+                return $this->redirectResponseCRUDFail($request, 'update', "Error updating {$this->vars->level->name}");
+            }
 
             return $this->redirectResponseCRUDSuccess($request, 'update');
         } catch (Exception $e) {
@@ -240,8 +244,10 @@ class PbBuilderController extends Controller
     {
         // Process
         try {
-            // Delete element
-            $this->vars->level->modelPath::find($id)->delete();
+            // Model delete
+            if (!$this->vars->level->modelPath::find($id)->delete()) {
+                return $this->redirectResponseCRUDFail($request, 'delete', "Error deleting {$this->vars->level->name}");
+            }
 
             return $this->redirectResponseCRUDSuccess($request, 'delete');
         } catch (Exception $e) {
@@ -279,10 +285,11 @@ class PbBuilderController extends Controller
                     // Build model
                     $el = $this->vars->level->modelPath::find($sortEl);
                 }
-                if ($el) {
+                if (isset($el) && $el) {
                     $el->position = $n;
                     $el->save();
                 }
+                unset($el);
                 $n++;
             }
 
@@ -322,15 +329,6 @@ class PbBuilderController extends Controller
             $arrayElements[
                 ($plural ? $this->vars->level->prefixNames : $this->vars->level->prefixName)] =
                     ($id ? $this->vars->level->modelPath::find($id) : $this->vars->level->modelPath::all());
-                    /* ($this->vars->request->is('api/*') ?
-                            $this->vars->level->modelPath::find($id)->getRawOriginal() :
-                            $this->vars->level->modelPath::find($id)
-                        ) :
-                        ($this->vars->request->is('api/*') ?
-                            $this->vars->level->modelPath::all()->getRawOriginal() :
-                            $this->vars->level->modelPath::all()
-                        )
-                    ); */
         }
 
         return $arrayElements;
@@ -415,14 +413,8 @@ class PbBuilderController extends Controller
                 array_push($keys, $vrKey);
             }
         }
-        if ($model) {
-            foreach ($keys as $key) {
-                if (!in_array($key, $this->vars->modelExclude)) {
-                    $model->$key = ${$key};
-                }
-            }
-            return $model;
-        } else {
+
+        if (!$model) {
             $requests = [];
             foreach ($keys as $key) {
                 if (!in_array($key, $this->vars->modelExclude)) {
@@ -431,6 +423,14 @@ class PbBuilderController extends Controller
             }
             return $requests;
         }
+
+        foreach ($keys as $key) {
+            if (!in_array($key, $this->vars->modelExclude)) {
+                $model->$key = ${$key};
+            }
+        }
+
+        return $model;
     }
 
     /**
@@ -443,18 +443,19 @@ class PbBuilderController extends Controller
      */
     protected function renderResponse($view, array $elements = [], bool $nullable = false): JsonResponse|InertiaResponse
     {
-        if ($this->vars->request->is('api/*')) {
-            //write your logic for api call
-            if ($elements || $nullable) {
-                return $this->handleJSONResponse($elements, 'Operation Successful');
-            } else {
-                return $this->handleJSONError('Operation Failed');
-            }
-        } else {
+        // If not API
+        if (!PbHelpers::isApi($this->vars->request)) {
             //write your logic for web call
             $this->shareVars();
             Inertia::setRootView($this->vars->inertiaRoot);
             return Inertia::render($view, $elements);
+        }
+
+        // If API
+        if ($elements || $nullable) {
+            return $this->handleJSONResponse($elements, 'Operation Successful');
+        } else {
+            return $this->handleJSONError('Operation Failed');
         }
     }
 

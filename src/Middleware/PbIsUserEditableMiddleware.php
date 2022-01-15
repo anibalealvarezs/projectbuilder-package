@@ -3,6 +3,7 @@
 namespace Anibalealvarezs\Projectbuilder\Middleware;
 
 use Anibalealvarezs\Projectbuilder\Exceptions\PbUserException;
+use Anibalealvarezs\Projectbuilder\Helpers\PbHelpers;
 use Anibalealvarezs\Projectbuilder\Models\PbUser;
 use Illuminate\Support\Facades\Auth;
 use Closure;
@@ -24,13 +25,13 @@ class PbIsUserEditableMiddleware
             return $next($request);
         }
 
-        if ($request->is('api/*')) {
-            return response()->json([
-                'success' => false,
-                'message' => "You don't have permission to edit this user."
-            ], 403);
-        } else {
+        if (!PbHelpers::isApi($request)) {
             throw PbUserException::notEditable();
         }
+
+        return response()->json([
+            'success' => false,
+            'message' => "You don't have permission to edit this user."
+        ], 403);
     }
 }

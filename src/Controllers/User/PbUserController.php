@@ -4,6 +4,7 @@ namespace Anibalealvarezs\Projectbuilder\Controllers\User;
 
 use Anibalealvarezs\Projectbuilder\Controllers\PbBuilderController;
 
+use Anibalealvarezs\Projectbuilder\Helpers\PbHelpers;
 use Anibalealvarezs\Projectbuilder\Models\PbUser;
 use App\Http\Requests;
 
@@ -141,35 +142,40 @@ class PbUserController extends PbBuilderController
             $model = $this->processModelRequests($this->vars->validationRules, $request, $this->vars->replacers, $model);
             $model->language_id = $lang;
             $model->country_id = $country;
-            if ($model->save()) {
-                $model->current_team_id = $this->getDefaultTeamId($model);
-                if ($model->save()) {
-                    $me = PbUser::current();
-                    if ($me->hasRole(['super-admin'])) {
-                        if (in_array('super-admin', $roles)) {
-                            // Add only super-admin
-                            $roles = ['super-admin'];
-                        } elseif (in_array('admin', $roles)) {
-                            // Add admin, and change developer and api-user
-                            $roles = [
-                                ...['admin'],
-                                ...array_intersect(['developer', 'api-user'], $roles)
-                            ];
-                        }
-                    } elseif ($me->hasRole(['admin'])) {
-                        // Remove super-admin/admin
-                        $toExclude = ['super-admin', 'admin'];
-                        $intersect = array_intersect($roles, $toExclude);
-                        $roles = array_diff($roles, $intersect);
-                    } else {
-                        // Remove super-admin/admin/developer/api-user
-                        $toExclude = ['super-admin', 'admin', 'developer', 'api-user'];
-                        $intersect = array_intersect($roles, $toExclude);
-                        $roles = array_diff($roles, $intersect);
-                    }
-                    $model->syncRoles($roles);
-                }
+            // Model save
+            if (!$model->save()) {
+                return $this->redirectResponseCRUDFail($request, 'create', "Error saving {$this->vars->level->name}");
             }
+            // Team assigning
+            $model->current_team_id = $this->getDefaultTeamId($model);
+            if (!$model->save()) {
+                return $this->redirectResponseCRUDFail($request, 'create', "Error updating team for {$this->vars->level->name}");
+            }
+            // Roles assigning
+            $me = PbUser::current();
+            if ($me->hasRole(['super-admin'])) {
+                if (in_array('super-admin', $roles)) {
+                    // Add only super-admin
+                    $roles = ['super-admin'];
+                } elseif (in_array('admin', $roles)) {
+                    // Add admin, and change developer and api-user
+                    $roles = [
+                        ...['admin'],
+                        ...array_intersect(['developer', 'api-user'], $roles)
+                    ];
+                }
+            } elseif ($me->hasRole(['admin'])) {
+                // Remove super-admin/admin
+                $toExclude = ['super-admin', 'admin'];
+                $intersect = array_intersect($roles, $toExclude);
+                $roles = array_diff($roles, $intersect);
+            } else {
+                // Remove super-admin/admin/developer/api-user
+                $toExclude = ['super-admin', 'admin', 'developer', 'api-user'];
+                $intersect = array_intersect($roles, $toExclude);
+                $roles = array_diff($roles, $intersect);
+            }
+            $model->syncRoles($roles);
 
             return $this->redirectResponseCRUDSuccess($request, 'create');
         } catch (Exception $e) {
@@ -188,7 +194,7 @@ class PbUserController extends PbBuilderController
      */
     public function show(int $id, $element = null, bool $multiple = false, string $route = 'level'): Application|RedirectResponse|Redirector|InertiaResponse|JsonResponse
     {
-        if ((Auth::user()->id == $id) && !$this->vars->request->is('api/*')) {
+        if ((Auth::user()->id == $id) && !PbHelpers::isApi($this->vars->request)) {
             return redirect(DIRECTORY_SEPARATOR.$this->vars->level->name.'/profile');
         }
 
@@ -254,48 +260,51 @@ class PbUserController extends PbBuilderController
             }
             $requests['language_id'] = $lang;
             $requests['country_id'] = $country;
-            if ($model->update($requests)) {
-                $me = PbUser::current();
-                if ($me->hasRole(['super-admin'])) {
-                    if (($model->id == Auth::user()->id) || in_array('super-admin', $roles)) {
-                        // Add only super-admin
-                        $roles = ['super-admin'];
-                    } elseif (in_array('admin', $roles)) {
-                        // Add admin, and change developer and api-user
-                        $roles = [
-                            ...['admin'],
-                            array_intersect(['developer', 'api-user'], $roles)
-                        ];
-                    }
-                } elseif ($me->hasRole(['admin'])) {
-                    if (($model->id == Auth::user()->id) || $model->hasRole(['admin'])) {
-                        // Add admin, and change developer and api-user
-                        $roles = [
-                            ...['admin'],
-                            ...array_intersect(['developer', 'api-user'], $roles)
-                        ];
-                    } else {
-                        // Remove super-admin/admin
-                        $toExclude = ['super-admin', 'admin'];
-                        $intersect = array_intersect($roles, $toExclude);
-                        $roles = array_diff($roles, $intersect);
-                    }
+            // Model update
+            if (!$model->update($requests)) {
+                return $this->redirectResponseCRUDFail($request, 'update', "Error updating {$this->vars->level->name}");
+            }
+            // Sync roles
+            $me = PbUser::current();
+            if ($me->hasRole(['super-admin'])) {
+                if (($model->id == Auth::user()->id) || in_array('super-admin', $roles)) {
+                    // Add only super-admin
+                    $roles = ['super-admin'];
+                } elseif (in_array('admin', $roles)) {
+                    // Add admin, and change developer and api-user
+                    $roles = [
+                        ...['admin'],
+                        array_intersect(['developer', 'api-user'], $roles)
+                    ];
+                }
+            } elseif ($me->hasRole(['admin'])) {
+                if (($model->id == Auth::user()->id) || $model->hasRole(['admin'])) {
+                    // Add admin, and change developer and api-user
+                    $roles = [
+                        ...['admin'],
+                        ...array_intersect(['developer', 'api-user'], $roles)
+                    ];
                 } else {
-                    // Remove super-admin/admin/developer/api-user
-                    $toExclude = ['super-admin', 'admin', 'developer', 'api-user'];
+                    // Remove super-admin/admin
+                    $toExclude = ['super-admin', 'admin'];
                     $intersect = array_intersect($roles, $toExclude);
                     $roles = array_diff($roles, $intersect);
-                    if ($model->hasRole(['developer'])) {
-                        // Keep developer
-                        array_push($roles, 'developer');
-                    }
-                    if ($model->hasRole(['api-user'])) {
-                        // Keep api-user
-                        array_push($roles, 'api-user');
-                    }
                 }
-                $model->syncRoles($roles);
+            } else {
+                // Remove super-admin/admin/developer/api-user
+                $toExclude = ['super-admin', 'admin', 'developer', 'api-user'];
+                $intersect = array_intersect($roles, $toExclude);
+                $roles = array_diff($roles, $intersect);
+                if ($model->hasRole(['developer'])) {
+                    // Keep developer
+                    array_push($roles, 'developer');
+                }
+                if ($model->hasRole(['api-user'])) {
+                    // Keep api-user
+                    array_push($roles, 'api-user');
+                }
             }
+            $model->syncRoles($roles);
 
             return $this->redirectResponseCRUDSuccess($request, 'update');
         } catch (Exception $e) {

@@ -12,12 +12,14 @@ class PbLocaleController extends Controller
 {
     public function update(Request $request): RedirectResponse
     {
-        if ($language = PbLanguage::findByCode($request->input('locale'))) {
-            if ($request->session()) {
-                $request->session()->put('locale', $language->code);
-            }
-            app()->setLocale($language->code);
+        if (!$language = PbLanguage::findByCode($request->input('locale'))) {
+            return Redirect::back();
         }
+
+        if ($request->session()) {
+            $request->session()->put('locale', $language->code);
+        }
+        app()->setLocale($language->code);
 
         return Redirect::back();
     }
