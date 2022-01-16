@@ -11,7 +11,7 @@ export default {
     },
     methods: {
         isRequired(key) {
-            return this.required.includes(key)
+            return (this.required ? this.required.includes(key) : false)
         },
         disableReadonly(event) {
             document.getElementById(event.target.id).readOnly = false

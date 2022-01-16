@@ -25,7 +25,7 @@ export default {
             document.getElementById(event.target.id).readOnly = false
         },
         isRequired(key) {
-            return this.required.includes(key)
+            return (this.required ? this.required.includes(key) : false)
         },
         isEmptyField(value) {
             return !value

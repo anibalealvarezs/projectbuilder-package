@@ -3,6 +3,7 @@
 namespace Anibalealvarezs\Projectbuilder\Models;
 
 use Anibalealvarezs\Projectbuilder\Helpers\PbHelpers;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class PbLogger extends PbBuilder
@@ -66,6 +67,17 @@ class PbLogger extends PbBuilder
             3 => 'Error',
             default => 'Debug',
         };
+    }
+
+    /**
+     * Scope a query to only include popular users.
+     *
+     * @param $value
+     * @return string
+     */
+    public function getCreatedAtAttribute($value)
+    {
+        return Carbon::parse($value)->format('d/m/y H:i:s');
     }
 
     /**

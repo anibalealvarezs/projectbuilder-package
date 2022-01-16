@@ -34,28 +34,6 @@ class PbLoggerController extends PbBuilderController
     {
         $model = $this->vars->level->modelPath::withPublicRelations()->get();
 
-        $filtered = $model->map(function ($q) {
-            return $q->only([
-                'id',
-                'severity',
-                'code',
-                'message',
-                'object_type',
-                'object_id',
-                'user_id',
-                'module_id',
-                'created_at',
-                'crud',
-            ]);
-        });
-
-        $filtered = $this->vars->helper->class::setCollectionAttributeDatetimeFormat(
-            $filtered,
-            ['created_at'],
-            "custom",
-            "d/m/y"
-        );
-
-        return parent::index($filtered);
+        return parent::index($model);
     }
 }

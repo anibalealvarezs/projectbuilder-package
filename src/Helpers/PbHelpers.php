@@ -266,7 +266,7 @@ class PbHelpers
             return (
                 isset($json->{app()->getLocale()}) && $json->{app()->getLocale()} ?
                     [app()->getLocale() => $json->{app()->getLocale()}] :
-                    [app()->getLocale() => ""]
+                    ["en" => $json->en]
             );
         }
         return $value;

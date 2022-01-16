@@ -66,33 +66,11 @@ class PbUserController extends PbBuilderController
     {
         $this->pushRequired(['roles', 'email']);
 
-        $model = $this->vars->level->modelPath::withPublicRelations()->removeAdmins()->get();
-        $filtered = $model->map(function ($q) {
-            return $q->only([
-                'id',
-                'name',
-                'email',
-                'last_session',
-                'created_at',
-                'country',
-                'city',
-                'lang',
-                'roles',
-                'crud',
-                'api',
-            ]);
-        })->sortByDesc(['name', 'email']);
-
-        $filtered = $this->vars->helper->class::setCollectionAttributeDatetimeFormat(
-            $filtered,
-            ['created_at', 'last_session'],
-            "custom",
-            "d/m/y"
-        );
+        $model = $this->vars->level->modelPath::withPublicRelations()->removeAdmins()->get()->sortByDesc(['name', 'email']);
 
         $this->vars->shares[] = 'me';
 
-        return parent::index($filtered);
+        return parent::index($model);
     }
 
     /**

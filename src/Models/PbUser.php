@@ -5,6 +5,7 @@ namespace Anibalealvarezs\Projectbuilder\Models;
 use Anibalealvarezs\Projectbuilder\Helpers\Shares;
 use Anibalealvarezs\Projectbuilder\Traits\PbModelTrait;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -26,7 +27,7 @@ class PbUser extends User
 
     protected $table = 'users';
 
-    protected $appends = ['api'];
+    protected $appends = ['api', 'crud'];
 
     public $translatable = [];
 
@@ -81,6 +82,17 @@ class PbUser extends User
     public function city(): BelongsTo
     {
         return $this->belongsTo(PbCity::class);
+    }
+
+    /**
+     * Scope a query to only include popular users.
+     *
+     * @param $value
+     * @return string
+     */
+    public function getCreatedAtAttribute($value)
+    {
+        return Carbon::parse($value)->format('d/m/y');
     }
 
     /**
