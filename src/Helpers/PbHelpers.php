@@ -199,7 +199,7 @@ class PbHelpers
      */
     public function buildCrudRoutes($type): void
     {
-        if (Schema::hasTable('modulekey')) {
+        if (Schema::hasTable('modules')) {
             $models = PbModule::whereIn('modulekey', $this->modulekeys)->pluck('modulekey');
 
             foreach ($models as $model) {

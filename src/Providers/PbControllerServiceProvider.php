@@ -41,7 +41,7 @@ class PbControllerServiceProvider extends ServiceProvider
      */
     public function boot(Kernel $kernel)
     {
-        if (Schema::hasTable('modulekey')) {
+        if (Schema::hasTable('modules')) {
             $models = PbModule::whereIn('modulekey', PbHelpers::getDefault('modulekeys'))->pluck('modulekey');
             foreach ($models as $model) {
                 $this->app->make($this->namespace.'\\'.ucfirst($model).'\\'.$this->prefix.ucfirst($model).$this->suffix);
