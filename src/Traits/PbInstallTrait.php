@@ -225,6 +225,21 @@ trait PbInstallTrait
     {
         $appConfig = file_get_contents(config_path('app.php'));
         $newAppConfig = $appConfig;
+        if (! Str::contains($newAppConfig, 'Anibalealvarezs\\Projectbuilder\\Providers\\PbJetstreamAppServiceProvider::class')) {
+            if (Str::contains($newAppConfig, 'App\\Providers\\JetstreamServiceProvider::class')) {
+                $newAppConfig = str_replace(
+                    'App\\Providers\\JetstreamServiceProvider::class,',
+                    'Anibalealvarezs\\Projectbuilder\\Providers\\PbJetstreamAppServiceProvider::class,',
+                    $newAppConfig
+                );
+            } else {
+                $newAppConfig = str_replace(
+                    'App\\Providers\\FortifyServiceProvider::class,',
+                    'App\\Providers\\FortifyServiceProvider::class,'.PHP_EOL.'        Anibalealvarezs\\Projectbuilder\\Providers\\PbJetstreamAppServiceProvider::class,',
+                    $newAppConfig
+                );
+            }
+        }
         if (! Str::contains($newAppConfig, 'Anibalealvarezs\\Projectbuilder\\Providers\\PbFortifyServiceProvider::class')) {
             if (Str::contains($newAppConfig, 'Laravel\\Fortify\\FortifyServiceProvider::class')) {
                 $newAppConfig = str_replace(
@@ -234,8 +249,8 @@ trait PbInstallTrait
                 );
             } else {
                 $newAppConfig = str_replace(
-                     'App\\Providers\\JetstreamServiceProvider::class,',
-                     'App\\Providers\\JetstreamServiceProvider::class,'.PHP_EOL.'        Anibalealvarezs\\Projectbuilder\\Providers\\PbFortifyServiceProvider::class,',
+                     'Anibalealvarezs\\Projectbuilder\\Providers\\PbJetstreamAppServiceProvider::class',
+                     'Anibalealvarezs\\Projectbuilder\\Providers\\PbJetstreamAppServiceProvider::class'.PHP_EOL.'        Anibalealvarezs\\Projectbuilder\\Providers\\PbFortifyServiceProvider::class,',
                     $newAppConfig
                  );
             }
