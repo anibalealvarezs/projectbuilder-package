@@ -49,7 +49,7 @@ class PbMigrationServiceProvider extends ServiceProvider
             }
             // Schema dump
             $this->publishes([
-                $this->schemaPath . DIRECTORY_SEPARATOR . 'mysql-schema.dump' => database_path('schema'),
+                $this->schemaPath . DIRECTORY_SEPARATOR . 'mysql-schema.dump' => database_path('schema/' . 'mysql-schema.dump'),
             ], 'schema');
         }
     }
