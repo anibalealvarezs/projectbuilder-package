@@ -5,6 +5,7 @@ namespace Anibalealvarezs\Projectbuilder\Helpers;
 use Anibalealvarezs\Projectbuilder\Models\PbConfig;
 use Anibalealvarezs\Projectbuilder\Models\PbModule;
 use Anibalealvarezs\Projectbuilder\Models\PbUser;
+use Illuminate\Support\Facades\Schema;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
@@ -198,24 +199,26 @@ class PbHelpers
      */
     public function buildCrudRoutes($type): void
     {
-        $models = PbModule::whereIn('modulekey', $this->modulekeys)->pluck('modulekey');
+        if (Schema::hasTable('modulekey')) {
+            $models = PbModule::whereIn('modulekey', $this->modulekeys)->pluck('modulekey');
 
-        foreach ($models as $model) {
-            $controller = self::getDefault('vendor') . '\\' . self::getDefault('package') . '\\Controllers\\' . ucfirst($model) . '\\' . self::getDefault('prefix') . ucfirst($model) . 'Controller';
-            switch ($type) {
-                case 'web':
-                    Route::resource($model . 's', $controller)->middleware(['web', 'auth:sanctum', 'verified', 'set_locale']);
-                    break;
-                default:
-                    Route::prefix('api')->group(
-                        fn() => Route::resource($model . 's', $controller)->middleware([
-                            'auth:sanctum',
-                            'verified',
-                            'api_access',
-                            'set_locale'
-                        ])->names(self::getApiRoutesNames($model))
-                    );
-                    break;
+            foreach ($models as $model) {
+                $controller = self::getDefault('vendor') . '\\' . self::getDefault('package') . '\\Controllers\\' . ucfirst($model) . '\\' . self::getDefault('prefix') . ucfirst($model) . 'Controller';
+                switch ($type) {
+                    case 'web':
+                        Route::resource($model . 's', $controller)->middleware(['web', 'auth:sanctum', 'verified', 'set_locale']);
+                        break;
+                    default:
+                        Route::prefix('api')->group(
+                            fn() => Route::resource($model . 's', $controller)->middleware([
+                                'auth:sanctum',
+                                'verified',
+                                'api_access',
+                                'set_locale'
+                            ])->names(self::getApiRoutesNames($model))
+                        );
+                        break;
+                }
             }
         }
     }
