@@ -119,6 +119,17 @@ class PbInstallCommand extends Command
                 echo "-------- [[ ERROR: Project Builder's stubs could not be published ]]\n";
                 return false;
             }
+            echo "------ Publishing Project Builder's schema dump... \n";
+            if (!Artisan::call(
+                'vendor:publish',
+                [
+                    '--provider' => 'Anibalealvarezs\Projectbuilder\Providers\PbMigrationServiceProvider',
+                    '--tag' => 'schema'
+                ]
+            )) {
+                echo "-------- [[ ERROR: Project Builder's stubs could not be published ]]\n";
+                return false;
+            }
             echo "------ Publishing Project Builder's views and config files... \n";
             if (!Artisan::call(
                 'vendor:publish',

@@ -8,10 +8,12 @@ use Illuminate\Support\ServiceProvider;
 class PbMigrationServiceProvider extends ServiceProvider
 {
     private $migrationPath;
+    private $schemaPath;
 
     public function __construct($app)
     {
         $this->migrationPath = __DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'Database/Migrations';
+        $this->schemaPath = __DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'Database/Schema';
 
         parent::__construct($app);
     }
@@ -24,6 +26,7 @@ class PbMigrationServiceProvider extends ServiceProvider
     public function boot()
     {
         if ($this->app->runningInConsole()) {
+            // Migrations
             $stubFiles = PbHelpers::getStubsList($this->migrationPath);
             $keyWords = PbHelpers::getMigrationsKeyWords();
             $offset = 0;
@@ -44,10 +47,11 @@ class PbMigrationServiceProvider extends ServiceProvider
                     $this->migrationPath . DIRECTORY_SEPARATOR . $sf => PbHelpers::getMigrationFileName($sf, $offset)
                 ], 'migrations');
             }
+            // Schema dump
+            $this->publishes([
+                $this->schemaPath . DIRECTORY_SEPARATOR . 'mysql-schema.dump' => database_path('schema'),
+            ], 'schema');
         }
-
-        // Migrations
-        // $this->loadMigrationsFrom($this->migrationPath); // <<== To enable legacy migrations
     }
 
     /**
