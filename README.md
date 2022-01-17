@@ -58,15 +58,7 @@ ln -s ../vendor/anibalealvarezs/projectbuilder-package/src/assets pbstorage
 
 ## Last steps...
 
-#### 3. Add full permissions to Jetstream API by default in ```app/Providers/JetstreamServiceProvider.php``` and remove the default permissions since they will be managed by Spatie's Permissions
-```php
-protected function configurePermissions()
-{
-    Jetstream::defaultApiTokenPermissions(['create', 'read', 'update', 'delete']);
-}
-```
-
-#### 4. Comment/remove the default routes in ```/routes/web.php```
+#### 3. Comment/remove the default routes in ```/routes/web.php```
 ```php
 /*
 Route::middleware(['auth:sanctum', 'verified'])->get('/dashboard', function () {

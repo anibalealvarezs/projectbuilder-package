@@ -3,11 +3,11 @@
         <div class="flex flex-wrap -mx-3 mb-6">
             <div v-for="(field, key) in form" class="w-full px-3 mb-6 md:mb-0">
                 <!-- {{ key }} -->
-                <label class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
+                <label v-if="formconfig[key].type !== 'hidden'" class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
                        :for="'grid-'+ key +'-' + keyid">
                     {{ key }}
                 </label>
-                <Input
+                <SimpleInput
                     :value="form[key]"
                     :keyel="key"
                     :keyid="keyid"
@@ -32,11 +32,14 @@
 import {reactive} from 'vue'
 import PbForm from "Pub/js/Projectbuilder/pbform"
 import {Helpers} from "Pub/js/Projectbuilder/projectbuilder"
+import {usePage} from "@inertiajs/inertia-vue3";
+import {computed} from "vue";
 
 export default {
     extends: PbForm,
     name: "PermissionForm",
     setup (props) {
+        const formconfig = computed(() => usePage().props.value.shared.formconfig)
         const form = reactive({
             name: props.data.name,
             roles: Helpers.getModelIdsList(props.data.roles),
@@ -44,7 +47,7 @@ export default {
         })
         const directory = 'permissions'
 
-        return { form, directory }
+        return { form, directory,formconfig }
     }
 }
 </script>

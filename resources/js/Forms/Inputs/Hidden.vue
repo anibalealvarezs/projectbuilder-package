@@ -1,6 +1,6 @@
 <template>
     <input
-        :value="(typeof value === 'object') ? (value[locale.code] ? value[locale.code] : '[no translation] ['+locale.code+']') : value"
+        :value="(typeof value === 'object') ? (value[locale.code] ? value[locale.code] : '') : value"
         :id="'grid-'+ keyel +'-' + keyid"
         type="hidden"
         :required="isRequired(keyel)"

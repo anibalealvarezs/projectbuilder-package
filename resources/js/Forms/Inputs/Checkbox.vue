@@ -11,11 +11,11 @@
         <span>
             {{ list[k].hasOwnProperty('alias') ?
                 ((typeof list[k].alias === 'object') ?
-                    (list[k].alias[locale.code] ? list[k].alias[locale.code] : '[no translation] ['+locale.code+']') :
+                    (list[k].alias[locale.code] ? list[k].alias[locale.code] : '') :
                     list[k].alias
                 ) :
                 ((typeof list[k]['name'] === 'object') ?
-                    (list[k]['name'][locale.code] ? list[k]['name'][locale.code] : '[no translation] ['+locale.code+']') :
+                    (list[k]['name'][locale.code] ? list[k]['name'][locale.code] : '') :
                     list[k]['name']
                 )
             }}

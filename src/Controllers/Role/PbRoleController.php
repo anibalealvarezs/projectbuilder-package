@@ -89,7 +89,9 @@ class PbRoleController extends PbBuilderController
      */
     public function store(Request $request): Redirector|RedirectResponse|Application|null
     {
-        $this->vars->validationRules['name'] = ['required', 'max:20', Rule::unique($this->vars->level->table)];
+        $this->pushValidationRules([
+            'name' => ['required', 'max:20', Rule::unique($this->vars->level->table)],
+        ]);
 
         // Validation
         if ($failed = $this->validateRequest($this->vars->validationRules, $request)) {
@@ -165,7 +167,9 @@ class PbRoleController extends PbBuilderController
      */
     public function update(Request $request, int $id): Redirector|RedirectResponse|Application|null
     {
-        $this->vars->validationRules['name'] = ['required', 'max:20', Rule::unique($this->vars->level->table)->ignore($id)];
+        $this->pushValidationRules([
+            'name' => ['required', 'max:20', Rule::unique($this->vars->level->table)->ignore($id)],
+        ]);
 
         // Validation
         if ($failed = $this->validateRequest($this->vars->validationRules, $request)) {

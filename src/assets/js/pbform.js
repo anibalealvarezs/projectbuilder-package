@@ -1,7 +1,7 @@
 import Button from "@/Jetstream/Button"
 import { Inertia } from '@inertiajs/inertia'
 import Swal from "sweetalert2"
-import Input from "@/Pages/Projectbuilder/Forms/Input"
+import SimpleInput from "@/Pages/Projectbuilder/Forms/SimpleInput"
 import {usePage} from "@inertiajs/inertia-vue3";
 
 export default {
@@ -13,7 +13,7 @@ export default {
     },
     components: {
         Button,
-        Input,
+        SimpleInput,
     },
     data() {
         return {
