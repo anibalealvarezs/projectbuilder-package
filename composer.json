@@ -22,13 +22,13 @@
         }
     ],
     "require": {
-        "php": "^8.0",
+        "php": "^8.0.2",
         "doctrine/dbal": "^3.2",
         "fideloper/proxy": "^4.4.1",
         "fruitcake/laravel-cors": "^2.0.4",
         "guzzlehttp/guzzle": "^7.4.1",
         "inertiajs/inertia-laravel": "^0.4.5",
-        "laravel/framework": "^8.76.2",
+        "laravel/framework": "^8.76.2|^9.0",
         "laravel/jetstream": "^2.5",
         "laravel/sanctum": "^2.13",
         "laravel/tinker": "^2.6.3",
