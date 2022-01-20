@@ -19,15 +19,19 @@ class PbSetLocaleMiddleware
      */
     public function handle(Request $request, Closure $next)
     {
-        if (!PbHelpers::isApi($request) && $request->session() && (app()->getLocale() != $request->session()->get('locale'))) {
-            app()->setLocale($request->session()->get('locale'));
-        } else {
-            if ($request->user()) {
-                if (!$locale = PbUser::find($request->user()->id)->getLocale()) {
-                    PbUser::current()->update(['language_id' => PbLanguage::findByCode($locale = config('app.locale'))->id]);
-                }
-                app()->setLocale($locale);
+        if (!PbHelpers::isApi($request)) {
+            if ($request->session() && $request->session()->get('locale') && (app()->getLocale() != $request->session()->get('locale'))) {
+                app()->setLocale($request->session()->get('locale'));
             }
+        } elseif ($request->user()) {
+            if (!$locale = PbUser::find($request->user()->id)->getLocale()) {
+                PbUser::current()->update(['language_id' => PbLanguage::findByCode($locale = config('app.locale'))->id]);
+            }
+            app()->setLocale($locale);
+        }
+
+        if (!app()->getLocale()) {
+            app()->setLocale(config('app.locale'));
         }
 
         return $next($request);
