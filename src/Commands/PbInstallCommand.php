@@ -24,7 +24,8 @@ class PbInstallCommand extends Command
                             {--config : Application wil be configured}
                             {--link : Links will be created}
                             {--npm : npm resources will be required}
-                            {--compile : npm will be run}';
+                            {--compile : npm will be run}
+                            {--force : database will be reset on migration}';
 
     /**
      * The console command description.
@@ -163,10 +164,18 @@ class PbInstallCommand extends Command
                     echo "-------- [[ ERROR: Cache could not be cleared ]]\n";
                     return false;
                 }
-                echo "------ Migrating... \n";
-                if (!Artisan::call('migrate')) {
-                    echo "-------- [[ ERROR: Migration failed ]]\n";
-                    return false;
+                if ($this->option('force')) {
+                    echo "------ Resetting database... \n";
+                    if (!Artisan::call('migrate:refresh')) {
+                        echo "-------- [[ ERROR: Database reset failed ]]\n";
+                        return false;
+                    }
+                } else {
+                    echo "------ Migrating... \n";
+                    if (!Artisan::call('migrate')) {
+                        echo "-------- [[ ERROR: Migration failed ]]\n";
+                        return false;
+                    }
                 }
             }
             if ($this->option('seed') || $this->option('all')) {
