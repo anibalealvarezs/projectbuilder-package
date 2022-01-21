@@ -127,7 +127,7 @@ class PbAltInstallCommand extends Command
                     return false;
                 }
             }
-            if ($this->option('seed') || $this->option('all') || (str_starts_with($this->signature,  'pbuilder:altupdate'))) {
+            if ($this->option('seed') || $this->option('all')) {
                 echo "------ Seeding... \n";
                 if (!shell_exec("php artisan db:seed --class=\"\\Anibalealvarezs\\Projectbuilder\\Database\\Seeders\\PbMainSeeder\"")) {
                     echo "-------- [[ ERROR: Tables could not be seeded ]]\n";

@@ -169,7 +169,7 @@ class PbInstallCommand extends Command
                     return false;
                 }
             }
-            if ($this->option('seed') || $this->option('all') || (str_starts_with($this->signature,  'pbuilder:update'))) {
+            if ($this->option('seed') || $this->option('all')) {
                 echo "------ Seeding... \n";
                 if (!Artisan::call(
                     'db:seed',
