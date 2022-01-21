@@ -47,7 +47,7 @@ class TableFields {
         }
         /* Buttons */
         /* Href */
-        if (!href.hasOwnProperty('route') || !href.hasOwnProperty('id')) {
+        if ((!href.hasOwnProperty('route') || !href.hasOwnProperty('id')) && !href.hasOwnProperty('custom')) {
             href = {}
         }
         /* Return */

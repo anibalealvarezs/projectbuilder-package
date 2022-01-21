@@ -108,4 +108,14 @@ trait PbModelTrait {
         }
         return $query;
     }
+
+    /**
+     * Scope a query to only include popular users.
+     *
+     * @return Array
+     */
+    public function getAppendedFields(): Array
+    {
+        return $this->appends;
+    }
 }

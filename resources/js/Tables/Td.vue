@@ -17,28 +17,28 @@
                         <div class="w-60">
                             <!-- Actions -->
                             <div v-for="(button, i) in field.buttons" class="space-y-1" :key="i">
-                                <JetDropdownLink
+                                <PbDropdownLink
                                     v-if="(button.type === 'link') && ((i !== 'update') || item.crud.editable) && ((i !== 'delete') || item.crud.deletable)"
                                     :href="buildRoute(button.route, item.id)"
                                 >
                                     <div :class="buildSpanClasses()">
                                         <div>{{ button.text }}</div>
                                     </div>
-                                </JetDropdownLink>
+                                </PbDropdownLink>
                                 <form
                                     v-if="(button.type === 'form') && ((i !== 'update') || item.crud.editable) && ((i !== 'delete') || item.crud.deletable)"
                                     :action="buildRoute(button.route, item.id)"
                                     @submit.prevent="submit"
                                     method="post"
                                 >
-                                    <JetDropdownLink
+                                    <PbDropdownLink
                                         as="button"
                                         @click="processAction(button, item)"
                                     >
                                         <div :class="buildSpanClasses()">
                                             <div>{{ button.text }}</div>
                                         </div>
-                                    </JetDropdownLink>
+                                    </PbDropdownLink>
                                 </form>
                             </div>
                         </div>
@@ -47,23 +47,38 @@
             </div>
         </div>
         <!-- SIZE -->
-        <div v-if="field.size === 'single'" :class="(field.href.hasOwnProperty('route') ? 'bg-gray-200' : '')">
+        <div v-if="field.size === 'single'" :class="(!!field.href.hasOwnProperty('route') || !!field.href.hasOwnProperty('custom') ? 'bg-gray-200' : '')">
             <!-- HREF -->
-            <JetDropdownLink
-                v-if="field.href.hasOwnProperty('route')"
+            <!-- route -->
+            <PbDropdownLink
+                v-if="!!field.href.hasOwnProperty('route')"
                 :href="buildRoute(field.href.route, item.id)"
             >
                 <!-- HREF CONTENT -->
                 <span
                     class="inline-flex items-center"
                 >
-                        {{ cellValue }}
+                    {{ field.href.hasOwnProperty('text') ? field.href.text : cellValue }}
                     <!-- <svg class="h-4 w-4"  width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">  <path stroke="none" d="M0 0h24v24H0z"/>  <path d="M14 8v-2a2 2 0 0 0 -2 -2h-7a2 2 0 0 0 -2 2v12a2 2 0 0 0 2 2h7a2 2 0 0 0 2 -2v-2" />
                         <path d="M7 12h14l-3 -3m0 6l3 -3" />
                     </svg> -->
                 </span>
-            </JetDropdownLink>
-            <!-- NO HREF CONTENT -->
+            </PbDropdownLink>
+            <!-- custom -->
+            <PbDropdownLink
+                v-else-if="!!field.href.hasOwnProperty('custom')"
+                :href="field.href.custom === 'self' ? cellValue : '#'"
+                :as="'a'"
+                :target="field.href.hasOwnProperty('target') ? field.href.target : '_self'"
+            >
+                <!-- HREF CONTENT -->
+                <span
+                    class="inline-flex items-center"
+                >
+                    {{ field.href.hasOwnProperty('text') ? field.href.text : cellValue }}
+                </span>
+            </PbDropdownLink>
+            <!-- NO HREF -->
             <div v-else>
                 <div v-if="field.status">
                     <span
@@ -104,8 +119,9 @@
         <div v-if="field.size === 'multiple'">
             <div v-for="cv in cellValue" :class="(field.arrval.hasOwnProperty('href') ? 'bg-gray-200 space-y-1 mb-px' : 'space-y-1')">
                 <!-- HREF -->
-                <JetDropdownLink
-                    v-if="field.arrval.hasOwnProperty('href')"
+                <!-- route -->
+                <PbDropdownLink
+                    v-if="field.arrval.hasOwnProperty('href') && field.arrval.href.hasOwnProperty('route')"
                     :href="buildRoute(field.arrval.href.route, cv[field.arrval.href.id])"
                 >
                     <!-- HREF CONTENT -->
@@ -118,7 +134,7 @@
                                 {{ cv[field.arrval.key][locale.code] ? cv[field.arrval.key][locale.code] : '[no translation]' }}  <span v-if="!cv[field.arrval.key][locale.code] && locale.country" :class="'fi fi-'+locale.country.code"></span>
                             </span>
                             <span v-else>
-                                {{ cv[field.arrval.key] }}
+                                {{ field.arrval.href.hasOwnProperty('text') ? field.arrval.href.text : cv[field.arrval.key] }}
                             </span>
                             <!-- <svg class="h-4 w-4"  width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">  <path stroke="none" d="M0 0h24v24H0z"/>  <path d="M14 8v-2a2 2 0 0 0 -2 -2h-7a2 2 0 0 0 -2 2v12a2 2 0 0 0 2 2h7a2 2 0 0 0 2 -2v-2" />
                                 <path d="M7 12h14l-3 -3m0 6l3 -3" />
@@ -131,11 +147,42 @@
                     >
                         {{ typeof cv === 'object' ? (cv[locale.code] ? cv[locale.code] : '[no translation]') : cv }} <span v-if="!cv[locale.code] && locale.country" :class="'fi fi-'+locale.country.code"></span>
                     </span>
-                </JetDropdownLink>
-                <!-- NO HREF CONTENT -->
+                </PbDropdownLink>
+                <!-- custom -->
+                <PbDropdownLink
+                    v-else-if="field.arrval.hasOwnProperty('href') && field.arrval.href.hasOwnProperty('custom')"
+                    :href="field.arrval.href.custom === 'self' ? (cv[field.arrval.key] ? cv[field.arrval.key] : '#') : '#'"
+                    :target="field.arrval.href.hasOwnProperty('target') ? field.arrval.href.target : '_self'"
+                    :as="'a'"
+                >
+                    <!-- HREF CONTENT -->
+                    <span
+                        v-if="field.arrval.hasOwnProperty('key')"
+                        class="inline-flex items-center"
+                    >
+                        <span v-if="cv[field.arrval.key]">
+                            <span v-if="typeof cv[field.arrval.key] === 'object'">
+                                {{ cv[field.arrval.key][locale.code] ? cv[field.arrval.key][locale.code] : '[no translation]' }}  <span v-if="!cv[field.arrval.key][locale.code] && locale.country" :class="'fi fi-'+locale.country.code"></span>
+                            </span>
+                            <span v-else>
+                                {{ field.arrval.href.hasOwnProperty('text') ? field.arrval.href.text : cv[field.arrval.key] }}
+                            </span>
+                            <!-- <svg class="h-4 w-4"  width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">  <path stroke="none" d="M0 0h24v24H0z"/>  <path d="M14 8v-2a2 2 0 0 0 -2 -2h-7a2 2 0 0 0 -2 2v12a2 2 0 0 0 2 2h7a2 2 0 0 0 2 -2v-2" />
+                                <path d="M7 12h14l-3 -3m0 6l3 -3" />
+                            </svg> -->
+                        </span>
+                    </span>
+                    <span
+                        v-else
+                        class="inline-flex items-center"
+                    >
+                        {{ typeof cv === 'object' ? (cv[locale.code] ? cv[locale.code] : '[no translation]') : cv }} <span v-if="!cv[locale.code] && locale.country" :class="'fi fi-'+locale.country.code"></span>
+                    </span>
+                </PbDropdownLink>
+                <!-- NO HREF -->
                 <span
                     class="inline-flex items-center"
-                    v-if="!field.arrval.hasOwnProperty('href')"
+                    v-else
                 >
                     <span v-if="field.arrval.hasOwnProperty('key')">
                         <span v-if="cv[field.arrval.key]">
@@ -161,7 +208,6 @@
 
 <script>
 import JetDropdown from '@/Jetstream/Dropdown'
-import JetDropdownLink from '@/Jetstream/DropdownLink'
 import JetNavLink from '@/Jetstream/NavLink'
 import JetResponsiveNavLink from '@/Jetstream/ResponsiveNavLink'
 import Button from "@/Jetstream/Button"
@@ -169,12 +215,13 @@ import Swal from "sweetalert2"
 import { computed } from 'vue'
 import { usePage } from '@inertiajs/inertia-vue3'
 import { TableFields as Table } from "Pub/js/Projectbuilder/projectbuilder"
+import PbDropdownLink from "@/Pages/Projectbuilder/PbDropdownLink"
 
 export default {
     name: "Td",
     components: {
         JetDropdown,
-        JetDropdownLink,
+        PbDropdownLink,
         JetNavLink,
         JetResponsiveNavLink,
         Button,
@@ -279,7 +326,7 @@ export default {
                         this.$inertia.post(this.buildRoute(b.route, i), data)
                     }
                 })
-        }
+        },
     },
     setup() {
         const user = computed(() => usePage().props.value.auth.user)

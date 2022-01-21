@@ -22,9 +22,11 @@ trait PbControllerListingTrait
         // Push default fields
         $row = self::buildDefaultFields($default);
         // Push custom fields
+        $model = new $config['model'];
         $fields = [
-            ...Schema::getColumnListing((new $config['model'])->getTable()),
-            ...$config['relations']
+            ...Schema::getColumnListing($model->getTable()),
+            ...$config['relations'],
+            ...$model->getAppendedFields(),
         ];
         $fields = [
             ...array_intersect($config['custom_order'], $fields),
@@ -146,12 +148,12 @@ trait PbControllerListingTrait
         }
         /* Buttons */
         /* Href */
-        if (!isset($options['href']['route']) || !isset($options['href']['id'])) {
+        if ((!isset($options['href']['route']) || !isset($options['href']['id'])) && !isset($options['href']['custom'])) {
             $options['href'] = [];
         }
         /* Buttons */
         /* Href */
-        if (!isset($options['href']['route']) || !isset($options['href']['id'])) {
+        if ((!isset($options['href']['route']) || !isset($options['href']['id'])) && !isset($options['href']['custom'])) {
             $options['href'] = [];
         }
         // Status

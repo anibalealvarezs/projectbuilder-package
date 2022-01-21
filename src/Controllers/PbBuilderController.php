@@ -102,6 +102,7 @@ class PbBuilderController extends Controller
         $this->vars->formconfig = $config['formconfig'];
         PbDebugbar::addMessage($this->vars->listing, 'listing');
         PbDebugbar::addMessage($this->vars->formconfig, 'formconfig');
+        PbDebugbar::addMessage($this->arraytify($arrayElements), 'data');
 
         $path = $this->buildRouteString($route, 'index');
 
@@ -327,8 +328,8 @@ class PbBuilderController extends Controller
             }
         } else {
             $arrayElements[
-                ($plural ? $this->vars->level->prefixNames : $this->vars->level->prefixName)] =
-                    ($id ? $this->vars->level->modelPath::find($id) : $this->vars->level->modelPath::all());
+            ($plural ? $this->vars->level->prefixNames : $this->vars->level->prefixName)] =
+                ($id ? $this->vars->level->modelPath::find($id) : $this->vars->level->modelPath::all());
         }
 
         return $arrayElements;
@@ -563,5 +564,19 @@ class PbBuilderController extends Controller
             ...$this->vars->validationRules,
             ...$array
         ];
+    }
+
+    /**
+     * Returns existing migration file if found, else uses the current timestamp.
+     *
+     * @return void
+     */
+    public function arraytify($array)
+    {
+        $result = [];
+        foreach ($array as $key => $value) {
+            $result[$key] = $value->toArray();
+        }
+        return $result;
     }
 }
