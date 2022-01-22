@@ -58,10 +58,14 @@
                 <span
                     class="inline-flex items-center"
                 >
-                    {{ field.href.hasOwnProperty('text') ? field.href.text : cellValue }}
-                    <!-- <svg class="h-4 w-4"  width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">  <path stroke="none" d="M0 0h24v24H0z"/>  <path d="M14 8v-2a2 2 0 0 0 -2 -2h-7a2 2 0 0 0 -2 2v12a2 2 0 0 0 2 2h7a2 2 0 0 0 2 -2v-2" />
-                        <path d="M7 12h14l-3 -3m0 6l3 -3" />
-                    </svg> -->
+                    <Icon
+                        v-if="field.href.hasOwnProperty('text') && field.href.text === '#'"
+                        type="check"
+                        :classes="['pb-icon-check', 'pb-status-enabled']"
+                    />
+                    <span v-else>
+                        {{ field.href.hasOwnProperty('text') ? field.href.text : cellValue }}
+                    </span>
                 </span>
             </PbDropdownLink>
             <!-- custom -->
@@ -75,27 +79,41 @@
                 <span
                     class="inline-flex items-center"
                 >
-                    {{ field.href.hasOwnProperty('text') ? field.href.text : cellValue }}
+                    <Icon
+                        v-if="field.href.hasOwnProperty('text') && field.href.text === '#'"
+                        type="check"
+                        :classes="['pb-icon-check', 'pb-status-enabled']"
+                    />
+                    <span v-else>
+                        {{ field.href.hasOwnProperty('text') ? field.href.text : cellValue }}
+                    </span>
                 </span>
             </PbDropdownLink>
             <!-- NO HREF -->
             <div v-else>
                 <div v-if="field.status">
                     <span
-                        v-if="cellValue === 1"
                         :class="buildSpanClasses()"
                     >
-                        <svg class="h-5 w-5 text-green-400" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" stroke="currentColor" viewBox="0 0 24 24" data-v-73b67a72=""><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" data-v-73b67a72=""></path></svg>
-                        <!-- <svg class="h-4 w-4"  width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">  <path stroke="none" d="M0 0h24v24H0z"/>  <path d="M14 8v-2a2 2 0 0 0 -2 -2h-7a2 2 0 0 0 -2 2v12a2 2 0 0 0 2 2h7a2 2 0 0 0 2 -2v-2" />
-                            <path d="M7 12h14l-3 -3m0 6l3 -3" />
-                        </svg> -->
+                        <!-- ENABLED -->
+                        <Icon
+                            v-if="cellValue === 1"
+                            type="check"
+                            :classes="['pb-icon-check', 'pb-status-enabled']"
+                        />
+                        <!-- DISABLED -->
+                        <Icon
+                            v-else
+                            type="close"
+                            :classes="['pb-icon-close', 'pb-status-disabled']"
+                        />
                     </span>
                 </div>
                 <div v-else-if="index === 'sorthandle'">
                     <span
                         :class="buildSpanClasses()"
                     >
-                        <svg class="h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" data-v-4ba735d4=""><path fill-rule="evenodd" d="M10 3a1 1 0 01.707.293l3 3a1 1 0 01-1.414 1.414L10 5.414 7.707 7.707a1 1 0 01-1.414-1.414l3-3A1 1 0 0110 3zm-3.707 9.293a1 1 0 011.414 0L10 14.586l2.293-2.293a1 1 0 011.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd" data-v-4ba735d4=""></path></svg>
+                        <Icon type="sort" />
                     </span>
                 </div>
                 <span
@@ -109,9 +127,6 @@
                         <span v-else>
                             {{ cellValue }}
                         </span>
-                        <!-- <svg class="h-4 w-4"  width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">  <path stroke="none" d="M0 0h24v24H0z"/>  <path d="M14 8v-2a2 2 0 0 0 -2 -2h-7a2 2 0 0 0 -2 2v12a2 2 0 0 0 2 2h7a2 2 0 0 0 2 -2v-2" />
-                            <path d="M7 12h14l-3 -3m0 6l3 -3" />
-                        </svg> -->
                     </span>
                 </span>
             </div>
@@ -134,11 +149,15 @@
                                 {{ cv[field.arrval.key][locale.code] ? cv[field.arrval.key][locale.code] : '[no translation]' }}  <span v-if="!cv[field.arrval.key][locale.code] && locale.country" :class="'fi fi-'+locale.country.code"></span>
                             </span>
                             <span v-else>
-                                {{ field.arrval.href.hasOwnProperty('text') ? field.arrval.href.text : cv[field.arrval.key] }}
+                                <Icon
+                                    v-if="field.arrval.href.hasOwnProperty('text') && field.arrval.href.text === '#'"
+                                    type="check"
+                                    :classes="['pb-icon-check', 'pb-status-enabled']"
+                                />
+                                <span v-else>
+                                    {{ field.arrval.href.hasOwnProperty('text') ? field.arrval.href.text : cv[field.arrval.key] }}
+                                </span>
                             </span>
-                            <!-- <svg class="h-4 w-4"  width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">  <path stroke="none" d="M0 0h24v24H0z"/>  <path d="M14 8v-2a2 2 0 0 0 -2 -2h-7a2 2 0 0 0 -2 2v12a2 2 0 0 0 2 2h7a2 2 0 0 0 2 -2v-2" />
-                                <path d="M7 12h14l-3 -3m0 6l3 -3" />
-                            </svg> -->
                         </span>
                     </span>
                     <span
@@ -165,11 +184,15 @@
                                 {{ cv[field.arrval.key][locale.code] ? cv[field.arrval.key][locale.code] : '[no translation]' }}  <span v-if="!cv[field.arrval.key][locale.code] && locale.country" :class="'fi fi-'+locale.country.code"></span>
                             </span>
                             <span v-else>
-                                {{ field.arrval.href.hasOwnProperty('text') ? field.arrval.href.text : cv[field.arrval.key] }}
+                                <Icon
+                                    v-if="field.arrval.href.hasOwnProperty('text') && field.arrval.href.text === '#'"
+                                    type="check"
+                                    :classes="['pb-icon-check', 'pb-status-enabled']"
+                                />
+                                <span v-else>
+                                    {{ field.arrval.href.hasOwnProperty('text') ? field.arrval.href.text : cv[field.arrval.key] }}
+                                </span>
                             </span>
-                            <!-- <svg class="h-4 w-4"  width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">  <path stroke="none" d="M0 0h24v24H0z"/>  <path d="M14 8v-2a2 2 0 0 0 -2 -2h-7a2 2 0 0 0 -2 2v12a2 2 0 0 0 2 2h7a2 2 0 0 0 2 -2v-2" />
-                                <path d="M7 12h14l-3 -3m0 6l3 -3" />
-                            </svg> -->
                         </span>
                     </span>
                     <span
@@ -192,9 +215,6 @@
                             <span v-else>
                                 {{ cv[field.arrval.key] }}
                             </span>
-                            <!-- <svg class="h-4 w-4"  width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">  <path stroke="none" d="M0 0h24v24H0z"/>  <path d="M14 8v-2a2 2 0 0 0 -2 -2h-7a2 2 0 0 0 -2 2v12a2 2 0 0 0 2 2h7a2 2 0 0 0 2 -2v-2" />
-                                <path d="M7 12h14l-3 -3m0 6l3 -3" />
-                            </svg> -->
                         </span>
                     </span>
                     <span v-else>
@@ -216,6 +236,7 @@ import { computed } from 'vue'
 import { usePage } from '@inertiajs/inertia-vue3'
 import { TableFields as Table } from "Pub/js/Projectbuilder/projectbuilder"
 import PbDropdownLink from "@/Pages/Projectbuilder/PbDropdownLink"
+import Icon from "@/Pages/Projectbuilder/Icons/Icon"
 
 export default {
     name: "Td",
@@ -225,6 +246,7 @@ export default {
         JetNavLink,
         JetResponsiveNavLink,
         Button,
+        Icon,
     },
     props: {
         item: Object,
