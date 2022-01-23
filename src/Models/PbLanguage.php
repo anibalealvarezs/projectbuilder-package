@@ -3,12 +3,14 @@
 namespace Anibalealvarezs\Projectbuilder\Models;
 
 use Anibalealvarezs\Projectbuilder\Helpers\PbHelpers;
+use Anibalealvarezs\Projectbuilder\Traits\PbModelEnableableTrait;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
-use Illuminate\Database\Eloquent\Builder;
 
 class PbLanguage extends PbBuilder
 {
+    use PbModelEnableableTrait;
+
     protected $table = 'languages';
 
     public $timestamps = false;
@@ -45,7 +47,7 @@ class PbLanguage extends PbBuilder
     public function delete(): bool
     {
         // Remove language from users
-        $this->updateUserLanguage();
+        $this->removeUsersLanguage();
 
         // delete the user
         return parent::delete();
@@ -56,24 +58,12 @@ class PbLanguage extends PbBuilder
      *
      * @return bool
      */
-    public function enable(): bool
+    public function scopeDisable(): bool
     {
         // Remove language from users
-        $this->updateUserLanguage();
+        $this->removeUsersLanguage();
 
-        $this->status = true;
-        return $this->update();
-    }
-
-    /**
-     * Scope a query to only include popular users.
-     *
-     * @param Builder $query
-     * @return Builder
-     */
-    public static function scopeEnabled(Builder $query): Builder
-    {
-        return $query->where('status', true);
+        return $this->update(['status' => false]);
     }
 
     /**
@@ -91,7 +81,7 @@ class PbLanguage extends PbBuilder
      *
      * @return bool
      */
-    protected function updateUserLanguage(): bool
+    protected function removeUsersLanguage(): bool
     {
         return PbUser::where('language_id', $this->id)->update(['language_id' => null]);
     }

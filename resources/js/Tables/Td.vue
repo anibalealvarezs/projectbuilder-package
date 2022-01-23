@@ -100,12 +100,16 @@
                             v-if="cellValue === 1"
                             type="check"
                             :classes="['pb-icon-check', 'pb-status-enabled']"
+                            :clickable=true
+                            @click="disableRow(item.id)"
                         />
                         <!-- DISABLED -->
                         <Icon
                             v-else
                             type="close"
                             :classes="['pb-icon-close', 'pb-status-disabled']"
+                            :clickable=true
+                            @click="enableRow(item.id)"
                         />
                     </span>
                 </div>
@@ -234,7 +238,7 @@ import Button from "@/Jetstream/Button"
 import Swal from "sweetalert2"
 import { computed } from 'vue'
 import { usePage } from '@inertiajs/inertia-vue3'
-import { TableFields as Table } from "Pub/js/Projectbuilder/projectbuilder"
+import { TableFields as Table, Helpers } from "Pub/js/Projectbuilder/projectbuilder"
 import PbDropdownLink from "@/Pages/Projectbuilder/PbDropdownLink"
 import Icon from "@/Pages/Projectbuilder/Icons/Icon"
 
@@ -295,10 +299,7 @@ export default {
             return Table.isCentered(this.field.style.centered)
         },
         buildRoute(r, id) {
-            if (id) {
-                return route(r, id)
-            }
-            return route(r)
+            return Helpers.buildRoute(r, id)
         },
         buildButtonClasses() {
             return "mx-1"
@@ -344,16 +345,52 @@ export default {
                 .then((result) => {
                     if (result['isConfirmed']){
                         data._method = b.method;
-                        // Aquí deberé modificar para recargar pantalla en edición de navigations
-                        this.$inertia.post(this.buildRoute(b.route, i), data)
+                        this.$inertia.post(Helpers.buildRoute(b.route, i), data)
                     }
                 })
+        },
+        disableRow(el) {
+            if (Helpers.isDebugEnabled()) {
+                console.log(
+                    "[ProjectBuilder] DEBUG" + "\n" +
+                    "Click received" + "\n" +
+                    "Disable: " + el + "\n" +
+                    "Component: Td"
+                )
+            }
+            let data = {
+                id: el,
+                _method: 'PUT',
+            }
+            this.$inertia.post(Helpers.buildRoute(this.model+'.disable', el), data, {
+                preserveScroll: true,
+                preserveState: false,
+            })
+        },
+        enableRow(el) {
+            if (Helpers.isDebugEnabled()) {
+                console.log(
+                    "[ProjectBuilder] DEBUG" + "\n" +
+                    "Click received" + "\n" +
+                    "Enable: " + el + "\n" +
+                    "Component: Td"
+                )
+            }
+            let data = {
+                id: el,
+                _method: 'PUT',
+            }
+            this.$inertia.post(Helpers.buildRoute(this.model+'.enable', el), data, {
+                preserveScroll: true,
+                preserveState: false,
+            })
         },
     },
     setup() {
         const user = computed(() => usePage().props.value.auth.user)
         const locale = computed(() => usePage().props.value.locale)
-        return { user, locale }
+        const model = computed(() => usePage().props.value.shared.model)
+        return { user, locale, model }
     }
 }
 </script>

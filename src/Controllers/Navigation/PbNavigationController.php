@@ -39,7 +39,6 @@ class PbNavigationController extends PbBuilderController
             'shares' => [
                 'permissionsall',
             ],
-            'sortable' => true,
             'sortingRef' => 'parent',
             'showId' => false,
         ]);

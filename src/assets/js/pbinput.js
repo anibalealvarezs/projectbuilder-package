@@ -1,4 +1,5 @@
 import {usePage} from "@inertiajs/inertia-vue3";
+import {Helpers} from "Pub/js/Projectbuilder/projectbuilder";
 
 export default {
     props: {
@@ -17,7 +18,7 @@ export default {
             document.getElementById(event.target.id).readOnly = false
         },
         isDebugEnabled() {
-            return usePage().props.value.shared.debug_enabled
+            Helpers.isDebugEnabled()
         }
     },
 }

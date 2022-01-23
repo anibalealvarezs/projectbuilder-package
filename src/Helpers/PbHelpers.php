@@ -200,27 +200,74 @@ class PbHelpers
     public function buildCrudRoutes($type): void
     {
         if (Schema::hasTable('modules')) {
-            $models = PbModule::whereIn('modulekey', $this->modulekeys)->pluck('modulekey');
+            $names = PbModule::whereIn('modulekey', $this->modulekeys)->pluck('modulekey');
+            $vars = [
+                'vendor' => self::getDefault('vendor'),
+                'package' => self::getDefault('package'),
+                'prefix' => self::getDefault('prefix'),
+            ];
 
-            foreach ($models as $model) {
-                $controller = self::getDefault('vendor') . '\\' . self::getDefault('package') . '\\Controllers\\' . ucfirst($model) . '\\' . self::getDefault('prefix') . ucfirst($model) . 'Controller';
+            foreach ($names as $name) {
+                $modelClass = $vars['vendor'] . '\\' . $vars['package'] . '\\Models\\' . $vars['prefix'] . ucfirst($name);
+                $controllerClass = $vars['vendor'] . '\\' . $vars['package'] . '\\Controllers\\' . ucfirst($name) . '\\' . $vars['prefix'] . ucfirst($name) . 'Controller';
                 switch ($type) {
                     case 'web':
-                        Route::resource($model . 's', $controller)->middleware(['web', 'auth:sanctum', 'verified', 'set_locale']);
+                        Route::resource($name . 's', $controllerClass)->middleware([
+                            'web',
+                            'auth:sanctum',
+                            'verified',
+                            'set_locale',
+                        ]);
+                        Route::group([
+                            'middleware' => ['web', 'auth:sanctum', 'verified', 'role_or_permission:update '. $name . 's']],
+                            fn() => self::buildAdditionalCrudRoutes($name, $modelClass, $controllerClass, false, true)
+                        );
                         break;
                     default:
                         Route::prefix('api')->group(
-                            fn() => Route::resource($model . 's', $controller)->middleware([
-                                'auth:sanctum',
-                                'verified',
-                                'api_access',
-                                'set_locale'
-                            ])->names(self::getApiRoutesNames($model))
+                            function() use ($name, $modelClass, $controllerClass) {
+                                Route::resource($name . 's', $controllerClass)->middleware([
+                                    'auth:sanctum',
+                                    'verified',
+                                    'api_access',
+                                    'set_locale',
+                                ])->names(self::getApiRoutesNames($name));
+
+                                Route::group([
+                                    'middleware' => ['api_access', 'auth:sanctum', 'verified', 'role_or_permission:update '. $name . 's']],
+                                    fn() => self::buildAdditionalCrudRoutes($name, $modelClass, $controllerClass, true)
+                                );
+                            }
                         );
                         break;
                 }
             }
         }
+    }
+
+    /**
+     * Returns existing migration file if found, else uses the current timestamp.
+     *
+     * @param $name
+     * @param $modelClass
+     * @param $controllerClass
+     * @param bool $api
+     * @param bool $sortable
+     * @return void
+     */
+    public static function buildAdditionalCrudRoutes($name, $modelClass, $controllerClass, bool $api = false, bool $sortable = false)
+    {
+        Route::prefix($name . 's')->group(
+            fn() => Route::prefix('{navigation}')->group(function () use ($name, $modelClass, $controllerClass, $api, $sortable) {
+                if (isset($modelClass::$sortable) && $sortable) {
+                    Route::match(array('PUT', 'PATCH'), 'sort', [$controllerClass, 'sort'])->name(($api ? 'api.': '') . $name . 's.sort');
+                }
+                if (isset($modelClass::$enableable)) {
+                    Route::match(array('PUT', 'PATCH'), 'enable', [$controllerClass, 'enable'])->name(($api ? 'api.': '') . $name . 's.enable');
+                    Route::match(array('PUT', 'PATCH'), 'disable', [$controllerClass, 'disable'])->name(($api ? 'api.': '') . $name . 's.disable');
+                }
+            })
+        );
     }
 
     /**

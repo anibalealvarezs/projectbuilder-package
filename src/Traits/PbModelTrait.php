@@ -118,4 +118,24 @@ trait PbModelTrait {
     {
         return $this->appends;
     }
+
+    /**
+     * Scope a query to only include popular users.
+     *
+     * @return bool
+     */
+    public static function scopeIsEnableable(): bool
+    {
+        return self::$sortable ?? false;
+    }
+
+    /**
+     * Scope a query to only include popular users.
+     *
+     * @return bool
+     */
+    public static function scopeIsSortable(): bool
+    {
+        return self::$enableable ?? false;
+    }
 }

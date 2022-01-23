@@ -4,12 +4,17 @@ namespace Anibalealvarezs\Projectbuilder\Models;
 
 use Anibalealvarezs\Projectbuilder\Helpers\PbHelpers;
 use Anibalealvarezs\Projectbuilder\Helpers\Shares;
+use Anibalealvarezs\Projectbuilder\Traits\PbModelEnableableTrait;
+use Anibalealvarezs\Projectbuilder\Traits\PbModelSortableTrait;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Builder;
 
 class PbNavigation extends PbBuilder
 {
+    use PbModelEnableableTrait;
+    use PbModelSortableTrait;
+
     protected $table = 'navigations';
 
     public $timestamps = false;

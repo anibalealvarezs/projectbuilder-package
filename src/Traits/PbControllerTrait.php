@@ -182,6 +182,18 @@ trait PbControllerTrait
                     'success' => ' deleted successfully!',
                     'fail' => ' could not be deleted! ' . $error,
                 },
+                'sort' => match ($result) {
+                    'success' => ' sorted successfully!',
+                    'fail' => ' could not be sorted! ' . $error,
+                },
+                'enable' => match ($result) {
+                    'success' => ' enabled successfully!',
+                    'fail' => ' could not be enabled! ' . $error,
+                },
+                'disable' => match ($result) {
+                    'success' => ' disabled successfully!',
+                    'fail' => ' could not be disabled! ' . $error,
+                },
                 default => ' model task has no valid response. Error: ' . $error,
             };
     }

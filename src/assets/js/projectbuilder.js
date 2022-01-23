@@ -1,5 +1,7 @@
 /* ProjectBuilder app.js file */
 
+const {usePage} = require("@inertiajs/inertia-vue3");
+
 class TableFields {
 
     constructor(showid = true, sort = false) {
@@ -347,6 +349,24 @@ class Helpers {
             }
         }
         return arr
+    }
+
+    static isDebugEnabled() {
+        return usePage().props.value.shared.debug_enabled
+    }
+
+    static stringToBoolean(string) {
+        if (!string) {
+            string = "false"
+        }
+        return JSON.parse(string)
+    }
+
+    static buildRoute(r, id) {
+        if (id) {
+            return route(r, id)
+        }
+        return route(r)
     }
 }
 

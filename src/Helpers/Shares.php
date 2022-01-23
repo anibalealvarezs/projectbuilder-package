@@ -85,7 +85,10 @@ class Shares
     {
         $user = PbUser::current();
         $userPermissions = $user->getAllPermissions()->pluck('id');
-        $navigations = PbNavigation::with(['ascendant', 'descendants'])
+        $navigations = PbNavigation::with(['ascendant', 'descendants' => function ($q) {
+                $q->enabled();
+            }])
+            ->enabled()
             ->where('parent', 0)
             ->where(function ($query) use ($userPermissions) {
                 $query->whereIn('permission_id', $userPermissions)->get();
@@ -98,7 +101,7 @@ class Shares
         return [
             'navigations' => [
                 'firstlevel' => $navigations,
-                'full' => PbNavigation::orderBy('parent')->orderBy('position')->get()
+                'full' => PbNavigation::enabled()->orderBy('parent')->orderBy('position')->get()
             ]
         ];
     }

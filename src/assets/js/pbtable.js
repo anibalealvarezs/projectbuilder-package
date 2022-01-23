@@ -1,4 +1,4 @@
-import {TableFields as Table} from "Pub/js/Projectbuilder/projectbuilder";
+import {TableFields as Table, Helpers} from "Pub/js/Projectbuilder/projectbuilder";
 import TrBody from "@/Pages/Projectbuilder/Tables/TrBody";
 import TrHead from "@/Pages/Projectbuilder/Tables/TrHead";
 import Container from "@/Pages/Projectbuilder/Tables/Container";
@@ -55,10 +55,11 @@ export default {
                 {
                     onSort: function (e) {
                         let data = {
-                            sortlist: that.getTablePositions(e.item.dataset.group)
+                            sortlist: that.getTablePositions(e.item.dataset.group),
+                            _method: 'PUT',
                         }
                         that.$inertia.post(
-                            '/'+that.directory+'/sort/'+e.item.dataset.group,
+                            Helpers.buildRoute(that.directory+'.sort', e.item.dataset.group),
                             data,
                             {
                                 preserveState: false,

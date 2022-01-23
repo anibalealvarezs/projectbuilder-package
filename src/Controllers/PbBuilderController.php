@@ -60,6 +60,7 @@ class PbBuilderController extends Controller
         }
         $this->vars->required = $this->getRequired();
         $this->vars->request = $request;
+        $this->vars->sortable = isset($this->vars->level->modelPath::$sortable);
 
         self::$item = $this->vars->level->name;
         self::$route = $this->vars->level->names;
@@ -294,11 +295,62 @@ class PbBuilderController extends Controller
                 $n++;
             }
 
-            return $this->redirectResponseCRUDSuccess($request,
-                $this->vars->level->key . ' sorted successfully!');
+            return $this->redirectResponseCRUDSuccess($request, 'sort');
         } catch (Exception $e) {
             return $this->redirectResponseCRUDFail($request,
                 $this->vars->level->key . ' could not be sorted! ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Sort model elements
+     *
+     * @param Request $request
+     * @param int $id
+     * @return Application|Redirector|RedirectResponse|null
+     */
+    public function enable(Request $request, int $id): Redirector|RedirectResponse|Application|null
+    {
+        if (isset($this->vars->level->modelPath::$enableable)) {
+            try {
+                if ($this->vars->level->modelPath::find($id)->enable()) {
+                    return $this->redirectResponseCRUDSuccess($request, 'enable');
+                }
+                return $this->redirectResponseCRUDFail($request, 'enable',
+                    $this->vars->level->key . ' could not be enabled due to an unknown error');
+            } catch (Exception $e) {
+                return $this->redirectResponseCRUDFail($request, 'enable',
+                    $this->vars->level->key . ' could not be enabled! ' . $e->getMessage());
+            }
+        } else {
+            return $this->redirectResponseCRUDFail($request, 'enable',
+                $this->vars->level->key . ' is not enableable! ');
+        }
+    }
+
+    /**
+     * Sort model elements
+     *
+     * @param Request $request
+     * @param int $id
+     * @return Application|Redirector|RedirectResponse|null
+     */
+    public function disable(Request $request, int $id): Redirector|RedirectResponse|Application|null
+    {
+        if (isset($this->vars->level->modelPath::$enableable)) {
+            try {
+                if ($this->vars->level->modelPath::find($id)->disable()) {
+                    return $this->redirectResponseCRUDSuccess($request, 'disable');
+                }
+                return $this->redirectResponseCRUDFail($request, 'disable',
+                    $this->vars->level->key . ' could not be disabled due to an unknown error');
+            } catch (Exception $e) {
+                return $this->redirectResponseCRUDFail($request, 'disable',
+                    $this->vars->level->key . ' could not be disabled! ' . $e->getMessage());
+            }
+        } else {
+            return $this->redirectResponseCRUDFail($request, 'disable',
+                $this->vars->level->key . ' is not disableable! ');
         }
     }
 
@@ -534,7 +586,6 @@ class PbBuilderController extends Controller
         $this->vars->formconfig = ($this->vars->formconfig ?? []);
         $this->vars->replacers = ($this->vars->replacers ?? []);
         $this->vars->defaults = ($this->vars->defaults ?? (object)[]);
-        $this->vars->sortable = ($this->vars->sortable ?? false);
         $this->vars->showPosition = ($this->vars->showPosition ?? false);
         $this->vars->showId = ($this->vars->showId ?? true);
         $this->vars->sortingRef = ($this->vars->sortingRef ?? "");
