@@ -54,6 +54,7 @@ class PbMiddlewareServiceProvider extends ServiceProvider
         $router->aliasMiddleware('is_user_deletable', $this->prefix.'IsUserDeletable'.$this->suffix);
         $router->aliasMiddleware('api_access', $this->prefix.'CanAccessApi'.$this->suffix);
         $router->aliasMiddleware('set_locale', $this->prefix.'SetLocale'.$this->suffix);
+        $router->aliasMiddleware('single_session', $this->prefix.'SingleSession'.$this->suffix);
     }
 
     /**

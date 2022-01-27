@@ -4,6 +4,7 @@ namespace Anibalealvarezs\Projectbuilder\Actions\Session;
 
 use Anibalealvarezs\Projectbuilder\Models\PbLanguage;
 use Anibalealvarezs\Projectbuilder\Models\PbUser;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 class PbUpdateCurrentLocale
@@ -22,6 +23,7 @@ class PbUpdateCurrentLocale
         }
         app()->setLocale($locale);
         $request->session()->put('locale', $locale);
+        Carbon::setLocale($locale);
 
         return $next($request);
     }

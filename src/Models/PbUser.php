@@ -369,15 +369,12 @@ class PbUser extends User
             'created_at' => [
                 'name' => 'Created At',
             ],
-            'last_session' => [
-                'name' => 'Last Session',
-            ],
         ];
 
         $config['relations'] = ['country', 'city', 'lang', 'roles'];
 
         $config['custom_order'] = [
-            'id', 'name', 'email', 'roles', 'country', 'lang', 'created_at', 'last_session'
+            'id', 'name', 'email', 'roles', 'country', 'lang', 'created_at'
         ];
 
         return $config;

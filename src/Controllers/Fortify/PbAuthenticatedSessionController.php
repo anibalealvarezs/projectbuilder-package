@@ -2,6 +2,8 @@
 
 namespace Anibalealvarezs\Projectbuilder\Controllers\Fortify;
 
+use Anibalealvarezs\Projectbuilder\Actions\Session\PbCheckSingleSessionOnLogin;
+use Anibalealvarezs\Projectbuilder\Actions\Session\PbSaveUserNewSessionData;
 use Anibalealvarezs\Projectbuilder\Actions\Session\PbUpdateCurrentLocale;
 use Illuminate\Routing\Pipeline;
 use Laravel\Fortify\Actions\AttemptToAuthenticate;
@@ -40,6 +42,8 @@ class PbAuthenticatedSessionController extends AuthenticatedSessionController
             Features::enabled(Features::twoFactorAuthentication()) ? RedirectIfTwoFactorAuthenticatable::class : null,
             AttemptToAuthenticate::class,
             PrepareAuthenticatedSession::class,
+            PbCheckSingleSessionOnLogin::class,
+            PbSaveUserNewSessionData::class,
             PbUpdateCurrentLocale::class,
         ]));
     }

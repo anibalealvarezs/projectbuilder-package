@@ -217,9 +217,10 @@ class PbHelpers
                             'auth:sanctum',
                             'verified',
                             'set_locale',
+                            'single_session',
                         ]);
                         Route::group([
-                            'middleware' => ['web', 'auth:sanctum', 'verified', 'role_or_permission:update '. $name . 's']],
+                            'middleware' => ['web', 'auth:sanctum', 'verified', 'single_session', 'role_or_permission:update '. $name . 's']],
                             fn() => self::buildAdditionalCrudRoutes($name, $modelClass, $controllerClass, false, true)
                         );
                         break;
