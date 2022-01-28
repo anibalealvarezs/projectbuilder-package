@@ -54,7 +54,7 @@ class PbHelpCommand extends Command
             echo ">> --link     |  For creating links\n";
             echo ">> --npm      |  For requiring npm resources\n";
             echo ">> --compile  |  For compiling webpack\n";
-            echo ">> --force  |  For resetting database on migration\n";
+            echo ">> --refresh   |  For resetting database on migration\n";
         } catch (Exception $e) {
             echo "-- [[ ERROR: ".$e->getMessage()." ]]";
         }

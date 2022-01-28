@@ -19,7 +19,7 @@ class PbAltUpdateCommand extends PbAltInstallCommand
                             {--link : Links will be created}
                             {--npm : npm resources will be required}
                             {--compile : npm will be run}
-                            {--force : database will be reset on migration}';
+                            {--refresh : database will be reset on migration}';
 
     /**
      * The console command description.
