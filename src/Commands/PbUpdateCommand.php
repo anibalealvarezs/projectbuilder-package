@@ -18,7 +18,8 @@ class PbUpdateCommand extends PbInstallCommand
                             {--config : Application wil be configured}
                             {--link : Links will be created}
                             {--npm : npm resources will be required}
-                            {--compile : npm will be run}';
+                            {--compile : npm will be run}
+                            {--force : database will be reset on migration}';
 
     /**
      * The console command description.
