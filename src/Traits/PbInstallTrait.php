@@ -67,9 +67,11 @@ trait PbInstallTrait
     public function installProjectBuilder(): bool
     {
         try {
-            echo "---- Looking for Project Builder's package last version...\n";
-            if (!$this->requirePackage()) {
-                return false;
+            if ($this->option('update') || $this->option('all')) {
+                echo "---- Looking for Project Builder's package last version...\n";
+                if (!$this->requirePackage()) {
+                    return false;
+                }
             }
             if ($this->option('publish') || $this->option('all') || (str_starts_with($this->signature,  'pbuilder:update')) || (str_starts_with($this->signature,  'pbuilder:altupdate'))) {
                 echo "---- Publishing Resources...\n";
