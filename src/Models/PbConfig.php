@@ -117,6 +117,10 @@ class PbConfig extends PbBuilder
             'description' => [],
         ];
 
+        $config['custom_order'] = [
+            'name', 'configkey', 'configvalue', 'description'
+        ];
+
         return $config;
     }
 }

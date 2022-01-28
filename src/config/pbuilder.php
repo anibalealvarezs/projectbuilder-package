@@ -57,4 +57,15 @@ return [
 
     'modulekeys' => ['user', 'config', 'navigation', 'permission', 'role', 'logger'],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Modules
+    |--------------------------------------------------------------------------
+    |
+    | Modules included in package.
+    |
+    */
+
+    'secretlogin' => 'secretlogin',
+
 ];
