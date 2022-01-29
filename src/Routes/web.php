@@ -4,7 +4,6 @@ use Anibalealvarezs\Projectbuilder\Controllers\Config\PbLocaleController as Loca
 use Anibalealvarezs\Projectbuilder\Controllers\Dashboard\PbDashboardController as DashboardController;
 use Anibalealvarezs\Projectbuilder\Helpers\PbHelpers;
 use Anibalealvarezs\Projectbuilder\Models\PbConfig;
-use Illuminate\Foundation\Application;
 use Inertia\Inertia;
 
 (new PbHelpers())->buildCrudRoutes('web');
@@ -24,11 +23,10 @@ Route::get('/clear-cache', function() {
     return "Cache is cleared";
 });
 
+Route::get('root', function () {
+    return PbHelpers::getWelcomeRoute();
+})->name('root');
+
 Route::get('/', function () {
-    return Inertia::render('Welcome', [
-        'canLogin' => Route::has('login'),
-        'canRegister' => Route::has('register'),
-        'laravelVersion' => Application::VERSION,
-        'phpVersion' => PHP_VERSION,
-    ]);
+    return PbHelpers::getWelcomeRoute();
 });

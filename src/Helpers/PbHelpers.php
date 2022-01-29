@@ -12,7 +12,10 @@ use Illuminate\Support\Facades\File;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
+use Inertia\Response;
 use JetBrains\PhpStorm\ArrayShape;
+use Illuminate\Foundation\Application;
+use Inertia\Inertia;
 
 class PbHelpers
 {
@@ -367,5 +370,20 @@ class PbHelpers
     public static function isApi(Request $request): bool
     {
         return $request->is('api/*');
+    }
+
+    /**
+     * Scope a query to only include popular users.
+     *
+     * @return Response
+     */
+    public static function getWelcomeRoute(): Response
+    {
+        return Inertia::render('Welcome', [
+            'canLogin' => Route::has('login'),
+            'canRegister' => Route::has('register'),
+            'laravelVersion' => Application::VERSION,
+            'phpVersion' => PHP_VERSION,
+        ]);
     }
 }

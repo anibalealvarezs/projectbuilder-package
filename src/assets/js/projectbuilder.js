@@ -364,7 +364,7 @@ class Helpers {
 
     static buildRoute(r, id) {
         if (id) {
-            return route(r, id)
+            return route(r == '/' ? 'root' : r, id)
         }
         return route(r)
     }
