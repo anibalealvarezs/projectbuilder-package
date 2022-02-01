@@ -23,9 +23,9 @@ class PbProfileInformationController extends ProfileInformationController
     public function update(Request $request,
         UpdatesUserProfileInformation $updater)
     {
+        $updater->update($request->user(), $request->all());
+
         $current = PbUser::current();
-        $current->name = $request->input('name');
-        $current->email = $request->input('email');
         if ($language = PbLanguage::find($request->input('language'))) {
             $current->language_id = $language->id;
             $request->session()->put('locale', $language->code);

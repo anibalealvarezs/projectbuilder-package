@@ -56,7 +56,8 @@ class PbUser extends User
         'last_session',
         'city_id',
         'country_id',
-        'language_id'
+        'language_id',
+        'profile_photo_path',
     ];
 
     public function setPasswordAttribute($password)
