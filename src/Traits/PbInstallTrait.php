@@ -48,8 +48,8 @@ trait PbInstallTrait
             }
             if ($this->option('compile') || $this->option('all') || (str_starts_with($this->signature,  'pbuilder:update')) || (str_starts_with($this->signature,  'pbuilder:altupdate'))) {
                 // Compilation...
-                echo "-- [[ Compiling assets ]]\n";
                 if (!$this->compileAssets()) {
+                    echo "---- [[ ERROR: Assets couldn't be compiled ]]\n";
                     return false;
                 }
             }
@@ -70,6 +70,7 @@ trait PbInstallTrait
             if ($this->option('update') || $this->option('all')) {
                 echo "---- Looking for Project Builder's package last version...\n";
                 if (!$this->requirePackage()) {
+                    echo "------ [[ ERROR: composer could not require Project Builder's package ]]\n";
                     return false;
                 }
             }
@@ -80,7 +81,7 @@ trait PbInstallTrait
                 }
             }
             if ($this->option('migrate') || $this->option('seed') || $this->option('all') || (str_starts_with($this->signature,  'pbuilder:update')) || (str_starts_with($this->signature,  'pbuilder:altupdate'))) {
-                echo "---- Database configuiration...\n";
+                echo "---- Configurating database...\n";
                 if (!$this->migrateAndSeed()) {
                     return false;
                 }
@@ -109,11 +110,8 @@ trait PbInstallTrait
      */
     public function requirePackage(): bool
     {
-        if (!shell_exec("composer require anibalealvarezs/projectbuilder-package --no-cache")) {
-            echo "------ [[ ERROR: composer could not require Project Builder's package ]]\n";
-            return false;
-        }
-        return true;
+        echo "------ [[ Requiring package ]]\n";
+        return shell_exec("composer require anibalealvarezs/projectbuilder-package --no-cache");
     }
 
     /**
@@ -123,11 +121,19 @@ trait PbInstallTrait
      */
     public function compileAssets(): bool
     {
-        if (!shell_exec("npm run prod")) {
-            echo "------ [[ ERROR: Assets couldn't be compiled ]]\n";
-            return false;
-        }
-        return true;
+        echo "-- [[ Compiling assets ]]\n";
+        return shell_exec("npm run prod");
+    }
+
+    /**
+     * Scope a query to only include popular users.
+     *
+     * @return bool
+     */
+    public function checkMysql(): bool
+    {
+        echo "---- Checking MySQL...\n";
+        return shell_exec('mysql --version');
     }
 
     /**

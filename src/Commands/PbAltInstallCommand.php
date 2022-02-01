@@ -118,6 +118,10 @@ class PbAltInstallCommand extends Command
     {
         try {
             if ($this->option('migrate') || $this->option('all') || (str_starts_with($this->signature,  'pbuilder:altupdate'))) {
+                if (!$this->checkMysql()) {
+                    echo "-------- [[ ERROR: Mysql is not executable from command line. Schema dump won't be imported ]]\n";
+                    return false;
+                }
                 echo "------ Clearing cache... \n";
                 if (!shell_exec("php artisan cache:clear")) {
                     echo "-------- [[ ERROR: Cache could not be cleared ]]\n";

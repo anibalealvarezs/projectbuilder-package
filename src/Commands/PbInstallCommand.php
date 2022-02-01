@@ -160,6 +160,10 @@ class PbInstallCommand extends Command
     {
         try {
             if ($this->option('migrate') || $this->option('all') || (str_starts_with($this->signature,  'pbuilder:update'))) {
+                if (!$this->checkMysql()) {
+                    echo "-------- [[ ERROR: Mysql is not executable from command line. Schema dump won't be imported ]]\n";
+                    return false;
+                }
                 echo "------ Clearing cache... \n";
                 if (!Artisan::call('cache:clear')) {
                     echo "-------- [[ ERROR: Cache could not be cleared ]]\n";
