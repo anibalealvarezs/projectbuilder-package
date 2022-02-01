@@ -2,6 +2,7 @@
 
 namespace Anibalealvarezs\Projectbuilder\Helpers;
 
+use Anibalealvarezs\Projectbuilder\Models\PbConfig;
 use Anibalealvarezs\Projectbuilder\Models\PbUser;
 use Barryvdh\Debugbar\Facades\Debugbar;
 use Illuminate\Support\Facades\Auth;
@@ -41,11 +42,24 @@ class PbDebugbar extends Debugbar
      */
     public static function isDebugEnabled(): bool
     {
-        $isLogged = Auth::check();
-        $canDebug = false;
-        if ($isLogged) {
-            $canDebug = PbUser::current()->hasPermissionTo('developer options');
+        if (!Auth::check()) {
+            return false;
         }
-        return PbHelpers::getDebugStatus() && $isLogged && $canDebug;
+
+        if (!PbUser::current()->hasPermissionTo('developer options')) {
+            return false;
+        }
+
+        return self::getDebugStatus();
+    }
+
+    /**
+     * Returns existing migration file if found, else uses the current timestamp.
+     *
+     * @return bool
+     */
+    public static function getDebugStatus(): bool
+    {
+        return (bool)PbConfig::getValueByKey('_DEBUG_MODE_');
     }
 }

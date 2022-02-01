@@ -41,20 +41,18 @@ class PbMiddlewareServiceProvider extends ServiceProvider
         //global middleware
         $kernel->prependMiddleware($this->prefix.'Https'.$this->suffix);
         $kernel->pushMiddleware($this->prefix.'Https'.$this->suffix);
-        $kernel->prependMiddleware($this->prefix.'SingleSession'.$this->suffix);
-        $kernel->pushMiddleware($this->prefix.'SingleSession'.$this->suffix);
-        $kernel->pushMiddleware($this->prefix.'IsDebugModeEnabled'.$this->suffix);
         //router middleware
         $router = $this->app['router'];
         $router->pushMiddlewareToGroup('web', $this->prefix.'Https'.$this->suffix);
+        $router->pushMiddlewareToGroup('web', $this->prefix.'IsDebugModeEnabled'.$this->suffix);
+        $router->pushMiddlewareToGroup('web', $this->prefix.'SingleSession'.$this->suffix);
+        $router->pushMiddlewareToGroup('web', $this->prefix.'SetLocale'.$this->suffix);
+        $router->pushMiddlewareToGroup('api', $this->prefix.'CanAccessApi'.$this->suffix);
         $router->aliasMiddleware('role_or_permission', $this->prefix.'RoleOrPermission'.$this->suffix);
         $router->aliasMiddleware('is_user_viewable', $this->prefix.'IsUserViewable'.$this->suffix);
         $router->aliasMiddleware('is_user_editable', $this->prefix.'IsUserEditable'.$this->suffix);
         $router->aliasMiddleware('is_user_selectable', $this->prefix.'IsUserSelectable'.$this->suffix);
         $router->aliasMiddleware('is_user_deletable', $this->prefix.'IsUserDeletable'.$this->suffix);
-        $router->aliasMiddleware('api_access', $this->prefix.'CanAccessApi'.$this->suffix);
-        $router->aliasMiddleware('set_locale', $this->prefix.'SetLocale'.$this->suffix);
-        $router->aliasMiddleware('single_session', $this->prefix.'SingleSession'.$this->suffix);
     }
 
     /**

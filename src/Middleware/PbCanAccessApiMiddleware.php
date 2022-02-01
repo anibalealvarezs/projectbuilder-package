@@ -17,28 +17,36 @@ class PbCanAccessApiMiddleware
      *
      * @param Request $request
      * @param Closure $next
-     * @param null $guard
      * @return mixed
      */
-    public function handle(Request $request, Closure $next, $guard = null)
+    public function handle(Request $request, Closure $next)
     {
-        $enabled = (bool) PbConfig::getValueByKey('_API_ENABLED_');
-
-        if ($me = PbUser::find(Auth::guard($guard)->user()->id)) {
-            if ($me->hasPermissionTo('api access') && $enabled) {
-                return $next($request);
-            }
+        if (!(bool) PbConfig::getValueByKey('_API_ENABLED_')) {
+            return response()->json([
+                'success' => false,
+                'message' => "API service is currently disabled"
+            ], 403);
         }
 
-        $message = (!$enabled ? "API service is currently disabled" : "You don't have permission to access the API");
-
         if (!PbHelpers::isApi($request)) {
-            throw PbUserException::custom(403, $message);
+            throw PbUserException::custom(403, "Invalid request!");
+        }
+
+        if (!Auth::check()) {
+            return response()->json([
+                'success' => false,
+                'message' => "You don't have permission to access the API"
+            ], 403);
+        }
+
+
+        if (PbUser::current()->hasPermissionTo('api access')) {
+            return $next($request);
         }
 
         return response()->json([
             'success' => false,
-            'message' => $message
+            'message' => "You don't have permission to access the API"
         ], 403);
     }
 }

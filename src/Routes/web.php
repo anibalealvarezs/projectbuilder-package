@@ -8,9 +8,9 @@ use Inertia\Inertia;
 
 (new PbHelpers())->buildCrudRoutes('web');
 
-Route::get('/dashboard', [DashboardController::class, 'index'])->middleware(['web', 'auth:sanctum', 'verified', 'set_locale', 'single_session'])->name('dashboard');
+Route::get('/dashboard', [DashboardController::class, 'index'])->middleware(['web', 'auth:sanctum', 'verified'])->name('dashboard');
 
-Route::post('/locale', [LocaleController::class, 'update'])->middleware(['web', 'auth:sanctum', 'verified', 'single_session'])->name('locale');
+Route::post('/locale', [LocaleController::class, 'update'])->middleware(['web', 'auth:sanctum', 'verified'])->name('locale');
 
 Route::get(config('pbuilder.secretlogin'), fn() => Inertia::render(PbHelpers::getDefault('package').'/Auth/Login', [
     'canResetPassword' => Route::has('password.request') && !PbConfig::getValueByKey('_DISABLE_PASSWORD_RESET_'),

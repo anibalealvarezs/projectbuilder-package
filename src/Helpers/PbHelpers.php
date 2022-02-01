@@ -2,7 +2,6 @@
 
 namespace Anibalealvarezs\Projectbuilder\Helpers;
 
-use Anibalealvarezs\Projectbuilder\Models\PbConfig;
 use Anibalealvarezs\Projectbuilder\Models\PbModule;
 use Anibalealvarezs\Projectbuilder\Models\PbUser;
 use Illuminate\Support\Facades\Schema;
@@ -127,11 +126,12 @@ class PbHelpers
      */
     public static function getCustomLocale(): string
     {
-        if (Auth::check()) {
-            $user = PbUser::current();
-            return $user->getLocale();
+        if (!Auth::check()) {
+            return "";
         }
-        return "";
+
+        $user = PbUser::current();
+        return $user->getLocale();
     }
 
     /**
@@ -187,16 +187,6 @@ class PbHelpers
     /**
      * Returns existing migration file if found, else uses the current timestamp.
      *
-     * @return bool
-     */
-    public static function getDebugStatus(): bool
-    {
-        return (bool)PbConfig::getValueByKey('_DEBUG_MODE_');
-    }
-
-    /**
-     * Returns existing migration file if found, else uses the current timestamp.
-     *
      * @param $type
      * @return void
      */
@@ -219,11 +209,9 @@ class PbHelpers
                             'web',
                             'auth:sanctum',
                             'verified',
-                            'set_locale',
-                            'single_session',
                         ]);
                         Route::group([
-                            'middleware' => ['web', 'auth:sanctum', 'verified', 'single_session', 'role_or_permission:update '. $name . 's']],
+                            'middleware' => ['web', 'auth:sanctum', 'verified', 'role_or_permission:update '. $name . 's']],
                             fn() => self::buildAdditionalCrudRoutes($name, $modelClass, $controllerClass, false, true)
                         );
                         break;
@@ -231,14 +219,13 @@ class PbHelpers
                         Route::prefix('api')->group(
                             function() use ($name, $modelClass, $controllerClass) {
                                 Route::resource($name . 's', $controllerClass)->middleware([
+                                    'api',
                                     'auth:sanctum',
                                     'verified',
-                                    'api_access',
-                                    'set_locale',
                                 ])->names(self::getApiRoutesNames($name));
 
                                 Route::group([
-                                    'middleware' => ['api_access', 'auth:sanctum', 'verified', 'role_or_permission:update '. $name . 's']],
+                                    'middleware' => ['api', 'auth:sanctum', 'verified', 'role_or_permission:update '. $name . 's']],
                                     fn() => self::buildAdditionalCrudRoutes($name, $modelClass, $controllerClass, true)
                                 );
                             }
