@@ -206,12 +206,17 @@ class PbHelpers
                 switch ($type) {
                     case 'web':
                         Route::resource($name . 's', $controllerClass)->middleware([
-                            'web',
-                            'auth:sanctum',
-                            'verified',
+                            ...self::getDefaultGroupsMiddlewares()['web'],
+                            ...self::getDefaultGroupsMiddlewares()['auth'],
                         ]);
-                        Route::group([
-                            'middleware' => ['web', 'auth:sanctum', 'verified', 'role_or_permission:update '. $name . 's']],
+                        Route::group(
+                            [
+                                'middleware' => [
+                                    ...self::getDefaultGroupsMiddlewares()['web'],
+                                    ...self::getDefaultGroupsMiddlewares()['auth'],
+                                    'role_or_permission:update '. $name . 's'
+                                ]
+                            ],
                             fn() => self::buildAdditionalCrudRoutes($name, $modelClass, $controllerClass, false, true)
                         );
                         break;
@@ -219,13 +224,18 @@ class PbHelpers
                         Route::prefix('api')->group(
                             function() use ($name, $modelClass, $controllerClass) {
                                 Route::resource($name . 's', $controllerClass)->middleware([
-                                    'api',
-                                    'auth:sanctum',
-                                    'verified',
+                                    ...self::getDefaultGroupsMiddlewares()['api'],
+                                    ...self::getDefaultGroupsMiddlewares()['auth'],
                                 ])->names(self::getApiRoutesNames($name));
 
-                                Route::group([
-                                    'middleware' => ['api', 'auth:sanctum', 'verified', 'role_or_permission:update '. $name . 's']],
+                                Route::group(
+                                    [
+                                        'middleware' => [
+                                            ...self::getDefaultGroupsMiddlewares()['api'],
+                                            ...self::getDefaultGroupsMiddlewares()['auth'],
+                                            'role_or_permission:update '. $name . 's'
+                                        ]
+                                    ],
                                     fn() => self::buildAdditionalCrudRoutes($name, $modelClass, $controllerClass, true)
                                 );
                             }
@@ -372,5 +382,31 @@ class PbHelpers
             'laravelVersion' => Application::VERSION,
             'phpVersion' => PHP_VERSION,
         ]);
+    }
+
+    /**
+     * Scope a query to only include popular users.
+     *
+     * @return array
+     */
+    #[ArrayShape(['web' => "string[]", 'api' => "string[]", 'auth' => "string[]"])] public static function getDefaultGroupsMiddlewares(): array
+    {
+        return [
+            'web' => [
+                'web',
+                'check_https',
+                'is_debug_enabled',
+                'single_session',
+                'set_locale',
+            ],
+            'api' => [
+                'api',
+                'can_access_api',
+            ],
+            'auth' => [
+                'auth:sanctum',
+                'verified',
+            ],
+        ];
     }
 }
