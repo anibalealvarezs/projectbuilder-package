@@ -31,8 +31,8 @@ Route::get('/clear-cache', function() {
 
 Route::get('root', function () {
     return PbHelpers::getWelcomeRoute();
-})->name('root');
+})->middleware(PbHelpers::getDefaultGroupsMiddlewares()['web'])->name('root');
 
 Route::get('/', function () {
     return PbHelpers::getWelcomeRoute();
-});
+})->middleware(PbHelpers::getDefaultGroupsMiddlewares()['web']);

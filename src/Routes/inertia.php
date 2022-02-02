@@ -2,12 +2,13 @@
 
 use Anibalealvarezs\Projectbuilder\Controllers\Jetstream\PbApiTokenController;
 use Anibalealvarezs\Projectbuilder\Controllers\Jetstream\PbUserProfileController;
+use Anibalealvarezs\Projectbuilder\Helpers\PbHelpers;
 use Illuminate\Support\Facades\Route;
 use Laravel\Jetstream\Jetstream;
 
-Route::group(['middleware' => config('jetstream.middleware', ['web'])], function () {
+Route::group(['middleware' => PbHelpers::getDefaultGroupsMiddlewares()['web']], function () {
 
-    Route::group(['middleware' => ['auth', 'verified']], function () {
+    Route::group(['middleware' => PbHelpers::getDefaultGroupsMiddlewares()['auth']], function () {
         // User & Profile...
         Route::get('/user/profile', [PbUserProfileController::class, 'show'])
                     ->name('profile.show');

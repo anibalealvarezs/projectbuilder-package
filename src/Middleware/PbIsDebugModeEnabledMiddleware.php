@@ -17,8 +17,7 @@ class PbIsDebugModeEnabledMiddleware
      */
     public function handle($request, Closure $next)
     {
-        $return = $next($request);
         PbDebugbar::toggleStatus();
-        return $return;
+        return $next($request);
     }
 }

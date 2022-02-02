@@ -3,10 +3,11 @@
 use Anibalealvarezs\Projectbuilder\Controllers\Fortify\PbAuthenticatedSessionController;
 use Anibalealvarezs\Projectbuilder\Controllers\Fortify\PbProfileInformationController;
 use Anibalealvarezs\Projectbuilder\Controllers\Fortify\PbTwoFactorAuthenticatedSessionController;
+use Anibalealvarezs\Projectbuilder\Helpers\PbHelpers;
 use Illuminate\Support\Facades\Route;
 use Laravel\Fortify\Features;
 
-Route::group(['middleware' => config('fortify.middleware', ['web'])], function () {
+Route::group(['middleware' => PbHelpers::getDefaultGroupsMiddlewares()['web']], function () {
     $enableViews = config('fortify.views', true);
 
     // Authentication...
