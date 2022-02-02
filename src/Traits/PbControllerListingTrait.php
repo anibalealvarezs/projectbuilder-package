@@ -184,48 +184,50 @@ trait PbControllerListingTrait
     protected static function buildActions($actions, $actionRoutes, $enabledActions): array
     {
         foreach ($actions as $key => &$action) {
-            if ($enabledActions[$key]) {
-                /* Text */
-                if (!isset($action['text'])) {
-                    $action['text'] = ($key == 'update' ? 'Edit' : ($key == 'delete' ? 'Delete' : 'NO TEXT DEFINED'));
-                }
-                /* ID */
-                /* Text */
-                if (!isset($action['id'])) {
-                    $action['id'] = true;
-                }
-                /* Route */
-                if (!isset($action['route'])) {
-                    $action['route'] = ($key == 'update' ? self::$route.'.edit' : ($key == 'delete' ? self::$route.'.destroy' : '/'));
-                }
-                /* Callback */
-                if (!isset($action['callback'])) {
-                    $action['callback'] = "";
-                }
-                /* Form item name */
-                if (!isset($action['formitem'])) {
-                    $action['formitem'] = self::$item;
-                }
-                /* Style */
-                if (!isset($action['style'])) {
-                    $action['style'] = ($key == 'update' ? 'secondary' : ($key == 'delete' ? 'danger' : 'default'));
-                }
-                /* Type */
-                if (!isset($action['type'])) {
-                    $action['type'] = 'form';
-                }
-                /* Method */
-                if (!isset($action['method'])) {
-                    $action['method'] = ($key == 'update' ? 'PUT' : 'DELETE');
-                }
-                /* Alternative for user */
-                if (!isset($action['altformodel'])) {
-                    $action['altformodel'] =
-                        ($key == 'update' ?
-                            ($actionRoutes['update'] ?? []) :
-                            ($actionRoutes['delete'] ?? [])
-                        );
-                }
+            if (!$enabledActions[$key]) {
+                unset($actions[$key]);
+                continue;
+            }
+            /* Text */
+            if (!isset($action['text'])) {
+                $action['text'] = ($key == 'update' ? 'Edit' : ($key == 'delete' ? 'Delete' : 'NO TEXT DEFINED'));
+            }
+            /* ID */
+            /* Text */
+            if (!isset($action['id'])) {
+                $action['id'] = true;
+            }
+            /* Route */
+            if (!isset($action['route'])) {
+                $action['route'] = ($key == 'update' ? self::$route.'.edit' : ($key == 'delete' ? self::$route.'.destroy' : '/'));
+            }
+            /* Callback */
+            if (!isset($action['callback'])) {
+                $action['callback'] = "";
+            }
+            /* Form item name */
+            if (!isset($action['formitem'])) {
+                $action['formitem'] = self::$item;
+            }
+            /* Style */
+            if (!isset($action['style'])) {
+                $action['style'] = ($key == 'update' ? 'secondary' : ($key == 'delete' ? 'danger' : 'default'));
+            }
+            /* Type */
+            if (!isset($action['type'])) {
+                $action['type'] = 'form';
+            }
+            /* Method */
+            if (!isset($action['method'])) {
+                $action['method'] = ($key == 'update' ? 'PUT' : 'DELETE');
+            }
+            /* Alternative for user */
+            if (!isset($action['altformodel'])) {
+                $action['altformodel'] =
+                    ($key == 'update' ?
+                        ($actionRoutes['update'] ?? []) :
+                        ($actionRoutes['delete'] ?? [])
+                    );
             }
         }
 
