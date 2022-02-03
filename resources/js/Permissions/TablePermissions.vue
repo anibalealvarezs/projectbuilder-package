@@ -8,9 +8,18 @@
             </Header>
             <Body :id="model+'-table-rows'">
                 <slot>
-                    <TrBody v-for="permission in permissions" :item="permission" :fields="fields" :hiddenid="buildHiddenIdTag" :allowed="allowed" :data-pos="getRowPos(permission)" @clicked-edit-item="onItemClicked" />
+                    <TrBody v-for="permission in (permissions.hasOwnProperty('data') ? permissions.data : permissions)" :item="permission" :fields="fields" :hiddenid="buildHiddenIdTag" :allowed="allowed" :data-pos="getRowPos(permission)" @clicked-edit-item="onItemClicked" />
                 </slot>
             </Body>
+            <Footer>
+                <slot>
+                    <TrFooter
+                        v-if="permissions.hasOwnProperty('data') && permissions.data.length > 0"
+                        :pagination="permissions"
+                        :model="model"
+                    />
+                </slot>
+            </Footer>
         </slot>
         <div v-if="existsFormButton" :id="buildHiddenIdTag" class="infinite-hidden">
             <PermissionForm :data="data" :keyid="generateRandomTag" :key="itemFormKey" :defaults="defaults" :required="required" />

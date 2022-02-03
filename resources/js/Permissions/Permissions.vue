@@ -22,7 +22,6 @@
                         :listing="listing"
                         :model="model"
                         :permissions="pbpermissions"
-                        :required="required"
                         :showid="showid"
                         :showpos="showpos"
                         :sort="sort"

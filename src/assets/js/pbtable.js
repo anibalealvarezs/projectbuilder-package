@@ -1,9 +1,11 @@
 import {TableFields as Table, Helpers} from "Pub/js/Projectbuilder/projectbuilder";
 import TrBody from "@/Pages/Projectbuilder/Tables/TrBody";
 import TrHead from "@/Pages/Projectbuilder/Tables/TrHead";
+import TrFooter from "@/Pages/Projectbuilder/Tables/TrFooter";
 import Container from "@/Pages/Projectbuilder/Tables/Container";
 import Header from "@/Pages/Projectbuilder/Tables/Header";
 import Body from "@/Pages/Projectbuilder/Tables/Body";
+import Footer from "@/Pages/Projectbuilder/Tables/Footer";
 import Sortable from "sortablejs";
 
 export default {
@@ -20,9 +22,11 @@ export default {
     components: {
         TrBody,
         TrHead,
+        TrFooter,
         Container,
         Header,
-        Body
+        Body,
+        Footer,
     },
     data() {
         return {

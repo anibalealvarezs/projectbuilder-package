@@ -40,19 +40,21 @@ class PbConfigController extends PbBuilderController
     /**
      * Display a listing of the resource.
      *
+     * @param int $page
      * @param null $element
      * @param bool $multiple
      * @param string $route
      * @return InertiaResponse|JsonResponse|RedirectResponse
      */
     public function index(
+        int $page = 1,
         $element = null,
         bool $multiple = false,
         string $route = 'level'
     ): InertiaResponse|JsonResponse|RedirectResponse {
-        $arrayElements = $this->vars->level->modelPath::withPublicRelations()->get();
+        $arrayElements = $this->vars->level->modelPath::withPublicRelations()->paginate(10, ['*'], 'page', $page ?? 1);
 
-        return parent::index($arrayElements);
+        return parent::index($page, $arrayElements);
     }
 
     /**

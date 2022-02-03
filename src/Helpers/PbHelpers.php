@@ -259,15 +259,21 @@ class PbHelpers
     public static function buildAdditionalCrudRoutes($name, $modelClass, $controllerClass, bool $api = false, bool $sortable = false)
     {
         Route::prefix($name . 's')->group(
-            fn() => Route::prefix('{navigation}')->group(function () use ($name, $modelClass, $controllerClass, $api, $sortable) {
-                if (isset($modelClass::$sortable) && $sortable) {
-                    Route::match(array('PUT', 'PATCH'), 'sort', [$controllerClass, 'sort'])->name(($api ? 'api.': '') . $name . 's.sort');
-                }
-                if (isset($modelClass::$enableable)) {
-                    Route::match(array('PUT', 'PATCH'), 'enable', [$controllerClass, 'enable'])->name(($api ? 'api.': '') . $name . 's.enable');
-                    Route::match(array('PUT', 'PATCH'), 'disable', [$controllerClass, 'disable'])->name(($api ? 'api.': '') . $name . 's.disable');
-                }
-            })
+            function() use ($name, $modelClass, $controllerClass, $api, $sortable) {
+                Route::get('page/{page}', [$controllerClass, 'index'])->middleware([
+                    ...PbHelpers::getDefaultGroupsMiddlewares()['web'],
+                    ...PbHelpers::getDefaultGroupsMiddlewares()['auth'],
+                ])->where('page', '[0-9]+')->name(($api ? 'api.' : '').$name . 's.index.paginated');
+                Route::prefix('{navigation}')->group(function () use ($name, $modelClass, $controllerClass, $api, $sortable) {
+                    if (isset($modelClass::$sortable) && $sortable) {
+                        Route::match(array('PUT', 'PATCH'), 'sort', [$controllerClass, 'sort'])->name(($api ? 'api.': '') . $name . 's.sort');
+                    }
+                    if (isset($modelClass::$enableable)) {
+                        Route::match(array('PUT', 'PATCH'), 'enable', [$controllerClass, 'enable'])->name(($api ? 'api.': '') . $name . 's.enable');
+                        Route::match(array('PUT', 'PATCH'), 'disable', [$controllerClass, 'disable'])->name(($api ? 'api.': '') . $name . 's.disable');
+                    }
+                });
+            }
         );
     }
 

@@ -8,9 +8,18 @@
             </Header>
             <Body :id="model+'-table-rows'">
                 <slot>
-                    <TrBody v-for="user in users" :item="user" :fields="fields" :hiddenid="buildHiddenIdTag" :allowed="allowed" :data-pos="getRowPos(user)" @clicked-edit-item="onItemClicked" />
+                    <TrBody v-for="user in (users.hasOwnProperty('data') ? users.data : users)" :item="user" :fields="fields" :hiddenid="buildHiddenIdTag" :allowed="allowed" :data-pos="getRowPos(user)" @clicked-edit-item="onItemClicked" />
                 </slot>
             </Body>
+            <Footer>
+                <slot>
+                    <TrFooter
+                        v-if="users.hasOwnProperty('data') && users.data.length > 0"
+                        :pagination="users"
+                        :model="model"
+                    />
+                </slot>
+            </Footer>
         </slot>
         <div v-if="existsFormButton" :id="buildHiddenIdTag" class="infinite-hidden">
             <UserForm :data="data" :keyid="generateRandomTag" :key="itemFormKey" :defaults="defaults" :required="required" />

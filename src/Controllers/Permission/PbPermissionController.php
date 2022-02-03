@@ -45,12 +45,14 @@ class PbPermissionController extends PbBuilderController
     /**
      * Display a listing of the resource.
      *
+     * @param int $page
      * @param null $element
      * @param bool $multiple
      * @param string $route
      * @return InertiaResponse|JsonResponse|RedirectResponse
      */
     public function index(
+        int $page = 1,
         $element = null,
         bool $multiple = false,
         string $route = 'level'
@@ -80,9 +82,9 @@ class PbPermissionController extends PbBuilderController
             }
         }
         //Get all permissions
-        $model = $this->vars->level->modelPath::whereNotIn('name', $toExclude)->withPublicRelations()->get();
+        $model = $this->vars->level->modelPath::whereNotIn('name', $toExclude)->withPublicRelations()->paginate(10, ['*'], 'page', $page ?? 1);
 
-        return parent::index($model);
+        return parent::index($page, $model);
     }
 
     /**

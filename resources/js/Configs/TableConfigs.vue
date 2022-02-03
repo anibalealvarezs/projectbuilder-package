@@ -8,9 +8,18 @@
             </Header>
             <Body :id="model+'-table-rows'">
                 <slot>
-                    <TrBody v-for="config in configs" :item="config" :fields="fields" :hiddenid="buildHiddenIdTag" :allowed="allowed" :data-pos="getRowPos(config)" @clicked-edit-item="onItemClicked" />
+                    <TrBody v-for="config in (configs.hasOwnProperty('data') ? configs.data : configs)" :item="config" :fields="fields" :hiddenid="buildHiddenIdTag" :allowed="allowed" :data-pos="getRowPos(config)" @clicked-edit-item="onItemClicked" />
                 </slot>
             </Body>
+            <Footer>
+                <slot>
+                    <TrFooter
+                        v-if="configs.hasOwnProperty('data') && configs.data.length > 0"
+                        :pagination="configs"
+                        :model="model"
+                    />
+                </slot>
+            </Footer>
         </slot>
         <div v-if="existsFormButton" :id="buildHiddenIdTag" class="infinite-hidden">
             <ConfigForm :data="data" :keyid="generateRandomTag" :key="itemFormKey" :defaults="defaults" :required="required" />

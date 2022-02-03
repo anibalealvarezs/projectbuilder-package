@@ -57,20 +57,24 @@ class PbUserController extends PbBuilderController
     /**
      * Display a listing of the resource.
      *
+     * @param int $page
      * @param null $element
      * @param bool $multiple
      * @param string $route
      * @return InertiaResponse|JsonResponse|RedirectResponse
      */
-    public function index($element = null, bool $multiple = false, string $route = 'level'): InertiaResponse|JsonResponse|RedirectResponse
+    public function index(int $page = 1, $element = null, bool $multiple = false, string $route = 'level'): InertiaResponse|JsonResponse|RedirectResponse
     {
         $this->pushRequired(['roles', 'email']);
 
-        $model = $this->vars->level->modelPath::withPublicRelations()->removeAdmins()->get()->sortByDesc(['name', 'email']);
+        $model = $this->vars->level->modelPath::withPublicRelations()
+            ->removeAdmins()
+            ->paginate(10, ['*'], 'page', $page ?? 1)
+            ->sortByDesc(['name', 'email']);
 
         $this->vars->shares[] = 'me';
 
-        return parent::index($model);
+        return parent::index($page, $model);
     }
 
     /**

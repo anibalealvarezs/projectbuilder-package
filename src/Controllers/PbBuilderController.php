@@ -69,17 +69,20 @@ class PbBuilderController extends Controller
     /**
      * Display a listing of the resource.
      *
+     * @param int $page
      * @param null $element
      * @param bool $multiple
      * @param string $route
      * @return InertiaResponse|JsonResponse|RedirectResponse
      */
     public function index(
+        int $page = 1,
         $element = null,
         bool $multiple = false,
         string $route = 'level'
     ): InertiaResponse|JsonResponse|RedirectResponse {
-        $arrayElements = $this->buildModelsArray($element, $multiple, null, true);
+
+        $arrayElements = $this->buildModelsArray($page, $element, $multiple, null, true);
 
         $this->vars->allowed = [
             'create ' . $this->vars->level->names => 'create',
@@ -357,6 +360,7 @@ class PbBuilderController extends Controller
     /**
      * Remove the specified resource from storage.
      *
+     * @param int $page
      * @param null $element
      * @param bool $multiple
      * @param null $id
@@ -364,6 +368,7 @@ class PbBuilderController extends Controller
      * @return array
      */
     protected function buildModelsArray(
+        int $page,
         $element = null,
         bool $multiple = false,
         $id = null,
@@ -381,7 +386,7 @@ class PbBuilderController extends Controller
         } else {
             $arrayElements[
             ($plural ? $this->vars->level->prefixNames : $this->vars->level->prefixName)] =
-                ($id ? $this->vars->level->modelPath::find($id) : $this->vars->level->modelPath::all());
+                ($id ? $this->vars->level->modelPath::find($id) : $this->vars->level->modelPath::paginate(10, ['*'], 'page', $page ?? 1));
         }
 
         return $arrayElements;

@@ -1,14 +1,14 @@
 <template>
-    <div>
-        <button type="submit" class="block w-full px-4 py-2 text-sm leading-5 text-gray-700 text-left hover:bg-gray-100 focus:outline-none focus:bg-gray-100 transition" v-if="as == 'button'">
+    <div :class="ccl ?? ''">
+        <button type="submit" :class="cl ?? 'block w-full px-4 py-2 text-sm leading-5 text-gray-700 text-left hover:bg-gray-100 focus:outline-none focus:bg-gray-100 transition'" v-if="as == 'button'">
             <slot></slot>
         </button>
 
-        <a :href="href" class="block px-4 py-2 text-sm leading-5 text-gray-700 hover:bg-gray-100 focus:outline-none focus:bg-gray-100 transition" v-else-if="as =='a'" :target="tgt">
+        <a :href="href" :class="cl ?? 'block px-4 py-2 text-sm leading-5 text-gray-700 hover:bg-gray-100 focus:outline-none focus:bg-gray-100 transition'" v-else-if="as =='a'" :target="tgt">
             <slot></slot>
         </a>
 
-        <Link :href="href" class="block px-4 py-2 text-sm leading-5 text-gray-700 hover:bg-gray-100 focus:outline-none focus:bg-gray-100 transition" v-else>
+        <Link :href="href" :class="cl ?? 'block px-4 py-2 text-sm leading-5 text-gray-700 hover:bg-gray-100 focus:outline-none focus:bg-gray-100 transition'" v-else>
             <slot></slot>
         </Link>
     </div>
@@ -22,7 +22,7 @@ export default defineComponent({
     components: {
         Link,
     },
-    props: ['href', 'as', 'target'],
+    props: ['href', 'as', 'target', 'cl', 'ccl'],
     data() {
         return {
             tgt: this.target ?? '_self',

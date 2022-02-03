@@ -49,23 +49,24 @@ class PbRoleController extends PbBuilderController
     /**
      * Display a listing of the resource.
      *
+     * @param int $page
      * @param null $element
      * @param bool $multiple
      * @param string $route
      * @return InertiaResponse|JsonResponse|RedirectResponse
      */
-    public function index($element = null, bool $multiple = false, string $route = 'level'): InertiaResponse|JsonResponse|RedirectResponse
+    public function index(int $page = 1, $element = null, bool $multiple = false, string $route = 'level'): InertiaResponse|JsonResponse|RedirectResponse
     {
         $query = $this->vars->level->modelPath::withPublicRelations()->whereNotIn('name', ['super-admin', 'developer', 'api-user']);
         $user = PbUser::current();
         if (!$user->hasRole('super-admin')) {
             $query = $query->whereNotIn('name', ['admin']);
         }
-        $model = $query->get(); //Get all permissions
+        $model = $query->paginate(10, ['*'], 'page', $page ?? 1);
 
         $this->pushRequired(['name']);
 
-        return parent::index($model);
+        return parent::index($page, $model);
     }
 
     /**
