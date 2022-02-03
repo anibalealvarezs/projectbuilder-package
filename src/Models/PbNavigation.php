@@ -171,6 +171,15 @@ class PbNavigation extends PbBuilder
 
         $config['relations'] = ['ascendant', 'permission', 'module'];
 
+        $config['pagination'] = [
+            'per_page' => 20,
+            'location' => 'both',
+        ];
+
+        $config['heading'] = [
+            'location' => 'both',
+        ];
+
         $config['fields'] = [
             'name' => [],
             'destiny' => [],

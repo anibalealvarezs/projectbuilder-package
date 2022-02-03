@@ -28,7 +28,9 @@ class PbBuilder extends Model
         'relations' => "array",
         'action_routes' => "array",
         'enabled_actions' => "bool[]",
-        'custom_order' => "array"
+        'custom_order' => "array",
+        'pagination' => "array",
+        'heading' => "array",
     ])] public static function getCrudConfig(): array
     {
         return [
@@ -41,6 +43,12 @@ class PbBuilder extends Model
                 'create' => true,
             ],
             'custom_order' => [],
+            'pagination' => [
+                'location' => 'bottom',
+            ],
+            'heading' => [
+                'location' => 'top',
+            ],
         ];
     }
 

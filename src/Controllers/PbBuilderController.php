@@ -5,6 +5,7 @@ namespace Anibalealvarezs\Projectbuilder\Controllers;
 use Anibalealvarezs\Projectbuilder\Helpers\PbDebugbar;
 use Anibalealvarezs\Projectbuilder\Helpers\PbHelpers;
 use Anibalealvarezs\Projectbuilder\Helpers\Shares;
+use Anibalealvarezs\Projectbuilder\Models\PbConfig;
 use Anibalealvarezs\Projectbuilder\Models\PbCountry;
 use Anibalealvarezs\Projectbuilder\Models\PbLanguage;
 use Anibalealvarezs\Projectbuilder\Traits\PbControllerTrait;
@@ -70,6 +71,7 @@ class PbBuilderController extends Controller
      * Display a listing of the resource.
      *
      * @param int $page
+     * @param int $perpage
      * @param null $element
      * @param bool $multiple
      * @param string $route
@@ -77,12 +79,11 @@ class PbBuilderController extends Controller
      */
     public function index(
         int $page = 1,
+        int $perpage = 0,
         $element = null,
         bool $multiple = false,
         string $route = 'level'
     ): InertiaResponse|JsonResponse|RedirectResponse {
-
-        $arrayElements = $this->buildModelsArray($page, $element, $multiple, null, true);
 
         $this->vars->allowed = [
             'create ' . $this->vars->level->names => 'create',
@@ -102,10 +103,20 @@ class PbBuilderController extends Controller
             $config['model'] = $this->vars->level->modelPath;
         }
 
+        if (!$perpage && isset($config['pagination']['per_page']) && $config['pagination']['per_page']) {
+            $perpage = $config['pagination']['per_page'];
+        }
+
+        $arrayElements = $this->buildModelsArray($page, $perpage, $element, $multiple, null, true);
+
         $this->vars->listing = self::buildListingRow($config);
         $this->vars->formconfig = $config['formconfig'];
+        $this->vars->pagination = $config['pagination'];
+        $this->vars->heading = $config['heading'];
         PbDebugbar::addMessage($this->vars->listing, 'listing');
         PbDebugbar::addMessage($this->vars->formconfig, 'formconfig');
+        PbDebugbar::addMessage($this->vars->pagination, 'pagination');
+        PbDebugbar::addMessage($this->vars->heading, 'heading');
         PbDebugbar::addMessage($this->arraytify($arrayElements), 'data');
 
         $path = $this->buildRouteString($route, 'index');
@@ -361,6 +372,7 @@ class PbBuilderController extends Controller
      * Remove the specified resource from storage.
      *
      * @param int $page
+     * @param int $perpage
      * @param null $element
      * @param bool $multiple
      * @param null $id
@@ -369,6 +381,7 @@ class PbBuilderController extends Controller
      */
     protected function buildModelsArray(
         int $page,
+        int $perpage,
         $element = null,
         bool $multiple = false,
         $id = null,
@@ -386,7 +399,7 @@ class PbBuilderController extends Controller
         } else {
             $arrayElements[
             ($plural ? $this->vars->level->prefixNames : $this->vars->level->prefixName)] =
-                ($id ? $this->vars->level->modelPath::find($id) : $this->vars->level->modelPath::paginate(10, ['*'], 'page', $page ?? 1));
+                ($id ? $this->vars->level->modelPath::find($id) : $this->vars->level->modelPath::paginate($perpage ?: (PbConfig::getValueByKey('_DEFAULT_TABLE_SIZE_') ?: 10), ['*'], 'page', $page ?: 1));
         }
 
         return $arrayElements;
@@ -411,6 +424,8 @@ class PbBuilderController extends Controller
             ...['defaults' => $this->getDefaults()],
             ...['listing' => $this->vars->listing],
             ...['formconfig' => $this->vars->formconfig],
+            ...['pagination' => $this->vars->pagination],
+            ...['heading' => $this->vars->heading],
         ];
         Inertia::share('shared', $shared);
         PbDebugbar::addMessage($shared, 'shared');

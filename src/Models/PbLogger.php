@@ -115,6 +115,15 @@ class PbLogger extends PbBuilder
 
         $config['relations'] = ['user', 'module'];
 
+        $config['pagination'] = [
+            'per_page' => 50,
+            'location' => 'both',
+        ];
+
+        $config['heading'] = [
+            'location' => 'both',
+        ];
+
         $config['formconfig'] = [
             'name' => [
                 'type' => 'text',

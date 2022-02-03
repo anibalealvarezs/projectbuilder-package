@@ -100,6 +100,15 @@ class PbPermission extends Permission
             ],
         ];
 
+        $config['pagination'] = [
+            'per_page' => 20,
+            'location' => 'both',
+        ];
+
+        $config['heading'] = [
+            'location' => 'both',
+        ];
+
         $config['formconfig'] = [
             'name' => [
                 'type' => 'text',

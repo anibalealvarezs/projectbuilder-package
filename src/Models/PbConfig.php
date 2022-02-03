@@ -106,6 +106,15 @@ class PbConfig extends PbBuilder
 
         $config['relations'] = ['module'];
 
+        $config['pagination'] = [
+            'per_page' => 20,
+            'location' => 'both',
+        ];
+
+        $config['heading'] = [
+            'location' => 'both',
+        ];
+
         $config['fields'] = [
             'name' => [],
             'configkey' => [

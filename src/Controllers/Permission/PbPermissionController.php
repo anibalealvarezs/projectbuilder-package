@@ -3,6 +3,7 @@
 namespace Anibalealvarezs\Projectbuilder\Controllers\Permission;
 
 use Anibalealvarezs\Projectbuilder\Controllers\PbBuilderController;
+use Anibalealvarezs\Projectbuilder\Models\PbConfig;
 use Anibalealvarezs\Projectbuilder\Models\PbRole;
 
 use Anibalealvarezs\Projectbuilder\Models\PbUser;
@@ -46,6 +47,7 @@ class PbPermissionController extends PbBuilderController
      * Display a listing of the resource.
      *
      * @param int $page
+     * @param int $perpage
      * @param null $element
      * @param bool $multiple
      * @param string $route
@@ -53,6 +55,7 @@ class PbPermissionController extends PbBuilderController
      */
     public function index(
         int $page = 1,
+        int $perpage = 0,
         $element = null,
         bool $multiple = false,
         string $route = 'level'
@@ -81,10 +84,16 @@ class PbPermissionController extends PbBuilderController
                 ];
             }
         }
-        //Get all permissions
-        $model = $this->vars->level->modelPath::whereNotIn('name', $toExclude)->withPublicRelations()->paginate(10, ['*'], 'page', $page ?? 1);
 
-        return parent::index($page, $model);
+        $config = $this->vars->level->modelPath::getCrudConfig();
+        if (!$perpage && isset($config['pagination']['per_page']) && $config['pagination']['per_page']) {
+            $perpage = $config['pagination']['per_page'];
+        }
+
+        $model = $this->vars->level->modelPath::whereNotIn('name', $toExclude)->withPublicRelations()
+            ->paginate($perpage ?? PbConfig::getValueByKey('_DEFAULT_TABLE_SIZE_') ?: 10, ['*'], 'page', $page ?? 1);
+
+        return parent::index($page, $perpage, $model);
     }
 
     /**

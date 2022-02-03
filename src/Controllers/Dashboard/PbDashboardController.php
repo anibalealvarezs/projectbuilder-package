@@ -29,6 +29,7 @@ class PbDashboardController extends PbBuilderController
      * Display a listing of the resource.
      *
      * @param int $page
+     * @param int $perpage
      * @param null $element
      * @param bool $multiple
      * @param string $route
@@ -36,6 +37,7 @@ class PbDashboardController extends PbBuilderController
      */
     public function index(
         int $page = 1,
+        int $perpage = 0,
         $element = null,
         bool $multiple = false,
         string $route = 'level'
