@@ -113,10 +113,6 @@ class PbBuilderController extends Controller
         $this->vars->formconfig = $config['formconfig'];
         $this->vars->pagination = $config['pagination'];
         $this->vars->heading = $config['heading'];
-        PbDebugbar::addMessage($this->vars->listing, 'listing');
-        PbDebugbar::addMessage($this->vars->formconfig, 'formconfig');
-        PbDebugbar::addMessage($this->vars->pagination, 'pagination');
-        PbDebugbar::addMessage($this->vars->heading, 'heading');
         PbDebugbar::addMessage($this->arraytify($arrayElements), 'data');
 
         $path = $this->buildRouteString($route, 'index');
@@ -424,8 +420,8 @@ class PbBuilderController extends Controller
             ...['defaults' => $this->getDefaults()],
             ...['listing' => $this->vars->listing],
             ...['formconfig' => $this->vars->formconfig],
-            ...['pagination' => $this->vars->pagination],
-            ...['heading' => $this->vars->heading],
+            ...['pagination' => $this->vars->pagination ?? ['location' => 'none']],
+            ...['heading' => $this->vars->heading ?? ['location' => 'none']],
         ];
         Inertia::share('shared', $shared);
         PbDebugbar::addMessage($shared, 'shared');

@@ -9,7 +9,7 @@
             :field="field"
             :allowed="allowed" />
     </tr>
-    <tr class="bg-gray-200 border-4">
+    <tr>
         <td colspan="100">
             <Pagination
                 v-if="['both', 'bottom'].includes(plocation)"
