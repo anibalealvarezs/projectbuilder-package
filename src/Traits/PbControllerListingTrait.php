@@ -72,6 +72,7 @@ trait PbControllerListingTrait
                             'bold' => true,
                             'width' => "w-12",
                         ],
+                        'orderable' => false,
                     ]
                 );
         }
@@ -87,6 +88,7 @@ trait PbControllerListingTrait
                             'bold' => true,
                             'width' => "w-12",
                         ],
+                        'orderable' => true,
                     ]
                 );
         }
@@ -112,6 +114,7 @@ trait PbControllerListingTrait
                     'bold' => false,
                     'width' => "w-20",
                 ],
+                'orderable' => false,
                 'buttons' => self::buildActions($actions, $actionRoutes, $enabledActions),
             ]
         );
@@ -160,6 +163,10 @@ trait PbControllerListingTrait
         if (!isset($options['status'])) {
             $options['status'] = false;
         }
+        // Orderable
+        if (!isset($options['orderable'])) {
+            $options['orderable'] = false;
+        }
 
         return [
             "key" => ($options['key'] ?? ""),
@@ -170,6 +177,7 @@ trait PbControllerListingTrait
             "href" => ($options['href'] ?? []),
             "size" => ($options['size'] ?? 'single'),
             "status" => ($options['status'] ?? false),
+            "orderable" => ($options['orderable'] ?? false),
         ];
     }
 

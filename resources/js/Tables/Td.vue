@@ -4,7 +4,7 @@
         <div v-if="index === 'actions'">
             <!-- Actions Dropdown -->
             <div class="relative">
-                <JetDropdown align="right" width="60">
+                <PbDropdown align="right" width="60" :top="'-mt-6'" :right="'right-14'">
                     <template #trigger>
                         <span class="inline-flex rounded-md">
                             <Button type="button">
@@ -43,7 +43,7 @@
                             </div>
                         </div>
                     </template>
-                </JetDropdown>
+                </PbDropdown>
             </div>
         </div>
         <!-- SIZE -->
@@ -231,7 +231,7 @@
 </template>
 
 <script>
-import JetDropdown from '@/Jetstream/Dropdown'
+import PbDropdown from '@/Pages/Projectbuilder/PbDropdown'
 import JetNavLink from '@/Jetstream/NavLink'
 import JetResponsiveNavLink from '@/Jetstream/ResponsiveNavLink'
 import Button from "@/Jetstream/Button"
@@ -245,7 +245,7 @@ import Icon from "@/Pages/Projectbuilder/Icons/Icon"
 export default {
     name: "Td",
     components: {
-        JetDropdown,
+        PbDropdown,
         PbDropdownLink,
         JetNavLink,
         JetResponsiveNavLink,

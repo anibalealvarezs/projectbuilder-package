@@ -7,7 +7,10 @@
             :key="index"
             :index="index"
             :field="field"
-            :allowed="allowed" />
+            :allowed="allowed"
+            :pagination="pagination"
+            :model="model"
+        />
     </tr>
     <tr>
         <td colspan="100">
@@ -15,6 +18,7 @@
                 v-if="['both', 'bottom'].includes(plocation)"
                 :pagination="pagination"
                 :model="model"
+                location="bottom"
             />
         </td>
     </tr>

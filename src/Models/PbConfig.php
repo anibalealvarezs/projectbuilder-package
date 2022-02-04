@@ -119,6 +119,7 @@ class PbConfig extends PbBuilder
             'name' => [],
             'configkey' => [
                 'name' => 'Key',
+                'orderable' => true,
             ],
             'configvalue' => [
                 'name' => 'Value',
@@ -127,7 +128,7 @@ class PbConfig extends PbBuilder
         ];
 
         $config['custom_order'] = [
-            'name', 'configkey', 'configvalue', 'description'
+            'configkey', 'name', 'configvalue', 'description'
         ];
 
         return $config;

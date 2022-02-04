@@ -260,12 +260,15 @@ class PbHelpers
     {
         Route::prefix($name . 's')->group(
             function() use ($name, $modelClass, $controllerClass, $api, $sortable) {
-                Route::get('page/{page?}/{perpage?}', [$controllerClass, 'index'])->middleware([
+                Route::get('page/{page?}/{perpage?}/{orderby?}/{field?}/{order?}', [$controllerClass, 'index'])->middleware([
                     ...PbHelpers::getDefaultGroupsMiddlewares()['web'],
                     ...PbHelpers::getDefaultGroupsMiddlewares()['auth'],
                 ])->where([
                     'page' => '[0-9]+',
                     'perpage' => '[0-9]+',
+                    'orderby' => 'order',
+                    'field' => '[a-zA-Z0-9_]+',
+                    'order' => 'asc|desc',
                 ])->name(($api ? 'api.' : '').$name . 's.index.paginated');
                 Route::prefix('{navigation}')->group(function () use ($name, $modelClass, $controllerClass, $api, $sortable) {
                     if (isset($modelClass::$sortable) && $sortable) {

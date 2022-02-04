@@ -1,6 +1,7 @@
 <template>
     <!-- This example requires Tailwind CSS v2.0+ -->
     <div class="bg-white px-4 py-3 flex items-center justify-between sm:px-6">
+        <!-- Mobile -->
         <div class="flex-1 flex justify-between sm:hidden">
             <PbDropdownLink v-if="pagination.prev_page_url"
                :href="buildPaginatedRoute(pagination.prev_page_url)"
@@ -15,7 +16,9 @@
                 Next
             </PbDropdownLink>
         </div>
+        <!-- Desktop -->
         <div class="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
+            <!-- Totals -->
             <div>
                 <p class="text-sm text-gray-700">
                     Showing
@@ -27,6 +30,31 @@
                     results
                 </p>
             </div>
+            <!-- Per page -->
+            <div>
+                Results per page:
+                <PbDropdown align="right" width="60" :top="location == 'bottom' ? '-mt-72' : 'mt-14'" class="inline-flex items-center">
+                    <template #trigger>
+                        <span class="inline-flex rounded-md">
+                            <Button type="button" class="inline-flex items-center ml-2 px-4 py-2 bg-gray-800 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700 active:bg-gray-900 focus:outline-none focus:border-gray-900 focus:ring focus:ring-gray-300 disabled:opacity-25 transition">
+                                {{ pagination.per_page }}
+                            </Button>
+                        </span>
+                    </template>
+
+                    <template #content>
+                        <div class="w-60">
+                            <!-- Actions -->
+                            <div v-for="quantity in [2, 5, 10, 20, 30, 50, 100, 200]" class="space-y-1">
+                                <PbDropdownLink :href="buildOrderedRoute(quantity)">
+                                    <div>{{ quantity }}</div>
+                                </PbDropdownLink>
+                            </div>
+                        </div>
+                    </template>
+                </PbDropdown>
+            </div>
+            <!-- Pagination -->
             <div v-if="pagination.prev_page_url || pagination.next_page_url">
                 <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
                     <div v-for="link in pagination.links">
@@ -129,11 +157,15 @@
 <script>
 import {Helpers} from "Pub/js/Projectbuilder/projectbuilder";
 import PbDropdownLink from "@/Pages/Projectbuilder/PbDropdownLink"
+import {computed} from "vue";
+import {usePage} from "@inertiajs/inertia-vue3"
+import PbDropdown from '@/Pages/Projectbuilder/PbDropdown'
 
 export default {
     name: "Pagination",
     components: {
-        PbDropdownLink
+        PbDropdownLink,
+        PbDropdown,
     },
     data() {
         return {
@@ -143,15 +175,34 @@ export default {
     props: {
         pagination: Object,
         model: String,
+        location: String,
     },
     methods: {
-        getInertiaId(link) {
-            let array = link.split('page=');
-            return [array[array.length - 1], this.pagination.per_page ?? 10];
+        getInertiaParams(perpage) {
+            let data = [this.pagination.page ?? 1, perpage]
+            if (this.orderby.hasOwnProperty('field') && this.orderby.hasOwnProperty('order')) {
+                data.push('order', this.orderby.field, this.orderby.order)
+            }
+            return data
+        },
+        getInertiaParamsFromPagination(link) {
+            let array = link.split('page=')
+            let data = [array[array.length - 1], this.pagination.per_page ?? 10]
+            if (this.orderby.hasOwnProperty('field') && this.orderby.hasOwnProperty('order')) {
+                data.push('order', this.orderby.field, this.orderby.order)
+            }
+            return data
+        },
+        buildOrderedRoute(perpage) {
+            return Helpers.buildRoute(this.model + '.index.paginated', this.getInertiaParams(perpage))
         },
         buildPaginatedRoute(link) {
-            return Helpers.buildRoute(this.model + '.index.paginated', this.getInertiaId(link))
+            return Helpers.buildRoute(this.model + '.index.paginated', this.getInertiaParamsFromPagination(link))
         },
+    },
+    setup() {
+        const orderby = computed(() => usePage().props.value.shared.orderby)
+        return { orderby }
     }
 }
 </script>

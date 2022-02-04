@@ -5,6 +5,7 @@
                 v-if="['both', 'top'].includes(plocation)"
                 :pagination="pagination"
                 :model="model"
+                location="top"
             />
         </td>
     </tr>
@@ -16,7 +17,10 @@
             :key="index"
             :index="index"
             :field="field"
-            :allowed="allowed" />
+            :allowed="allowed"
+            :pagination="pagination"
+            :model="model"
+        />
     </tr>
 </template>
 

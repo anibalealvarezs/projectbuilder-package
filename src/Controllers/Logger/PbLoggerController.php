@@ -28,21 +28,40 @@ class PbLoggerController extends PbBuilderController
      *
      * @param int $page
      * @param int $perpage
+     * @param string|null $orderby
+     * @param string $field
+     * @param string $order
      * @param null $element
      * @param bool $multiple
      * @param string $route
      * @return InertiaResponse|JsonResponse|RedirectResponse
      */
-    public function index(int $page = 1, int $perpage = 0, $element = null, bool $multiple = false, string $route = 'level'): InertiaResponse|JsonResponse|RedirectResponse
+    public function index(
+        int $page = 1,
+        int $perpage = 0,
+        string $orderby = null,
+        string $field = 'id',
+        string $order = 'asc',
+        $element = null,
+        bool $multiple = false,
+        string $route = 'level'): InertiaResponse|JsonResponse|RedirectResponse
     {
         $config = $this->vars->level->modelPath::getCrudConfig();
-        if (!$perpage && isset($config['pagination']['per_page']) && $config['pagination']['per_page']) {
-            $perpage = $config['pagination']['per_page'];
+
+        $query = $this->vars->level->modelPath::withPublicRelations();
+
+        if (!isset($this->vars->level->modelPath::$sortable) || !$this->vars->level->modelPath::$sortable) {
+            if (!$perpage && isset($config['pagination']['per_page']) && $config['pagination']['per_page']) {
+                $perpage = $config['pagination']['per_page'];
+            }
+            if ($orderby) {
+                $query->orderBy($field, $order);
+            }
+            $model = $query->paginate($perpage ?? PbConfig::getValueByKey('_DEFAULT_TABLE_SIZE_') ?: 10, ['*'], 'page', $page ?? 1);
+        } else {
+            $model = $query->get();
         }
 
-        $model = $this->vars->level->modelPath::withPublicRelations()
-            ->paginate($perpage ?? PbConfig::getValueByKey('_DEFAULT_TABLE_SIZE_') ?: 10, ['*'], 'page', $page ?? 1);
-
-        return parent::index($page, $perpage, $model);
+        return parent::index($page, $perpage, $orderby, $field, $order, $model);
     }
 }

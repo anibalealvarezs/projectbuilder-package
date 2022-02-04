@@ -140,11 +140,16 @@ class PbLogger extends PbBuilder
         ];
 
         $config['fields'] = [
-            'severity' => [],
-            'code' => [],
+            'severity' => [
+                'orderable' => true,
+            ],
+            'code' => [
+                'orderable' => true,
+            ],
             'message' => [],
             'object_type' => [
                 'name' => 'Object Type',
+                'orderable' => true,
             ],
             'object_id' => [
                 'name' => 'Object ID',
@@ -165,6 +170,7 @@ class PbLogger extends PbBuilder
             ],
             'created_at' => [
                 'name' => 'Created At',
+                'orderable' => true,
             ],
         ];
 

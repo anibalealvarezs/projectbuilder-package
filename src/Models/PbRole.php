@@ -47,7 +47,9 @@ class PbRole extends Role
         $config = PbBuilder::getCrudConfig();
 
         $config['fields'] = [
-            'name' => [],
+            'name' => [
+                'orderable' => true,
+            ],
             'alias' => [],
         ];
 

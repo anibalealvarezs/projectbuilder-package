@@ -8,6 +8,7 @@ class TableFields {
         this.fields = {}
         if (sort) {
             this.fields['sorthandle'] = {
+                key: "sort",
                 name: "Sort",
                 style: {
                     centered: true,
@@ -22,6 +23,7 @@ class TableFields {
         }
         if (showid) {
             this.fields['item'] = {
+                key: "id",
                 name: "#",
                 style: {
                     centered: true,
@@ -36,7 +38,7 @@ class TableFields {
         }
     }
 
-    customField(key, name, arrval = {}, style = {}, buttons = {}, href = {}, size = 'single', status = false) {
+    customField(key, name, arrval = {}, style = {}, buttons = {}, href = {}, size = 'single', status = false, orderable = false) {
         /* Style */
         if (!style.hasOwnProperty('centered')) {
             style['centered'] = false
@@ -54,6 +56,7 @@ class TableFields {
         }
         /* Return */
         this.fields[key] = {
+            key: key,
             name: name,
             style: style,
             buttons: buttons,
@@ -61,6 +64,7 @@ class TableFields {
             arrval: arrval,
             size: size,
             status: status,
+            orderable: orderable,
         }
     }
 
@@ -233,7 +237,7 @@ class TableFields {
     buildTableFields(listing) {
         for (const [k, v] of Object.entries(listing)) {
             if ((v.key !== 'item') && (v.key !== 'actions') && (v.key !== 'sorthandle')) {
-                this.customField(v.key, v.name, v.arrval, v.style, v.buttons, v.href, v.size, v.status)
+                this.customField(v.key, v.name, v.arrval, v.style, v.buttons, v.href, v.size, v.status, v.orderable)
             } else if (v.key === 'actions') {
                 this.pushActions(v.buttons);
             }

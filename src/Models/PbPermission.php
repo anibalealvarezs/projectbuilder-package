@@ -91,7 +91,9 @@ class PbPermission extends Permission
         ];
 
         $config['fields'] = [
-            'name' => [],
+            'name' => [
+                'orderable' => true,
+            ],
             'alias' => [],
             'module' => [
                 'arrval' => [

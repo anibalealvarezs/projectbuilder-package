@@ -31,6 +31,7 @@ class PbBuilder extends Model
         'custom_order' => "array",
         'pagination' => "array",
         'heading' => "array",
+        'orderable' => "bool",
     ])] public static function getCrudConfig(): array
     {
         return [
@@ -49,6 +50,7 @@ class PbBuilder extends Model
             'heading' => [
                 'location' => 'top',
             ],
+            'orderable' => false,
         ];
     }
 

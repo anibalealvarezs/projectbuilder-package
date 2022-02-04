@@ -344,8 +344,11 @@ class PbUser extends User
                     'route' => 'users.show',
                     'id' => true,
                 ],
+                'orderable' => true,
             ],
-            'email' => [],
+            'email' => [
+                'orderable' => true,
+            ],
             'roles' => [
                 'arrval' => [
                     'key' => 'alias',
@@ -369,6 +372,7 @@ class PbUser extends User
             ],
             'created_at' => [
                 'name' => 'Created At',
+                'orderable' => true,
             ],
         ];
 

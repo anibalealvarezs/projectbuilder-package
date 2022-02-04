@@ -30,6 +30,9 @@ class PbDashboardController extends PbBuilderController
      *
      * @param int $page
      * @param int $perpage
+     * @param string|null $orderby
+     * @param string $field
+     * @param string $order
      * @param null $element
      * @param bool $multiple
      * @param string $route
@@ -38,10 +41,14 @@ class PbDashboardController extends PbBuilderController
     public function index(
         int $page = 1,
         int $perpage = 0,
+        string $orderby = null,
+        string $field = 'id',
+        string $order = 'asc',
         $element = null,
         bool $multiple = false,
         string $route = 'level'
     ): InertiaResponse|JsonResponse|RedirectResponse {
+
         return $this->renderResponse($this->vars->helper->package . '/Dashboard');
     }
 }
