@@ -30,9 +30,9 @@
 
 <script>
 import {reactive} from 'vue'
+import {usePage} from "@inertiajs/inertia-vue3"
+import {computed} from "vue"
 import PbForm from "Pub/js/Projectbuilder/pbform"
-import {usePage} from "@inertiajs/inertia-vue3";
-import {computed} from "vue";
 
 export default {
     extends: PbForm,

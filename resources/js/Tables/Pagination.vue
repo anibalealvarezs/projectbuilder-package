@@ -157,15 +157,17 @@
 <script>
 import {Helpers} from "Pub/js/Projectbuilder/projectbuilder";
 import PbDropdownLink from "@/Pages/Projectbuilder/PbDropdownLink"
-import {computed} from "vue";
+import {computed} from "vue"
 import {usePage} from "@inertiajs/inertia-vue3"
 import PbDropdown from '@/Pages/Projectbuilder/PbDropdown'
+import Button from "@/Jetstream/Button"
 
 export default {
     name: "Pagination",
     components: {
         PbDropdownLink,
         PbDropdown,
+        Button,
     },
     data() {
         return {
