@@ -4,9 +4,24 @@
     >
         <PbDropdownLink
             v-if="field.hasOwnProperty('orderable') && helpers.stringToBoolean(field.orderable)"
-            :href="buildOrderedRoute(field.key, (orderby.field === field.key) ? (orderby.order == 'asc' ? 'desc' : 'asc') : 'asc')"
+            :href="buildOrderedRoute(field.key, ((orderby.field === field.key) && (orderby.order == 'asc')) ? 'desc' : 'asc')"
             :cl="'block text-sm leading-9 text-gray-700 transition w-full h-full'"
         >
+            <Icon
+                v-if="(orderby.field === field.key) && (orderby.order == 'asc')"
+                type="arrow-up"
+                :classes="['inline-flex']"
+            />
+            <Icon
+                v-else-if="(orderby.field === field.key) && (orderby.order == 'desc')"
+                type="arrow-down"
+                :classes="['inline-flex']"
+            />
+            <Icon
+                v-else
+                type="sort"
+                :classes="['inline-flex', 'opacity-25']"
+            />
             {{ field.name }}
         </PbDropdownLink>
         <span v-else class="text-gray-800">{{ field.name }}</span>
@@ -16,8 +31,9 @@
 <script>
 import { Helpers } from "Pub/js/Projectbuilder/projectbuilder"
 import PbDropdownLink from "@/Pages/Projectbuilder/PbDropdownLink"
-import {computed} from "vue";
-import {usePage} from "@inertiajs/inertia-vue3";
+import {computed} from "vue"
+import {usePage} from "@inertiajs/inertia-vue3"
+import Icon from "@/Pages/Projectbuilder/Icons/Icon"
 
 export default {
     name: "Th",
@@ -30,6 +46,7 @@ export default {
     },
     components: {
         PbDropdownLink,
+        Icon,
     },
     data() {
         return {
@@ -52,7 +69,7 @@ export default {
             return ret
         },
         getInertiaParams(field, order) {
-            return [this.pagination.page ?? 1, this.pagination.per_page ?? 10, 'order', field, order]
+            return [this.pagination.current_page ?? 1, this.pagination.per_page ?? 10, 'order', field, order]
         },
         buildOrderedRoute(field, order) {
             return Helpers.buildRoute(this.model + '.index.paginated', this.getInertiaParams(field, order))

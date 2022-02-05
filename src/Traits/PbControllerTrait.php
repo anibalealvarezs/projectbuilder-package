@@ -3,10 +3,14 @@
 namespace Anibalealvarezs\Projectbuilder\Traits;
 
 use Anibalealvarezs\Projectbuilder\Helpers\Shares;
+use Anibalealvarezs\Projectbuilder\Models\PbConfig;
 use Anibalealvarezs\Projectbuilder\Models\PbUser;
 
 use Auth;
 use Illuminate\Contracts\Foundation\Application;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Redirector;
@@ -250,5 +254,54 @@ trait PbControllerTrait
             $res['data'] = $errorMsg;
         }
         return response()->json($res, $code);
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @param Builder $query
+     * @param int $page
+     * @param int $perpage
+     * @param string|null $orderby
+     * @param string $field
+     * @param string $order
+     * @param array $defaultOrder
+     * @return LengthAwarePaginator
+     */
+    public function paginateAndOrder(Builder $query, int $page = 1, int $perpage = 0, string $orderby = null, string $field = 'id', string $order = 'asc', array $defaultOrder = []): LengthAwarePaginator
+    {
+        $config = $this->vars->level->modelPath::getCrudConfig();
+        if (!$perpage && isset($config['pagination']['per_page']) && $config['pagination']['per_page']) {
+            $perpage = $config['pagination']['per_page'];
+        }
+        if ($orderby) {
+            $query->orderBy($field, $order);
+        } else {
+            foreach ($defaultOrder as $key => $value) {
+                $query->orderBy($key, $value);
+            }
+        }
+        return $query->paginate($perpage ?: (PbConfig::getValueByKey('_DEFAULT_TABLE_SIZE_') ?: 10), ['*'], 'page', $page ?: 1);
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @param Builder|null $query
+     * @param int $page
+     * @param int $perpage
+     * @param string|null $orderby
+     * @param string $field
+     * @param string $order
+     * @param array $defaultOrder
+     * @return LengthAwarePaginator|Collection
+     */
+    public function buildPaginatedAndOrderedModel(Builder $query = null, int $page = 1, int $perpage = 0, string $orderby = null, string $field = 'id', string $order = 'asc', array $defaultOrder = []): LengthAwarePaginator|Collection
+    {
+        if (!isset($this->vars->level->modelPath::$sortable) || !$this->vars->level->modelPath::$sortable) {
+            return $this->paginateAndOrder($query ?: $this->vars->level->modelPath::withPublicRelations(), $page, $perpage, $orderby, $field, $order, $defaultOrder);
+        } else {
+            return $query->get();
+        }
     }
 }

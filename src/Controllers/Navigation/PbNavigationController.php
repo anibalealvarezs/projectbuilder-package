@@ -4,7 +4,6 @@ namespace Anibalealvarezs\Projectbuilder\Controllers\Navigation;
 
 use Anibalealvarezs\Projectbuilder\Controllers\PbBuilderController;
 
-use Anibalealvarezs\Projectbuilder\Models\PbConfig;
 use App\Http\Requests;
 
 use Illuminate\Http\JsonResponse;
@@ -70,8 +69,13 @@ class PbNavigationController extends PbBuilderController
         bool $multiple = false,
         string $route = 'level'): InertiaResponse|JsonResponse|RedirectResponse
     {
-        $model = $this->vars->level->modelPath::withPublicRelations()->orderedByDefault()->get();
-
-        return parent::index($page, $perpage, $orderby, $field, $order, $model);
+        return parent::index(
+            $page,
+            $perpage,
+            $orderby,
+            $field,
+            $order,
+            $this->vars->level->modelPath::withPublicRelations()->orderedByDefault()->get()
+        );
     }
 }

@@ -5,7 +5,6 @@ namespace Anibalealvarezs\Projectbuilder\Controllers;
 use Anibalealvarezs\Projectbuilder\Helpers\PbDebugbar;
 use Anibalealvarezs\Projectbuilder\Helpers\PbHelpers;
 use Anibalealvarezs\Projectbuilder\Helpers\Shares;
-use Anibalealvarezs\Projectbuilder\Models\PbConfig;
 use Anibalealvarezs\Projectbuilder\Models\PbCountry;
 use Anibalealvarezs\Projectbuilder\Models\PbLanguage;
 use Anibalealvarezs\Projectbuilder\Traits\PbControllerTrait;
@@ -108,33 +107,20 @@ class PbBuilderController extends Controller
         if (!isset($config['model'])) {
             $config['model'] = $this->vars->level->modelPath;
         }
-
         if (!isset($config['pagination']['page']) || !$config['pagination']['page']) {
             $config['pagination']['page'] = $page;
         }
-        if (!$perpage && isset($config['pagination']['per_page']) && $config['pagination']['per_page']) {
-            $perpage = $config['pagination']['per_page'];
-        }
-
-        if ($orderby == 'order') {
-            $ordered = [
-                'field' => $field,
-                'order' => $order
-            ];
-        }
-
-        $arrayElements = $this->buildModelsArray($page, $perpage, $ordered ?? [], $element, $multiple, null, true);
 
         $this->vars->listing = self::buildListingRow($config);
         $this->vars->formconfig = $config['formconfig'];
         $this->vars->pagination = !isset($this->vars->level->modelPath::$sortable) || !$this->vars->level->modelPath::$sortable ? $config['pagination'] : [];
         $this->vars->heading = $config['heading'];
-        $this->vars->orderby = !isset($this->vars->level->modelPath::$sortable) || !$this->vars->level->modelPath::$sortable ? $ordered ?? [] : [];
+        $this->vars->orderby = (!isset($this->vars->level->modelPath::$sortable) || !$this->vars->level->modelPath::$sortable) && $orderby ? ['field' => $field, 'order' => $order] : [];
+
+        $arrayElements = $this->buildModelsArray($element, $multiple, null, true, $page, $perpage, $orderby, $field, $order);
         PbDebugbar::addMessage($this->arraytify($arrayElements), 'data');
 
-        $path = $this->buildRouteString($route, 'index');
-
-        return $this->renderResponse($path, $arrayElements);
+        return $this->renderResponse($this->buildRouteString($route, 'index'), $arrayElements);
     }
 
     /**
@@ -145,13 +131,10 @@ class PbBuilderController extends Controller
      */
     public function create(string $route = 'level'): InertiaResponse|JsonResponse
     {
-        $config = $this->vars->level->modelPath::getCrudConfig();
-        $this->vars->formconfig = $config['formconfig'];
+        $this->vars->formconfig = $this->vars->level->modelPath::getCrudConfig()['formconfig'];
         PbDebugbar::addMessage($this->vars->formconfig, 'formconfig');
 
-        $path = $this->buildRouteString($route, 'create');
-
-        return $this->renderResponse($path);
+        return $this->renderResponse($this->buildRouteString($route, 'create'));
     }
 
     /**
@@ -198,11 +181,10 @@ class PbBuilderController extends Controller
         bool $multiple = false,
         string $route = 'level'
     ): Application|RedirectResponse|Redirector|InertiaResponse|JsonResponse {
+
         $arrayElements = $this->buildModelsArray($element, $multiple, $id);
 
-        $path = $this->buildRouteString($route, 'show');
-
-        return $this->renderResponse($path, $arrayElements);
+        return $this->renderResponse($this->buildRouteString($route, 'show'), $arrayElements);
     }
 
     /**
@@ -220,15 +202,11 @@ class PbBuilderController extends Controller
         bool $multiple = false,
         string $route = 'level'
     ): InertiaResponse|JsonResponse {
-        $arrayElements = $this->buildModelsArray($element, $multiple, $id);
 
-        $config = $this->vars->level->modelPath::getCrudConfig();
-        $this->vars->formconfig = $config['formconfig'];
+        $this->vars->formconfig = $this->vars->level->modelPath::getCrudConfig()['formconfig'];
         PbDebugbar::addMessage($this->vars->formconfig, 'formconfig');
 
-        $path = $this->buildRouteString($route, 'edit');
-
-        return $this->renderResponse($path, $arrayElements);
+        return $this->renderResponse($this->buildRouteString($route, 'edit'), $this->buildModelsArray($element, $multiple, $id));
     }
 
     /**
@@ -384,29 +362,29 @@ class PbBuilderController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param int $page
-     * @param int $perpage
-     * @param array $ordered
      * @param null $element
      * @param bool $multiple
      * @param null $id
      * @param bool $plural
+     * @param int $page
+     * @param int $perpage
+     * @param string|null $orderby
+     * @param string $field
+     * @param string $order
      * @return array
      */
     protected function buildModelsArray(
-        int $page,
-        int $perpage,
-        array $ordered,
         $element = null,
         bool $multiple = false,
         $id = null,
-        bool $plural = false
+        bool $plural = false,
+        int $page = 1,
+        int $perpage = 0,
+        string $orderby = null,
+        string $field = 'id',
+        string $order = 'asc'
     ): array {
         $arrayElements = [];
-        $query = $this->vars->level->modelPath::query();
-        if ($ordered && (!isset($this->vars->level->modelPath::$sortable) || !$this->vars->level->modelPath::$sortable)) {
-            $query->orderBy($ordered['field'], $ordered['order']);
-        }
         if ($element) {
             if ($multiple) {
                 foreach ($element as $key => $value) {
@@ -418,12 +396,7 @@ class PbBuilderController extends Controller
         } else {
             $arrayElements[
             ($plural ? $this->vars->level->prefixNames : $this->vars->level->prefixName)] =
-                ($id ? $query->find($id) :
-                    (!isset($this->vars->level->modelPath::$sortable) || !$this->vars->level->modelPath::$sortable ?
-                        $query->paginate($perpage ?: (PbConfig::getValueByKey('_DEFAULT_TABLE_SIZE_') ?: 10), ['*'], 'page', $page ?: 1) :
-                        $query->get()
-                    )
-                );
+                ($id ? $this->vars->level->modelPath::find($id) : $this->buildPaginatedAndOrderedModel(null, $page, $perpage, $orderby, $field, $order));
         }
 
         return $arrayElements;

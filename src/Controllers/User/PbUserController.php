@@ -81,28 +81,24 @@ class PbUserController extends PbBuilderController
     {
         $this->pushRequired(['roles', 'email']);
 
-        $config = $this->vars->level->modelPath::getCrudConfig();
-
-        $query = $this->vars->level->modelPath::withPublicRelations()->removeAdmins();
-
-        if (!isset($this->vars->level->modelPath::$sortable) || !$this->vars->level->modelPath::$sortable) {
-            if (!$perpage && isset($config['pagination']['per_page']) && $config['pagination']['per_page']) {
-                $perpage = $config['pagination']['per_page'];
-            }
-            if ($orderby) {
-                $query->orderBy($field, $order);
-            } else {
-                $query->orderBy('name', 'asc')->orderBy('email', 'asc');
-            }
-            $model = $query->paginate($perpage ?: (PbConfig::getValueByKey('_DEFAULT_TABLE_SIZE_') ?: 10), ['*'], 'page', $page ?: 1);
-        } else {
-            $model = $query->get();
-        }
-
-
         $this->vars->shares[] = 'me';
 
-        return parent::index($page, $perpage, $orderby, $field, $order, $model);
+        return parent::index(
+            $page,
+            $perpage,
+            $orderby,
+            $field,
+            $order,
+            $this->buildPaginatedAndOrderedModel(
+                $this->vars->level->modelPath::withPublicRelations()->removeAdmins(),
+                $page,
+                $perpage,
+                $orderby,
+                $field,
+                $order,
+                ['name' => 'asc', 'email' => 'asc']
+            )
+        );
     }
 
     /**
@@ -208,9 +204,7 @@ class PbUserController extends PbBuilderController
             return redirect(DIRECTORY_SEPARATOR.$this->vars->level->name.'/profile');
         }
 
-        $model = $this->vars->level->modelPath::withPublicRelations()->find($id);
-
-        return parent::show($id, $model);
+        return parent::show($id, $this->vars->level->modelPath::withPublicRelations()->find($id));
     }
 
     /**
@@ -224,15 +218,13 @@ class PbUserController extends PbBuilderController
      */
     public function edit(int $id, $element = null, bool $multiple = false, string $route = 'level'): InertiaResponse|JsonResponse
     {
-        if (Auth::user()->id == $id) {
+        if ((Auth::user()->id == $id) && !PbHelpers::isApi($this->vars->request)) {
             return redirect(DIRECTORY_SEPARATOR.$this->vars->level->name.'/profile');
         }
 
-        $model = $this->vars->level->modelPath::withPublicRelations()->find($id);
-
         $this->pushRequired(['roles', 'email']);
 
-        return parent::edit($id, $model);
+        return parent::edit($id, $this->vars->level->modelPath::withPublicRelations()->find($id));
     }
 
     /**

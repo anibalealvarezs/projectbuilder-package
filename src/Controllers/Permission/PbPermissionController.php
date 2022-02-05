@@ -67,8 +67,6 @@ class PbPermissionController extends PbBuilderController
         string $route = 'level'
     ): InertiaResponse|JsonResponse|RedirectResponse {
 
-        $config = $this->vars->level->modelPath::getCrudConfig();
-
         $me = PbUser::current();
         $toExclude = ['crud super-admin'];
         if (!$me->hasRole('super-admin')) {
@@ -94,21 +92,21 @@ class PbPermissionController extends PbBuilderController
             }
         }
 
-        $query = $this->vars->level->modelPath::whereNotIn('name', $toExclude)->withPublicRelations();
-
-        if (!isset($this->vars->level->modelPath::$sortable) || !$this->vars->level->modelPath::$sortable) {
-            if (!$perpage && isset($config['pagination']['per_page']) && $config['pagination']['per_page']) {
-                $perpage = $config['pagination']['per_page'];
-            }
-            if ($orderby) {
-                $query->orderBy($field, $order);
-            }
-            $model = $query->paginate($perpage ?? PbConfig::getValueByKey('_DEFAULT_TABLE_SIZE_') ?: 10, ['*'], 'page', $page ?? 1);
-        } else {
-            $model = $query->get();
-        }
-
-        return parent::index($page, $perpage, $orderby, $field, $order, $model);
+        return parent::index(
+            $page,
+            $perpage,
+            $orderby,
+            $field,
+            $order,
+            $this->buildPaginatedAndOrderedModel(
+                $this->vars->level->modelPath::whereNotIn('name', $toExclude)->withPublicRelations(),
+                $page,
+                $perpage,
+                $orderby,
+                $field,
+                $order
+            )
+        );
     }
 
     /**
@@ -168,6 +166,7 @@ class PbPermissionController extends PbBuilderController
         bool $multiple = false,
         string $route = 'level'
     ): Application|RedirectResponse|Redirector|InertiaResponse|JsonResponse {
+
         return $this->edit($id);
     }
 
@@ -186,9 +185,8 @@ class PbPermissionController extends PbBuilderController
         bool $multiple = false,
         string $route = 'level'
     ): InertiaResponse|JsonResponse {
-        $model = $this->vars->level->modelPath::withPublicRelations()->findOrFail($id);
 
-        return parent::edit($id, $model);
+        return parent::edit($id, $this->vars->level->modelPath::withPublicRelations()->findOrFail($id));
     }
 
     /**

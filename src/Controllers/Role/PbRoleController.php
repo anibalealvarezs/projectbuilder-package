@@ -70,30 +70,29 @@ class PbRoleController extends PbBuilderController
         bool $multiple = false,
         string $route = 'level'): InertiaResponse|JsonResponse|RedirectResponse
     {
-        $config = $this->vars->level->modelPath::getCrudConfig();
+        $this->pushRequired(['name']);
 
         $query = $this->vars->level->modelPath::withPublicRelations()->whereNotIn('name', ['super-admin', 'developer', 'api-user']);
 
-        $user = PbUser::current();
-        if (!$user->hasRole('super-admin')) {
+        if (!PbUser::current()->hasRole('super-admin')) {
             $query->whereNotIn('name', ['admin']);
         }
 
-        if (!isset($this->vars->level->modelPath::$sortable) || !$this->vars->level->modelPath::$sortable) {
-            if (!$perpage && isset($config['pagination']['per_page']) && $config['pagination']['per_page']) {
-                $perpage = $config['pagination']['per_page'];
-            }
-            if ($orderby) {
-                $query->orderBy($field, $order);
-            }
-            $model = $query->paginate($perpage ?? PbConfig::getValueByKey('_DEFAULT_TABLE_SIZE_') ?: 10, ['*'], 'page', $page ?? 1);
-        } else {
-            $model = $query->get();
-        }
-
-        $this->pushRequired(['name']);
-
-        return parent::index($page, $perpage, $orderby, $field, $order, $model);
+        return parent::index(
+            $page,
+            $perpage,
+            $orderby,
+            $field,
+            $order,
+            $this->buildPaginatedAndOrderedModel(
+                $query,
+                $page,
+                $perpage,
+                $orderby,
+                $field,
+                $order
+            )
+        );
     }
 
     /**
@@ -179,11 +178,9 @@ class PbRoleController extends PbBuilderController
      */
     public function edit(int $id, $element = null, bool $multiple = false, string $route = 'level'): InertiaResponse|JsonResponse
     {
-        $model = $this->vars->level->modelPath::withPublicRelations()->whereNotIn('name', ['super-admin', 'developer', 'api-user'])->findOrFail($id);
-
         $this->pushRequired(['name']);
 
-        return parent::edit($id, $model);
+        return parent::edit($id, $this->vars->level->modelPath::withPublicRelations()->whereNotIn('name', ['super-admin', 'developer', 'api-user'])->findOrFail($id));
     }
 
     /**
