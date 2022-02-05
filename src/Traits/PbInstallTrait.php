@@ -207,6 +207,11 @@ trait PbInstallTrait
             if (!$this->addPubPath()) {
                 return false;
             }
+            // Replace feature flag globals for esm-bundler build of Vue...
+            echo "---- Replacing feature flag globals for esm-bundler build of Vue...\n";
+            if (!$this->replaceFeatureFlagGlobals()) {
+                return false;
+            }
         }
         if ($this->option('npm') || $this->option('all') || (str_starts_with($this->signature,  'pbuilder:update')) || (str_starts_with($this->signature,  'pbuilder:altupdate'))) {
             // Install npm resources...
@@ -386,6 +391,34 @@ trait PbInstallTrait
             if (!file_put_contents(base_path('/webpack.config.js'), str_replace(
                 '\'@\': path.resolve(\'resources/js\'),',
                 '\'@\': path.resolve(\'resources/js\'),'.PHP_EOL.'            Pub: path.resolve(\'public\'),',
+                $webpackConfig
+            ))) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * Scope a query to only include popular users.
+     *
+     * @return bool
+     */
+    protected function replaceFeatureFlagGlobals(): bool
+    {
+        if (! Str::contains($webpackConfig = file_get_contents(base_path('/webpack.config.js')), 'const webpack = require(\'webpack\');')) {
+            if (!file_put_contents(base_path('/webpack.config.js'), str_replace(
+                'const path = require(\'path\');',
+                'const path = require(\'path\');'.PHP_EOL.'const webpack = require(\'webpack\');',
+                $webpackConfig
+            ))) {
+                return false;
+            }
+        }
+        if (! Str::contains($webpackConfig = file_get_contents(base_path('/webpack.config.js')), '__VUE_OPTIONS_API__: JSON.stringify(true),')) {
+            if (!file_put_contents(base_path('/webpack.config.js'), str_replace(
+                '};',
+                '    plugins: ['.PHP_EOL.'        new webpack.DefinePlugin({'.PHP_EOL.'            __VUE_OPTIONS_API__: JSON.stringify(true),'.PHP_EOL.PHP_EOL.'            __VUE_PROD_DEVTOOLS__: JSON.stringify(false),'.'        }),'.PHP_EOL.'    ],'.PHP_EOL.'};',
                 $webpackConfig
             ))) {
                 return false;
