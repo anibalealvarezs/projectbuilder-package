@@ -212,6 +212,11 @@ trait PbInstallTrait
             if (!$this->replaceFeatureFlagGlobals()) {
                 return false;
             }
+            // Enable source map for debug...
+            echo "---- Enabling source map...\n";
+            if (!$this->enableSourceMap()) {
+                return false;
+            }
         }
         if ($this->option('npm') || $this->option('all') || (str_starts_with($this->signature,  'pbuilder:update')) || (str_starts_with($this->signature,  'pbuilder:altupdate'))) {
             // Install npm resources...
@@ -419,6 +424,25 @@ trait PbInstallTrait
             if (!file_put_contents(base_path('/webpack.config.js'), str_replace(
                 '};',
                 '    plugins: ['.PHP_EOL.'        new webpack.DefinePlugin({'.PHP_EOL.'            __VUE_OPTIONS_API__: JSON.stringify(true),'.PHP_EOL.PHP_EOL.'            __VUE_PROD_DEVTOOLS__: JSON.stringify(false),'.'        }),'.PHP_EOL.'    ],'.PHP_EOL.'};',
+                $webpackConfig
+            ))) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * Scope a query to only include popular users.
+     *
+     * @return bool
+     */
+    protected function enableSourceMap(): bool
+    {
+        if (! Str::contains($webpackConfig = file_get_contents(base_path('/webpack.config.js')), 'devtool: "source-map",')) {
+            if (!file_put_contents(base_path('/webpack.config.js'), str_replace(
+                '};',
+                '    devtool: "source-map",'.PHP_EOL.'};',
                 $webpackConfig
             ))) {
                 return false;
