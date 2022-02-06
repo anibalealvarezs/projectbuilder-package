@@ -67,17 +67,20 @@ class PbCountry extends PbBuilder
      */
     public function delete(): bool
     {
-        // Remove langs relations
-        $this->langs()->detach();
+        return DB::transaction(function() {
 
-        // Delete cities
-        PbCity::where('country_id', $this->id)->delete();
+            // Remove langs relations
+            $this->langs()->detach();
 
-        // Remove countries from users
-        PbUser::where('country_id', $this->id)->update(['country_id' => null]);
+            // Delete cities
+            PbCity::where('country_id', $this->id)->delete();
 
-        // delete the country
-        return parent::delete();
+            // Remove countries from users
+            PbUser::where('country_id', $this->id)->update(['country_id' => null]);
+
+            // delete the country
+            return parent::delete();
+        });
     }
 
     /**

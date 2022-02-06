@@ -8,6 +8,7 @@ use Anibalealvarezs\Projectbuilder\Traits\PbModelCrudTrait;
 use Anibalealvarezs\Projectbuilder\Traits\PbModelTrait;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Facades\DB;
 use Spatie\Permission\Models\Permission;
 use Spatie\Translatable\HasTranslations;
 
@@ -46,11 +47,14 @@ class PbPermission extends Permission
      */
     public function delete(): bool
     {
-        // Remove countries from users
-        PbNavigation::where('permission_id', $this->id)->update(['permission_id' => null]);
+        return DB::transaction(function() {
 
-        // delete the country
-        return parent::delete();
+            // Remove countries from users
+            PbNavigation::where('permission_id', $this->id)->update(['permission_id' => null]);
+
+            // delete the country
+            return parent::delete();
+        });
     }
 
     /**

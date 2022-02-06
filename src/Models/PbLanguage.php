@@ -91,12 +91,6 @@ class PbLanguage extends PbBuilder
      *
      * @return bool
      */
-    public function disable(): bool
-    {
-        $this->status = false;
-        return $this->update();
-    }
-
     public function getNameAttribute($value)
     {
         return PbHelpers::translateString($value);

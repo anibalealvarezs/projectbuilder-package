@@ -6,6 +6,7 @@ use Anibalealvarezs\Projectbuilder\Helpers\PbHelpers;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
+use Illuminate\Support\Facades\DB;
 
 class PbCity extends PbBuilder
 {
@@ -49,17 +50,20 @@ class PbCity extends PbBuilder
      */
     public function delete(): bool
     {
-        // Remove langs relations
-        $this->langs()->detach();
+        return DB::transaction(function() {
 
-        // Remove cities from users
-        PbUser::where('city_id', $this->id)->update(['city_id' => null]);
+            // Remove langs relations
+            $this->langs()->detach();
 
-        // Remove cities from users
-        PbCountry::where('capital_id', $this->id)->update(['capital_id' => null]);
+            // Remove cities from users
+            PbUser::where('city_id', $this->id)->update(['city_id' => null]);
 
-        // delete the user
-        return parent::delete();
+            // Remove cities from users
+            PbCountry::where('capital_id', $this->id)->update(['capital_id' => null]);
+
+            // delete the user
+            return parent::delete();
+        });
     }
 
     /**

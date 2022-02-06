@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Laravel\Sanctum\HasApiTokens;
 use Spatie\Permission\Traits\HasRoles;
 use Spatie\Translatable\HasTranslations;
@@ -265,27 +266,29 @@ class PbUser extends User
      */
     public function delete(): bool
     {
-        if (PbModule::exists('file') && class_exists(\Anibalealvarezs\Filemanager\Models\FmFile::class)) {
-            $user = self::getDefaultUser();
-            if ($user) {
-                try {
-                    \Anibalealvarezs\Filemanager\Models\FmFile::replaceAuthor($this->id, $user->id);
-                } catch (Exception $e) {
-                    $module = PbModule::getByKey('file');
-                    PbLogger::create([
-                        'severity' => 3,
-                        'code' => 1,
-                        'message' => 'Author not replaced. '.$e->getMessage(),
-                        'object_type' => 'file',
-                        'user_id' => Auth::user()->id,
-                        'module_id' => $module?->id
-                    ]);
+        return DB::transaction(function() {
+
+            if (PbModule::exists('file') && class_exists(\Anibalealvarezs\Filemanager\Models\FmFile::class)) {
+                if ($user = self::getDefaultUser()) {
+                    try {
+                        \Anibalealvarezs\Filemanager\Models\FmFile::replaceAuthor($this->id, $user->id);
+                    } catch (Exception $e) {
+                        $module = PbModule::getByKey('file');
+                        PbLogger::create([
+                            'severity' => 3,
+                            'code' => 1,
+                            'message' => 'Author not replaced. '.$e->getMessage(),
+                            'object_type' => 'file',
+                            'user_id' => Auth::user()->id,
+                            'module_id' => $module?->id
+                        ]);
+                    }
                 }
             }
-        }
 
-        // delete the country
-        return parent::delete();
+            // delete the country
+            return parent::delete();
+        });
     }
 
     /**
@@ -295,7 +298,7 @@ class PbUser extends User
      */
     public function getDefaultUser(): self|null
     {
-        return PbUser::find(1);
+        return PbUser::first();
     }
 
     /**
