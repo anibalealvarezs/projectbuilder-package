@@ -60,8 +60,7 @@
                 >
                     <Icon
                         v-if="field.href.hasOwnProperty('text') && field.href.text === '#'"
-                        type="check"
-                        :classes="['pb-icon-check', 'pb-status-enabled']"
+                        type="get-into"
                     />
                     <span v-else>
                         {{ field.href.hasOwnProperty('text') ? field.href.text : cellValue }}
@@ -81,8 +80,7 @@
                 >
                     <Icon
                         v-if="field.href.hasOwnProperty('text') && field.href.text === '#'"
-                        type="check"
-                        :classes="['pb-icon-check', 'pb-status-enabled']"
+                        type="get-into"
                     />
                     <span v-else>
                         {{ field.href.hasOwnProperty('text') ? field.href.text : cellValue }}
@@ -189,8 +187,7 @@
                             <span v-else>
                                 <Icon
                                     v-if="field.arrval.href.hasOwnProperty('text') && field.arrval.href.text === '#'"
-                                    type="check"
-                                    :classes="['pb-icon-check', 'pb-status-enabled']"
+                                    type="get-into"
                                 />
                                 <span v-else>
                                     {{ field.arrval.href.hasOwnProperty('text') ? field.arrval.href.text : cv[field.arrval.key] }}
