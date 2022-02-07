@@ -125,10 +125,15 @@ class PbConfig extends PbBuilder
                 'name' => 'Value',
             ],
             'description' => [],
+            'module' => [
+                'arrval' => [
+                    'key' => 'name',
+                ],
+            ],
         ];
 
         $config['custom_order'] = [
-            'configkey', 'name', 'configvalue', 'description'
+            'configkey', 'name', 'configvalue', 'description', 'module'
         ];
 
         return $config;

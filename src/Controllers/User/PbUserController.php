@@ -5,7 +5,6 @@ namespace Anibalealvarezs\Projectbuilder\Controllers\User;
 use Anibalealvarezs\Projectbuilder\Controllers\PbBuilderController;
 
 use Anibalealvarezs\Projectbuilder\Helpers\PbHelpers;
-use Anibalealvarezs\Projectbuilder\Models\PbConfig;
 use Anibalealvarezs\Projectbuilder\Models\PbUser;
 use App\Http\Requests;
 

@@ -37,7 +37,7 @@ trait PbInstallTrait
                 return false;
             }
             // Logging results...
-            if (\Anibalealvarezs\Projectbuilder\Models\PbLogger::updateOrCreate(['message' => 'App Created'], ['object_type' => null])) {
+            if (\Anibalealvarezs\Projectbuilder\Models\PbLogger::updateOrCreate(['message' => json_encode(['en' => 'App Created', 'es' => 'Aplicación Creada'])], ['object_type' => null])) {
                 echo "---- [[ Confirmation log entry added ]]\n";
             } else {
                 echo "---- [[ Error adding confirmation log entry ]]\n";
@@ -89,7 +89,7 @@ trait PbInstallTrait
             if ($this->option('link') || $this->option('all')) {
                 echo "---- Creating links...\n";
                 if (!$this->createLinks()) {
-                    if (\Anibalealvarezs\Projectbuilder\Models\PbLogger::create(['severity' => 2, 'message' => 'Links creation failed', 'object_type' => null])) {
+                    if (\Anibalealvarezs\Projectbuilder\Models\PbLogger::create(['severity' => 2, 'message' => json_encode(['en' => 'Links creation failed', 'es' => 'Creación de enlaces fallida']), 'object_type' => null])) {
                         echo "---- [[ Error creating links ]]\n";
                     } else {
                         echo "---- [[ Failure registering links creation error log ]]\n";
