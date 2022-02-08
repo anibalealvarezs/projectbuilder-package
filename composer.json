@@ -33,7 +33,7 @@
         "laravel/sanctum": "^2.13",
         "laravel/tinker": "^2.6.3",
         "nesbot/carbon": "^2.55.2",
-        "spatie/laravel-permission": "^3.18",
+        "spatie/laravel-permission": "^5.0",
         "spatie/laravel-translatable": "^4.6",
         "tightenco/ziggy": "^1.4.2",
         "barryvdh/laravel-debugbar": "^3.6.5"
