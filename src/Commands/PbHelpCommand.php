@@ -47,7 +47,6 @@ class PbHelpCommand extends Command
             echo "[[ Parameters ]]\n\n";
             echo ">> --all      |  For performing all tasks below\n";
             echo ">> --update   |  For updating the package before running tasks\n";
-            echo ">> --inertia  |  For installing Jetstream and Inertia\n";
             echo ">> --publish  |  For publishing resources\n";
             echo ">> --migrate  |  For running migrations\n";
             echo ">> --seed     |  For seeding the database\n";
