@@ -5,9 +5,20 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [1.3.6] - 2022-02-08
+
+- Laravel 9.x support added.
+- Unnecessary packages removed from composer.json.
+- Installation updated.
+   - Ask for confirmation for installing Inertia or leave.
+   - webpack.congig.js insertions format fixed.
+   - Jetstream and Fortify no longer being asked to be ignored in composer.json.
+   - Fix: Inertia class no longer being imported on installation trait to prevent exception on fresh installations.
+- Schema's default string length moved to Project Builder's app service provider
+
 ## [1.3.5] - 2022-02-04
 
--- New release after several months of work and missing changelog entries.
+- New release after several months of work and missing changelog entries.
 
 ## [1.2.2.2] - 2021-07-18
 

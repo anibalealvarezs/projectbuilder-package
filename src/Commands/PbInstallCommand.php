@@ -18,7 +18,6 @@ class PbInstallCommand extends Command
     protected $signature = 'pbuilder:install
                             {--all : All tasks will be performed}
                             {--update : pachage will be updated before installation}
-                            {--inertia : Includes Jetstream and Inertia installation}
                             {--publish : Resources will be published to the application}
                             {--migrate : Migrations will be run}
                             {--seed : Tables will be seeded}

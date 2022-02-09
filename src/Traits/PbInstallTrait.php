@@ -24,10 +24,16 @@ trait PbInstallTrait
                 return false;
             }
             echo "[[ Process start ]]\n";
-            // Inertia...
-            if ($this->option('inertia') || $this->option('all')) {
-                echo "-- [[ Installing pre-requirements ]]\n";
-                if (!$this->installInertia()) {
+            if (!class_exists(\Inertia\Inertia::class)) {
+                // Ask for confirmation for installing Inertia
+                if ($this->confirm("'Jetstream/Inertia with Teams and Pest' is required. Do you want Project Builder to install it for you?")) {
+                    // Inertia
+                    echo "-- [[ Installing pre-requirements ]]\n";
+                    if (!$this->installInertia()) {
+                        return false;
+                    }
+                } else {
+                    echo "[[ Please install 'Jetstream/Inertia with Teams and Pest' before installing Project Builder ]]\n";
                     return false;
                 }
             }
@@ -423,7 +429,7 @@ trait PbInstallTrait
         if (! Str::contains($webpackConfig = file_get_contents(base_path('/webpack.config.js')), '__VUE_OPTIONS_API__: JSON.stringify(true),')) {
             if (!file_put_contents(base_path('/webpack.config.js'), str_replace(
                 '};',
-                '    plugins: ['.PHP_EOL.'        new webpack.DefinePlugin({'.PHP_EOL.'            __VUE_OPTIONS_API__: JSON.stringify(true),'.PHP_EOL.PHP_EOL.'            __VUE_PROD_DEVTOOLS__: JSON.stringify(false),'.'        }),'.PHP_EOL.'    ],'.PHP_EOL.'};',
+                '    plugins: ['.PHP_EOL.'        new webpack.DefinePlugin({'.PHP_EOL.'            __VUE_OPTIONS_API__: JSON.stringify(true),'.PHP_EOL.'            __VUE_PROD_DEVTOOLS__: JSON.stringify(false),'.PHP_EOL.'        }),'.PHP_EOL.'    ],'.PHP_EOL.'};',
                 $webpackConfig
             ))) {
                 return false;
