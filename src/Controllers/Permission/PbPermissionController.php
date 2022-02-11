@@ -135,7 +135,7 @@ class PbPermissionController extends PbBuilderController
             // Add additional fields values
             $model->guard_name = 'admin';
             // Check if module relation exists
-            if ($model->hasRelation('module') && $request->input('module') &&  $module = PbModule::find($request->input('module'))) {
+            if ($model->hasRelation('module') && ($request->input('module') > 0) &&  $module = PbModule::find($request->input('module'))) {
                 $model->module()->associate($module);
             }
             // Model save
@@ -226,7 +226,7 @@ class PbPermissionController extends PbBuilderController
             // Build requests
             $requests = $this->processModelRequests($this->vars->validationRules, $request, $this->vars->replacers);
             // Check if module relation exists
-            if ($model->hasRelation('module') && $request->input('module') &&  $module = PbModule::find($request->input('module'))) {
+            if ($model->hasRelation('module') && ($request->input('module') > 0) &&  $module = PbModule::find($request->input('module'))) {
                 $model->module()->associate($module);
             }
             // Model update

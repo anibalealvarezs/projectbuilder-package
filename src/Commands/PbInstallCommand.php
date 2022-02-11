@@ -20,7 +20,6 @@ class PbInstallCommand extends Command
                             {--update : pachage will be updated before installation}
                             {--publish : Resources will be published to the application}
                             {--migrate : Migrations will be run}
-                            {--reset : Migrations will be removed from migrations directory}
                             {--seed : Tables will be seeded}
                             {--config : Application wil be configured}
                             {--link : Links will be created}

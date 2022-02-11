@@ -159,7 +159,7 @@ class PbBuilderController extends Controller
             $model = $this->processModelRequests($this->vars->validationRules, $request, $this->vars->replacers,
                 (new $this->vars->level->modelPath())->setLocale(app()->getLocale()));
             // Check if module relation exists
-            if ($model->hasRelation('module') && $request->input('module') &&  $module = PbModule::find($request->input('module'))) {
+            if ($model->hasRelation('module') && ($request->input('module') > 0) &&  $module = PbModule::find($request->input('module'))) {
                 $model->module()->associate($module);
             }
             // Model save
@@ -268,7 +268,7 @@ class PbBuilderController extends Controller
             // Build requests
             $requests = $this->processModelRequests($this->vars->validationRules, $request, $this->vars->replacers);
             // Check if module relation exists
-            if ($model->hasRelation('module') && $request->input('module') &&  $module = PbModule::find($request->input('module'))) {
+            if ($model->hasRelation('module') && ($request->input('module') > 0) &&  $module = PbModule::find($request->input('module'))) {
                 $model->module()->associate($module);
             }
             // Model update
