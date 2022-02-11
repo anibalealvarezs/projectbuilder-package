@@ -4,7 +4,9 @@ namespace Anibalealvarezs\Projectbuilder\Helpers;
 
 use Anibalealvarezs\Projectbuilder\Models\PbConfig;
 use Anibalealvarezs\Projectbuilder\Models\PbCountry;
+use Anibalealvarezs\Projectbuilder\Models\PbCurrentUser;
 use Anibalealvarezs\Projectbuilder\Models\PbLanguage;
+use Anibalealvarezs\Projectbuilder\Models\PbModule;
 use Anibalealvarezs\Projectbuilder\Models\PbNavigation;
 use Anibalealvarezs\Projectbuilder\Models\PbPermission;
 use Anibalealvarezs\Projectbuilder\Models\PbRole;
@@ -35,6 +37,8 @@ class Shares
                 "me" => [...$list, ...self::getMyData()],
                 "api_data" => [...$list, ...self::apiData()],
                 "debug_status" => [...$list, ...['debug_enabled' => PbDebugbar::isDebugEnabled()]],
+                "modules" => [...$list, ...self::getModules()],
+                "modules_replace" => [...$list, ...self::getModulesReplacingIds()],
             };
         }
         return $list;
@@ -51,7 +55,7 @@ class Shares
     {
         $allowed = [];
         foreach ($elements as $key => $value) {
-            $allowed[$value] = PbUser::current()->hasPermissionTo($key);
+            $allowed[$value] = app(PbCurrentUser::class)->hasPermissionTo($key);
         }
         return [
             'allowed' => $allowed
@@ -66,7 +70,7 @@ class Shares
     #[ArrayShape(['userdata' => "array|null"])]
     public static function getUserPermissionsAndRoles(): array
     {
-        $user = PbUser::current();
+        $user = app(PbCurrentUser::class);
         return [
             'userdata' => $user ? [
                 'permissions' => $user->getAllPermissions(),
@@ -158,8 +162,8 @@ class Shares
     #[ArrayShape(['roles' => "mixed"])]
     public static function getRoles(): array
     {
-        $user = PbUser::current();
-        $roles = ([]);
+        $user = app(PbCurrentUser::class);
+        $roles = collect([]);
         if ($user->hasRole(['super-admin'])) {
             $roles = PbRole::whereNotIn(
                 'name',
@@ -218,11 +222,45 @@ class Shares
      *
      * @return array
      */
+    #[ArrayShape([
+        'modules' => "\Anibalealvarezs\Projectbuilder\Models\PbModule[]|\Illuminate\Database\Eloquent\Collection"
+    ])]
+    public static function getModules(): array
+    {
+        return [
+            'modules' => PbModule::all()
+        ];
+    }
+
+    /**
+     * Transform the resource into an array.
+     *
+     * @return array
+     */
+    #[ArrayShape([
+        'modules' => "\Anibalealvarezs\Projectbuilder\Models\PbModule[]|\Illuminate\Database\Eloquent\Collection"
+    ])]
+    public static function getModulesReplacingIds(): array
+    {
+        $modules = PbModule::all()->toArray();
+        foreach($modules as &$module) {
+            $module['id'] = $module['modulekey'];
+        }
+        return [
+            'modules' => collect($modules)
+        ];
+    }
+
+    /**
+     * Transform the resource into an array.
+     *
+     * @return array
+     */
     #[ArrayShape(['me' => "mixed"])]
     public static function getMyData(): array
     {
         return [
-            'me' => PbUser::withPublicRelations()->current()
+            'me' => app(PbCurrentUser::class)
         ];
     }
 

@@ -43,7 +43,8 @@ export default {
             name: props.data.name,
             configkey: props.data.configkey,
             configvalue: props.data.configvalue,
-            description: props.data.description
+            description: props.data.description,
+            module: props.data.module,
         })
         const directory = 'configs'
 

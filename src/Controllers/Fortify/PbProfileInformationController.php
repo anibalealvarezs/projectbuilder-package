@@ -3,6 +3,7 @@
 namespace Anibalealvarezs\Projectbuilder\Controllers\Fortify;
 
 use Anibalealvarezs\Projectbuilder\Models\PbCountry;
+use Anibalealvarezs\Projectbuilder\Models\PbCurrentUser;
 use Anibalealvarezs\Projectbuilder\Models\PbLanguage;
 use Anibalealvarezs\Projectbuilder\Models\PbUser;
 use Illuminate\Http\JsonResponse;
@@ -25,7 +26,7 @@ class PbProfileInformationController extends ProfileInformationController
     {
         $updater->update($request->user(), $request->all());
 
-        $current = PbUser::current();
+        $current = app(PbCurrentUser::class);
         if ($language = PbLanguage::find($request->input('language'))) {
             $current->language_id = $language->id;
             $request->session()->put('locale', $language->code);

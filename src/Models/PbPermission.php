@@ -7,9 +7,11 @@ use Anibalealvarezs\Projectbuilder\Helpers\Shares;
 use Anibalealvarezs\Projectbuilder\Traits\PbModelCrudTrait;
 use Anibalealvarezs\Projectbuilder\Traits\PbModelTrait;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\DB;
 use Spatie\Permission\Models\Permission;
+use Spatie\Permission\PermissionRegistrar;
 use Spatie\Translatable\HasTranslations;
 
 class PbPermission extends Permission
@@ -28,6 +30,11 @@ class PbPermission extends Permission
         $this->connection = config('database.default');
         $this->publicRelations = ['roles', 'module'];
         $this->allRelations = ['roles', 'module'];
+        $this->unmodifiableModels = [
+            'name' => [
+                'crud super-admin',
+            ]
+        ];
     }
 
     public function getAliasAttribute($value)
@@ -79,6 +86,41 @@ class PbPermission extends Permission
     }
 
     /**
+     * A permission can be applied to roles.
+     */
+    public function roles(): BelongsToMany
+    {
+        return $this->belongsToMany(
+            PbRole::class,
+            config('permission.table_names.role_has_permissions'),
+            PermissionRegistrar::$pivotPermission,
+            PermissionRegistrar::$pivotRole
+        );
+    }
+
+    /**
+     * Scope a query to only include popular users.
+     *
+     * @param $key
+     * @return PbConfig|null
+     */
+    public static function findByNameCustom($key): self|null
+    {
+        return self::firstWhere('name', $key);
+    }
+
+    /**
+     * Scope a query to only include popular users.
+     *
+     * @param $id
+     * @return bool
+     */
+    public function isDeletableBy($id): bool
+    {
+        return false; // Undeletable till we have a better way to handle permission deletion
+    }
+
+    /**
      * Scope a query to only include popular users.
      *
      * @return array
@@ -99,6 +141,16 @@ class PbPermission extends Permission
                 'orderable' => true,
             ],
             'alias' => [],
+            'roles' => [
+                'arrval' => [
+                    'key' => 'alias',
+                    'href' => [
+                        'route' => 'roles.show',
+                        'id' => 'id',
+                    ],
+                ],
+                'size' => 'multiple',
+            ],
             'module' => [
                 'arrval' => [
                     'key' => 'name',
@@ -107,7 +159,7 @@ class PbPermission extends Permission
         ];
 
         $config['pagination'] = [
-            'per_page' => 20,
+            'per_page' => 10,
             'location' => 'both',
         ];
 
@@ -125,6 +177,13 @@ class PbPermission extends Permission
             'roles' => [
                 'type' => 'select-multiple',
                 'list' => Shares::getRoles()['roles']->toArray(),
+            ],
+            'module' => [
+                'type' => 'select',
+                'list' => [
+                    ...[['id' => 0, 'name' => '[none]']],
+                    ...Shares::getModules()['modules']->toArray()
+                ],
             ],
         ];
 

@@ -13,6 +13,7 @@ use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Laravel\Sanctum\HasApiTokens;
+use Illuminate\Support\Collection;
 use Spatie\Permission\Traits\HasRoles;
 use Spatie\Translatable\HasTranslations;
 
@@ -100,6 +101,17 @@ class PbUser extends User
     /**
      * Scope a query to only include popular users.
      *
+     * @return string
+     */
+    public function scopeWithAllPermissions()
+    {
+        $this->permissions = $this->getAllPermissions();
+        return $this;
+    }
+
+    /**
+     * Scope a query to only include popular users.
+     *
      * @return BelongsTo
      */
     public function lang(): BelongsTo
@@ -131,7 +143,11 @@ class PbUser extends User
      */
     public function scopeCurrent(Builder $query): self|null
     {
-        return $query->find(Auth::user()->id);
+        if ($user = $query->find(Auth::user()->id)->withAllPermissions()) {
+            $user->roles = $user->roles()->get();
+            return $user;
+        }
+        return null;
     }
 
     /**
@@ -190,14 +206,15 @@ class PbUser extends User
      */
     public function isEditableBy($id): bool
     {
-        $user = self::find($id);
-        if (!($this->hasRole('super-admin') && !$user->hasRole('super-admin')) &&
-            !($this->hasRole(['admin']) && !$user->hasAnyRole(['super-admin', 'admin']))
-        ) {
-            return true;
+        if (!$user = $this->canBeOverrunedBy($id)) {
+            return false;
         }
 
-        return false;
+        if (!$user->hasPermissionTo('update '.$this->getTable())) {
+            return false;
+        }
+
+        return true;
     }
 
     /**
@@ -208,14 +225,15 @@ class PbUser extends User
      */
     public function isViewableBy($id): bool
     {
-        $user = self::find($id);
-        if (!($this->hasRole('super-admin') && !$user->hasRole('super-admin')) &&
-            !($this->hasRole(['admin']) && !$user->hasAnyRole(['super-admin', 'admin']))
-        ) {
-            return true;
+        if (!$user = $this->canBeOverrunedBy($id)) {
+            return false;
         }
 
-        return false;
+        if (!$user->hasPermissionTo('read '.$this->getTable())) {
+            return false;
+        }
+
+        return true;
     }
 
     /**
@@ -226,7 +244,7 @@ class PbUser extends User
      */
     public function isSelectableBy($id): bool
     {
-        return true;
+        return $this->isViewableBy($id);
     }
 
     /**
@@ -237,26 +255,82 @@ class PbUser extends User
      */
     public function isDeletableBy($id): bool
     {
-        if (!$this->hasAnyRole(['super-admin', 'admin']) && ($this->id != Auth::user()->id)) {
-            return true;
+        if (!$user = $this->canBeOverrunedBy($id)) {
+            return false;
         }
 
-        return false;
+        if ($this->id === $id) {
+            return false;
+        }
+
+        if ($this->hasRole('super-admin')) {
+            return false;
+        }
+
+        if ($this->hasRole(['admin']) && !$user->hasRole('super-admin')){
+            return false;
+        }
+
+        if (!$user->hasPermissionTo('delete '.$this->getTable())) {
+            return false;
+        }
+
+        return true;
     }
 
     /**
      * Scope a query to only include popular users.
      *
-     * @return bool
+     * @param $id
+     * @return bool|PbUser|PbCurrentUser
      */
-    protected function getDeletableStatus(): bool
+    protected function canBeOverrunedBy($id): bool|PbUser|PbCurrentUser
     {
-        $currentUser = self::current();
-        if ($this->id == $currentUser->id) {
+        if (Auth::user()->id === $id) {
+            $user = app(PbCurrentUser::class);
+        }
+
+        if (!$user && !$user = self::find($id)) {
             return false;
         }
 
-        return true;
+        if ($this->hasRole('super-admin') && !$user->hasRole('super-admin')) {
+            return false;
+        }
+
+        if ($this->hasRole('admin') && !$user->hasAnyRole(['super-admin', 'admin'])) {
+            return false;
+        }
+
+        return $user;
+    }
+
+    /**
+     * Scope a query to only include popular users.
+     *
+     * @param bool $only_names
+     * @return array|Collection
+     */
+    public function scopeCurrentPermissions($only_names = false): array|Collection
+    {
+        if (!$only_names) {
+            return $this->permissions;
+        }
+        return $this->permissions->pluck('name')->toArray();
+    }
+
+    /**
+     * Scope a query to only include popular users.
+     *
+     * @param bool $only_names
+     * @return array|Collection
+     */
+    public function scopeCurrentRoles($only_names = false): array|Collection
+    {
+        if (!$only_names) {
+            return $this->roles;
+        }
+        return $this->roles->pluck('name')->toArray();
     }
 
     /**

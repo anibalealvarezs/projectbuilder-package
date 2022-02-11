@@ -4,6 +4,8 @@ namespace Anibalealvarezs\Projectbuilder\Controllers\Permission;
 
 use Anibalealvarezs\Projectbuilder\Controllers\PbBuilderController;
 use Anibalealvarezs\Projectbuilder\Models\PbConfig;
+use Anibalealvarezs\Projectbuilder\Models\PbCurrentUser;
+use Anibalealvarezs\Projectbuilder\Models\PbModule;
 use Anibalealvarezs\Projectbuilder\Models\PbRole;
 
 use Anibalealvarezs\Projectbuilder\Models\PbUser;
@@ -132,6 +134,10 @@ class PbPermissionController extends PbBuilderController
             $model = $this->processModelRequests($this->vars->validationRules, $request, $this->vars->replacers, $model);
             // Add additional fields values
             $model->guard_name = 'admin';
+            // Check if module relation exists
+            if ($model->hasRelation('module') && $request->input('module') &&  $module = PbModule::find($request->input('module'))) {
+                $model->module()->associate($module);
+            }
             // Model save
             if (!$model->save()) {
                 return $this->redirectResponseCRUDFail($request, 'create', "Error saving {$this->vars->level->name}");
@@ -208,9 +214,21 @@ class PbPermissionController extends PbBuilderController
         // Process
         try {
             // Build model
-            $model = $this->vars->level->modelPath::find($id)->setLocale(app()->getLocale());
+            if (!$model = $this->vars->level->modelPath::find($id)) {
+                return $this->redirectResponseCRUDFail(request(), 'update', "Error finding {$this->vars->level->name}");
+            }
+            if (!$model->isEditableBy(Auth::user()->id)) {
+                return $this->redirectResponseCRUDFail($request, 'update', "You don't have permission to edit this {$this->vars->level->name}");
+            }
+            $model->setLocale(app()->getLocale());
+            // Push Unmodifiable Permissions
+            $model = $this->pushUnmodifiablePermissions($model);
             // Build requests
             $requests = $this->processModelRequests($this->vars->validationRules, $request, $this->vars->replacers);
+            // Check if module relation exists
+            if ($model->hasRelation('module') && $request->input('module') &&  $module = PbModule::find($request->input('module'))) {
+                $model->module()->associate($module);
+            }
             // Model update
             if (!$model->update($requests)) {
                 return $this->redirectResponseCRUDFail($request, 'update', "Error updating {$this->vars->level->name}");
@@ -258,7 +276,12 @@ class PbPermissionController extends PbBuilderController
     {
         // Process
         try {
-            $model = $this->vars->level->modelPath::findOrFail($id);
+            if (!$model = $this->vars->level->modelPath::find($id)) {
+                return $this->redirectResponseCRUDFail(request(), 'delete', "Error finding {$this->vars->level->name}");
+            }
+            if (!$model->isDeletableBy(Auth::user()->id)) {
+                return $this->redirectResponseCRUDFail($request, 'delete', "You don't have permission to edit this {$this->vars->level->name}");
+            }
             //Make it impossible to delete these specific permissions
             if (in_array($model->name, [
                 'admin roles permissions',
@@ -286,5 +309,46 @@ class PbPermissionController extends PbBuilderController
         } catch (Exception $e) {
             return $this->redirectResponseCRUDFail($request, 'delete', $e->getMessage());
         }
+    }
+
+    protected function pushUnmodifiablePermissions($model)
+    {
+        if (!PbUser::current()->hasRole('super-admin')) {
+            array_push(
+                $model->unmodifiableModels['name'],
+                ...[
+                    'admin roles permissions',
+                    'create roles',
+                    'update roles',
+                    'delete roles',
+                    'create permissions',
+                    'update permissions',
+                    'delete permissions',
+                    'create configs',
+                    'update configs',
+                    'delete configs',
+                    'create navigations',
+                    'update navigations',
+                    'delete navigations',
+                    'developer options',
+                    'read loggers',
+                    'delete loggers',
+                    'config loggers',
+                    'api access',
+                ]
+            );
+            if (!PbUser::current()->hasRole('admin')) {
+                array_push(
+                    $model->unmodifiableModels['name'],
+                    ...[
+                        'read roles',
+                        'read configs',
+                        'read permissions',
+                        'read navigations',
+                    ]
+                );
+            }
+        }
+        return $model;
     }
 }

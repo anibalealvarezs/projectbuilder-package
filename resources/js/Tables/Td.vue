@@ -1,5 +1,5 @@
 <template>
-    <td v-if="(allowed.update || allowed.delete) || (index !== 'actions')" scope="row"
+    <td v-if="((allowed.update && item.crud.editable) || (allowed.delete && item.crud.deletable)) || (index !== 'actions')" scope="row"
         :class="(index === 'sorthandle' ? buildHandlerClasses() : buildTdClasses())">
         <div v-if="index === 'actions'">
             <!-- Actions Dropdown -->

@@ -3,6 +3,7 @@
 namespace Anibalealvarezs\Projectbuilder\Traits;
 
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\Auth;
 
 trait PbModelTrait {
 
@@ -16,6 +17,31 @@ trait PbModelTrait {
      */
     protected array $allRelations = [];
 
+    /**
+     * @var array
+     */
+    public array $undeletableModels = [];
+
+    /**
+     * @var array
+     */
+    public array $unmodifiableModels = [];
+
+    /**
+     * @var array
+     */
+    public array $unreadableModels = [];
+
+    /**
+     * @var array
+     */
+    public array $unconfigurableModels = [];
+
+    /**
+     * Scope a query to only include popular users.
+     *
+     * @return array
+     */
     protected function getCrudAttribute(): array
     {
         return [
@@ -34,7 +60,17 @@ trait PbModelTrait {
      */
     protected function getReadableStatus(): bool
     {
-        return true;
+        if (!Auth::check()) {
+            return false;
+        }
+
+        foreach($this->unreadableModels as $key => $value) {
+            if (in_array($this->{$key}, $value)) {
+                return false;
+            }
+        }
+
+        return $this->isViewableBy(Auth::user()->id);
     }
 
     /**
@@ -44,7 +80,17 @@ trait PbModelTrait {
      */
     protected function getEditableStatus(): bool
     {
-        return true;
+        if (!Auth::check()) {
+            return false;
+        }
+
+        foreach($this->unmodifiableModels as $key => $value) {
+            if (in_array($this->{$key}, $value)) {
+                return false;
+            }
+        }
+
+        return $this->isEditableBy(Auth::user()->id);
     }
 
     /**
@@ -54,7 +100,17 @@ trait PbModelTrait {
      */
     protected function getSelectableStatus(): bool
     {
-        return true;
+        if (!Auth::check()) {
+            return false;
+        }
+
+        foreach($this->unreadableModels as $key => $value) {
+            if (in_array($this->{$key}, $value)) {
+                return false;
+            }
+        }
+
+        return $this->isSelectableBy(Auth::user()->id);
     }
 
     /**
@@ -64,7 +120,17 @@ trait PbModelTrait {
      */
     protected function getDeletableStatus(): bool
     {
-        return true;
+        if (!Auth::check()) {
+            return false;
+        }
+
+        foreach($this->undeletableModels as $key => $value) {
+            if (in_array($this->{$key}, $value)) {
+                return false;
+            }
+        }
+
+        return $this->isDeletableBy(Auth::user()->id);
     }
 
     /**
@@ -74,6 +140,16 @@ trait PbModelTrait {
      */
     protected function getConfigurableStatus(): bool
     {
+        if (!Auth::check()) {
+            return false;
+        }
+
+        foreach($this->unconfigurableModels as $key => $value) {
+            if (in_array($this->{$key}, $value)) {
+                return false;
+            }
+        }
+
         return true;
     }
 
@@ -137,5 +213,30 @@ trait PbModelTrait {
     public static function scopeIsSortable(): bool
     {
         return self::$enableable ?? false;
+    }
+
+    /**
+     * Determine if the given relationship (method) exists.
+     *
+     * @param  string  $key
+     * @return bool
+     */
+    public function hasRelation($key)
+    {
+        // If the key already exists in the relationships array, it just means the
+        // relationship has already been loaded, so we'll just return it out of
+        // here because there is no need to query within the relations twice.
+        if ($this->relationLoaded($key)) {
+            return true;
+        }
+
+        // If the "attribute" exists as a method on the model, we will just assume
+        // it is a relationship and will load and return results from the query
+        // and hydrate the relationship's value on the "relationships" array.
+        if (method_exists($this, $key)) {
+            return true;
+        }
+
+        return false;
     }
 }

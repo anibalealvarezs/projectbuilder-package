@@ -9,6 +9,7 @@ use Anibalealvarezs\Projectbuilder\Traits\PbModelSortableTrait;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\Auth;
 
 class PbNavigation extends PbBuilder
 {
@@ -165,7 +166,11 @@ class PbNavigation extends PbBuilder
                 ],
             ],
             'module' => [
-                'type' => 'text',
+                'type' => 'select',
+                'list' => [
+                    ...[['id' => 0, 'name' => '[none]']],
+                    ...Shares::getModules()['modules']->toArray()
+                ],
             ],
         ];
 
@@ -195,19 +200,22 @@ class PbNavigation extends PbBuilder
                     'key' => 'alias',
                 ],
             ],
-            'status' => [
+            'module' => [
+                'arrval' => [
+                    'key' => 'name',
+                ],
+            ],
+        ];
+
+        if ((new self)->isEditableBy(Auth::user()->id)) {
+            $config['fields']['status'] = [
                 'style' => [
                     'centered' => true,
                     'width' => 'w-12',
                 ],
                 'status' => true
-            ],
-            'module' => [
-                'arrval' => [
-                    'key' => 'alias',
-                ],
-            ],
-        ];
+            ];
+        }
 
         return $config;
     }

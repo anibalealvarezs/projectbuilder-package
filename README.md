@@ -9,11 +9,13 @@ This Laravel package is a simple and easy way to create a new project with a new
 
 ## Requirements
 
-#### 0. Install Laravel 9.x and Jetstream/Inertia
+#### 0. Install Laravel
+
+[![Laravel 9.x](https://img.shields.io/badge/Laravel-9.x-blue.svg)](https://laravel.com/docs/master/installation)
 ```shell
 composer create-project laravel/laravel my-project
 ```
-Optionally, you can manually pre-install Jetstream/Inertia with teams. Project Builder will also ask you for it if you don't have it.
+Optionally, you can manually pre-install Jetstream/Inertia with Teams and Pest. Project Builder will also ask you for it if you don't have it.
 ```shell
 php artisan jetstream:install inertia --teams
 ```

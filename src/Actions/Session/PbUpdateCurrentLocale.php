@@ -2,6 +2,7 @@
 
 namespace Anibalealvarezs\Projectbuilder\Actions\Session;
 
+use Anibalealvarezs\Projectbuilder\Models\PbCurrentUser;
 use Anibalealvarezs\Projectbuilder\Models\PbLanguage;
 use Anibalealvarezs\Projectbuilder\Models\PbUser;
 use Carbon\Carbon;
@@ -19,7 +20,7 @@ class PbUpdateCurrentLocale
     public function handle($request, $next)
     {
         if (!$locale = PbUser::find($request->user()->id)->getLocale()) {
-            PbUser::current()->update(['language_id' => PbLanguage::findByCode($locale = config('app.locale'))->id]);
+            app(PbCurrentUser::class)->update(['language_id' => PbLanguage::findByCode($locale = config('app.locale'))->id]);
         }
         app()->setLocale($locale);
         $request->session()->put('locale', $locale);

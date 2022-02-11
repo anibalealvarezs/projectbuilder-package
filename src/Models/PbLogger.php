@@ -3,12 +3,13 @@
 namespace Anibalealvarezs\Projectbuilder\Models;
 
 use Anibalealvarezs\Projectbuilder\Helpers\PbHelpers;
+use Anibalealvarezs\Projectbuilder\Helpers\Shares;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class PbLogger extends PbBuilder
 {
-    protected $table = 'logger';
+    protected $table = 'loggers';
 
     /**
      * Create a new Eloquent model instance.
@@ -136,6 +137,13 @@ class PbLogger extends PbBuilder
             ],
             'description' => [
                 'type' => 'textarea',
+            ],
+            'module' => [
+                'type' => 'select',
+                'list' => [
+                    ...[['id' => 0, 'name' => '[none]']],
+                    ...Shares::getModules()['modules']->toArray()
+                ],
             ],
         ];
 

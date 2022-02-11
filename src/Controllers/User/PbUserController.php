@@ -5,6 +5,7 @@ namespace Anibalealvarezs\Projectbuilder\Controllers\User;
 use Anibalealvarezs\Projectbuilder\Controllers\PbBuilderController;
 
 use Anibalealvarezs\Projectbuilder\Helpers\PbHelpers;
+use Anibalealvarezs\Projectbuilder\Models\PbCurrentUser;
 use Anibalealvarezs\Projectbuilder\Models\PbUser;
 use App\Http\Requests;
 
@@ -114,7 +115,7 @@ class PbUserController extends PbBuilderController
 
         $this->pushRequired(['roles', 'password', 'email']);
 
-        return $this->renderResponse($this->vars->level->viewsPath.'Create'.$this->vars->level->key);
+        return $this->renderResponse($this->buildRouteString($route, 'create'));
     }
 
     /**
@@ -157,7 +158,7 @@ class PbUserController extends PbBuilderController
                 return $this->redirectResponseCRUDFail($request, 'create', "Error updating team for {$this->vars->level->name}");
             }
             // Roles assigning
-            $me = PbUser::current();
+            $me = app(PbCurrentUser::class);
             if ($me->hasRole(['super-admin'])) {
                 if (in_array('super-admin', $roles)) {
                     // Add only super-admin
@@ -253,7 +254,16 @@ class PbUserController extends PbBuilderController
         // Process
         try {
             // Build model
-            $model = $this->vars->level->modelPath::find($id)->setLocale(app()->getLocale());
+            if (!$model = $this->vars->level->modelPath::find($id)) {
+                return $this->redirectResponseCRUDFail($request, 'update', "Error finding {$this->vars->level->name} with id $id");
+            }
+            if ($this->isUnmodifiableModel($model)) {
+                return $this->redirectResponseCRUDFail(request(), 'update', "This {$this->vars->level->name} cannot be modified");
+            }
+            if (!$model->isEditableBy(Auth::user()->id)) {
+                return $this->redirectResponseCRUDFail($request, 'update', "You don't have permission to edit this {$this->vars->level->name}");
+            }
+            $model->setLocale(app()->getLocale());
             // Build requests
             $requests = $this->processModelRequests($this->vars->validationRules, $request, $this->vars->replacers);
             if ($password != "") {
@@ -266,7 +276,7 @@ class PbUserController extends PbBuilderController
                 return $this->redirectResponseCRUDFail($request, 'update', "Error updating {$this->vars->level->name}");
             }
             // Sync roles
-            $me = PbUser::current();
+            $me = app(PbCurrentUser::class);
             if ($me->hasRole(['super-admin'])) {
                 if (($model->id == Auth::user()->id) || in_array('super-admin', $roles)) {
                     // Add only super-admin

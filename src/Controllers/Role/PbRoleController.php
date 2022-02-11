@@ -3,7 +3,6 @@
 namespace Anibalealvarezs\Projectbuilder\Controllers\Role;
 
 use Anibalealvarezs\Projectbuilder\Controllers\PbBuilderController;
-use Anibalealvarezs\Projectbuilder\Models\PbConfig;
 use Anibalealvarezs\Projectbuilder\Models\PbPermission;
 
 use Anibalealvarezs\Projectbuilder\Models\PbUser;
@@ -208,7 +207,16 @@ class PbRoleController extends PbBuilderController
         // Process
         try {
             // Build model
-            $model = $this->vars->level->modelPath::find($id)->setLocale(app()->getLocale());
+            if (!$model = $this->vars->level->modelPath::find($id)) {
+                return $this->redirectResponseCRUDFail($request, 'update', "Error finding {$this->vars->level->name}");
+            }
+            if ($this->isUnmodifiableModel($model)) {
+                return $this->redirectResponseCRUDFail($request, 'update', "This {$this->vars->level->name} cannot be modified");
+            }
+            if (!$model->isEditableBy(Auth::user()->id)) {
+                return $this->redirectResponseCRUDFail($request, 'update', "You don't have permission to edit this {$this->vars->level->name}");
+            }
+            $model->setLocale(app()->getLocale());
             // Build requests
             $requests = $this->processModelRequests($this->vars->validationRules, $request, $this->vars->replacers);
             // Model update
@@ -243,42 +251,6 @@ class PbRoleController extends PbBuilderController
         }
     }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param Request $request
-     * @param int $id
-     * @return Application|Redirector|RedirectResponse
-     */
-    public function destroy(Request $request, int $id): Redirector|RedirectResponse|Application
-    {
-        // Process
-        try {
-            $model = $this->vars->level->modelPath::findOrFail($id);
-            //Make it impossible to delete these specific permissions
-            if (in_array($model->name, [
-                'user',
-                'api-user',
-                'admin',
-                'developer',
-                'super-admin',
-            ])) {
-                $request->session()->flash('flash.banner', 'This role can not be deleted!');
-                $request->session()->flash('flash.bannerStyle', 'danger');
-
-                return redirect()->route($this->vars->level->names . '.index');
-            }
-            // Model delete
-            if (!$model->delete()) {
-                return $this->redirectResponseCRUDFail($request, 'delete', "Error deleting {$this->vars->level->name}");
-            }
-
-            return $this->redirectResponseCRUDSuccess($request, 'delete');
-        } catch (Exception $e) {
-            return $this->redirectResponseCRUDFail($request, 'delete', $e->getMessage());
-        }
-    }
-
     protected function loadDefaultPermissions()
     {
         $this->superAdminExclusivePermissions =
@@ -287,19 +259,15 @@ class PbRoleController extends PbBuilderController
                 [
                     'crud super-admin',
                     'admin roles permissions',
-                    'read roles',
                     'create roles',
                     'update roles',
                     'delete roles',
-                    'read permissions',
                     'create permissions',
                     'update permissions',
                     'delete permissions',
-                    'read configs',
                     'create configs',
                     'update configs',
                     'delete configs',
-                    'read navigations',
                     'create navigations',
                     'update navigations',
                     'delete navigations',

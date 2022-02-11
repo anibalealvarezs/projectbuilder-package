@@ -41,6 +41,7 @@ export default {
         const formconfig = computed(() => usePage().props.value.shared.formconfig)
         const form = reactive({
             name: props.data.name,
+            module: props.data.module,
         })
         const directory = 'loggers'
 

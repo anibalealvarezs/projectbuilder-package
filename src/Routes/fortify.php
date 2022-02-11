@@ -32,7 +32,7 @@ Route::group(['middleware' => PbHelpers::getDefaultGroupsMiddlewares()['web']], 
     // Profile Information...
     if (Features::enabled(Features::updateProfileInformation())) {
         Route::put('/user/profile-information', [PbProfileInformationController::class, 'update'])
-            ->middleware([config('fortify.auth_middleware', 'auth').':'.config('fortify.guard')])
+            ->middleware([...[config('fortify.auth_middleware', 'auth').':'.config('fortify.guard')], ...PbHelpers::getDefaultGroupsMiddlewares()['auth']])
             ->name('user-profile-information.update');
     }
 

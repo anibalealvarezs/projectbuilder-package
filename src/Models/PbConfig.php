@@ -3,11 +3,12 @@
 namespace Anibalealvarezs\Projectbuilder\Models;
 
 use Anibalealvarezs\Projectbuilder\Helpers\PbHelpers;
+use Anibalealvarezs\Projectbuilder\Helpers\Shares;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class PbConfig extends PbBuilder
 {
-    protected $table = 'config';
+    protected $table = 'configs';
 
     public $timestamps = false;
 
@@ -101,6 +102,13 @@ class PbConfig extends PbBuilder
             ],
             'description' => [
                 'type' => 'textarea',
+            ],
+            'module' => [
+                'type' => 'select',
+                'list' => [
+                    ...[['id' => 0, 'name' => '[none]']],
+                    ...Shares::getModules()['modules']->toArray()
+                ],
             ],
         ];
 

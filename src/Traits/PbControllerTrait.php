@@ -4,6 +4,7 @@ namespace Anibalealvarezs\Projectbuilder\Traits;
 
 use Anibalealvarezs\Projectbuilder\Helpers\Shares;
 use Anibalealvarezs\Projectbuilder\Models\PbConfig;
+use Anibalealvarezs\Projectbuilder\Models\PbCurrentUser;
 use Anibalealvarezs\Projectbuilder\Models\PbUser;
 
 use Auth;
@@ -46,10 +47,10 @@ trait PbControllerTrait
         $allowed = [];
         if (is_array($permissions)) {
             foreach ($permissions as $permission) {
-                $allowed[$permission] = PbUser::current()->hasPermissionTo($permission);
+                $allowed[$permission] = app(PbCurrentUser::class)->hasPermissionTo($permission);
             }
         } else {
-            $allowed[$permissions] = PbUser::current()->hasPermissionTo($permissions);
+            $allowed[$permissions] = app(PbCurrentUser::class)->hasPermissionTo($permissions);
         }
 
         return $allowed;

@@ -6,7 +6,9 @@ use Anibalealvarezs\Projectbuilder\Helpers\PbDebugbar;
 use Anibalealvarezs\Projectbuilder\Helpers\PbHelpers;
 use Anibalealvarezs\Projectbuilder\Helpers\Shares;
 use Anibalealvarezs\Projectbuilder\Models\PbCountry;
+use Anibalealvarezs\Projectbuilder\Models\PbCurrentUser;
 use Anibalealvarezs\Projectbuilder\Models\PbLanguage;
+use Anibalealvarezs\Projectbuilder\Models\PbModule;
 use Anibalealvarezs\Projectbuilder\Traits\PbControllerTrait;
 
 use Anibalealvarezs\Projectbuilder\Traits\PbControllerListingTrait;
@@ -60,7 +62,7 @@ class PbBuilderController extends Controller
         }
         $this->vars->required = $this->getRequired();
         $this->vars->request = $request;
-        $this->vars->sortable = isset($this->vars->level->modelPath::$sortable);
+        $this->vars->sortable = isset($this->vars->level->modelPath::$sortable) && $this->vars->level->modelPath::$sortable;
 
         self::$item = $this->vars->level->name;
         self::$route = $this->vars->level->names;
@@ -112,10 +114,11 @@ class PbBuilderController extends Controller
         }
 
         $this->vars->listing = self::buildListingRow($config);
+        $this->vars->sortable = $this->vars->sortable && app(PbCurrentUser::class)->hasPermissionTo('update '.(new $this->vars->level->modelPath)->getTable());
         $this->vars->formconfig = $config['formconfig'];
-        $this->vars->pagination = !isset($this->vars->level->modelPath::$sortable) || !$this->vars->level->modelPath::$sortable ? $config['pagination'] : [];
+        $this->vars->pagination = !$this->vars->sortable ? $config['pagination'] : [];
         $this->vars->heading = $config['heading'];
-        $this->vars->orderby = (!isset($this->vars->level->modelPath::$sortable) || !$this->vars->level->modelPath::$sortable) && $orderby ? ['field' => $field, 'order' => $order] : [];
+        $this->vars->orderby = !$this->vars->sortable && $orderby ? ['field' => $field, 'order' => $order] : [];
 
         $arrayElements = $this->buildModelsArray($element, $multiple, null, true, $page, $perpage, $orderby, $field, $order);
         PbDebugbar::addMessage($this->arraytify($arrayElements), 'data');
@@ -155,6 +158,10 @@ class PbBuilderController extends Controller
             // Add requests
             $model = $this->processModelRequests($this->vars->validationRules, $request, $this->vars->replacers,
                 (new $this->vars->level->modelPath())->setLocale(app()->getLocale()));
+            // Check if module relation exists
+            if ($model->hasRelation('module') && $request->input('module') &&  $module = PbModule::find($request->input('module'))) {
+                $model->module()->associate($module);
+            }
             // Model save
             if (!$model->save()) {
                 return $this->redirectResponseCRUDFail($request, 'create', "Error saving {$this->vars->level->name}");
@@ -182,9 +189,17 @@ class PbBuilderController extends Controller
         string $route = 'level'
     ): Application|RedirectResponse|Redirector|InertiaResponse|JsonResponse {
 
-        $arrayElements = $this->buildModelsArray($element, $multiple, $id);
+        if (!$model = $this->buildModelsArray($element, $multiple, $id)) {
+            return $this->redirectResponseCRUDFail(request(), 'show', "Error finding {$this->vars->level->name}");
+        }
+        if ($this->isUnreadableModel($this->vars->level->modelPath::find($id))) {
+            return $this->redirectResponseCRUDFail(request(), 'show', "This {$this->vars->level->name} cannot be shown");
+        }
+        if (!$model->isViewableBy(Auth::user()->id)) {
+            return $this->redirectResponseCRUDFail(request(), 'show', "You don't have permission to view this {$this->vars->level->name}");
+        }
 
-        return $this->renderResponse($this->buildRouteString($route, 'show'), $arrayElements);
+        return $this->renderResponse($this->buildRouteString($route, 'show'), $model);
     }
 
     /**
@@ -206,7 +221,19 @@ class PbBuilderController extends Controller
         $this->vars->formconfig = $this->vars->level->modelPath::getCrudConfig()['formconfig'];
         PbDebugbar::addMessage($this->vars->formconfig, 'formconfig');
 
-        return $this->renderResponse($this->buildRouteString($route, 'edit'), $this->buildModelsArray($element, $multiple, $id));
+        $currentModel = $this->vars->level->modelPath::find($id);
+
+        if (!$model = $this->buildModelsArray($element, $multiple, $id)) {
+            return $this->redirectResponseCRUDFail(request(), 'edit', "Error finding {$this->vars->level->name}");
+        }
+        if ($this->isUnreadableModel($currentModel)) {
+            return $this->redirectResponseCRUDFail(request(), 'edit', "This {$this->vars->level->name} cannot be modified");
+        }
+        if (!$currentModel->isEditableBy(Auth::user()->id)) {
+            return $this->redirectResponseCRUDFail(request(), 'edit', "You don't have permission to edit this {$this->vars->level->name}");
+        }
+
+        return $this->renderResponse($this->buildRouteString($route, 'edit'), $model);
     }
 
     /**
@@ -226,9 +253,22 @@ class PbBuilderController extends Controller
         // Process
         try {
             // Build model
-            $model = $this->vars->level->modelPath::find($id)->setLocale(app()->getLocale());
+            if (!$model = $this->vars->level->modelPath::find($id)) {
+                return $this->redirectResponseCRUDFail($request, 'update', "Error finding {$this->vars->level->name}");
+            }
+            if ($this->isUnmodifiableModel($model)) {
+                return $this->redirectResponseCRUDFail($request, 'update', "This {$this->vars->level->name} cannot be modified");
+            }
+            if (!$model->isEditableBy(Auth::user()->id)) {
+                return $this->redirectResponseCRUDFail($request, 'update', "You don't have permission to edit this {$this->vars->level->name}");
+            }
+            $model->setLocale(app()->getLocale());
             // Build requests
             $requests = $this->processModelRequests($this->vars->validationRules, $request, $this->vars->replacers);
+            // Check if module relation exists
+            if ($model->hasRelation('module') && $request->input('module') &&  $module = PbModule::find($request->input('module'))) {
+                $model->module()->associate($module);
+            }
             // Model update
             if (!$model->update($requests)) {
                 return $this->redirectResponseCRUDFail($request, 'update', "Error updating {$this->vars->level->name}");
@@ -249,16 +289,25 @@ class PbBuilderController extends Controller
      */
     public function destroy(Request $request, int $id): Redirector|RedirectResponse|Application
     {
+        if (!$model = $this->vars->level->modelPath::find($id)) {
+            return $this->redirectResponseCRUDFail($request, 'delete', "Error finding {$this->vars->level->name}");
+        }
+        if (!$model->isDeletableBy(Auth::user()->id)) {
+            return $this->redirectResponseCRUDFail($request, 'delete', "You don't have permission to edit this {$this->vars->level->name}");
+        }
+        if ($this->isUndeletableModel($model)) {
+            return $this->redirectResponseCRUDFail($request, 'delete', "This {$this->vars->level->name} cannot be deleted");
+        }
         // Process
         try {
             // Model delete
-            if (!$this->vars->level->modelPath::find($id)->delete()) {
+            if (!$model->delete()) {
                 return $this->redirectResponseCRUDFail($request, 'delete', "Error deleting {$this->vars->level->name}");
             }
 
             return $this->redirectResponseCRUDSuccess($request, 'delete');
         } catch (Exception $e) {
-            return $this->redirectResponseCRUDFail($request, 'update', $e->getMessage());
+            return $this->redirectResponseCRUDFail($request, 'delete', $e->getMessage());
         }
     }
 
@@ -316,9 +365,16 @@ class PbBuilderController extends Controller
      */
     public function enable(Request $request, int $id): Redirector|RedirectResponse|Application|null
     {
-        if (isset($this->vars->level->modelPath::$enableable)) {
+        if (isset($this->vars->level->modelPath::$enableable) && (new $this->vars->level->modelPath)->isEditableBy(Auth::user()->id)) {
+            $model = $this->vars->level->modelPath::find($id);
+            if ($this->isUnmodifiableModel($model)) {
+                return $this->redirectResponseCRUDFail($request, 'enable', "This {$this->vars->level->name} cannot be modified");
+            }
+            if (!$model->isEditableBy(Auth::user()->id)) {
+                return $this->redirectResponseCRUDFail($request, 'enable', "You don't have permission to edit this {$this->vars->level->name}");
+            }
             try {
-                if ($this->vars->level->modelPath::find($id)->enable()) {
+                if ($model->enable()) {
                     return $this->redirectResponseCRUDSuccess($request, 'enable');
                 }
                 return $this->redirectResponseCRUDFail($request, 'enable',
@@ -342,9 +398,16 @@ class PbBuilderController extends Controller
      */
     public function disable(Request $request, int $id): Redirector|RedirectResponse|Application|null
     {
-        if (isset($this->vars->level->modelPath::$enableable)) {
+        if (isset($this->vars->level->modelPath::$enableable) && (new $this->vars->level->modelPath)->isEditableBy(Auth::user()->id)) {
+            $model = $this->vars->level->modelPath::find($id);
+            if ($this->isUnmodifiableModel($model)) {
+                return $this->redirectResponseCRUDFail($request, 'disable', "This {$this->vars->level->name} cannot be modified");
+            }
+            if (!$model->isEditableBy(Auth::user()->id)) {
+                return $this->redirectResponseCRUDFail($request, 'disable', "You don't have permission to edit this {$this->vars->level->name}");
+            }
             try {
-                if ($this->vars->level->modelPath::find($id)->disable()) {
+                if ($model->disable()) {
                     return $this->redirectResponseCRUDSuccess($request, 'disable');
                 }
                 return $this->redirectResponseCRUDFail($request, 'disable',
@@ -647,5 +710,69 @@ class PbBuilderController extends Controller
             $result[$key] = $value->toArray();
         }
         return $result;
+    }
+
+    /**
+     * Returns existing migration file if found, else uses the current timestamp.
+     *
+     * @param $model
+     * @return bool
+     */
+    public function isUndeletableModel($model): bool
+    {
+        foreach($model->undeletableModels as $key => $value) {
+            if (in_array($model->{$key}, $value)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Returns existing migration file if found, else uses the current timestamp.
+     *
+     * @param $model
+     * @return bool
+     */
+    public function isUnmodifiableModel($model): bool
+    {
+        foreach($model->unmodifiableModels as $key => $value) {
+            if (in_array($model->{$key}, $value)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Returns existing migration file if found, else uses the current timestamp.
+     *
+     * @param $model
+     * @return bool
+     */
+    public function isUnreadableModel($model): bool
+    {
+        foreach($model->unreadableModels as $key => $value) {
+            if (in_array($model->{$key}, $value)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Returns existing migration file if found, else uses the current timestamp.
+     *
+     * @param $model
+     * @return bool
+     */
+    public function isUnconfigurableModel($model): bool
+    {
+        foreach($model->unconfigurableModels as $key => $value) {
+            if (in_array($model->{$key}, $value)) {
+                return true;
+            }
+        }
+        return false;
     }
 }

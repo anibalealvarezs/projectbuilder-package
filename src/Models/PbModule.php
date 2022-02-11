@@ -57,7 +57,7 @@ class PbModule extends PbBuilder
      * @param $value
      * @return PbModule|null
      */
-    public function getByKey($value): self|null
+    public static function getByKey($value): self|null
     {
         return self::firstWhere('modulekey', $value);
     }
@@ -81,8 +81,7 @@ class PbModule extends PbBuilder
      */
     public static function isEnabled($value): bool
     {
-        $module = (app(PbModule::class))->getByKey($value);
-        if ($module) {
+        if ($module = self::getByKey($value)) {
             return (bool) $module->status;
         }
         return false;
@@ -96,8 +95,7 @@ class PbModule extends PbBuilder
      */
     public static function exists($value): bool
     {
-        $module = (app(PbModule::class))->getByKey($value);
-        if ($module) {
+        if (self::getByKey($value)) {
             return true;
         }
         return false;

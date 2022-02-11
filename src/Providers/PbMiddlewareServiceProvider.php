@@ -49,6 +49,7 @@ class PbMiddlewareServiceProvider extends ServiceProvider
         $router->aliasMiddleware('is_user_selectable', $this->prefix.'IsUserSelectable'.$this->suffix);
         $router->aliasMiddleware('is_user_deletable', $this->prefix.'IsUserDeletable'.$this->suffix);
         $router->aliasMiddleware('check_https', $this->prefix.'Https'.$this->suffix);
+        $router->aliasMiddleware('set_current_user', $this->prefix.'SetCurrentUser'.$this->suffix);
         $router->aliasMiddleware('is_debug_enabled', $this->prefix.'IsDebugModeEnabled'.$this->suffix);
         $router->aliasMiddleware('single_session', $this->prefix.'SingleSession'.$this->suffix);
         $router->aliasMiddleware('set_locale', $this->prefix.'SetLocale'.$this->suffix);

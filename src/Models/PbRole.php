@@ -6,7 +6,9 @@ use Anibalealvarezs\Projectbuilder\Helpers\PbHelpers;
 use Anibalealvarezs\Projectbuilder\Helpers\Shares;
 use Anibalealvarezs\Projectbuilder\Traits\PbModelCrudTrait;
 use Anibalealvarezs\Projectbuilder\Traits\PbModelTrait;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Spatie\Permission\Models\Role;
+use Spatie\Permission\PermissionRegistrar;
 use Spatie\Translatable\HasTranslations;
 
 class PbRole extends Role
@@ -25,6 +27,29 @@ class PbRole extends Role
         $this->connection = config('database.default');
         $this->publicRelations = ['permissions'];
         $this->allRelations = ['permissions'];
+        $this->unreadableModels = [
+            'name' => [
+                'super-admin',
+            ]
+        ];
+        $this->undeletableModels = [
+            'name' => [
+                'user',
+                'api-user',
+                'admin',
+                'developer',
+                'super-admin',
+            ]
+        ];
+        $this->unmodifiableModels = [
+            'name' => [
+                'user',
+                'api-user',
+                'admin',
+                'developer',
+                'super-admin',
+            ]
+        ];
     }
 
     public function getAliasAttribute($value)
@@ -35,6 +60,19 @@ class PbRole extends Role
     public function getAliasesAttribute($value)
     {
         return $this->getRawOriginal('alias');
+    }
+
+    /**
+     * A role may be given various permissions.
+     */
+    public function permissions(): BelongsToMany
+    {
+        return $this->belongsToMany(
+            PbPermission::class,
+            config('permission.table_names.role_has_permissions'),
+            PermissionRegistrar::$pivotRole,
+            PermissionRegistrar::$pivotPermission
+        );
     }
 
     /**
@@ -51,6 +89,21 @@ class PbRole extends Role
                 'orderable' => true,
             ],
             'alias' => [],
+            'permissions' => [
+                'arrval' => [
+                    'key' => 'alias',
+                    'href' => [
+                        'route' => 'permissions.show',
+                        'id' => 'id',
+                    ],
+                ],
+                'size' => 'multiple',
+            ],
+        ];
+
+        $config['pagination'] = [
+            'per_page' => 10,
+            'location' => 'both',
         ];
 
         $config['formconfig'] = [

@@ -5,6 +5,7 @@ namespace Anibalealvarezs\Projectbuilder\Middleware;
 use Anibalealvarezs\Projectbuilder\Exceptions\PbUserException;
 use Anibalealvarezs\Projectbuilder\Helpers\PbHelpers;
 use Anibalealvarezs\Projectbuilder\Models\PbConfig;
+use Anibalealvarezs\Projectbuilder\Models\PbCurrentUser;
 use Anibalealvarezs\Projectbuilder\Models\PbUser;
 use Illuminate\Support\Facades\Auth;
 use Closure;

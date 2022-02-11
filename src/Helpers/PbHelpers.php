@@ -2,6 +2,7 @@
 
 namespace Anibalealvarezs\Projectbuilder\Helpers;
 
+use Anibalealvarezs\Projectbuilder\Models\PbCurrentUser;
 use Anibalealvarezs\Projectbuilder\Models\PbModule;
 use Anibalealvarezs\Projectbuilder\Models\PbUser;
 use Illuminate\Support\Facades\Schema;
@@ -130,8 +131,7 @@ class PbHelpers
             return "";
         }
 
-        $user = PbUser::current();
-        return $user->getLocale();
+        return app(PbCurrentUser::class)->getLocale();
     }
 
     /**
@@ -407,8 +407,8 @@ class PbHelpers
             'web' => [
                 'web',
                 'check_https',
-                'is_debug_enabled',
                 'single_session',
+                'is_debug_enabled',
                 'set_locale',
             ],
             'api' => [
@@ -418,6 +418,7 @@ class PbHelpers
             'auth' => [
                 'auth:sanctum',
                 'verified',
+                'set_current_user',
             ],
         ];
     }
