@@ -189,13 +189,15 @@ class PbBuilderController extends Controller
         string $route = 'level'
     ): Application|RedirectResponse|Redirector|InertiaResponse|JsonResponse {
 
+        $currentModel = $this->vars->level->modelPath::find($id);
+
         if (!$model = $this->buildModelsArray($element, $multiple, $id)) {
             return $this->redirectResponseCRUDFail(request(), 'show', "Error finding {$this->vars->level->name}");
         }
-        if ($this->isUnreadableModel($this->vars->level->modelPath::find($id))) {
+        if ($this->isUnreadableModel($currentModel)) {
             return $this->redirectResponseCRUDFail(request(), 'show', "This {$this->vars->level->name} cannot be shown");
         }
-        if (!$model->isViewableBy(Auth::user()->id)) {
+        if (!$currentModel->isViewableBy(Auth::user()->id)) {
             return $this->redirectResponseCRUDFail(request(), 'show', "You don't have permission to view this {$this->vars->level->name}");
         }
 
