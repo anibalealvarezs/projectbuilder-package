@@ -88,6 +88,13 @@ trait PbInstallTrait
                 }
             }
             if ($this->option('migrate') || $this->option('seed') || $this->option('all') || (str_starts_with($this->signature,  'pbuilder:update')) || (str_starts_with($this->signature,  'pbuilder:altupdate'))) {
+                if ($this->confirm("'Do you want to remove previous migration files?")) {
+                    echo "------ Removing previous migration files\n";
+                    if (!$this->removePreviousMigrations()) {
+                        echo "-------- [[ ERROR: Error removing migrations files ]]\n";
+                        return false;
+                    }
+                }
                 echo "---- Configurating database...\n";
                 if (!$this->migrateAndSeed()) {
                     return false;
@@ -403,6 +410,19 @@ trait PbInstallTrait
             ))) {
                 return false;
             }
+        }
+        return true;
+    }
+
+    /**
+     * Scope a query to only include popular users.
+     *
+     * @return bool
+     */
+    protected function removePreviousMigrations(): bool
+    {
+        if (!shell_exec("rm ".database_path('migrations' . DIRECTORY_SEPARATOR)."*")) {
+            return false;
         }
         return true;
     }
