@@ -270,8 +270,8 @@ trait PbInstallTrait
                 );
             } else {
                 $newAppConfig = str_replace(
-                     'Anibalealvarezs\\Projectbuilder\\Providers\\PbJetstreamAppServiceProvider::class',
-                     'Anibalealvarezs\\Projectbuilder\\Providers\\PbJetstreamAppServiceProvider::class'.PHP_EOL.'        Anibalealvarezs\\Projectbuilder\\Providers\\PbFortifyServiceProvider::class,',
+                     'Anibalealvarezs\\Projectbuilder\\Providers\\PbJetstreamAppServiceProvider::class,',
+                     'Anibalealvarezs\\Projectbuilder\\Providers\\PbJetstreamAppServiceProvider::class,'.PHP_EOL.'        Anibalealvarezs\\Projectbuilder\\Providers\\PbFortifyServiceProvider::class,',
                     $newAppConfig
                  );
             }
