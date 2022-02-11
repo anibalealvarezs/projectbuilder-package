@@ -24,7 +24,7 @@
     "require": {
         "php": "^8.0.2",
         "spatie/laravel-permission": "^5.0",
-        "spatie/laravel-translatable": "^4.6",
+        "spatie/laravel-translatable": "^5.0",
         "barryvdh/laravel-debugbar": "^3.6.5"
     },
     "require-dev": {
