@@ -17,7 +17,8 @@ composer create-project laravel/laravel my-project
 ```
 Optionally, you can manually pre-install Jetstream/Inertia with Teams and Pest. Project Builder will also ask you for it if you don't have it.
 ```shell
-php artisan jetstream:install inertia --teams
+composer require laravel/jetstream
+php artisan jetstream:install inertia --teams --pest
 ```
 
 #### 1. Add the repository to your composer.json

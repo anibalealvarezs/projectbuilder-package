@@ -14,17 +14,18 @@ CREATE TABLE `cities` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
-DROP TABLE IF EXISTS `config`;
+DROP TABLE IF EXISTS `configs`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `config` (
+CREATE TABLE `configs` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
   `configkey` varchar(254) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `configvalue` text COLLATE utf8mb4_unicode_ci NOT NULL,
   `name` json DEFAULT NULL,
   `description` json DEFAULT NULL,
   `module_id` int(10) unsigned DEFAULT NULL,
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `config_configkey_unique` (`configkey`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 DROP TABLE IF EXISTS `countries`;
@@ -77,10 +78,10 @@ CREATE TABLE `languages` (
   UNIQUE KEY `languages_code_unique` (`code`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
-DROP TABLE IF EXISTS `logger`;
+DROP TABLE IF EXISTS `loggers`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `logger` (
+CREATE TABLE `loggers` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
   `severity` tinyint(3) unsigned NOT NULL DEFAULT '1',
   `code` int(10) unsigned NOT NULL DEFAULT '0',
@@ -136,7 +137,8 @@ CREATE TABLE `modules` (
   `name` varchar(254) COLLATE utf8mb4_unicode_ci NOT NULL,
   `modulekey` varchar(20) COLLATE utf8mb4_unicode_ci NOT NULL,
   `status` tinyint(3) unsigned NOT NULL DEFAULT '1',
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `modules_modulekey_unique` (`modulekey`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 DROP TABLE IF EXISTS `navigations`;
@@ -219,7 +221,8 @@ CREATE TABLE `roles` (
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   `alias` varchar(190) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `roles_name_unique` (`name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 DROP TABLE IF EXISTS `sessions`;
@@ -316,7 +319,6 @@ INSERT INTO `migrations` VALUES (279,'2014_10_12_100000_create_password_resets_t
 INSERT INTO `migrations` VALUES (280,'2014_10_12_200000_add_two_factor_columns_to_users_table',1);
 INSERT INTO `migrations` VALUES (281,'2018_07_16_024424_add_last_session_column_to_users',1);
 INSERT INTO `migrations` VALUES (282,'2019_08_19_000000_create_failed_jobs_table',1);
-INSERT INTO `migrations` VALUES (283,'2019_12_14_000001_create_personal_access_tokens_table',1);
 INSERT INTO `migrations` VALUES (284,'2020_05_21_100000_create_teams_table',1);
 INSERT INTO `migrations` VALUES (285,'2020_05_21_200000_create_team_user_table',1);
 INSERT INTO `migrations` VALUES (286,'2020_05_21_300000_create_team_invitations_table',1);
@@ -343,3 +345,8 @@ INSERT INTO `migrations` VALUES (306,'2021_07_10_013019_add_module_column_to_per
 INSERT INTO `migrations` VALUES (307,'2021_07_10_013940_add_module_column_to_configs',1);
 INSERT INTO `migrations` VALUES (308,'2021_07_10_025334_add_module_column_to_logger',2);
 INSERT INTO `migrations` VALUES (309,'2021_12_12_093147_fix_tables_logger_column_names',3);
+INSERT INTO `migrations` VALUES (310,'2019_12_14_000001_create_personal_access_tokens_table',4);
+INSERT INTO `migrations` VALUES (311,'2022_02_07_220408_make_configkey_column_unique',5);
+INSERT INTO `migrations` VALUES (312,'2022_02_07_220408_make_modulekey_column_unique',5);
+INSERT INTO `migrations` VALUES (313,'2022_02_07_220934_make_name_column_unique',6);
+INSERT INTO `migrations` VALUES (314,'2022_02_10_000746_rename_logger_and_config_tables',7);
