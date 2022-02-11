@@ -51,11 +51,6 @@ class PbAltInstallCommand extends Command
                 echo "------ [[ ERROR: Jetstream installation failed failed ]]\n";
                 return false;
             }
-            echo "---- Installing providers...\n";
-            if (!$this->installProviders()) {
-                echo "------ [[ ERROR: proviers couldn't be installed ]]\n";
-                return false;
-            }
         } catch (Exception $e) {
             echo "------ [[ ERROR: ".$e->getMessage()." ]]\n";
             return false;
