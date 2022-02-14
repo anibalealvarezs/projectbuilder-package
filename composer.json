@@ -1,6 +1,6 @@
 {
     "name": "anibalealvarezs/projectbuilder-package",
-    "description": "Package to add usefull libraries for new projects",
+    "description": "CRUD App for Laravel 9.x",
     "keywords": [
         "project",
         "laravel",
