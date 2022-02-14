@@ -2,9 +2,9 @@
 
 namespace Anibalealvarezs\Projectbuilder\Controllers;
 
-use Anibalealvarezs\Projectbuilder\Helpers\PbDebugbar;
-use Anibalealvarezs\Projectbuilder\Helpers\PbHelpers;
-use Anibalealvarezs\Projectbuilder\Helpers\Shares;
+use Anibalealvarezs\Projectbuilder\Utilities\PbDebugbar;
+use Anibalealvarezs\Projectbuilder\Utilities\PbUtilities;
+use Anibalealvarezs\Projectbuilder\Utilities\Shares;
 use Anibalealvarezs\Projectbuilder\Models\PbCountry;
 use Anibalealvarezs\Projectbuilder\Models\PbCurrentUser;
 use Anibalealvarezs\Projectbuilder\Models\PbLanguage;
@@ -23,6 +23,7 @@ use Illuminate\Routing\Redirector;
 
 use Auth;
 use DB;
+use Illuminate\Support\Str;
 use Session;
 
 use Inertia\Inertia;
@@ -41,13 +42,13 @@ class PbBuilderController extends Controller
     function __construct(Request $request, $crud_perms = false)
     {
         $this->initVars();
-        $this->vars->helper->prefix = ($this->vars->helper->prefix ?? $this->vars->helper->class::getDefault('prefix'));
-        $this->vars->helper->vendor = ($this->vars->helper->vendor ?? $this->vars->helper->class::getDefault('vendor'));
-        $this->vars->helper->package = ($this->vars->helper->package ?? $this->vars->helper->class::getDefault('package'));
+        $this->vars->helper->prefix = ($this->vars->helper->prefix ?? getAttributeStatically($this->vars->helper->class, 'prefix'));
+        $this->vars->helper->vendor = ($this->vars->helper->vendor ?? getAttributeStatically($this->vars->helper->class, 'vendor'));
+        $this->vars->helper->package = ($this->vars->helper->package ?? getAttributeStatically($this->vars->helper->class, 'package'));
         if (!isset($this->vars->helper->keys['level'])) {
             $this->vars->helper->keys['level'] = ($this->vars->keys['level'] ?? 'Builder');
         }
-        foreach ($this->vars->helper->class::getModelsLevels() as $value) {
+        foreach (modelsLevels() as $value) {
             if (isset($this->vars->helper->keys[$value])) {
                 $this->vars->{$value} = $this->buildControllerVars($this->vars->helper->keys[$value]);
             }
@@ -56,7 +57,7 @@ class PbBuilderController extends Controller
         $this->vars->viewModelName = ($this->vars->viewModelName ?? $this->vars->level->names);
         if ($crud_perms) {
             // Middlewares
-            foreach ($this->vars->helper->class::getMethodsByPermission() as $key => $value) {
+            foreach (methodsByPermission() as $key => $value) {
                 $this->middleware('role_or_permission:' . $key . ' ' . $this->vars->level->names, $value);
             }
         }
@@ -66,6 +67,8 @@ class PbBuilderController extends Controller
 
         self::$item = $this->vars->level->name;
         self::$route = $this->vars->level->names;
+
+        PbDebugbar::startMeasure('model_controller', $this->vars->level->names.' crud controller');
     }
 
     /**
@@ -92,13 +95,19 @@ class PbBuilderController extends Controller
         string $route = 'level'
     ): InertiaResponse|JsonResponse|RedirectResponse {
 
+        PbDebugbar::stopMeasure('model_controller');
+        PbDebugbar::startMeasure('builder_controller', 'builder crud controller');
+
         $this->vars->allowed = [
             'create ' . $this->vars->level->names => 'create',
             'update ' . $this->vars->level->names => 'update',
             'delete ' . $this->vars->level->names => 'delete',
         ];
 
-        $config = $this->vars->level->modelPath::getCrudConfig();
+        PbDebugbar::measure('builder crud controller model config load', function() use (&$config) {
+            $config = ($this->vars->config ?? $this->vars->level->modelPath::getCrudConfig(true));
+        });
+
         if (!isset($config['fields']['actions'])) {
             $config['fields']['actions'] = [
                 'update' => [],
@@ -106,23 +115,27 @@ class PbBuilderController extends Controller
             ];
         }
         $config['enabled_actions'] = Shares::allowed($this->vars->allowed)['allowed'];
+
         if (!isset($config['model'])) {
             $config['model'] = $this->vars->level->modelPath;
         }
         if (!isset($config['pagination']['page']) || !$config['pagination']['page']) {
             $config['pagination']['page'] = $page;
         }
-
         $this->vars->listing = self::buildListingRow($config);
         $this->vars->sortable = $this->vars->sortable && app(PbCurrentUser::class)->hasPermissionTo('update '.(new $this->vars->level->modelPath)->getTable());
-        $this->vars->formconfig = $config['formconfig'];
+        $this->vars->formconfig = ($config['formconfig'] ?? []);
         $this->vars->pagination = !$this->vars->sortable ? $config['pagination'] : [];
         $this->vars->heading = $config['heading'];
         $this->vars->orderby = !$this->vars->sortable && $orderby ? ['field' => $field, 'order' => $order] : [];
 
-        $arrayElements = $this->buildModelsArray($element, $multiple, null, true, $page, $perpage, $orderby, $field, $order);
-        PbDebugbar::addMessage($this->arraytify($arrayElements), 'data');
+        PbDebugbar::measure('builder crud controller model building', function() use (&$arrayElements, $element, $multiple, $page, $perpage, $orderby, $field, $order) {
+            $arrayElements = $this->buildModelsArray($element, $multiple, null, true, $page, $perpage, $orderby, $field, $order);
+        });
 
+        PbDebugbar::addMessage($arrayElements, 'data');
+
+        PbDebugbar::startMeasure('builder_controller_response_building', 'builder crud controller response building');
         return $this->renderResponse($this->buildRouteString($route, 'index'), $arrayElements);
     }
 
@@ -134,9 +147,16 @@ class PbBuilderController extends Controller
      */
     public function create(string $route = 'level'): InertiaResponse|JsonResponse
     {
-        $this->vars->formconfig = $this->vars->level->modelPath::getCrudConfig()['formconfig'];
+        PbDebugbar::stopMeasure('model_controller');
+        PbDebugbar::startMeasure('builder_controller', 'builder crud controller');
+
+        PbDebugbar::measure('builder crud controller model config load', function() {
+            $this->vars->formconfig = $this->vars->level->modelPath::getCrudConfig(true)['formconfig'];
+        });
+
         PbDebugbar::addMessage($this->vars->formconfig, 'formconfig');
 
+        PbDebugbar::startMeasure('builder_controller_response_building', 'builder crud controller response building');
         return $this->renderResponse($this->buildRouteString($route, 'create'));
     }
 
@@ -148,6 +168,9 @@ class PbBuilderController extends Controller
      */
     public function store(Request $request): Redirector|RedirectResponse|Application|null
     {
+        PbDebugbar::stopMeasure('model_controller');
+        PbDebugbar::startMeasure('builder_controller', 'builder crud controller');
+
         // Validation
         if ($failed = $this->validateRequest($this->vars->validationRules, $request)) {
             return $failed;
@@ -167,6 +190,7 @@ class PbBuilderController extends Controller
                 return $this->redirectResponseCRUDFail($request, 'create', "Error saving {$this->vars->level->name}");
             }
 
+            PbDebugbar::startMeasure('builder_controller_response_building', 'builder crud controller response building');
             return $this->redirectResponseCRUDSuccess($request, 'create');
         } catch (Exception $e) {
             return $this->redirectResponseCRUDFail($request, 'create', $e->getMessage());
@@ -189,6 +213,9 @@ class PbBuilderController extends Controller
         string $route = 'level'
     ): Application|RedirectResponse|Redirector|InertiaResponse|JsonResponse {
 
+        PbDebugbar::stopMeasure('model_controller');
+        PbDebugbar::startMeasure('builder_controller', 'builder crud controller');
+
         $currentModel = $this->vars->level->modelPath::find($id);
 
         if (!$model = $this->buildModelsArray($element, $multiple, $id)) {
@@ -201,6 +228,7 @@ class PbBuilderController extends Controller
             return $this->redirectResponseCRUDFail(request(), 'show', "You don't have permission to view this {$this->vars->level->name}");
         }
 
+        PbDebugbar::startMeasure('builder_controller_response_building', 'builder crud controller response building');
         return $this->renderResponse($this->buildRouteString($route, 'show'), $model);
     }
 
@@ -220,7 +248,13 @@ class PbBuilderController extends Controller
         string $route = 'level'
     ): InertiaResponse|JsonResponse {
 
-        $this->vars->formconfig = $this->vars->level->modelPath::getCrudConfig()['formconfig'];
+        PbDebugbar::stopMeasure('model_controller');
+        PbDebugbar::startMeasure('builder_controller', 'builder crud controller');
+
+        PbDebugbar::measure('builder crud controller model config load', function() {
+            $this->vars->formconfig = $this->vars->level->modelPath::getCrudConfig(true)['formconfig'];
+        });
+
         PbDebugbar::addMessage($this->vars->formconfig, 'formconfig');
 
         $currentModel = $this->vars->level->modelPath::find($id);
@@ -235,6 +269,7 @@ class PbBuilderController extends Controller
             return $this->redirectResponseCRUDFail(request(), 'edit', "You don't have permission to edit this {$this->vars->level->name}");
         }
 
+        PbDebugbar::startMeasure('builder_controller_response_building', 'builder crud controller response building');
         return $this->renderResponse($this->buildRouteString($route, 'edit'), $model);
     }
 
@@ -247,6 +282,9 @@ class PbBuilderController extends Controller
      */
     public function update(Request $request, int $id): Redirector|RedirectResponse|Application|null
     {
+        PbDebugbar::stopMeasure('model_controller');
+        PbDebugbar::startMeasure('builder_controller', 'builder crud controller');
+
         // Validation
         if ($failed = $this->validateRequest($this->vars->validationRules, $request)) {
             return $failed;
@@ -276,6 +314,7 @@ class PbBuilderController extends Controller
                 return $this->redirectResponseCRUDFail($request, 'update', "Error updating {$this->vars->level->name}");
             }
 
+            PbDebugbar::startMeasure('builder_controller_response_building', 'builder crud controller response building');
             return $this->redirectResponseCRUDSuccess($request, 'update');
         } catch (Exception $e) {
             return $this->redirectResponseCRUDFail($request, 'update', $e->getMessage());
@@ -291,6 +330,9 @@ class PbBuilderController extends Controller
      */
     public function destroy(Request $request, int $id): Redirector|RedirectResponse|Application
     {
+        PbDebugbar::stopMeasure('model_controller');
+        PbDebugbar::startMeasure('builder_controller', 'builder crud controller');
+
         if (!$model = $this->vars->level->modelPath::find($id)) {
             return $this->redirectResponseCRUDFail($request, 'delete', "Error finding {$this->vars->level->name}");
         }
@@ -307,6 +349,7 @@ class PbBuilderController extends Controller
                 return $this->redirectResponseCRUDFail($request, 'delete', "Error deleting {$this->vars->level->name}");
             }
 
+            PbDebugbar::startMeasure('builder_controller_response_building', 'builder crud controller response building');
             return $this->redirectResponseCRUDSuccess($request, 'delete');
         } catch (Exception $e) {
             return $this->redirectResponseCRUDFail($request, 'delete', $e->getMessage());
@@ -322,6 +365,9 @@ class PbBuilderController extends Controller
      */
     public function sort(Request $request, int $id): Redirector|RedirectResponse|Application|null
     {
+        PbDebugbar::stopMeasure('model_controller');
+        PbDebugbar::startMeasure('builder_controller', 'builder crud controller');
+
         // Validation
         if ($failed = $this->validateRequest(['sortlist' => ['required']], $request)) {
             return $failed;
@@ -351,6 +397,7 @@ class PbBuilderController extends Controller
                 $n++;
             }
 
+            PbDebugbar::startMeasure('builder_controller_response_building', 'builder crud controller response building');
             return $this->redirectResponseCRUDSuccess($request, 'sort');
         } catch (Exception $e) {
             return $this->redirectResponseCRUDFail($request,
@@ -367,6 +414,9 @@ class PbBuilderController extends Controller
      */
     public function enable(Request $request, int $id): Redirector|RedirectResponse|Application|null
     {
+        PbDebugbar::stopMeasure('model_controller');
+        PbDebugbar::startMeasure('builder_controller', 'builder crud controller');
+
         if (isset($this->vars->level->modelPath::$enableable) && (new $this->vars->level->modelPath)->isEditableBy(Auth::user()->id)) {
             $model = $this->vars->level->modelPath::find($id);
             if ($this->isUnmodifiableModel($model)) {
@@ -377,6 +427,7 @@ class PbBuilderController extends Controller
             }
             try {
                 if ($model->enable()) {
+                    PbDebugbar::startMeasure('builder_controller_response_building', 'builder crud controller response building');
                     return $this->redirectResponseCRUDSuccess($request, 'enable');
                 }
                 return $this->redirectResponseCRUDFail($request, 'enable',
@@ -400,6 +451,9 @@ class PbBuilderController extends Controller
      */
     public function disable(Request $request, int $id): Redirector|RedirectResponse|Application|null
     {
+        PbDebugbar::stopMeasure('model_controller');
+        PbDebugbar::startMeasure('builder_controller', 'builder crud controller');
+
         if (isset($this->vars->level->modelPath::$enableable) && (new $this->vars->level->modelPath)->isEditableBy(Auth::user()->id)) {
             $model = $this->vars->level->modelPath::find($id);
             if ($this->isUnmodifiableModel($model)) {
@@ -410,6 +464,7 @@ class PbBuilderController extends Controller
             }
             try {
                 if ($model->disable()) {
+                    PbDebugbar::startMeasure('builder_controller_response_building', 'builder crud controller response building');
                     return $this->redirectResponseCRUDSuccess($request, 'disable');
                 }
                 return $this->redirectResponseCRUDFail($request, 'disable',
@@ -580,10 +635,17 @@ class PbBuilderController extends Controller
     protected function renderResponse($view, array $elements = [], bool $nullable = false): JsonResponse|InertiaResponse
     {
         // If not API
-        if (!PbHelpers::isApi($this->vars->request)) {
-            //write your logic for web call
-            $this->shareVars();
+        if (!isApi($this->vars->request)) {
+
+            PbDebugbar::measure('builder crud controller share building', function() {
+                $this->shareVars();
+            });
+
             Inertia::setRootView($this->vars->inertiaRoot);
+
+            PbDebugbar::stopMeasure('builder_controller');
+            PbDebugbar::stopMeasure('builder_controller_response_building');
+
             return Inertia::render($view, $elements);
         }
 
@@ -621,11 +683,11 @@ class PbBuilderController extends Controller
     {
         $object = (object)[];
         $object->key = $key;
-        $object->keys = $this->vars->helper->class::toPlural($key);
+        $object->keys = Str::plural($key);
         $object->name = strtolower($key);
-        $object->names = $this->vars->helper->class::toPlural($object->name);
+        $object->names = Str::plural($object->name);
         $object->prefixName = strtolower($this->vars->helper->prefix . $key);
-        $object->prefixNames = $this->vars->helper->class::toPlural($object->prefixName);
+        $object->prefixNames = Str::plural($object->prefixName);
         $object->modelPath = $this->vars->helper->vendor . "\\" . $this->vars->helper->package . "\\Models\\" . $this->vars->helper->prefix . $key;
         $object->viewsPath = $this->vars->helper->package . "/" . $object->keys . "/";
         $object->table = (new $object->modelPath())->getTable();
@@ -659,7 +721,7 @@ class PbBuilderController extends Controller
         $this->vars->helper = ($this->vars->helper ?? (object)[]);
         $this->vars->helper->class =
             ($this->vars->helper->class ??
-                PbHelpers::getDefault('vendor') . '\\' . PbHelpers::getDefault('package') . '\\Helpers\\' . PbHelpers::getDefault('prefix') . 'Helpers'
+                app(PbUtilities::class)->vendor . '\\' . app(PbUtilities::class)->package . '\\Utilities\\' . app(PbUtilities::class)->prefix . 'Utilities'
             );
         $this->vars->validationRules = ($this->vars->validationRules ?? []);
         $this->vars->allowed = ($this->vars->allowed ?? []);

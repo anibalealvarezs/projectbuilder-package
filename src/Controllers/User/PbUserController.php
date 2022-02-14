@@ -4,9 +4,8 @@ namespace Anibalealvarezs\Projectbuilder\Controllers\User;
 
 use Anibalealvarezs\Projectbuilder\Controllers\PbBuilderController;
 
-use Anibalealvarezs\Projectbuilder\Helpers\PbHelpers;
 use Anibalealvarezs\Projectbuilder\Models\PbCurrentUser;
-use Anibalealvarezs\Projectbuilder\Models\PbUser;
+use Anibalealvarezs\Projectbuilder\Utilities\PbDebugbar;
 use App\Http\Requests;
 
 use App\Models\Team;
@@ -49,10 +48,6 @@ class PbUserController extends PbBuilderController
         ]);
         // Parent construct
         parent::__construct($request, true);
-        // Middlewares
-        $this->middleware(['is_user_editable'])->only('edit', 'update');
-        $this->middleware(['is_user_deletable'])->only('destroy');
-        $this->middleware(['is_user_viewable'])->only('show');
     }
 
     /**
@@ -82,6 +77,17 @@ class PbUserController extends PbBuilderController
         $this->pushRequired(['roles', 'email']);
 
         $this->vars->shares[] = 'me';
+        $this->vars->config = $this->vars->level->modelPath::getCrudConfig(true);
+
+        $model = $this->buildPaginatedAndOrderedModel(
+            $this->vars->level->modelPath::withPublicRelations()->removeAdmins(),
+            $page,
+            $perpage,
+            $orderby,
+            $field,
+            $order,
+            ['name' => 'asc', 'email' => 'asc']
+        );
 
         return parent::index(
             $page,
@@ -89,15 +95,7 @@ class PbUserController extends PbBuilderController
             $orderby,
             $field,
             $order,
-            $this->buildPaginatedAndOrderedModel(
-                $this->vars->level->modelPath::withPublicRelations()->removeAdmins(),
-                $page,
-                $perpage,
-                $orderby,
-                $field,
-                $order,
-                ['name' => 'asc', 'email' => 'asc']
-            )
+            $model,
         );
     }
 
@@ -200,7 +198,7 @@ class PbUserController extends PbBuilderController
      */
     public function show(int $id, $element = null, bool $multiple = false, string $route = 'level'): Application|RedirectResponse|Redirector|InertiaResponse|JsonResponse
     {
-        if ((Auth::user()->id == $id) && !PbHelpers::isApi($this->vars->request)) {
+        if ((Auth::user()->id == $id) && !isApi($this->vars->request)) {
             return redirect(DIRECTORY_SEPARATOR.$this->vars->level->name.'/profile');
         }
 
@@ -218,7 +216,7 @@ class PbUserController extends PbBuilderController
      */
     public function edit(int $id, $element = null, bool $multiple = false, string $route = 'level'): InertiaResponse|JsonResponse
     {
-        if ((Auth::user()->id == $id) && !PbHelpers::isApi($this->vars->request)) {
+        if ((Auth::user()->id == $id) && !isApi($this->vars->request)) {
             return redirect(DIRECTORY_SEPARATOR.$this->vars->level->name.'/profile');
         }
 

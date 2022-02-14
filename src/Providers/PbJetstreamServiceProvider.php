@@ -2,16 +2,11 @@
 
 namespace Anibalealvarezs\Projectbuilder\Providers;
 
-use Anibalealvarezs\Projectbuilder\Helpers\PbHelpers;
+use Anibalealvarezs\Projectbuilder\Utilities\PbUtilities;
 use Anibalealvarezs\Projectbuilder\Models\PbConfig;
-use App\Http\Middleware\HandleInertiaRequests;
-use Illuminate\Contracts\Container\BindingResolutionException;
-use Illuminate\Contracts\Http\Kernel;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use Laravel\Fortify\Fortify;
-use Laravel\Jetstream\Http\Middleware\ShareInertiaData;
 use Laravel\Jetstream\Jetstream;
 use Laravel\Jetstream\JetstreamServiceProvider;
 
@@ -56,7 +51,7 @@ class PbJetstreamServiceProvider extends JetstreamServiceProvider
     {
         parent::bootInertia();
 
-        $dir = PbHelpers::getDefault('package').'/Auth/';
+        $dir = getAttributeStatically(PbUtilities::class, 'package').'/Auth/';
 
         /* $kernel = $this->app->make(Kernel::class);
 

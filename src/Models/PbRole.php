@@ -2,16 +2,17 @@
 
 namespace Anibalealvarezs\Projectbuilder\Models;
 
-use Anibalealvarezs\Projectbuilder\Helpers\PbHelpers;
-use Anibalealvarezs\Projectbuilder\Helpers\Shares;
+use Anibalealvarezs\Projectbuilder\Interfaces\PbModelCrudInterface;
+use Anibalealvarezs\Projectbuilder\Utilities\Shares;
 use Anibalealvarezs\Projectbuilder\Traits\PbModelCrudTrait;
 use Anibalealvarezs\Projectbuilder\Traits\PbModelTrait;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\PermissionRegistrar;
 use Spatie\Translatable\HasTranslations;
+use Auth;
 
-class PbRole extends Role
+class PbRole extends Role implements PbModelCrudInterface
 {
     use HasTranslations;
     use PbModelTrait;
@@ -54,7 +55,7 @@ class PbRole extends Role
 
     public function getAliasAttribute($value)
     {
-        return PbHelpers::translateString($value);
+        return translateString($value);
     }
 
     public function getAliasesAttribute($value)
@@ -78,9 +79,21 @@ class PbRole extends Role
     /**
      * Scope a query to only include popular users.
      *
+     * @param $id
+     * @return bool|PbUser|PbCurrentUser
+     */
+    public function getAuthorizedUser($id): bool|PbUser|PbCurrentUser
+    {
+        return (Auth::user()->id === $id ? app(PbCurrentUser::class) : PbUser::find($id));
+    }
+
+    /**
+     * Scope a query to only include popular users.
+     *
+     * @param bool $includeForm
      * @return array
      */
-    public static function getCrudConfig(): array
+    public static function getCrudConfig(bool $includeForm = false): array
     {
         $config = PbBuilder::getCrudConfig();
 
@@ -106,18 +119,20 @@ class PbRole extends Role
             'location' => 'both',
         ];
 
-        $config['formconfig'] = [
-            'name' => [
-                'type' => 'text',
-            ],
-            'alias' => [
-                'type' => 'text',
-            ],
-            'permissions' => [
-                'type' => 'select-multiple',
-                'list' => Shares::getPermissionsAll()['permissionsall']->toArray(),
-            ],
-        ];
+        if ($includeForm) {
+            $config['formconfig'] = [
+                'name' => [
+                    'type' => 'text',
+                ],
+                'alias' => [
+                    'type' => 'text',
+                ],
+                'permissions' => [
+                    'type' => 'select-multiple',
+                    'list' => Shares::getPermissionsAll()['permissionsall']->toArray(),
+                ],
+            ];
+        }
 
         $config['relations'] = ['permissions'];
 

@@ -2,27 +2,31 @@
 
 use Anibalealvarezs\Projectbuilder\Controllers\Config\PbLocaleController as LocaleController;
 use Anibalealvarezs\Projectbuilder\Controllers\Dashboard\PbDashboardController as DashboardController;
-use Anibalealvarezs\Projectbuilder\Helpers\PbHelpers;
-use Anibalealvarezs\Projectbuilder\Models\PbConfig;
+use Anibalealvarezs\Projectbuilder\Utilities\PbUtilities;
 use Inertia\Inertia;
 
-(new PbHelpers())->buildCrudRoutes('web');
+(new PbUtilities())->buildCrudRoutes('web');
 
 Route::get('/dashboard', [DashboardController::class, 'index'])->middleware([
-    ...PbHelpers::getDefaultGroupsMiddlewares()['web'],
-    ...PbHelpers::getDefaultGroupsMiddlewares()['auth'],
+    ...getDefaultGroupsMiddlewares('web'),
+    ...getDefaultGroupsMiddlewares('auth'),
+    ...getDefaultGroupsMiddlewares('debug'),
 ])->name('dashboard');
 
 Route::post('/locale', [LocaleController::class, 'update'])->middleware([
-    ...PbHelpers::getDefaultGroupsMiddlewares()['web'],
-    ...PbHelpers::getDefaultGroupsMiddlewares()['auth'],
+    ...getDefaultGroupsMiddlewares('web'),
+    ...getDefaultGroupsMiddlewares('auth'),
+    ...getDefaultGroupsMiddlewares('debug'),
 ])->name('locale');
 
-Route::get(config('pbuilder.secretlogin'), fn() => Inertia::render(PbHelpers::getDefault('package').'/Auth/Login', [
-    'canResetPassword' => Route::has('password.request') && !PbConfig::getValueByKey('_DISABLE_PASSWORD_RESET_'),
+Route::get(config('pbuilder.secretlogin'), fn() => Inertia::render(app(PbUtilities::class)->package.'/Auth/Login', [
+    'canResetPassword' => Route::has('password.request') && !getConfigValue('_DISABLE_PASSWORD_RESET_'),
     'status' => session('status'),
     'loginEnabled' => true,
-]))->middleware(PbHelpers::getDefaultGroupsMiddlewares()['web'])->name('secretlogin');
+]))->middleware([
+    ...getDefaultGroupsMiddlewares('web'),
+    ...getDefaultGroupsMiddlewares('debug'),
+])->name('secretlogin');
 
 Route::get('/clear-cache', function() {
     Artisan::call('cache:clear');
@@ -30,9 +34,15 @@ Route::get('/clear-cache', function() {
 });
 
 Route::get('root', function () {
-    return PbHelpers::getWelcomeRoute();
-})->middleware(PbHelpers::getDefaultGroupsMiddlewares()['web'])->name('root');
+    return welcomeRoute();
+})->middleware([
+    ...getDefaultGroupsMiddlewares('web'),
+    ...getDefaultGroupsMiddlewares('debug'),
+])->name('root');
 
 Route::get('/', function () {
-    return PbHelpers::getWelcomeRoute();
-})->middleware(PbHelpers::getDefaultGroupsMiddlewares()['web']);
+    return welcomeRoute();
+})->middleware([
+    ...getDefaultGroupsMiddlewares('web'),
+    ...getDefaultGroupsMiddlewares('debug'),
+]);

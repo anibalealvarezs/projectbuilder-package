@@ -3,9 +3,9 @@
 namespace Anibalealvarezs\Projectbuilder\Controllers\Role;
 
 use Anibalealvarezs\Projectbuilder\Controllers\PbBuilderController;
+use Anibalealvarezs\Projectbuilder\Models\PbCurrentUser;
 use Anibalealvarezs\Projectbuilder\Models\PbPermission;
 
-use Anibalealvarezs\Projectbuilder\Models\PbUser;
 use App\Http\Requests;
 
 use Illuminate\Contracts\Foundation\Application;
@@ -71,9 +71,11 @@ class PbRoleController extends PbBuilderController
     {
         $this->pushRequired(['name']);
 
+        $this->vars->config = $this->vars->level->modelPath::getCrudConfig(true);
+
         $query = $this->vars->level->modelPath::withPublicRelations()->whereNotIn('name', ['super-admin', 'developer', 'api-user']);
 
-        if (!PbUser::current()->hasRole('super-admin')) {
+        if (!app(PbCurrentUser::class)->hasRole('super-admin')) {
             $query->whereNotIn('name', ['admin']);
         }
 
@@ -202,7 +204,7 @@ class PbRoleController extends PbBuilderController
 
         $permissions = $request->input('permissions');
 
-        $me = PbUser::current();
+        $me = app(PbCurrentUser::class);
 
         // Process
         try {

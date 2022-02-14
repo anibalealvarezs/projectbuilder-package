@@ -2,8 +2,8 @@
 
 namespace Anibalealvarezs\Projectbuilder\Providers;
 
-use Anibalealvarezs\Projectbuilder\Helpers\PbDebugbar;
-use Anibalealvarezs\Projectbuilder\Helpers\PbHelpers;
+use Anibalealvarezs\Projectbuilder\Utilities\PbDebugbar;
+use Anibalealvarezs\Projectbuilder\Utilities\PbUtilities;
 use Anibalealvarezs\Projectbuilder\Models\PbConfig;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Schema;
@@ -49,7 +49,7 @@ class PbAppServiceProvider extends ServiceProvider
                             app()->setLocale('en');
                         }
                     }
-                    $locale = PbHelpers::getDefaultCountry(app()->getLocale());
+                    $locale = getDefaultCountryFromCurrentLocale();
                     PbDebugbar::addMessage($locale, 'locale');
                     return $locale;
                 },
@@ -67,6 +67,6 @@ class PbAppServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        //
+        $this->app->singleton(PbUtilities::class, static fn() => new PbUtilities());
     }
 }

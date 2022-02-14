@@ -24,7 +24,7 @@ class PbSetCurrentUserMiddleware
             return $next($request);
         }
 
-        if ($currentUser = PbUser::current()) {
+        if ($currentUser = PbUser::current()->withAllPermissions()) {
             App::singleton(PbCurrentUser::class, static fn() => $currentUser);
         }
 

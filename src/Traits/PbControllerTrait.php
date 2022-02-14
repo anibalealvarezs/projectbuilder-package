@@ -2,10 +2,8 @@
 
 namespace Anibalealvarezs\Projectbuilder\Traits;
 
-use Anibalealvarezs\Projectbuilder\Helpers\Shares;
-use Anibalealvarezs\Projectbuilder\Models\PbConfig;
+use Anibalealvarezs\Projectbuilder\Utilities\Shares;
 use Anibalealvarezs\Projectbuilder\Models\PbCurrentUser;
-use Anibalealvarezs\Projectbuilder\Models\PbUser;
 
 use Auth;
 use Illuminate\Contracts\Foundation\Application;
@@ -271,7 +269,7 @@ trait PbControllerTrait
      */
     public function paginateAndOrder(Builder $query, int $page = 1, int $perpage = 0, string $orderby = null, string $field = 'id', string $order = 'asc', array $defaultOrder = []): LengthAwarePaginator
     {
-        $config = $this->vars->level->modelPath::getCrudConfig();
+        $config = ($this->vars->config ?? $this->vars->level->modelPath::getCrudConfig(true));
         if (!$perpage && isset($config['pagination']['per_page']) && $config['pagination']['per_page']) {
             $perpage = $config['pagination']['per_page'];
         }
@@ -282,7 +280,7 @@ trait PbControllerTrait
                 $query->orderBy($key, $value);
             }
         }
-        return $query->paginate($perpage ?: (PbConfig::getValueByKey('_DEFAULT_TABLE_SIZE_') ?: 10), ['*'], 'page', $page ?: 1);
+        return $query->paginate($perpage ?: (getConfigValue('_DEFAULT_TABLE_SIZE_') ?: 10), ['*'], 'page', $page ?: 1);
     }
 
     /**

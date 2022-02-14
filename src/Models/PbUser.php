@@ -2,7 +2,9 @@
 
 namespace Anibalealvarezs\Projectbuilder\Models;
 
-use Anibalealvarezs\Projectbuilder\Helpers\Shares;
+use Anibalealvarezs\Projectbuilder\Interfaces\PbModelCrudInterface;
+use Anibalealvarezs\Projectbuilder\Traits\PbModelCrudTrait;
+use Anibalealvarezs\Projectbuilder\Utilities\Shares;
 use Anibalealvarezs\Projectbuilder\Traits\PbModelTrait;
 use App\Models\User;
 use Carbon\Carbon;
@@ -10,19 +12,20 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Notifications\Notifiable;
-use Illuminate\Support\Facades\Auth;
+use Auth;
 use Illuminate\Support\Facades\DB;
 use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Support\Collection;
 use Spatie\Permission\Traits\HasRoles;
 use Spatie\Translatable\HasTranslations;
 
-class PbUser extends User
+class PbUser extends User implements PbModelCrudInterface
 {
     use Notifiable;
     use HasApiTokens;
     use HasRoles;
     use PbModelTrait;
+    use PbModelCrudTrait;
     use HasTranslations;
 
     protected $guard_name = 'admin';
@@ -30,6 +33,8 @@ class PbUser extends User
     protected $table = 'users';
 
     protected $appends = ['api', 'crud'];
+
+    protected $hidden = ['password', 'remember_token', 'two_factor_secret', 'two_factor_recovery_codes'];
 
     public $translatable = [];
 
@@ -158,7 +163,7 @@ class PbUser extends User
      */
     public function scopeRemoveAdmins(Builder $query): Builder
     {
-        $currentUser = self::current();
+        $currentUser = app(PbCurrentUser::class);
         if (!$currentUser->hasRole('super-admin')) {
             $superAdmins = self::role('super-admin')->get()->modelKeys();
             $query->whereNotIn('id', $superAdmins);
@@ -204,58 +209,9 @@ class PbUser extends User
      * @param $id
      * @return bool
      */
-    public function isEditableBy($id): bool
-    {
-        if (!$user = $this->canBeOverrunedBy($id)) {
-            return false;
-        }
-
-        if (!$user->hasPermissionTo('update '.$this->getTable())) {
-            return false;
-        }
-
-        return true;
-    }
-
-    /**
-     * Scope a query to only include popular users.
-     *
-     * @param $id
-     * @return bool
-     */
-    public function isViewableBy($id): bool
-    {
-        if (!$user = $this->canBeOverrunedBy($id)) {
-            return false;
-        }
-
-        if (!$user->hasPermissionTo('read '.$this->getTable())) {
-            return false;
-        }
-
-        return true;
-    }
-
-    /**
-     * Scope a query to only include popular users.
-     *
-     * @param $id
-     * @return bool
-     */
-    public function isSelectableBy($id): bool
-    {
-        return $this->isViewableBy($id);
-    }
-
-    /**
-     * Scope a query to only include popular users.
-     *
-     * @param $id
-     * @return bool
-     */
     public function isDeletableBy($id): bool
     {
-        if (!$user = $this->canBeOverrunedBy($id)) {
+        if (!$user = $this->getAuthorizedUser($id)) {
             return false;
         }
 
@@ -284,13 +240,17 @@ class PbUser extends User
      * @param $id
      * @return bool|PbUser|PbCurrentUser
      */
-    protected function canBeOverrunedBy($id): bool|PbUser|PbCurrentUser
+    public function getAuthorizedUser($id): bool|PbUser|PbCurrentUser
     {
         if (Auth::user()->id === $id) {
             $user = app(PbCurrentUser::class);
         }
 
-        if (!$user && !$user = self::find($id)) {
+        if (!isset($user) || !$user) {
+            $user = self::find($id);
+        }
+
+        if (!$user) {
             return false;
         }
 
@@ -378,9 +338,10 @@ class PbUser extends User
     /**
      * Scope a query to only include popular users.
      *
+     * @param bool $includeForm
      * @return array
      */
-    public static function getCrudConfig(): array
+    public static function getCrudConfig(bool $includeForm = false): array
     {
         $config = PbBuilder::getCrudConfig();
 
@@ -391,29 +352,31 @@ class PbUser extends User
             ],
         ];
 
-        $config['formconfig'] = [
-            'name' => [
-                'type' => 'text',
-            ],
-            'email' => [
-                'type' => 'text',
-            ],
-            'country' => [
-                'type' => 'select',
-                'list' => Shares::getCountries()['countries']->toArray(),
-            ],
-            'lang' => [
-                'type' => 'select',
-                'list' => Shares::getLanguages()['languages']->toArray(),
-            ],
-            'roles' => [
-                'type' => 'select-multiple',
-                'list' => Shares::getRoles()['roles']->toArray(),
-            ],
-            'password' => [
-                'type' => 'password',
-            ],
-        ];
+        if ($includeForm) {
+            $config['formconfig'] = [
+                'name' => [
+                    'type' => 'text',
+                ],
+                'email' => [
+                    'type' => 'text',
+                ],
+                'country' => [
+                    'type' => 'select',
+                    'list' => Shares::getCountries()['countries']->toArray(),
+                ],
+                'lang' => [
+                    'type' => 'select',
+                    'list' => Shares::getLanguages()['languages']->toArray(),
+                ],
+                'roles' => [
+                    'type' => 'select-multiple',
+                    'list' => Shares::getRoles()['roles']->toArray(),
+                ],
+                'password' => [
+                    'type' => 'password',
+                ],
+            ];
+        }
 
         $config['fields'] = [
             'name' => [

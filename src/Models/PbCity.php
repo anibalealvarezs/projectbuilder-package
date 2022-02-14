@@ -2,7 +2,6 @@
 
 namespace Anibalealvarezs\Projectbuilder\Models;
 
-use Anibalealvarezs\Projectbuilder\Helpers\PbHelpers;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
@@ -40,7 +39,7 @@ class PbCity extends PbBuilder
 
     public function getNameAttribute($value)
     {
-        return PbHelpers::translateString($value);
+        return translateString($value);
     }
 
     /**

@@ -2,7 +2,6 @@
 
 namespace Anibalealvarezs\Projectbuilder\Middleware;
 
-use Anibalealvarezs\Projectbuilder\Models\PbConfig;
 use Anibalealvarezs\Projectbuilder\Models\PbUser;
 use Closure;
 use Illuminate\Http\Request;
@@ -27,7 +26,7 @@ class PbSingleSessionMiddleware
             redirect()->route('login');
         }
 
-        if (!PbConfig::getValueByKey('_ENABLE_SINGLE_SESSION_')) {
+        if (!getConfigValue('_ENABLE_SINGLE_SESSION_')) {
             return $next($request);
         }
 
@@ -39,7 +38,7 @@ class PbSingleSessionMiddleware
             return $next($request);
         }
 
-        if (!$user->hasRole('admin') || ($user->hasRole('admin') && !PbConfig::getValueByKey('_ALLOW_MULTIPLE_ADMIN_SESSION_'))) {
+        if (!$user->hasRole('admin') || ($user->hasRole('admin') && !getConfigValue('_ALLOW_MULTIPLE_ADMIN_SESSION_'))) {
             auth('web')->logout();
             $request->session()->invalidate();
             $request->session()->regenerateToken();

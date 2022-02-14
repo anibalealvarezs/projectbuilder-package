@@ -1,9 +1,8 @@
 <?php
 
-namespace Anibalealvarezs\Projectbuilder\Helpers;
+namespace Anibalealvarezs\Projectbuilder\Utilities;
 
-use Anibalealvarezs\Projectbuilder\Models\PbConfig;
-use Anibalealvarezs\Projectbuilder\Models\PbUser;
+use Anibalealvarezs\Projectbuilder\Models\PbCurrentUser;
 use Barryvdh\Debugbar\Facades\Debugbar;
 use Illuminate\Support\Facades\Auth;
 
@@ -46,7 +45,7 @@ class PbDebugbar extends Debugbar
             return false;
         }
 
-        if (!PbUser::current()->hasPermissionTo('developer options')) {
+        if (!app(PbCurrentUser::class)->hasPermissionTo('developer options')) {
             return false;
         }
 
@@ -60,6 +59,6 @@ class PbDebugbar extends Debugbar
      */
     public static function getDebugStatus(): bool
     {
-        return (bool)PbConfig::getValueByKey('_DEBUG_MODE_');
+        return (bool) getConfigValue('_DEBUG_MODE_');
     }
 }

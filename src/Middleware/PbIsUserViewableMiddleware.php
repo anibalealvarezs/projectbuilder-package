@@ -3,7 +3,6 @@
 namespace Anibalealvarezs\Projectbuilder\Middleware;
 
 use Anibalealvarezs\Projectbuilder\Exceptions\PbUserException;
-use Anibalealvarezs\Projectbuilder\Helpers\PbHelpers;
 use Anibalealvarezs\Projectbuilder\Models\PbUser;
 use Illuminate\Support\Facades\Auth;
 use Closure;
@@ -27,7 +26,7 @@ class PbIsUserViewableMiddleware
             }
         }
 
-        if (!PbHelpers::isApi($request)) {
+        if (!isApi($request)) {
             throw PbUserException::notViewable();
         }
 

@@ -2,14 +2,13 @@
 
 namespace Anibalealvarezs\Projectbuilder\Controllers\Jetstream;
 
-use Anibalealvarezs\Projectbuilder\Helpers\Shares;
+use Anibalealvarezs\Projectbuilder\Utilities\Shares;
 use Anibalealvarezs\Projectbuilder\Models\PbCurrentUser;
-use Anibalealvarezs\Projectbuilder\Models\PbUser;
 use Anibalealvarezs\Projectbuilder\Traits\PbControllerTrait;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
-use Anibalealvarezs\Projectbuilder\Helpers\PbInertiaManager;
+use Anibalealvarezs\Projectbuilder\Utilities\PbInertiaManager;
 use Laravel\Jetstream\Http\Controllers\Inertia\UserProfileController;
 
 class PbUserProfileController extends UserProfileController
@@ -42,7 +41,7 @@ class PbUserProfileController extends UserProfileController
 
         return self::inertia()->render($request, 'Show', [
             'sessions' => $this->sessions($request)->all(),
-            'roles' => PbUser::current()->roles
+            'roles' => app(PbCurrentUser::class)->roles
         ]);
     }
 

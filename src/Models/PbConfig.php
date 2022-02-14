@@ -2,15 +2,18 @@
 
 namespace Anibalealvarezs\Projectbuilder\Models;
 
-use Anibalealvarezs\Projectbuilder\Helpers\PbHelpers;
-use Anibalealvarezs\Projectbuilder\Helpers\Shares;
+use Anibalealvarezs\Projectbuilder\Interfaces\PbModelCrudInterface;
+use Anibalealvarezs\Projectbuilder\Utilities\Shares;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Auth;
 
-class PbConfig extends PbBuilder
+class PbConfig extends PbBuilder implements PbModelCrudInterface
 {
     protected $table = 'configs';
 
     public $timestamps = false;
+
+    protected $appends = ['crud'];
 
     /**
      * Create a new Eloquent model instance.
@@ -48,12 +51,12 @@ class PbConfig extends PbBuilder
 
     public function getNameAttribute($value)
     {
-        return PbHelpers::translateString($value);
+        return translateString($value);
     }
 
     public function getDescriptionAttribute($value)
     {
-        return PbHelpers::translateString($value);
+        return translateString($value);
     }
 
     /**
@@ -84,33 +87,47 @@ class PbConfig extends PbBuilder
     /**
      * Scope a query to only include popular users.
      *
+     * @param $id
+     * @return bool|PbUser|PbCurrentUser
+     */
+    public function getAuthorizedUser($id): bool|PbUser|PbCurrentUser
+    {
+        return (Auth::user()->id === $id ? app(PbCurrentUser::class) : PbUser::find($id));
+    }
+
+    /**
+     * Scope a query to only include popular users.
+     *
+     * @param bool $includeForm
      * @return array
      */
-    public static function getCrudConfig(): array
+    public static function getCrudConfig(bool $includeForm = false): array
     {
         $config = parent::getCrudConfig();
 
-        $config['formconfig'] = [
-            'name' => [
-                'type' => 'text',
-            ],
-            'configkey' => [
-                'type' => 'text',
-            ],
-            'configvalue' => [
-                'type' => 'text',
-            ],
-            'description' => [
-                'type' => 'textarea',
-            ],
-            'module' => [
-                'type' => 'select',
-                'list' => [
-                    ...[['id' => 0, 'name' => '[none]']],
-                    ...Shares::getModules()['modules']->toArray()
+        if ($includeForm) {
+            $config['formconfig'] = [
+                'name' => [
+                    'type' => 'text',
                 ],
-            ],
-        ];
+                'configkey' => [
+                    'type' => 'text',
+                ],
+                'configvalue' => [
+                    'type' => 'text',
+                ],
+                'description' => [
+                    'type' => 'textarea',
+                ],
+                'module' => [
+                    'type' => 'select',
+                    'list' => [
+                        ...[['id' => 0, 'name' => '[none]']],
+                        ...Shares::getModules()['modules']->toArray()
+                    ],
+                ],
+            ];
+        }
 
         $config['relations'] = ['module'];
 

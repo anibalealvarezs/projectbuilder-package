@@ -2,7 +2,7 @@
 
 namespace Anibalealvarezs\Projectbuilder\Providers;
 
-use Anibalealvarezs\Projectbuilder\Helpers\PbHelpers;
+use Anibalealvarezs\Projectbuilder\Utilities\PbUtilities;
 use Anibalealvarezs\Projectbuilder\Models\PbModule;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Contracts\Http\Kernel;
@@ -28,8 +28,8 @@ class PbControllerServiceProvider extends ServiceProvider
     {
         parent::__construct($app);
 
-        $this->namespace = PbHelpers::getDefault('vendor').'\\'.PbHelpers::getDefault('package').'\Controllers';
-        $this->prefix = PbHelpers::getDefault('prefix');
+        $this->namespace = app(PbUtilities::class)->vendor.'\\'.app(PbUtilities::class)->package.'\Controllers';
+        $this->prefix = app(PbUtilities::class)->prefix;
         $this->suffix = 'Controller';
     }
 
@@ -42,7 +42,7 @@ class PbControllerServiceProvider extends ServiceProvider
     public function boot(Kernel $kernel)
     {
         if (Schema::hasTable('modules')) {
-            $models = PbModule::whereIn('modulekey', PbHelpers::getDefault('modulekeys'))->pluck('modulekey');
+            $models = PbModule::whereIn('modulekey', getAttributeStatically(PbUtilities::class, 'modulekeys'))->pluck('modulekey');
             foreach ($models as $model) {
                 $this->app->make($this->namespace.'\\'.ucfirst($model).'\\'.$this->prefix.ucfirst($model).$this->suffix);
             }

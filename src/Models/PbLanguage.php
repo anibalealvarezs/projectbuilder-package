@@ -2,7 +2,6 @@
 
 namespace Anibalealvarezs\Projectbuilder\Models;
 
-use Anibalealvarezs\Projectbuilder\Helpers\PbHelpers;
 use Anibalealvarezs\Projectbuilder\Traits\PbModelEnableableTrait;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
@@ -73,7 +72,7 @@ class PbLanguage extends PbBuilder
      */
     public function putCountry()
     {
-        $this->country = PbHelpers::getDefaultCountry($this->code);
+        $this->country = getDefaultCountry($this->code);
     }
 
     /**
@@ -93,7 +92,7 @@ class PbLanguage extends PbBuilder
      */
     public function getNameAttribute($value)
     {
-        return PbHelpers::translateString($value);
+        return translateString($value);
     }
 
     /**

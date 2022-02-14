@@ -2,8 +2,8 @@
 
 namespace Anibalealvarezs\Projectbuilder\Models;
 
-use Anibalealvarezs\Projectbuilder\Helpers\PbHelpers;
-use Anibalealvarezs\Projectbuilder\Helpers\Shares;
+use Anibalealvarezs\Projectbuilder\Interfaces\PbModelCrudInterface;
+use Anibalealvarezs\Projectbuilder\Utilities\Shares;
 use Anibalealvarezs\Projectbuilder\Traits\PbModelCrudTrait;
 use Anibalealvarezs\Projectbuilder\Traits\PbModelTrait;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -13,8 +13,9 @@ use Illuminate\Support\Facades\DB;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\PermissionRegistrar;
 use Spatie\Translatable\HasTranslations;
+use Auth;
 
-class PbPermission extends Permission
+class PbPermission extends Permission implements PbModelCrudInterface
 {
     use HasTranslations;
     use PbModelTrait;
@@ -39,7 +40,7 @@ class PbPermission extends Permission
 
     public function getAliasAttribute($value)
     {
-        return PbHelpers::translateString($value);
+        return translateString($value);
     }
 
     public function getAliasesAttribute($value)
@@ -102,7 +103,7 @@ class PbPermission extends Permission
      * Scope a query to only include popular users.
      *
      * @param $key
-     * @return PbConfig|null
+     * @return PbPermission|null
      */
     public static function findByNameCustom($key): self|null
     {
@@ -123,9 +124,21 @@ class PbPermission extends Permission
     /**
      * Scope a query to only include popular users.
      *
+     * @param $id
+     * @return bool|PbUser|PbCurrentUser
+     */
+    public function getAuthorizedUser($id): bool|PbUser|PbCurrentUser
+    {
+        return (Auth::user()->id === $id ? app(PbCurrentUser::class) : PbUser::find($id));
+    }
+
+    /**
+     * Scope a query to only include popular users.
+     *
+     * @param bool $includeForm
      * @return array
      */
-    public static function getCrudConfig(): array
+    public static function getCrudConfig(bool $includeForm = false): array
     {
         $config = PbBuilder::getCrudConfig();
 
@@ -167,25 +180,27 @@ class PbPermission extends Permission
             'location' => 'both',
         ];
 
-        $config['formconfig'] = [
-            'name' => [
-                'type' => 'text',
-            ],
-            'alias' => [
-                'type' => 'text',
-            ],
-            'roles' => [
-                'type' => 'select-multiple',
-                'list' => Shares::getRoles()['roles']->toArray(),
-            ],
-            'module' => [
-                'type' => 'select',
-                'list' => [
-                    ...[['id' => 0, 'name' => '[none]']],
-                    ...Shares::getModules()['modules']->toArray()
+        if ($includeForm) {
+            $config['formconfig'] = [
+                'name' => [
+                    'type' => 'text',
                 ],
-            ],
-        ];
+                'alias' => [
+                    'type' => 'text',
+                ],
+                'roles' => [
+                    'type' => 'select-multiple',
+                    'list' => Shares::getRoles()['roles']->toArray(),
+                ],
+                'module' => [
+                    'type' => 'select',
+                    'list' => [
+                        ...[['id' => 0, 'name' => '[none]']],
+                        ...Shares::getModules()['modules']->toArray()
+                    ],
+                ],
+            ];
+        }
 
         $config['relations'] = ['roles', 'module'];
 

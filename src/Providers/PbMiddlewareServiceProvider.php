@@ -2,7 +2,7 @@
 
 namespace Anibalealvarezs\Projectbuilder\Providers;
 
-use Anibalealvarezs\Projectbuilder\Helpers\PbHelpers;
+use Anibalealvarezs\Projectbuilder\Utilities\PbUtilities;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Contracts\Http\Kernel;
 use Illuminate\Support\ServiceProvider;
@@ -26,8 +26,8 @@ class PbMiddlewareServiceProvider extends ServiceProvider
     {
         parent::__construct($app);
 
-        $this->namespace = PbHelpers::getDefault('vendor').'\\'.PbHelpers::getDefault('package').'\Middleware';
-        $this->prefix = $this->namespace.'\\'.PbHelpers::getDefault('prefix');
+        $this->namespace = app(PbUtilities::class)->vendor.'\\'.app(PbUtilities::class)->package.'\Middleware';
+        $this->prefix = $this->namespace.'\\'.app(PbUtilities::class)->prefix;
         $this->suffix = 'Middleware';
     }
 
@@ -54,6 +54,7 @@ class PbMiddlewareServiceProvider extends ServiceProvider
         $router->aliasMiddleware('single_session', $this->prefix.'SingleSession'.$this->suffix);
         $router->aliasMiddleware('set_locale', $this->prefix.'SetLocale'.$this->suffix);
         $router->aliasMiddleware('can_access_api', $this->prefix.'CanAccessApi'.$this->suffix);
+        $router->aliasMiddleware('set_config_data', $this->prefix.'SetConfigData'.$this->suffix);
     }
 
     /**

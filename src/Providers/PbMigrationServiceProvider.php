@@ -2,7 +2,6 @@
 
 namespace Anibalealvarezs\Projectbuilder\Providers;
 
-use Anibalealvarezs\Projectbuilder\Helpers\PbHelpers;
 use Illuminate\Support\ServiceProvider;
 
 class PbMigrationServiceProvider extends ServiceProvider
@@ -27,14 +26,14 @@ class PbMigrationServiceProvider extends ServiceProvider
     {
         if ($this->app->runningInConsole()) {
             // Migrations
-            $stubFiles = PbHelpers::getStubsList($this->migrationPath);
-            $keyWords = PbHelpers::getMigrationsKeyWords();
+            $stubFiles = getStubsList($this->migrationPath);
+            $keyWords = migrationsKeywords();
             $offset = 0;
             foreach ($keyWords as $value) {
                 foreach ($stubFiles as $ks => $sf) {
                     if (str_starts_with($sf, $value)) {
                         $this->publishes([
-                            $this->migrationPath . DIRECTORY_SEPARATOR . $sf => PbHelpers::getMigrationFileName($sf,
+                            $this->migrationPath . DIRECTORY_SEPARATOR . $sf => getMigrationFileName($sf,
                                 $offset)
                         ], 'migrations');
                         unset($stubFiles[$ks]);
@@ -44,7 +43,7 @@ class PbMigrationServiceProvider extends ServiceProvider
             }
             foreach ($stubFiles as $sf) {
                 $this->publishes([
-                    $this->migrationPath . DIRECTORY_SEPARATOR . $sf => PbHelpers::getMigrationFileName($sf, $offset)
+                    $this->migrationPath . DIRECTORY_SEPARATOR . $sf => getMigrationFileName($sf, $offset)
                 ], 'migrations');
             }
             // Schema dump

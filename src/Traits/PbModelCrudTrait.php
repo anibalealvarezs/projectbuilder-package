@@ -3,6 +3,7 @@
 namespace Anibalealvarezs\Projectbuilder\Traits;
 
 use Anibalealvarezs\Projectbuilder\Models\PbCurrentUser;
+use Anibalealvarezs\Projectbuilder\Models\PbUser;
 
 trait PbModelCrudTrait {
 
@@ -14,10 +15,12 @@ trait PbModelCrudTrait {
      */
     public function isEditableBy($id): bool
     {
-        if ($permissions = app(PbCurrentUser::class)->currentPermissions(true)) {
-            if (!in_array('update '.$this->getTable(), $permissions)) {
-                return false;
-            }
+        if (!$user = $this->getAuthorizedUser($id)) {
+            return false;
+        }
+
+        if (!$user->hasPermissionTo('update '.$this->getTable())) {
+            return false;
         }
 
         return true;
@@ -31,10 +34,12 @@ trait PbModelCrudTrait {
      */
     public function isViewableBy($id): bool
     {
-        if ($permissions = app(PbCurrentUser::class)->currentPermissions(true)) {
-            if (!in_array('read '.$this->getTable(), $permissions)) {
-                return false;
-            }
+        if (!$user = $this->getAuthorizedUser($id)) {
+            return false;
+        }
+
+        if (!$user->hasPermissionTo('read '.$this->getTable())) {
+            return false;
         }
 
         return true;
@@ -48,13 +53,7 @@ trait PbModelCrudTrait {
      */
     public function isSelectableBy($id): bool
     {
-        if ($permissions = app(PbCurrentUser::class)->currentPermissions(true)) {
-            if (!in_array('read '.$this->getTable(), $permissions)) {
-                return false;
-            }
-        }
-
-        return true;
+        return $this->isViewableBy($id);
     }
 
     /**
@@ -65,12 +64,33 @@ trait PbModelCrudTrait {
      */
     public function isDeletableBy($id): bool
     {
-        if ($permissions = app(PbCurrentUser::class)->currentPermissions(true)) {
-            if (!in_array('delete '.$this->getTable(), $permissions)) {
-                return false;
-            }
+        if (!$user = $this->getAuthorizedUser($id)) {
+            return false;
+        }
+
+        if (!$user->hasPermissionTo('delete '.$this->getTable())) {
+            return false;
         }
 
         return true;
+    }
+
+    /**
+     * Scope a query to only include popular users.
+     *
+     * @param $id
+     * @return bool|PbUser|PbCurrentUser
+     */
+    public function getAuthorizedUser($id): bool|PbUser|PbCurrentUser
+    {
+        if (!class_exists(Auth::class)) {
+            return false;
+        }
+
+        if (!Auth::check()) {
+            return false;
+        }
+
+        return (Auth::user()->id === $id ? app(PbCurrentUser::class) : PbUser::find($id));
     }
 }

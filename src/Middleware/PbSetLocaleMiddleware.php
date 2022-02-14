@@ -2,7 +2,6 @@
 
 namespace Anibalealvarezs\Projectbuilder\Middleware;
 
-use Anibalealvarezs\Projectbuilder\Helpers\PbHelpers;
 use Anibalealvarezs\Projectbuilder\Models\PbCurrentUser;
 use Anibalealvarezs\Projectbuilder\Models\PbLanguage;
 use Anibalealvarezs\Projectbuilder\Models\PbUser;
@@ -20,7 +19,7 @@ class PbSetLocaleMiddleware
      */
     public function handle(Request $request, Closure $next)
     {
-        if (!PbHelpers::isApi($request)) {
+        if (!isApi($request)) {
             if ($request->session() && $request->session()->get('locale') && (app()->getLocale() != $request->session()->get('locale'))) {
                 app()->setLocale($request->session()->get('locale'));
             }

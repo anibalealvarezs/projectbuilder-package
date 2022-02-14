@@ -1,6 +1,6 @@
 <?php
 
-namespace Anibalealvarezs\ProjectBuilder\Helpers;
+namespace Anibalealvarezs\ProjectBuilder\Utilities;
 
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -25,7 +25,7 @@ class PbInertiaManager extends InertiaManager
             }
         }
 
-        $package = PbHelpers::getDefault('package');
+        $package = app(PbUtilities::class)->package;
 
         Inertia::setRootView($package . '::app');
 

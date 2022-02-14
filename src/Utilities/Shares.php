@@ -1,8 +1,7 @@
 <?php
 
-namespace Anibalealvarezs\Projectbuilder\Helpers;
+namespace Anibalealvarezs\Projectbuilder\Utilities;
 
-use Anibalealvarezs\Projectbuilder\Models\PbConfig;
 use Anibalealvarezs\Projectbuilder\Models\PbCountry;
 use Anibalealvarezs\Projectbuilder\Models\PbCurrentUser;
 use Anibalealvarezs\Projectbuilder\Models\PbLanguage;
@@ -10,7 +9,6 @@ use Anibalealvarezs\Projectbuilder\Models\PbModule;
 use Anibalealvarezs\Projectbuilder\Models\PbNavigation;
 use Anibalealvarezs\Projectbuilder\Models\PbPermission;
 use Anibalealvarezs\Projectbuilder\Models\PbRole;
-use Anibalealvarezs\Projectbuilder\Models\PbUser;
 use JetBrains\PhpStorm\ArrayShape;
 
 class Shares
@@ -87,8 +85,7 @@ class Shares
     #[ArrayShape(['navigations' => "array"])]
     public static function getNavigations(): array
     {
-        $user = PbUser::current();
-        $userPermissions = $user->getAllPermissions()->pluck('id');
+        $userPermissions = app(PbCurrentUser::class)->permissions->pluck('id');
         $navigations = PbNavigation::with(['ascendant', 'descendants' => function ($q) use ($userPermissions) {
                 $q->enabled();
                 $q->where(function ($query) use ($userPermissions) {
@@ -120,7 +117,7 @@ class Shares
     #[ArrayShape(['locale' => "string"])]
     public static function getCustomLocale(): array
     {
-        $customLocale = PbHelpers::getCustomLocale();
+        $customLocale = getCurrentLocale();
         return [
             'locale' => $customLocale ?: app()->getLocale()
         ];
@@ -134,7 +131,7 @@ class Shares
     #[ArrayShape(['permissions' => "mixed"])]
     public static function getPermissions(): array
     {
-        $permissions = PbPermission::whereIn('id', PbUser::current()->getAllPermissions()->pluck('id'))->get();
+        $permissions = PbPermission::whereIn('id', app(PbCurrentUser::class)->permissions->pluck('id'))->get();
         return [
             'permissions' => $permissions
         ];
@@ -274,8 +271,8 @@ class Shares
     {
         return [
             'api_data' => [
-                'access' => PbUser::current()->hasPermissionTo('api access'),
-                'enabled' => (bool)PbConfig::getValueByKey('_API_ENABLED_'),
+                'access' => app(PbCurrentUser::class)->hasPermissionTo('api access'),
+                'enabled' => (bool) getConfigValue('_API_ENABLED_'),
             ]
         ];
     }

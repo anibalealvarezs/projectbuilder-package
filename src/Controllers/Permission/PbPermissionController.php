@@ -3,12 +3,10 @@
 namespace Anibalealvarezs\Projectbuilder\Controllers\Permission;
 
 use Anibalealvarezs\Projectbuilder\Controllers\PbBuilderController;
-use Anibalealvarezs\Projectbuilder\Models\PbConfig;
 use Anibalealvarezs\Projectbuilder\Models\PbCurrentUser;
 use Anibalealvarezs\Projectbuilder\Models\PbModule;
 use Anibalealvarezs\Projectbuilder\Models\PbRole;
 
-use Anibalealvarezs\Projectbuilder\Models\PbUser;
 use App\Http\Requests;
 
 use Illuminate\Contracts\Foundation\Application;
@@ -69,7 +67,7 @@ class PbPermissionController extends PbBuilderController
         string $route = 'level'
     ): InertiaResponse|JsonResponse|RedirectResponse {
 
-        $me = PbUser::current();
+        $me = app(PbCurrentUser::class);
         $toExclude = ['crud super-admin'];
         if (!$me->hasRole('super-admin')) {
             $toExclude = [
@@ -93,6 +91,8 @@ class PbPermissionController extends PbBuilderController
                 ];
             }
         }
+
+        $this->vars->config = $this->vars->level->modelPath::getCrudConfig(true);
 
         return parent::index(
             $page,
@@ -313,7 +313,7 @@ class PbPermissionController extends PbBuilderController
 
     protected function pushUnmodifiablePermissions($model)
     {
-        if (!PbUser::current()->hasRole('super-admin')) {
+        if (!app(PbCurrentUser::class)->hasRole('super-admin')) {
             array_push(
                 $model->unmodifiableModels['name'],
                 ...[
@@ -337,7 +337,7 @@ class PbPermissionController extends PbBuilderController
                     'api access',
                 ]
             );
-            if (!PbUser::current()->hasRole('admin')) {
+            if (!app(PbCurrentUser::class)->hasRole('admin')) {
                 array_push(
                     $model->unmodifiableModels['name'],
                     ...[

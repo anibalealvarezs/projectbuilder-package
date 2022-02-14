@@ -3,7 +3,6 @@
 namespace Anibalealvarezs\Projectbuilder\Middleware;
 
 use Anibalealvarezs\Projectbuilder\Exceptions\PbUserException;
-use Anibalealvarezs\Projectbuilder\Helpers\PbHelpers;
 use Anibalealvarezs\Projectbuilder\Models\PbUser;
 use Illuminate\Support\Facades\Auth;
 use Closure;
@@ -25,7 +24,7 @@ class PbIsUserDeletableMiddleware
             return $next($request);
         }
 
-        if (!PbHelpers::isApi($request)) {
+        if (!isApi($request)) {
             throw PbUserException::notDeletable();
         }
 

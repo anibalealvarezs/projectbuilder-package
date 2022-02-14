@@ -14,13 +14,12 @@ class PbBuilder extends Model
     use PbModelCrudTrait;
     use HasTranslations;
 
-    protected $appends = ['crud'];
-
     public $translatable = [];
 
     /**
      * Scope a query to only include popular users.
      *
+     * @param bool $includeForm
      * @return array
      */
     #[ArrayShape([
@@ -32,7 +31,7 @@ class PbBuilder extends Model
         'pagination' => "array",
         'heading' => "array",
         'orderable' => "bool",
-    ])] public static function getCrudConfig(): array
+    ])] public static function getCrudConfig(bool $includeForm = false): array
     {
         return [
             'default' => [],

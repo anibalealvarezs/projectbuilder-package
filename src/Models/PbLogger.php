@@ -2,14 +2,17 @@
 
 namespace Anibalealvarezs\Projectbuilder\Models;
 
-use Anibalealvarezs\Projectbuilder\Helpers\PbHelpers;
-use Anibalealvarezs\Projectbuilder\Helpers\Shares;
+use Anibalealvarezs\Projectbuilder\Interfaces\PbModelCrudInterface;
+use Anibalealvarezs\Projectbuilder\Utilities\Shares;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Auth;
 
-class PbLogger extends PbBuilder
+class PbLogger extends PbBuilder implements PbModelCrudInterface
 {
     protected $table = 'loggers';
+
+    protected $appends = ['crud'];
 
     /**
      * Create a new Eloquent model instance.
@@ -57,7 +60,7 @@ class PbLogger extends PbBuilder
 
     public function getMessageAttribute($value)
     {
-        return PbHelpers::translateString($value);
+        return translateString($value);
     }
 
     public function getSeverityAttribute($value)
@@ -89,7 +92,7 @@ class PbLogger extends PbBuilder
      */
     public function save(array $options = [])
     {
-        if (PbConfig::getValueByKey('_SAVE_LOGS_')) {
+        if (getConfigValue('_SAVE_LOGS_')) {
             parent::save();
         }
         return false;
@@ -108,9 +111,21 @@ class PbLogger extends PbBuilder
     /**
      * Scope a query to only include popular users.
      *
+     * @param $id
+     * @return bool|PbUser|PbCurrentUser
+     */
+    public function getAuthorizedUser($id): bool|PbUser|PbCurrentUser
+    {
+        return (Auth::user()->id === $id ? app(PbCurrentUser::class) : PbUser::find($id));
+    }
+
+    /**
+     * Scope a query to only include popular users.
+     *
+     * @param bool $includeForm
      * @return array
      */
-    public static function getCrudConfig(): array
+    public static function getCrudConfig(bool $includeForm = false): array
     {
         $config = parent::getCrudConfig();
 
@@ -125,27 +140,29 @@ class PbLogger extends PbBuilder
             'location' => 'both',
         ];
 
-        $config['formconfig'] = [
-            'name' => [
-                'type' => 'text',
-            ],
-            'loggerkey' => [
-                'type' => 'text',
-            ],
-            'loggervalue' => [
-                'type' => 'text',
-            ],
-            'description' => [
-                'type' => 'textarea',
-            ],
-            'module' => [
-                'type' => 'select',
-                'list' => [
-                    ...[['id' => 0, 'name' => '[none]']],
-                    ...Shares::getModules()['modules']->toArray()
+        if ($includeForm) {
+            $config['formconfig'] = [
+                'name' => [
+                    'type' => 'text',
                 ],
-            ],
-        ];
+                'loggerkey' => [
+                    'type' => 'text',
+                ],
+                'loggervalue' => [
+                    'type' => 'text',
+                ],
+                'description' => [
+                    'type' => 'textarea',
+                ],
+                'module' => [
+                    'type' => 'select',
+                    'list' => [
+                        ...[['id' => 0, 'name' => '[none]']],
+                        ...Shares::getModules()['modules']->toArray()
+                    ],
+                ],
+            ];
+        }
 
         $config['fields'] = [
             'severity' => [

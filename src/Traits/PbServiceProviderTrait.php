@@ -31,7 +31,7 @@ trait PbServiceProviderTrait {
         $this->publishes([
             $dirs['components'] => resource_path('js/Pages/'.$package),
         ], $name.'-components');
-        // Only Js Helpers
+        // Only Js Utilities
         $this->publishes([
             $dirs['assets_js'] => public_path('js/'.$package),
         ], $name.'-js');

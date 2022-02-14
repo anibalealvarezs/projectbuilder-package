@@ -2,16 +2,16 @@
 
 namespace Anibalealvarezs\Projectbuilder\Models;
 
-use Anibalealvarezs\Projectbuilder\Helpers\PbHelpers;
-use Anibalealvarezs\Projectbuilder\Helpers\Shares;
+use Anibalealvarezs\Projectbuilder\Interfaces\PbModelCrudInterface;
+use Anibalealvarezs\Projectbuilder\Utilities\Shares;
 use Anibalealvarezs\Projectbuilder\Traits\PbModelEnableableTrait;
 use Anibalealvarezs\Projectbuilder\Traits\PbModelSortableTrait;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Support\Facades\Auth;
+use Auth;
 
-class PbNavigation extends PbBuilder
+class PbNavigation extends PbBuilder implements PbModelCrudInterface
 {
     use PbModelEnableableTrait;
     use PbModelSortableTrait;
@@ -19,6 +19,8 @@ class PbNavigation extends PbBuilder
     protected $table = 'navigations';
 
     public $timestamps = false;
+
+    protected $appends = ['crud'];
 
     /**
      * Create a new Eloquent model instance.
@@ -53,7 +55,7 @@ class PbNavigation extends PbBuilder
      */
     public function getNameAttribute($value)
     {
-        return PbHelpers::translateString($value);
+        return translateString($value);
     }
 
     /**
@@ -111,68 +113,82 @@ class PbNavigation extends PbBuilder
     /**
      * Scope a query to only include popular users.
      *
+     * @param $id
+     * @return bool|PbUser|PbCurrentUser
+     */
+    public function getAuthorizedUser($id): bool|PbUser|PbCurrentUser
+    {
+        return (Auth::user()->id === $id ? app(PbCurrentUser::class) : PbUser::find($id));
+    }
+
+    /**
+     * Scope a query to only include popular users.
+     *
+     * @param bool $includeForm
      * @return array
      */
-    public static function getCrudConfig(): array
+    public static function getCrudConfig(bool $includeForm = false): array
     {
         $config = parent::getCrudConfig();
 
-        $config['formconfig'] = [
-            'name' => [
-                'type' => 'text',
-            ],
-            'destiny' => [
-                'type' => 'textarea',
-            ],
-            'type' => [
-                'type' => 'select',
-                'list' => [
-                    [
-                        'id' => 'route',
-                        'name' => 'Route'
-                    ],
-                    [
-                        'id' => 'path',
-                        'name' => 'Path'
-                    ],
-                    [
-                        'id' => 'custom',
-                        'name' => 'Custom'
+        if ($includeForm) {
+            $config['formconfig'] = [
+                'name' => [
+                    'type' => 'text',
+                ],
+                'destiny' => [
+                    'type' => 'textarea',
+                ],
+                'type' => [
+                    'type' => 'select',
+                    'list' => [
+                        [
+                            'id' => 'route',
+                            'name' => 'Route'
+                        ],
+                        [
+                            'id' => 'path',
+                            'name' => 'Path'
+                        ],
+                        [
+                            'id' => 'custom',
+                            'name' => 'Custom'
+                        ],
                     ],
                 ],
-            ],
-            'parent' => [
-                'type' => 'select',
-                'list' => [
-                    ...[['id'=>0, 'name'=>'[none]']],
-                    ...Shares::getNavigations()['navigations']['full']->toArray()
-                ],
-            ],
-            'permission' => [
-                'type' => 'select',
-                'list' => Shares::getPermissionsAll()['permissionsall']->toArray(),
-            ],
-            'status' => [
-                'type' => 'select',
-                'list' => [
-                    [
-                        'id' => '1',
-                        'name' => 'Enabled'
-                    ],
-                    [
-                        'id' => '0',
-                        'name' => 'Disabled'
+                'parent' => [
+                    'type' => 'select',
+                    'list' => [
+                        ...[['id'=>0, 'name'=>'[none]']],
+                        ...Shares::getNavigations()['navigations']['full']->toArray()
                     ],
                 ],
-            ],
-            'module' => [
-                'type' => 'select',
-                'list' => [
-                    ...[['id' => 0, 'name' => '[none]']],
-                    ...Shares::getModules()['modules']->toArray()
+                'permission' => [
+                    'type' => 'select',
+                    'list' => Shares::getPermissionsAll()['permissionsall']->toArray(),
                 ],
-            ],
-        ];
+                'status' => [
+                    'type' => 'select',
+                    'list' => [
+                        [
+                            'id' => '1',
+                            'name' => 'Enabled'
+                        ],
+                        [
+                            'id' => '0',
+                            'name' => 'Disabled'
+                        ],
+                    ],
+                ],
+                'module' => [
+                    'type' => 'select',
+                    'list' => [
+                        ...[['id' => 0, 'name' => '[none]']],
+                        ...Shares::getModules()['modules']->toArray()
+                    ],
+                ],
+            ];
+        }
 
         $config['relations'] = ['ascendant', 'permission', 'module'];
 

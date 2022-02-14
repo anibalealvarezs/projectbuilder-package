@@ -5,6 +5,30 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [1.3.7] - 2022-02-13
+
+- BREAKING CHANGES:
+  - [x] [1.3.6.1]
+- Added Middleware to store config data in session
+- Helpers renamed as Utilities
+- Helpers moved from classes to functions in helpers.php file
+- Added singleton for utilities
+- CRUD permitions refactored
+- Performance significantly improved
+- ```crud``` attribute is now optional for models
+- Added performance flags to CRUD controllers
+
+## [1.3.6.1] - 2022-02-11
+
+- Added singleton for current user
+- PbLogger and PbConfig tables names updated
+- spatie/laravel-translatable minimum requirement updated
+- Schema dump updated
+- Providers installation moved to Project Builder section
+- Fixed typo in Installation Command
+- Added option for removing previous migration files
+- Fixed error on saving profile data
+
 ## [1.3.6] - 2022-02-08
 
 - Laravel 9.x support added.
@@ -135,7 +159,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Changed
 
 - Trailts moved to "Traits" folder and its names changed
-- Controllers/Traits/Helpers refactored
+- Controllers/Traits/Utilities refactored
 
 ### Fixed
 
@@ -166,7 +190,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Changed
 
 - Inertia::share() instructions removed from PbAppServiceProvider. Global variable generation methods move to
-  Helpers/Shares. Sharing is now specified in controller methods.
+  Utilities/Shares. Sharing is now specified in controller methods.
 - 'isAdmin' middleware removed. Middlewares are now managed in controllers based on permissions
 - New Roles & Permissions models extended from Spatie's models
 

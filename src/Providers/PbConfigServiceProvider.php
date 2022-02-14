@@ -2,7 +2,7 @@
 
 namespace Anibalealvarezs\Projectbuilder\Providers;
 
-use Anibalealvarezs\Projectbuilder\Helpers\PbHelpers;
+use Anibalealvarezs\Projectbuilder\Utilities\PbUtilities;
 use Illuminate\Contracts\Http\Kernel;
 use Illuminate\Support\ServiceProvider;
 
@@ -25,10 +25,10 @@ class PbConfigServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        $this->app->config["filesystems.disks." . strtolower(PbHelpers::getDefault('prefix'))] = [
+        $this->app->config["filesystems.disks." . strtolower(app(PbUtilities::class)->prefix)] = [
             'driver' => 'local',
             'root' => __DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'assets',
-            'url' => config('app.url') . DIRECTORY_SEPARATOR . PbHelpers::getDefault('storageDirName'),
+            'url' => config('app.url') . DIRECTORY_SEPARATOR . getAttributeStatically(PbUtilities::class, 'storageDirName'),
             'visibility' => 'public',
         ];
         if (session('locale')) {

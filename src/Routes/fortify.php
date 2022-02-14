@@ -3,11 +3,14 @@
 use Anibalealvarezs\Projectbuilder\Controllers\Fortify\PbAuthenticatedSessionController;
 use Anibalealvarezs\Projectbuilder\Controllers\Fortify\PbProfileInformationController;
 use Anibalealvarezs\Projectbuilder\Controllers\Fortify\PbTwoFactorAuthenticatedSessionController;
-use Anibalealvarezs\Projectbuilder\Helpers\PbHelpers;
 use Illuminate\Support\Facades\Route;
 use Laravel\Fortify\Features;
 
-Route::group(['middleware' => PbHelpers::getDefaultGroupsMiddlewares()['web']], function () {
+Route::group(['middleware' => [
+            ...getDefaultGroupsMiddlewares('web'),
+            ...getDefaultGroupsMiddlewares('debug'),
+        ]
+    ], function () {
     $enableViews = config('fortify.views', true);
 
     // Authentication...
@@ -32,7 +35,10 @@ Route::group(['middleware' => PbHelpers::getDefaultGroupsMiddlewares()['web']], 
     // Profile Information...
     if (Features::enabled(Features::updateProfileInformation())) {
         Route::put('/user/profile-information', [PbProfileInformationController::class, 'update'])
-            ->middleware([...[config('fortify.auth_middleware', 'auth').':'.config('fortify.guard')], ...PbHelpers::getDefaultGroupsMiddlewares()['auth']])
+            ->middleware([
+                ...[config('fortify.auth_middleware', 'auth').':'.config('fortify.guard')],
+                ...getDefaultGroupsMiddlewares('auth'),
+            ])
             ->name('user-profile-information.update');
     }
 

@@ -2,7 +2,7 @@
 
 namespace Anibalealvarezs\Projectbuilder\Providers;
 
-use Anibalealvarezs\Projectbuilder\Helpers\PbHelpers;
+use Anibalealvarezs\Projectbuilder\Utilities\PbUtilities;
 use Anibalealvarezs\Projectbuilder\Traits\PbServiceProviderTrait;
 use Illuminate\Support\ServiceProvider;
 
@@ -17,7 +17,7 @@ class PbViewServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        $dir = PbHelpers::getDefault('directory');
+        $dir = getAttributeStatically(PbUtilities::class, 'directory');
         $dirs = [
             'core' => __DIR__ . '/../../../'.$dir.'/resources/core',
             'components' => __DIR__ . '/../../../'.$dir.'/resources/js',
@@ -28,7 +28,7 @@ class PbViewServiceProvider extends ServiceProvider
             'blade' => __DIR__ . '/../../../'.$dir.'/resources/views',
             'config' => __DIR__ . '/../../../'.$dir.'/src/config',
         ];
-        $this->booter(PbHelpers::getDefault('prefix'), PbHelpers::getDefault('package'), $dirs);
+        $this->booter(app(PbUtilities::class)->prefix, app(PbUtilities::class)->package, $dirs);
     }
 
     /**
