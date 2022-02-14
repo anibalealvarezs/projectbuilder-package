@@ -3,7 +3,7 @@
 namespace Anibalealvarezs\Projectbuilder\Models;
 
 use Anibalealvarezs\Projectbuilder\Interfaces\PbModelCrudInterface;
-use Anibalealvarezs\Projectbuilder\Utilities\Shares;
+use Anibalealvarezs\Projectbuilder\Utilities\PbShares;
 use Anibalealvarezs\Projectbuilder\Traits\PbModelEnableableTrait;
 use Anibalealvarezs\Projectbuilder\Traits\PbModelSortableTrait;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -160,12 +160,12 @@ class PbNavigation extends PbBuilder implements PbModelCrudInterface
                     'type' => 'select',
                     'list' => [
                         ...[['id'=>0, 'name'=>'[none]']],
-                        ...Shares::getNavigations()['navigations']['full']->toArray()
+                        ...PbShares::getNavigations()['navigations']['full']->toArray()
                     ],
                 ],
                 'permission' => [
                     'type' => 'select',
-                    'list' => Shares::getPermissionsAll()['permissionsall']->toArray(),
+                    'list' => PbShares::getPermissionsAll()['permissionsall']->toArray(),
                 ],
                 'status' => [
                     'type' => 'select',
@@ -184,7 +184,7 @@ class PbNavigation extends PbBuilder implements PbModelCrudInterface
                     'type' => 'select',
                     'list' => [
                         ...[['id' => 0, 'name' => '[none]']],
-                        ...Shares::getModules()['modules']->toArray()
+                        ...PbShares::getModules()['modules']->toArray()
                     ],
                 ],
             ];

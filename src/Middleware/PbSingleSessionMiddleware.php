@@ -23,7 +23,7 @@ class PbSingleSessionMiddleware
         }
 
         if (!$user = PbUser::find($request->user()->id)) {
-            redirect()->route('login');
+            to_route('login');
         }
 
         if (!getConfigValue('_ENABLE_SINGLE_SESSION_')) {
@@ -42,7 +42,7 @@ class PbSingleSessionMiddleware
             auth('web')->logout();
             $request->session()->invalidate();
             $request->session()->regenerateToken();
-            return redirect()->route('login')->with('error', 'Your session is no longer valid.');
+            return to_route('login')->with('error', 'Your session is no longer valid.');
         }
 
         return $next($request);

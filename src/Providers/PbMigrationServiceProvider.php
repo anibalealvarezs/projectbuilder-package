@@ -36,7 +36,7 @@ class PbMigrationServiceProvider extends ServiceProvider
                             $this->migrationPath . DIRECTORY_SEPARATOR . $sf => getMigrationFileName($sf,
                                 $offset)
                         ], 'migrations');
-                        unset($stubFiles[$ks]);
+                        Arr::forget($stubFiles, $ks);
                     }
                 }
                 $offset++;

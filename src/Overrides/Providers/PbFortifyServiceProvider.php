@@ -1,6 +1,6 @@
 <?php
 
-namespace Anibalealvarezs\Projectbuilder\Providers;
+namespace Anibalealvarezs\Projectbuilder\Overrides\Providers;
 
 use Illuminate\Support\Facades\Route;
 use Laravel\Fortify\Fortify;

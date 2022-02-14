@@ -253,55 +253,73 @@ trait PbInstallTrait
     {
         $appConfig = file_get_contents(config_path('app.php'));
         $newAppConfig = $appConfig;
-        if (! Str::contains($newAppConfig, 'Anibalealvarezs\\Projectbuilder\\Providers\\PbJetstreamAppServiceProvider::class')) {
-            if (Str::contains($newAppConfig, 'App\\Providers\\JetstreamServiceProvider::class')) {
+        if (! Str::contains($newAppConfig, 'Anibalealvarezs\\Projectbuilder\\Overrides\\Providers\\PbJetstreamAppServiceProvider::class')) {
+            if (Str::contains($newAppConfig, 'Anibalealvarezs\\Projectbuilder\\Providers\\PbJetstreamAppServiceProvider::class')) {
+                $newAppConfig = str_replace(
+                    'Anibalealvarezs\\Projectbuilder\\Providers\\PbJetstreamAppServiceProvider::class,',
+                    'Anibalealvarezs\\Projectbuilder\\Overrides\\Providers\\PbJetstreamAppServiceProvider::class,',
+                    $newAppConfig
+                );
+            } elseif (Str::contains($newAppConfig, 'App\\Providers\\JetstreamServiceProvider::class')) {
                 $newAppConfig = str_replace(
                     'App\\Providers\\JetstreamServiceProvider::class,',
-                    'Anibalealvarezs\\Projectbuilder\\Providers\\PbJetstreamAppServiceProvider::class,',
+                    'Anibalealvarezs\\Projectbuilder\\Overrides\\Providers\\PbJetstreamAppServiceProvider::class,',
                     $newAppConfig
                 );
             } else {
                 $newAppConfig = str_replace(
                     'App\\Providers\\FortifyServiceProvider::class,',
-                    'App\\Providers\\FortifyServiceProvider::class,'.PHP_EOL.'        Anibalealvarezs\\Projectbuilder\\Providers\\PbJetstreamAppServiceProvider::class,',
+                    'App\\Providers\\FortifyServiceProvider::class,'.PHP_EOL.'        Anibalealvarezs\\Projectbuilder\\Overrides\\Providers\\PbJetstreamAppServiceProvider::class,',
                     $newAppConfig
                 );
             }
         }
-        if (! Str::contains($newAppConfig, 'Anibalealvarezs\\Projectbuilder\\Providers\\PbFortifyServiceProvider::class')) {
-            if (Str::contains($newAppConfig, 'Laravel\\Fortify\\FortifyServiceProvider::class')) {
+        if (! Str::contains($newAppConfig, 'Anibalealvarezs\\Projectbuilder\\Overrides\\Providers\\PbFortifyServiceProvider::class')) {
+            if (Str::contains($newAppConfig, 'Anibalealvarezs\\Projectbuilder\\Providers\\PbFortifyServiceProvider::class')) {
+                $newAppConfig = str_replace(
+                    'Anibalealvarezs\\Projectbuilder\\Providers\\PbFortifyServiceProvider::class,',
+                    'Anibalealvarezs\\Projectbuilder\\Overrides\\Providers\\PbFortifyServiceProvider::class,',
+                    $newAppConfig
+                );
+            } elseif (Str::contains($newAppConfig, 'Laravel\\Fortify\\FortifyServiceProvider::class')) {
                 $newAppConfig = str_replace(
                     'Laravel\\Fortify\\FortifyServiceProvider::class,',
-                    'Anibalealvarezs\\Projectbuilder\\Providers\\PbFortifyServiceProvider::class,',
+                    'Anibalealvarezs\\Projectbuilder\\Overrides\\Providers\\PbFortifyServiceProvider::class,',
                     $newAppConfig
                 );
             } else {
                 $newAppConfig = str_replace(
-                     'Anibalealvarezs\\Projectbuilder\\Providers\\PbJetstreamAppServiceProvider::class,',
-                     'Anibalealvarezs\\Projectbuilder\\Providers\\PbJetstreamAppServiceProvider::class,'.PHP_EOL.'        Anibalealvarezs\\Projectbuilder\\Providers\\PbFortifyServiceProvider::class,',
+                     'Anibalealvarezs\\Projectbuilder\\Overrides\\Providers\\PbJetstreamAppServiceProvider::class,',
+                     'Anibalealvarezs\\Projectbuilder\\Overrides\\Providers\\PbJetstreamAppServiceProvider::class,'.PHP_EOL.'        Anibalealvarezs\\Projectbuilder\\Overrides\\Providers\\PbFortifyServiceProvider::class,',
                     $newAppConfig
                  );
             }
         }
-        if (! Str::contains($newAppConfig, 'Anibalealvarezs\\Projectbuilder\\Providers\\PbJetstreamServiceProvider::class')) {
-            if (Str::contains($newAppConfig, 'Laravel\\Jetstream\\JetstreamServiceProvider::class')) {
+        if (! Str::contains($newAppConfig, 'Anibalealvarezs\\Projectbuilder\\Overrides\\Providers\\PbJetstreamServiceProvider::class')) {
+            if (Str::contains($newAppConfig, 'Anibalealvarezs\\Projectbuilder\\Providers\\PbJetstreamServiceProvider::class')) {
+                $newAppConfig = str_replace(
+                    'Anibalealvarezs\\Projectbuilder\\Providers\\PbJetstreamServiceProvider::class,',
+                    'Anibalealvarezs\\Projectbuilder\\Overrides\\Providers\\PbJetstreamServiceProvider::class,',
+                    $newAppConfig
+                );
+            } elseif (Str::contains($newAppConfig, 'Laravel\\Jetstream\\JetstreamServiceProvider::class')) {
                 $newAppConfig = str_replace(
                     'Laravel\\Jetstream\\JetstreamServiceProvider::class,',
-                    'Anibalealvarezs\\Projectbuilder\\Providers\\PbJetstreamServiceProvider::class,',
+                    'Anibalealvarezs\\Projectbuilder\\Overrides\\Providers\\PbJetstreamServiceProvider::class,',
                     $newAppConfig
                 );
             } else {
                 $newAppConfig = str_replace(
-                    'Anibalealvarezs\\Projectbuilder\\Providers\\PbFortifyServiceProvider::class,',
-                    'Anibalealvarezs\\Projectbuilder\\Providers\\PbFortifyServiceProvider::class,'.PHP_EOL.'        Anibalealvarezs\\Projectbuilder\\Providers\\PbJetstreamServiceProvider::class,',
+                    'Anibalealvarezs\\Projectbuilder\\Overrides\\Providers\\PbFortifyServiceProvider::class,',
+                    'Anibalealvarezs\\Projectbuilder\\Overrides\\Providers\\PbFortifyServiceProvider::class,'.PHP_EOL.'        Anibalealvarezs\\Projectbuilder\\Overrides\\Providers\\PbJetstreamServiceProvider::class,',
                     $newAppConfig
                 );
             }
         }
         if (! Str::contains($newAppConfig, 'Anibalealvarezs\\Projectbuilder\\Providers\\PbRouteServiceProvider::class')) {
             $newAppConfig = str_replace(
-                'Anibalealvarezs\\Projectbuilder\\Providers\\PbJetstreamServiceProvider::class,',
-                'Anibalealvarezs\\Projectbuilder\\Providers\\PbJetstreamServiceProvider::class,'.PHP_EOL.'        Anibalealvarezs\\Projectbuilder\\Providers\\PbRouteServiceProvider::class,',
+                'Anibalealvarezs\\Projectbuilder\\Overrides\\Providers\\PbJetstreamServiceProvider::class,',
+                'Anibalealvarezs\\Projectbuilder\\Overrides\\Providers\\PbJetstreamServiceProvider::class,'.PHP_EOL.'        Anibalealvarezs\\Projectbuilder\\Providers\\PbRouteServiceProvider::class,',
                 $newAppConfig
             );
         }

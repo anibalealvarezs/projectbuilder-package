@@ -2,6 +2,7 @@
 
 namespace Anibalealvarezs\Projectbuilder\Providers;
 
+use Anibalealvarezs\Projectbuilder\Facades\PbUtilitiesFacade;
 use Anibalealvarezs\Projectbuilder\Utilities\PbUtilities;
 use Anibalealvarezs\Projectbuilder\Models\PbModule;
 use Illuminate\Contracts\Container\BindingResolutionException;
@@ -42,7 +43,7 @@ class PbControllerServiceProvider extends ServiceProvider
     public function boot(Kernel $kernel)
     {
         if (Schema::hasTable('modules')) {
-            $models = PbModule::whereIn('modulekey', getAttributeStatically(PbUtilities::class, 'modulekeys'))->pluck('modulekey');
+            $models = PbModule::whereIn('modulekey', app(PbUtilities::class)->modulekeys)->pluck('modulekey');
             foreach ($models as $model) {
                 $this->app->make($this->namespace.'\\'.ucfirst($model).'\\'.$this->prefix.ucfirst($model).$this->suffix);
             }

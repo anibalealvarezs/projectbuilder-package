@@ -1,14 +1,14 @@
 <?php
 
-namespace Anibalealvarezs\Projectbuilder\Controllers\Jetstream;
+namespace Anibalealvarezs\Projectbuilder\Overrides\Controllers\Jetstream;
 
-use Anibalealvarezs\Projectbuilder\Utilities\Shares;
+use Anibalealvarezs\Projectbuilder\Utilities\PbShares;
 use Anibalealvarezs\Projectbuilder\Models\PbCurrentUser;
 use Anibalealvarezs\Projectbuilder\Traits\PbControllerTrait;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
-use Anibalealvarezs\Projectbuilder\Utilities\PbInertiaManager;
+use Anibalealvarezs\Projectbuilder\Overrides\Classes\PbInertiaManager;
 use Laravel\Jetstream\Http\Controllers\Inertia\UserProfileController;
 
 class PbUserProfileController extends UserProfileController
@@ -34,8 +34,8 @@ class PbUserProfileController extends UserProfileController
             'shared',
             [
                 ...$this->globalInertiaShare(),
-                ...Shares::list(['languages']),
-                ...Shares::list(['countries']),
+                ...PbShares::list(['languages']),
+                ...PbShares::list(['countries']),
             ]
         );
 

@@ -1,7 +1,7 @@
 <?php
 
-use Anibalealvarezs\Projectbuilder\Controllers\Jetstream\PbApiTokenController;
-use Anibalealvarezs\Projectbuilder\Controllers\Jetstream\PbUserProfileController;
+use Anibalealvarezs\Projectbuilder\Overrides\Controllers\Jetstream\PbApiTokenController;
+use Anibalealvarezs\Projectbuilder\Overrides\Controllers\Jetstream\PbUserProfileController;
 use Illuminate\Support\Facades\Route;
 use Laravel\Jetstream\Jetstream;
 

@@ -1,8 +1,8 @@
 <?php
 
-use Anibalealvarezs\Projectbuilder\Controllers\Fortify\PbAuthenticatedSessionController;
-use Anibalealvarezs\Projectbuilder\Controllers\Fortify\PbProfileInformationController;
-use Anibalealvarezs\Projectbuilder\Controllers\Fortify\PbTwoFactorAuthenticatedSessionController;
+use Anibalealvarezs\Projectbuilder\Overrides\Controllers\Fortify\PbProfileInformationController;
+use Anibalealvarezs\Projectbuilder\Overrides\Controllers\Fortify\PbTwoFactorAuthenticatedSessionController;
+use Anibalealvarezs\Projectbuilder\Overrides\Controllers\Fortify\PbAuthenticatedSessionController;
 use Illuminate\Support\Facades\Route;
 use Laravel\Fortify\Features;
 

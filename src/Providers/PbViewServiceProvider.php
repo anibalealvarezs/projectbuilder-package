@@ -2,8 +2,8 @@
 
 namespace Anibalealvarezs\Projectbuilder\Providers;
 
-use Anibalealvarezs\Projectbuilder\Utilities\PbUtilities;
 use Anibalealvarezs\Projectbuilder\Traits\PbServiceProviderTrait;
+use Anibalealvarezs\Projectbuilder\Utilities\PbUtilities;
 use Illuminate\Support\ServiceProvider;
 
 class PbViewServiceProvider extends ServiceProvider
@@ -17,7 +17,7 @@ class PbViewServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        $dir = getAttributeStatically(PbUtilities::class, 'directory');
+        $dir = app(PbUtilities::class)->directory;
         $dirs = [
             'core' => __DIR__ . '/../../../'.$dir.'/resources/core',
             'components' => __DIR__ . '/../../../'.$dir.'/resources/js',

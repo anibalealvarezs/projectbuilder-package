@@ -9,9 +9,10 @@ use Anibalealvarezs\Projectbuilder\Models\PbModule;
 use Anibalealvarezs\Projectbuilder\Models\PbNavigation;
 use Anibalealvarezs\Projectbuilder\Models\PbPermission;
 use Anibalealvarezs\Projectbuilder\Models\PbRole;
+use Anibalealvarezs\Projectbuilder\Overrides\Classes\PbDebugbar;
 use JetBrains\PhpStorm\ArrayShape;
 
-class Shares
+class PbShares
 {
     /**
      * Transform the resource into an array.

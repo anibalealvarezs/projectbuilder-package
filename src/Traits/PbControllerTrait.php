@@ -2,7 +2,7 @@
 
 namespace Anibalealvarezs\Projectbuilder\Traits;
 
-use Anibalealvarezs\Projectbuilder\Utilities\Shares;
+use Anibalealvarezs\Projectbuilder\Utilities\PbShares;
 use Anibalealvarezs\Projectbuilder\Models\PbCurrentUser;
 
 use Auth;
@@ -25,7 +25,7 @@ trait PbControllerTrait
      */
     protected function globalInertiaShare(): array
     {
-        return Shares::list([
+        return PbShares::list([
             'api_data',
             'navigations',
             'languages',

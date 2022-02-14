@@ -17,10 +17,10 @@ class PbCheckSingleSessionOnLogin
     public function handle($request, $next)
     {
         if (!$request->user()) {
-            redirect()->route('login');
+            to_route('login');
         }
         if (!$user = PbUser::find($request->user()->id)) {
-            redirect()->route('login');
+            to_route('login');
         }
         if ((!$lastSession = $user->last_session) || !getConfigValue('_ENABLE_SINGLE_SESSION_')) {
             return $next($request);
@@ -31,7 +31,7 @@ class PbCheckSingleSessionOnLogin
                 auth('web')->logout();
                 $request->session()->invalidate();
                 $request->session()->regenerateToken();
-                return redirect()->route('login')->with('error', 'This user has already started a session.');
+                return to_route('login')->with('error', 'This user has already started a session.');
             }
         }
 

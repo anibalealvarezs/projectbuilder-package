@@ -2,7 +2,7 @@
 
 namespace Anibalealvarezs\Projectbuilder\Middleware;
 
-use Anibalealvarezs\Projectbuilder\Utilities\PbDebugbar;
+use Anibalealvarezs\Projectbuilder\Overrides\Classes\PbDebugbar;
 use Closure;
 use Illuminate\Http\Request;
 

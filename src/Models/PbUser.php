@@ -4,7 +4,7 @@ namespace Anibalealvarezs\Projectbuilder\Models;
 
 use Anibalealvarezs\Projectbuilder\Interfaces\PbModelCrudInterface;
 use Anibalealvarezs\Projectbuilder\Traits\PbModelCrudTrait;
-use Anibalealvarezs\Projectbuilder\Utilities\Shares;
+use Anibalealvarezs\Projectbuilder\Utilities\PbShares;
 use Anibalealvarezs\Projectbuilder\Traits\PbModelTrait;
 use App\Models\User;
 use Carbon\Carbon;
@@ -362,15 +362,15 @@ class PbUser extends User implements PbModelCrudInterface
                 ],
                 'country' => [
                     'type' => 'select',
-                    'list' => Shares::getCountries()['countries']->toArray(),
+                    'list' => PbShares::getCountries()['countries']->toArray(),
                 ],
                 'lang' => [
                     'type' => 'select',
-                    'list' => Shares::getLanguages()['languages']->toArray(),
+                    'list' => PbShares::getLanguages()['languages']->toArray(),
                 ],
                 'roles' => [
                     'type' => 'select-multiple',
-                    'list' => Shares::getRoles()['roles']->toArray(),
+                    'list' => PbShares::getRoles()['roles']->toArray(),
                 ],
                 'password' => [
                     'type' => 'password',

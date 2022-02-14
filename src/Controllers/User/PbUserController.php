@@ -5,7 +5,7 @@ namespace Anibalealvarezs\Projectbuilder\Controllers\User;
 use Anibalealvarezs\Projectbuilder\Controllers\PbBuilderController;
 
 use Anibalealvarezs\Projectbuilder\Models\PbCurrentUser;
-use Anibalealvarezs\Projectbuilder\Utilities\PbDebugbar;
+use Anibalealvarezs\Projectbuilder\Overrides\Classes\PbDebugbar;
 use App\Http\Requests;
 
 use App\Models\Team;

@@ -3,7 +3,7 @@
 namespace Anibalealvarezs\Projectbuilder\Models;
 
 use Anibalealvarezs\Projectbuilder\Interfaces\PbModelCrudInterface;
-use Anibalealvarezs\Projectbuilder\Utilities\Shares;
+use Anibalealvarezs\Projectbuilder\Utilities\PbShares;
 use Anibalealvarezs\Projectbuilder\Traits\PbModelCrudTrait;
 use Anibalealvarezs\Projectbuilder\Traits\PbModelTrait;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -129,7 +129,7 @@ class PbRole extends Role implements PbModelCrudInterface
                 ],
                 'permissions' => [
                     'type' => 'select-multiple',
-                    'list' => Shares::getPermissionsAll()['permissionsall']->toArray(),
+                    'list' => PbShares::getPermissionsAll()['permissionsall']->toArray(),
                 ],
             ];
         }

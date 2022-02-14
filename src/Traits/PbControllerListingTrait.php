@@ -2,6 +2,7 @@
 
 namespace Anibalealvarezs\Projectbuilder\Traits;
 
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Schema;
 use JetBrains\PhpStorm\ArrayShape;
 
@@ -193,7 +194,7 @@ trait PbControllerListingTrait
     {
         foreach ($actions as $key => &$action) {
             if (!$enabledActions[$key]) {
-                unset($actions[$key]);
+                Arr::forget($actions, $key);
                 continue;
             }
             /* Text */

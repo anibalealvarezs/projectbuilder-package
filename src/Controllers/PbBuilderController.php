@@ -2,9 +2,10 @@
 
 namespace Anibalealvarezs\Projectbuilder\Controllers;
 
-use Anibalealvarezs\Projectbuilder\Utilities\PbDebugbar;
+use Anibalealvarezs\Projectbuilder\Facades\PbUtilitiesFacade;
+use Anibalealvarezs\Projectbuilder\Overrides\Classes\PbDebugbar;
 use Anibalealvarezs\Projectbuilder\Utilities\PbUtilities;
-use Anibalealvarezs\Projectbuilder\Utilities\Shares;
+use Anibalealvarezs\Projectbuilder\Utilities\PbShares;
 use Anibalealvarezs\Projectbuilder\Models\PbCountry;
 use Anibalealvarezs\Projectbuilder\Models\PbCurrentUser;
 use Anibalealvarezs\Projectbuilder\Models\PbLanguage;
@@ -42,9 +43,9 @@ class PbBuilderController extends Controller
     function __construct(Request $request, $crud_perms = false)
     {
         $this->initVars();
-        $this->vars->helper->prefix = ($this->vars->helper->prefix ?? getAttributeStatically($this->vars->helper->class, 'prefix'));
-        $this->vars->helper->vendor = ($this->vars->helper->vendor ?? getAttributeStatically($this->vars->helper->class, 'vendor'));
-        $this->vars->helper->package = ($this->vars->helper->package ?? getAttributeStatically($this->vars->helper->class, 'package'));
+        $this->vars->helper->prefix = ($this->vars->helper->prefix ?? resolve($this->vars->helper->class)->prefix);
+        $this->vars->helper->vendor = ($this->vars->helper->vendor ?? resolve($this->vars->helper->class)->vendor);
+        $this->vars->helper->package = ($this->vars->helper->package ?? resolve($this->vars->helper->class)->package);
         if (!isset($this->vars->helper->keys['level'])) {
             $this->vars->helper->keys['level'] = ($this->vars->keys['level'] ?? 'Builder');
         }
@@ -104,7 +105,7 @@ class PbBuilderController extends Controller
             'delete ' . $this->vars->level->names => 'delete',
         ];
 
-        PbDebugbar::measure('builder crud controller model config load', function() use (&$config) {
+        PbDebugbar::measure('builder crud controller - model config load', function() use (&$config) {
             $config = ($this->vars->config ?? $this->vars->level->modelPath::getCrudConfig(true));
         });
 
@@ -114,7 +115,7 @@ class PbBuilderController extends Controller
                 'delete' => []
             ];
         }
-        $config['enabled_actions'] = Shares::allowed($this->vars->allowed)['allowed'];
+        $config['enabled_actions'] = PbShares::allowed($this->vars->allowed)['allowed'];
 
         if (!isset($config['model'])) {
             $config['model'] = $this->vars->level->modelPath;
@@ -123,19 +124,19 @@ class PbBuilderController extends Controller
             $config['pagination']['page'] = $page;
         }
         $this->vars->listing = self::buildListingRow($config);
-        $this->vars->sortable = $this->vars->sortable && app(PbCurrentUser::class)->hasPermissionTo('update '.(new $this->vars->level->modelPath)->getTable());
+        $this->vars->sortable = $this->vars->sortable && app(PbCurrentUser::class)->hasPermissionTo('update '.resolve($this->vars->level->modelPath)->getTable());
         $this->vars->formconfig = ($config['formconfig'] ?? []);
         $this->vars->pagination = !$this->vars->sortable ? $config['pagination'] : [];
         $this->vars->heading = $config['heading'];
         $this->vars->orderby = !$this->vars->sortable && $orderby ? ['field' => $field, 'order' => $order] : [];
 
-        PbDebugbar::measure('builder crud controller model building', function() use (&$arrayElements, $element, $multiple, $page, $perpage, $orderby, $field, $order) {
+        PbDebugbar::measure('builder crud controller - model building', function() use (&$arrayElements, $element, $multiple, $page, $perpage, $orderby, $field, $order) {
             $arrayElements = $this->buildModelsArray($element, $multiple, null, true, $page, $perpage, $orderby, $field, $order);
         });
 
         PbDebugbar::addMessage($arrayElements, 'data');
 
-        PbDebugbar::startMeasure('builder_controller_response_building', 'builder crud controller response building');
+        PbDebugbar::startMeasure('builder_controller_response_building', 'builder crud controller - response building');
         return $this->renderResponse($this->buildRouteString($route, 'index'), $arrayElements);
     }
 
@@ -150,13 +151,13 @@ class PbBuilderController extends Controller
         PbDebugbar::stopMeasure('model_controller');
         PbDebugbar::startMeasure('builder_controller', 'builder crud controller');
 
-        PbDebugbar::measure('builder crud controller model config load', function() {
+        PbDebugbar::measure('builder crud controller - model config load', function() {
             $this->vars->formconfig = $this->vars->level->modelPath::getCrudConfig(true)['formconfig'];
         });
 
         PbDebugbar::addMessage($this->vars->formconfig, 'formconfig');
 
-        PbDebugbar::startMeasure('builder_controller_response_building', 'builder crud controller response building');
+        PbDebugbar::startMeasure('builder_controller_response_building', 'builder crud controller - response building');
         return $this->renderResponse($this->buildRouteString($route, 'create'));
     }
 
@@ -190,7 +191,7 @@ class PbBuilderController extends Controller
                 return $this->redirectResponseCRUDFail($request, 'create', "Error saving {$this->vars->level->name}");
             }
 
-            PbDebugbar::startMeasure('builder_controller_response_building', 'builder crud controller response building');
+            PbDebugbar::startMeasure('builder_controller_response_building', 'builder crud controller - response building');
             return $this->redirectResponseCRUDSuccess($request, 'create');
         } catch (Exception $e) {
             return $this->redirectResponseCRUDFail($request, 'create', $e->getMessage());
@@ -228,7 +229,7 @@ class PbBuilderController extends Controller
             return $this->redirectResponseCRUDFail(request(), 'show', "You don't have permission to view this {$this->vars->level->name}");
         }
 
-        PbDebugbar::startMeasure('builder_controller_response_building', 'builder crud controller response building');
+        PbDebugbar::startMeasure('builder_controller_response_building', 'builder crud controller - response building');
         return $this->renderResponse($this->buildRouteString($route, 'show'), $model);
     }
 
@@ -251,7 +252,7 @@ class PbBuilderController extends Controller
         PbDebugbar::stopMeasure('model_controller');
         PbDebugbar::startMeasure('builder_controller', 'builder crud controller');
 
-        PbDebugbar::measure('builder crud controller model config load', function() {
+        PbDebugbar::measure('builder crud controller - model config load', function() {
             $this->vars->formconfig = $this->vars->level->modelPath::getCrudConfig(true)['formconfig'];
         });
 
@@ -269,7 +270,7 @@ class PbBuilderController extends Controller
             return $this->redirectResponseCRUDFail(request(), 'edit', "You don't have permission to edit this {$this->vars->level->name}");
         }
 
-        PbDebugbar::startMeasure('builder_controller_response_building', 'builder crud controller response building');
+        PbDebugbar::startMeasure('builder_controller_response_building', 'builder crud controller - response building');
         return $this->renderResponse($this->buildRouteString($route, 'edit'), $model);
     }
 
@@ -314,7 +315,7 @@ class PbBuilderController extends Controller
                 return $this->redirectResponseCRUDFail($request, 'update', "Error updating {$this->vars->level->name}");
             }
 
-            PbDebugbar::startMeasure('builder_controller_response_building', 'builder crud controller response building');
+            PbDebugbar::startMeasure('builder_controller_response_building', 'builder crud controller - response building');
             return $this->redirectResponseCRUDSuccess($request, 'update');
         } catch (Exception $e) {
             return $this->redirectResponseCRUDFail($request, 'update', $e->getMessage());
@@ -349,7 +350,7 @@ class PbBuilderController extends Controller
                 return $this->redirectResponseCRUDFail($request, 'delete', "Error deleting {$this->vars->level->name}");
             }
 
-            PbDebugbar::startMeasure('builder_controller_response_building', 'builder crud controller response building');
+            PbDebugbar::startMeasure('builder_controller_response_building', 'builder crud controller - response building');
             return $this->redirectResponseCRUDSuccess($request, 'delete');
         } catch (Exception $e) {
             return $this->redirectResponseCRUDFail($request, 'delete', $e->getMessage());
@@ -397,7 +398,7 @@ class PbBuilderController extends Controller
                 $n++;
             }
 
-            PbDebugbar::startMeasure('builder_controller_response_building', 'builder crud controller response building');
+            PbDebugbar::startMeasure('builder_controller_response_building', 'builder crud controller - response building');
             return $this->redirectResponseCRUDSuccess($request, 'sort');
         } catch (Exception $e) {
             return $this->redirectResponseCRUDFail($request,
@@ -427,7 +428,7 @@ class PbBuilderController extends Controller
             }
             try {
                 if ($model->enable()) {
-                    PbDebugbar::startMeasure('builder_controller_response_building', 'builder crud controller response building');
+                    PbDebugbar::startMeasure('builder_controller_response_building', 'builder crud controller - response building');
                     return $this->redirectResponseCRUDSuccess($request, 'enable');
                 }
                 return $this->redirectResponseCRUDFail($request, 'enable',
@@ -464,7 +465,7 @@ class PbBuilderController extends Controller
             }
             try {
                 if ($model->disable()) {
-                    PbDebugbar::startMeasure('builder_controller_response_building', 'builder crud controller response building');
+                    PbDebugbar::startMeasure('builder_controller_response_building', 'builder crud controller - response building');
                     return $this->redirectResponseCRUDSuccess($request, 'disable');
                 }
                 return $this->redirectResponseCRUDFail($request, 'disable',
@@ -531,8 +532,8 @@ class PbBuilderController extends Controller
     {
         $shared = [
             ...$this->globalInertiaShare(),
-            ...Shares::allowed($this->vars->allowed),
-            ...Shares::list($this->vars->shares),
+            ...PbShares::allowed($this->vars->allowed),
+            ...PbShares::list($this->vars->shares),
             ...['sort' => $this->vars->sortable],
             ...['showpos' => $this->vars->showPosition],
             ...['showid' => $this->vars->showId],
@@ -637,7 +638,7 @@ class PbBuilderController extends Controller
         // If not API
         if (!isApi($this->vars->request)) {
 
-            PbDebugbar::measure('builder crud controller share building', function() {
+            PbDebugbar::measure('builder crud controller - share building', function() {
                 $this->shareVars();
             });
 
@@ -690,7 +691,7 @@ class PbBuilderController extends Controller
         $object->prefixNames = Str::plural($object->prefixName);
         $object->modelPath = $this->vars->helper->vendor . "\\" . $this->vars->helper->package . "\\Models\\" . $this->vars->helper->prefix . $key;
         $object->viewsPath = $this->vars->helper->package . "/" . $object->keys . "/";
-        $object->table = (new $object->modelPath())->getTable();
+        $object->table = resolve($object->modelPath)->getTable();
         return $object;
     }
 

@@ -1,6 +1,6 @@
 <?php
 
-namespace Anibalealvarezs\Projectbuilder\Controllers\Fortify;
+namespace Anibalealvarezs\Projectbuilder\Overrides\Controllers\Fortify;
 
 use Anibalealvarezs\Projectbuilder\Actions\Session\PbCheckSingleSessionOnLogin;
 use Anibalealvarezs\Projectbuilder\Actions\Session\PbEnsureLoginIsNotDisabled;

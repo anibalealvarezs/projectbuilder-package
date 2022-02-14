@@ -1,6 +1,6 @@
 <?php
 
-namespace Anibalealvarezs\Projectbuilder\Providers;
+namespace Anibalealvarezs\Projectbuilder\Overrides\Providers;
 
 use Anibalealvarezs\Projectbuilder\Utilities\PbUtilities;
 use Anibalealvarezs\Projectbuilder\Models\PbConfig;
@@ -51,7 +51,7 @@ class PbJetstreamServiceProvider extends JetstreamServiceProvider
     {
         parent::bootInertia();
 
-        $dir = getAttributeStatically(PbUtilities::class, 'package').'/Auth/';
+        $dir = resolve(PbUtilities::class)->package.'/Auth/';
 
         /* $kernel = $this->app->make(Kernel::class);
 

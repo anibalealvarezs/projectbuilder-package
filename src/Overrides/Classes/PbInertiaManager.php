@@ -1,7 +1,9 @@
 <?php
 
-namespace Anibalealvarezs\ProjectBuilder\Utilities;
+namespace Anibalealvarezs\Projectbuilder\Overrides\Classes;
 
+use Anibalealvarezs\Projectbuilder\Facades\PbUtilitiesFacade;
+use Anibalealvarezs\Projectbuilder\Utilities\PbUtilities;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;

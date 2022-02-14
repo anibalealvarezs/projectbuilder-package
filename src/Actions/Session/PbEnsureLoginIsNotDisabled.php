@@ -18,10 +18,10 @@ class PbEnsureLoginIsNotDisabled
     public function handle($request, $next)
     {
         if (!$request->user()) {
-            redirect()->route('login');
+            to_route('login');
         }
         if (!$user = PbUser::find($request->user()->id)) {
-            redirect()->route('login');
+            to_route('login');
         }
 
         if (!PbConfig::getValueByKey('_DISABLE_LOGIN_') || $user->hasAnyRole(['super-admin', 'admin'])) {
@@ -31,6 +31,6 @@ class PbEnsureLoginIsNotDisabled
         auth('web')->logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();
-        return redirect()->route('login')->with('error', 'You\'re not allowed to login at this moment.');
+        return to_route('login')->with('error', 'You\'re not allowed to login at this moment.');
     }
 }

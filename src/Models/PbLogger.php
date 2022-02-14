@@ -3,7 +3,7 @@
 namespace Anibalealvarezs\Projectbuilder\Models;
 
 use Anibalealvarezs\Projectbuilder\Interfaces\PbModelCrudInterface;
-use Anibalealvarezs\Projectbuilder\Utilities\Shares;
+use Anibalealvarezs\Projectbuilder\Utilities\PbShares;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Auth;
@@ -158,7 +158,7 @@ class PbLogger extends PbBuilder implements PbModelCrudInterface
                     'type' => 'select',
                     'list' => [
                         ...[['id' => 0, 'name' => '[none]']],
-                        ...Shares::getModules()['modules']->toArray()
+                        ...PbShares::getModules()['modules']->toArray()
                     ],
                 ],
             ];

@@ -298,7 +298,7 @@ class PbPermissionController extends PbBuilderController
                 $request->session()->flash('flash.banner', 'This permission can not be deleted!');
                 $request->session()->flash('flash.bannerStyle', 'danger');
 
-                return redirect()->route($this->vars->level->names . '.index');
+                return to_route($this->vars->level->names . '.index');
             }
             // Model delete
             if (!$model->delete()) {

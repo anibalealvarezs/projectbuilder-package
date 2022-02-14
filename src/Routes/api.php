@@ -1,5 +1,5 @@
 <?php
 
-use Anibalealvarezs\Projectbuilder\Utilities\PbUtilities;
+use Anibalealvarezs\Projectbuilder\Facades\PbUtilitiesFacade;
 
-app(PbUtilities::class)->buildCrudRoutes('api');
+app(PbUtilitiesFacade::class)::buildCrudRoutes('api');

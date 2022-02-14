@@ -247,18 +247,6 @@ function setCollectionAttributeDatetimeFormat(
 /**
  * Returns existing migration file if found, else uses the current timestamp.
  *
- * @param string $class
- * @param $key
- * @return mixed
- */
-function getAttributeStatically(string $class, $key): mixed
-{
-    return (new $class())->{$key};
-}
-
-/**
- * Returns existing migration file if found, else uses the current timestamp.
- *
  * @return string
  */
 function getCurrentLocale(): string

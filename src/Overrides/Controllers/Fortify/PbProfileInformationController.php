@@ -1,6 +1,6 @@
 <?php
 
-namespace Anibalealvarezs\Projectbuilder\Controllers\Fortify;
+namespace Anibalealvarezs\Projectbuilder\Overrides\Controllers\Fortify;
 
 use Anibalealvarezs\Projectbuilder\Models\PbCountry;
 use Anibalealvarezs\Projectbuilder\Models\PbCurrentUser;

@@ -2,10 +2,11 @@
 
 use Anibalealvarezs\Projectbuilder\Controllers\Config\PbLocaleController as LocaleController;
 use Anibalealvarezs\Projectbuilder\Controllers\Dashboard\PbDashboardController as DashboardController;
+use Anibalealvarezs\Projectbuilder\Facades\PbUtilitiesFacade;
 use Anibalealvarezs\Projectbuilder\Utilities\PbUtilities;
 use Inertia\Inertia;
 
-(new PbUtilities())->buildCrudRoutes('web');
+app(PbUtilitiesFacade::class)::buildCrudRoutes('web');
 
 Route::get('/dashboard', [DashboardController::class, 'index'])->middleware([
     ...getDefaultGroupsMiddlewares('web'),

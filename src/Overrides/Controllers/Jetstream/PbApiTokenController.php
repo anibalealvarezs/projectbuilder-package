@@ -1,13 +1,13 @@
 <?php
 
-namespace Anibalealvarezs\Projectbuilder\Controllers\Jetstream;
+namespace Anibalealvarezs\Projectbuilder\Overrides\Controllers\Jetstream;
 
 use Anibalealvarezs\Projectbuilder\Traits\PbControllerTrait;
 use Laravel\Jetstream\Jetstream;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
-use Anibalealvarezs\Projectbuilder\Utilities\PbInertiaManager;
+use Anibalealvarezs\Projectbuilder\Overrides\Classes\PbInertiaManager;
 use Laravel\Jetstream\Http\Controllers\Inertia\ApiTokenController;
 
 class PbApiTokenController extends ApiTokenController

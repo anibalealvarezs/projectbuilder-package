@@ -1,6 +1,6 @@
 <?php
 
-namespace Anibalealvarezs\Projectbuilder\Providers;
+namespace Anibalealvarezs\Projectbuilder\Overrides\Providers;
 
 use App\Providers\JetstreamServiceProvider;
 use Laravel\Jetstream\Jetstream;

@@ -1,6 +1,6 @@
 <?php
 
-namespace Anibalealvarezs\Projectbuilder\Utilities;
+namespace Anibalealvarezs\Projectbuilder\Overrides\Classes;
 
 use Anibalealvarezs\Projectbuilder\Models\PbCurrentUser;
 use Barryvdh\Debugbar\Facades\Debugbar;

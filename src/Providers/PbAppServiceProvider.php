@@ -2,7 +2,8 @@
 
 namespace Anibalealvarezs\Projectbuilder\Providers;
 
-use Anibalealvarezs\Projectbuilder\Utilities\PbDebugbar;
+use Anibalealvarezs\Projectbuilder\Facades\PbUtilitiesFacade;
+use Anibalealvarezs\Projectbuilder\Overrides\Classes\PbDebugbar;
 use Anibalealvarezs\Projectbuilder\Utilities\PbUtilities;
 use Anibalealvarezs\Projectbuilder\Models\PbConfig;
 use Illuminate\Http\Request;
@@ -67,6 +68,10 @@ class PbAppServiceProvider extends ServiceProvider
      */
     public function register()
     {
+        $this->app->bind('PbUtilities', function () {
+            return new PbUtilities();
+        });
         $this->app->singleton(PbUtilities::class, static fn() => new PbUtilities());
+        $this->app->singleton(PbUtilitiesFacade::class, static fn() => new PbUtilitiesFacade());
     }
 }

@@ -2,6 +2,7 @@
 
 namespace Anibalealvarezs\Projectbuilder\Providers;
 
+use Anibalealvarezs\Projectbuilder\Facades\PbUtilitiesFacade;
 use Anibalealvarezs\Projectbuilder\Utilities\PbUtilities;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Contracts\Http\Kernel;
