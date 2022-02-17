@@ -171,12 +171,12 @@ trait PbControllerListingTrait
 
         return [
             "key" => ($options['key'] ?? ""),
-            "name" => ($options['name'] ?? ($options['key'] ? ucwords($options['key']) : "")),
+            "name" => (isset($options['name']) && $options['name'] ? $options['name'] : ($options['key'] ? ucwords($options['key']) : "")),
             "arrval" => ($options['arrval'] ?? []),
             "style" => ($options['style'] ?? []),
             "buttons" => ($options['buttons'] ?? []),
             "href" => ($options['href'] ?? []),
-            "size" => ($options['size'] ?? 'single'),
+            "size" => (isset($options['size']) && $options['size'] ? $options['size'] : 'single'),
             "status" => ($options['status'] ?? false),
             "orderable" => ($options['orderable'] ?? false),
         ];

@@ -5,18 +5,26 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [1.3.7] - 2022-02-13
+## [1.3.7.1] - 2022-02-14
+
+- Implemented cache for controllers
+- Added facades por ```PbDebugbar``` class
+
+## [1.3.7] - 2022-02-14
 
 - BREAKING CHANGES:
   - [x] [1.3.6.1]
 - Added Middleware to store config data in session
-- Helpers renamed as Utilities
-- Helpers moved from classes to functions in helpers.php file
+- Helpers moved from classes to functions in ```helpers.php``` file
+- ```Helpers``` folder renamed as ```Utilities```
+- ```PbHelpers``` class renamed as ```PbUtilities```
 - Added singleton for utilities
 - CRUD permitions refactored
 - Performance significantly improved
 - ```crud``` attribute is now optional for models
 - Added performance flags to CRUD controllers
+- Added facades por ```PbUtilities``` class
+- Overrides moved to ```Overrides``` folder
 
 ## [1.3.6.1] - 2022-02-11
 

@@ -9,7 +9,7 @@ use Anibalealvarezs\Projectbuilder\Models\PbModule;
 use Anibalealvarezs\Projectbuilder\Models\PbNavigation;
 use Anibalealvarezs\Projectbuilder\Models\PbPermission;
 use Anibalealvarezs\Projectbuilder\Models\PbRole;
-use Anibalealvarezs\Projectbuilder\Overrides\Classes\PbDebugbar;
+use Anibalealvarezs\Projectbuilder\Facades\PbDebugbarFacade as Debug;
 use JetBrains\PhpStorm\ArrayShape;
 
 class PbShares
@@ -35,7 +35,7 @@ class PbShares
                 "countries" => [...$list, ...self::getCountries()],
                 "me" => [...$list, ...self::getMyData()],
                 "api_data" => [...$list, ...self::apiData()],
-                "debug_status" => [...$list, ...['debug_enabled' => PbDebugbar::isDebugEnabled()]],
+                "debug_status" => [...$list, ...['debug_enabled' => Debug::isDebugEnabled()]],
                 "modules" => [...$list, ...self::getModules()],
                 "modules_replace" => [...$list, ...self::getModulesReplacingIds()],
             };

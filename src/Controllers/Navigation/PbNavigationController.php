@@ -4,6 +4,8 @@ namespace Anibalealvarezs\Projectbuilder\Controllers\Navigation;
 
 use Anibalealvarezs\Projectbuilder\Controllers\PbBuilderController;
 
+use Anibalealvarezs\Projectbuilder\Facades\PbDebugbarFacade as Debug;
+use Anibalealvarezs\Projectbuilder\Utilities\PbCache;
 use App\Http\Requests;
 
 use Illuminate\Http\JsonResponse;
@@ -14,6 +16,8 @@ use Illuminate\Validation\Rule;
 use Auth;
 use DB;
 use Inertia\Response as InertiaResponse;
+use Psr\SimpleCache\InvalidArgumentException;
+use ReflectionException;
 use Session;
 
 class PbNavigationController extends PbBuilderController
@@ -58,6 +62,7 @@ class PbNavigationController extends PbBuilderController
      * @param bool $multiple
      * @param string $route
      * @return InertiaResponse|JsonResponse|RedirectResponse
+     * @throws ReflectionException|InvalidArgumentException
      */
     public function index(
         int $page = 1,
@@ -69,13 +74,33 @@ class PbNavigationController extends PbBuilderController
         bool $multiple = false,
         string $route = 'level'): InertiaResponse|JsonResponse|RedirectResponse
     {
+        Debug::start('custom_controller', $this->vars->level->names.' crud controller');
+
+        Debug::measure(
+            $this->vars->level->names.' crud controller - model list build',
+            function() use (&$model, $page, $perpage, $orderby, $field, $order) {
+                $cached = PbCache::run(
+                    closure: fn() =>  $this->vars->level->modelPath::withPublicRelations()->orderedByDefault()->get(),
+                    package: $this->vars->helper->package,
+                    class: __CLASS__,
+                    model: $this->vars->level->names,
+                    modelFunction: 'getList',
+                    byRoles: true,
+                );
+                $model = $cached['data'];
+                $this->vars->cacheObjects[] = $cached['index'];
+            }
+        );
+
+        Debug::stop('custom_controller');
+
         return parent::index(
             $page,
             $perpage,
             $orderby,
             $field,
             $order,
-            $this->vars->level->modelPath::withPublicRelations()->orderedByDefault()->get()
+            $model
         );
     }
 }

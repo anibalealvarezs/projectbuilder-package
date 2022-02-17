@@ -16,6 +16,8 @@ use Illuminate\Validation\Rule;
 use Auth;
 use DB;
 use Inertia\Response as InertiaResponse;
+use Psr\SimpleCache\InvalidArgumentException;
+use ReflectionException;
 use Session;
 
 class PbConfigController extends PbBuilderController
@@ -42,6 +44,7 @@ class PbConfigController extends PbBuilderController
      *
      * @param string $route
      * @return InertiaResponse|JsonResponse
+     * @throws ReflectionException|InvalidArgumentException
      */
     public function create(string $route = 'level'): InertiaResponse|JsonResponse
     {
@@ -70,14 +73,15 @@ class PbConfigController extends PbBuilderController
      * @param null $element
      * @param bool $multiple
      * @param string $route
-     * @return InertiaResponse|JsonResponse
+     * @return RedirectResponse|InertiaResponse|JsonResponse
+     * @throws ReflectionException|InvalidArgumentException
      */
     public function edit(
         int $id,
         $element = null,
         bool $multiple = false,
         string $route = 'level'
-    ): InertiaResponse|JsonResponse {
+    ): RedirectResponse|InertiaResponse|JsonResponse {
 
         $this->pushRequired(['configkey']);
 

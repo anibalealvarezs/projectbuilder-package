@@ -6,6 +6,8 @@ use Anibalealvarezs\Projectbuilder\Controllers\PbBuilderController;
 use Anibalealvarezs\Projectbuilder\Models\PbCurrentUser;
 use Anibalealvarezs\Projectbuilder\Models\PbPermission;
 
+use Anibalealvarezs\Projectbuilder\Facades\PbDebugbarFacade as Debug;
+use Anibalealvarezs\Projectbuilder\Utilities\PbCache;
 use App\Http\Requests;
 
 use Illuminate\Contracts\Foundation\Application;
@@ -20,6 +22,8 @@ use DB;
 
 use Inertia\Response as InertiaResponse;
 
+use Psr\SimpleCache\InvalidArgumentException;
+use ReflectionException;
 use Session;
 
 class PbRoleController extends PbBuilderController
@@ -58,6 +62,7 @@ class PbRoleController extends PbBuilderController
      * @param bool $multiple
      * @param string $route
      * @return InertiaResponse|JsonResponse|RedirectResponse
+     * @throws ReflectionException|InvalidArgumentException
      */
     public function index(
         int $page = 1,
@@ -69,15 +74,57 @@ class PbRoleController extends PbBuilderController
         bool $multiple = false,
         string $route = 'level'): InertiaResponse|JsonResponse|RedirectResponse
     {
-        $this->pushRequired(['name']);
+        Debug::start('custom_controller', $this->vars->level->names.' crud controller');
+        Debug::measure($this->vars->level->names.' crud controller - push required fields', fn() => $this->pushRequired(['name']));
 
-        $this->vars->config = $this->vars->level->modelPath::getCrudConfig(true);
+        Debug::measure(
+            $this->vars->level->names.' crud controller - model config load',
+            function() use ($page, $perpage, $orderby, $field, $order) {
+                $cached = PbCache::run(
+                    closure: fn() => $this->vars->level->modelPath::getCrudConfig(true),
+                    package: $this->vars->helper->package,
+                    class: __CLASS__,
+                    model: $this->vars->level->names,
+                    modelFunction: 'getCrudConfig',
+                    pagination: ['page' => $page, 'perpage' => $perpage, 'orderby' => $orderby, 'field' => $field, 'order' => $order],
+                    byRoles: true,
+                );
+                $this->vars->config = $cached['data'];
+                $this->vars->cacheObjects[] = $cached['index'];
+            }
+        );
 
-        $query = $this->vars->level->modelPath::withPublicRelations()->whereNotIn('name', ['super-admin', 'developer', 'api-user']);
+        Debug::measure(
+            $this->vars->level->names.' crud controller - model list build',
+            function() use (&$model, $page, $perpage, $orderby, $field, $order) {
+                $cached = PbCache::run(
+                    closure: function() use ($order, $field, $orderby, $perpage, $page) {
+                        $query = $this->vars->level->modelPath::withPublicRelations()->whereNotIn('name', ['super-admin', 'developer', 'api-user']);
+                        if (!app(PbCurrentUser::class)->hasRole('super-admin')) {
+                            $query->whereNotIn('name', ['admin']);
+                        }
+                        return $this->buildPaginatedAndOrderedModel(
+                            query: $query,
+                            page: $page,
+                            perpage: $perpage,
+                            orderby: $orderby,
+                            field: $field,
+                            order: $order,
+                        );
+                    },
+                    package: $this->vars->helper->package,
+                    class: __CLASS__,
+                    model: $this->vars->level->names,
+                    modelFunction: 'getList',
+                    pagination: ['page' => $page, 'perpage' => $perpage, 'orderby' => $orderby, 'field' => $field, 'order' => $order],
+                    byRoles: true,
+                );
+                $model = $cached['data'];
+                $this->vars->cacheObjects[] = $cached['index'];
+            }
+        );
 
-        if (!app(PbCurrentUser::class)->hasRole('super-admin')) {
-            $query->whereNotIn('name', ['admin']);
-        }
+        Debug::stop('custom_controller');
 
         return parent::index(
             $page,
@@ -85,14 +132,7 @@ class PbRoleController extends PbBuilderController
             $orderby,
             $field,
             $order,
-            $this->buildPaginatedAndOrderedModel(
-                $query,
-                $page,
-                $perpage,
-                $orderby,
-                $field,
-                $order
-            )
+            $model,
         );
     }
 
@@ -101,6 +141,7 @@ class PbRoleController extends PbBuilderController
      *
      * @param string $route
      * @return InertiaResponse|JsonResponse
+     * @throws ReflectionException|InvalidArgumentException
      */
     public function create(string $route = 'level'): InertiaResponse|JsonResponse
     {
@@ -131,9 +172,14 @@ class PbRoleController extends PbBuilderController
         // Process
         try {
             // Build model
-            $model = (new $this->vars->level->modelPath())->setLocale(app()->getLocale());
+            $model = resolve($this->vars->level->modelPath)->setLocale(app()->getLocale());
             // Add requests
-            $model = $this->processModelRequests($this->vars->validationRules, $request, $this->vars->replacers, $model);
+            $model = $this->processModelRequests(
+                validationRules: $this->vars->validationRules,
+                request: $request,
+                replacers: $this->vars->replacers,
+                model: $model
+            );
             // Add additional fields values
             $model->guard_name = 'admin';
             // Model save
@@ -162,6 +208,7 @@ class PbRoleController extends PbBuilderController
      * @param bool $multiple
      * @param string $route
      * @return Application|RedirectResponse|Redirector|InertiaResponse|JsonResponse
+     * @throws ReflectionException|InvalidArgumentException
      */
     public function show(int $id, $element = null, bool $multiple = false, string $route = 'level'): Application|RedirectResponse|Redirector|InertiaResponse|JsonResponse
     {
@@ -175,13 +222,36 @@ class PbRoleController extends PbBuilderController
      * @param null $element
      * @param bool $multiple
      * @param string $route
-     * @return InertiaResponse|JsonResponse
+     * @return RedirectResponse|InertiaResponse|JsonResponse
+     * @throws ReflectionException|InvalidArgumentException
      */
-    public function edit(int $id, $element = null, bool $multiple = false, string $route = 'level'): InertiaResponse|JsonResponse
+    public function edit(int $id, $element = null, bool $multiple = false, string $route = 'level'): RedirectResponse|InertiaResponse|JsonResponse
     {
         $this->pushRequired(['name']);
 
-        return parent::edit($id, $this->vars->level->modelPath::withPublicRelations()->whereNotIn('name', ['super-admin', 'developer', 'api-user'])->findOrFail($id));
+        Debug::measure(
+            $this->vars->level->names.' crud controller - model find',
+            function() use (&$model, $id) {
+                $cached = PbCache::run(
+                    closure: fn() => $this->vars->level->modelPath::withPublicRelations()->whereNotIn('name', ['super-admin', 'developer', 'api-user'])->find($id),
+                    package: $this->vars->helper->package,
+                    class: __CLASS__,
+                    function: 'edit',
+                    model: $this->vars->level->name,
+                    modelFunction: 'find',
+                    modelId: $id,
+                    byRoles: true,
+                );
+                $model = $cached['data'];
+                $this->vars->cacheObjects[] = $cached['index'];
+            }
+        );
+
+        if (!$model) {
+            return $this->redirectResponseCRUDFail(request(), 'edit', "Error finding {$this->vars->level->name}");
+        }
+
+        return parent::edit($id, $model);
     }
 
     /**
@@ -220,7 +290,11 @@ class PbRoleController extends PbBuilderController
             }
             $model->setLocale(app()->getLocale());
             // Build requests
-            $requests = $this->processModelRequests($this->vars->validationRules, $request, $this->vars->replacers);
+            $requests = $this->processModelRequests(
+                validationRules: $this->vars->validationRules,
+                request: $request,
+                replacers: $this->vars->replacers,
+            );
             // Model update
             if (!$model->update($requests)) {
                 return $this->redirectResponseCRUDFail($request, 'update', "Error updating {$this->vars->level->name}");

@@ -2,8 +2,8 @@
 
 namespace Anibalealvarezs\Projectbuilder\Controllers;
 
-use Anibalealvarezs\Projectbuilder\Facades\PbUtilitiesFacade;
-use Anibalealvarezs\Projectbuilder\Overrides\Classes\PbDebugbar;
+use Anibalealvarezs\Projectbuilder\Facades\PbDebugbarFacade as Debug;
+use Anibalealvarezs\Projectbuilder\Utilities\PbCache;
 use Anibalealvarezs\Projectbuilder\Utilities\PbUtilities;
 use Anibalealvarezs\Projectbuilder\Utilities\PbShares;
 use Anibalealvarezs\Projectbuilder\Models\PbCountry;
@@ -25,6 +25,8 @@ use Illuminate\Routing\Redirector;
 use Auth;
 use DB;
 use Illuminate\Support\Str;
+use Psr\SimpleCache\InvalidArgumentException;
+use ReflectionException;
 use Session;
 
 use Inertia\Inertia;
@@ -47,7 +49,7 @@ class PbBuilderController extends Controller
         $this->vars->helper->vendor = ($this->vars->helper->vendor ?? resolve($this->vars->helper->class)->vendor);
         $this->vars->helper->package = ($this->vars->helper->package ?? resolve($this->vars->helper->class)->package);
         if (!isset($this->vars->helper->keys['level'])) {
-            $this->vars->helper->keys['level'] = ($this->vars->keys['level'] ?? 'Builder');
+            $this->vars->helper->keys['level'] = $this->vars->keys['level'] ?? 'Builder';
         }
         foreach (modelsLevels() as $value) {
             if (isset($this->vars->helper->keys[$value])) {
@@ -65,11 +67,10 @@ class PbBuilderController extends Controller
         $this->vars->required = $this->getRequired();
         $this->vars->request = $request;
         $this->vars->sortable = isset($this->vars->level->modelPath::$sortable) && $this->vars->level->modelPath::$sortable;
+        $this->vars->cacheObjects = [];
 
         self::$item = $this->vars->level->name;
         self::$route = $this->vars->level->names;
-
-        PbDebugbar::startMeasure('model_controller', $this->vars->level->names.' crud controller');
     }
 
     /**
@@ -84,6 +85,7 @@ class PbBuilderController extends Controller
      * @param bool $multiple
      * @param string $route
      * @return InertiaResponse|JsonResponse|RedirectResponse
+     * @throws ReflectionException|InvalidArgumentException
      */
     public function index(
         int $page = 1,
@@ -96,8 +98,7 @@ class PbBuilderController extends Controller
         string $route = 'level'
     ): InertiaResponse|JsonResponse|RedirectResponse {
 
-        PbDebugbar::stopMeasure('model_controller');
-        PbDebugbar::startMeasure('builder_controller', 'builder crud controller');
+        Debug::start('builder_controller', 'builder crud controller');
 
         $this->vars->allowed = [
             'create ' . $this->vars->level->names => 'create',
@@ -105,9 +106,23 @@ class PbBuilderController extends Controller
             'delete ' . $this->vars->level->names => 'delete',
         ];
 
-        PbDebugbar::measure('builder crud controller - model config load', function() use (&$config) {
-            $config = ($this->vars->config ?? $this->vars->level->modelPath::getCrudConfig(true));
-        });
+        Debug::measure(
+            'builder crud controller - model config load',
+            function() use (&$config, $page, $perpage, $orderby, $field, $order) {
+                $cached = PbCache::run(
+                    closure: fn() => (isset($this->vars->config) && $this->vars->config) ? $this->vars->config : $this->vars->level->modelPath::getCrudConfig(true),
+                    package: $this->vars->helper->package,
+                    class: __CLASS__,
+                    model: $this->vars->level->names,
+                    modelFunction: 'getCrudConfig',
+                    pagination: ['page' => $page, 'perpage' => $perpage, 'orderby' => $orderby, 'field' => $field, 'order' => $order],
+                    byRoles: !($this->vars->level->names == 'users'),
+                    byUser: true,
+                );
+                $config = $cached['data'];
+                $this->vars->cacheObjects[] = $cached['index'];
+            }
+        );
 
         if (!isset($config['fields']['actions'])) {
             $config['fields']['actions'] = [
@@ -115,7 +130,24 @@ class PbBuilderController extends Controller
                 'delete' => []
             ];
         }
-        $config['enabled_actions'] = PbShares::allowed($this->vars->allowed)['allowed'];
+
+        Debug::measure(
+            'builder crud controller - model config additional',
+            function() use (&$config, $page, $perpage, $orderby, $field, $order) {
+                $cached = PbCache::run(
+                    closure: fn() => PbShares::allowed($this->vars->allowed)['allowed'],
+                    package: $this->vars->helper->package,
+                    class: __CLASS__,
+                    model: $this->vars->level->names,
+                    modelFunction: 'sharesAllowed',
+                    pagination: ['page' => $page, 'perpage' => $perpage, 'orderby' => $orderby, 'field' => $field, 'order' => $order],
+                    byRoles: !($this->vars->level->names == 'users'),
+                    byUser: true,
+                );
+                $config['enabled_actions'] = $cached['data'];
+                $this->vars->cacheObjects[] = $cached['index'];
+            }
+        );
 
         if (!isset($config['model'])) {
             $config['model'] = $this->vars->level->modelPath;
@@ -123,21 +155,56 @@ class PbBuilderController extends Controller
         if (!isset($config['pagination']['page']) || !$config['pagination']['page']) {
             $config['pagination']['page'] = $page;
         }
-        $this->vars->listing = self::buildListingRow($config);
-        $this->vars->sortable = $this->vars->sortable && app(PbCurrentUser::class)->hasPermissionTo('update '.resolve($this->vars->level->modelPath)->getTable());
-        $this->vars->formconfig = ($config['formconfig'] ?? []);
-        $this->vars->pagination = !$this->vars->sortable ? $config['pagination'] : [];
-        $this->vars->heading = $config['heading'];
-        $this->vars->orderby = !$this->vars->sortable && $orderby ? ['field' => $field, 'order' => $order] : [];
 
-        PbDebugbar::measure('builder crud controller - model building', function() use (&$arrayElements, $element, $multiple, $page, $perpage, $orderby, $field, $order) {
-            $arrayElements = $this->buildModelsArray($element, $multiple, null, true, $page, $perpage, $orderby, $field, $order);
-        });
+        Debug::measure(
+            'builder crud controller - sorting and pagination',
+            function() use ($config, $page, $perpage, $orderby, $field, $order) {
+                $this->vars->sortable = $this->vars->sortable && app(PbCurrentUser::class)->hasPermissionTo('update '.resolve($this->vars->level->modelPath)->getTable());
+                $this->vars->formconfig = ($config['formconfig'] ?? []);
+                $this->vars->pagination = !$this->vars->sortable ? $config['pagination'] : [];
+                $this->vars->heading = $config['heading'];
+                $this->vars->orderby = !$this->vars->sortable && $orderby ? ['field' => $field, 'order' => $order] : [];
+                $cached = PbCache::run(
+                    closure: fn() => self::buildListingRow($config),
+                    package: $this->vars->helper->package,
+                    class: __CLASS__,
+                    model: $this->vars->level->names,
+                    modelFunction: 'sortAndPaginate',
+                    pagination: ['page' => $page, 'perpage' => $perpage, 'orderby' => $orderby, 'field' => $field, 'order' => $order],
+                    byRoles: !($this->vars->level->names == 'users'),
+                    byUser: true,
+                );
+                $this->vars->listing = $cached['data'];
+                $this->vars->cacheObjects[] = $cached['index'];
+            }
+        );
 
-        PbDebugbar::addMessage($arrayElements, 'data');
+        Debug::measure(
+            'builder crud controller - model list build',
+            function() use (&$arrayElements, $order, $field, $orderby, $perpage, $page, $multiple, $element) {
+                $cached = PbCache::run(
+                    closure: function() use (&$arrayElements, $element, $multiple, $page, $perpage, $orderby, $field, $order) {
+                        return $this->buildModelsArray($element, $multiple, null, true, $page, $perpage, $orderby, $field, $order);
+                    },
+                    package: $this->vars->helper->package,
+                    class: __CLASS__,
+                    model: $this->vars->level->names,
+                    modelFunction: 'buildModelsArray',
+                    pagination: ['page' => $page, 'perpage' => $perpage, 'orderby' => $orderby, 'field' => $field, 'order' => $order],
+                    byRoles: !($this->vars->level->names == 'users'),
+                    byUser: true,
+                );
+                $arrayElements = $cached['data'];
+                $this->vars->cacheObjects[] = $cached['index'];
+            }
+        );
 
-        PbDebugbar::startMeasure('builder_controller_response_building', 'builder crud controller - response building');
-        return $this->renderResponse($this->buildRouteString($route, 'index'), $arrayElements);
+        Debug::add($arrayElements, 'data');
+        Debug::add($this->vars->cacheObjects, 'caches', true);
+
+        Debug::stop('builder_controller');
+
+        return $this->renderResponse($this->buildRouteString($route, 'index'), (array) $arrayElements);
     }
 
     /**
@@ -145,19 +212,34 @@ class PbBuilderController extends Controller
      *
      * @param string $route
      * @return InertiaResponse|JsonResponse
+     * @throws ReflectionException|InvalidArgumentException
      */
     public function create(string $route = 'level'): InertiaResponse|JsonResponse
     {
-        PbDebugbar::stopMeasure('model_controller');
-        PbDebugbar::startMeasure('builder_controller', 'builder crud controller');
+        Debug::start('builder_controller', 'builder crud controller');
 
-        PbDebugbar::measure('builder crud controller - model config load', function() {
-            $this->vars->formconfig = $this->vars->level->modelPath::getCrudConfig(true)['formconfig'];
-        });
+        Debug::measure(
+            'builder crud controller - model config load',
+            function() use (&$config) {
+                $cached = PbCache::run(
+                    closure: fn() => (isset($this->vars->config) && $this->vars->config) ? $this->vars->config : $this->vars->level->modelPath::getCrudConfig(true),
+                    package: $this->vars->helper->package,
+                    class: __CLASS__,
+                    function: 'create',
+                    model: $this->vars->level->names,
+                    modelFunction: 'getCrudConfig',
+                    byRoles: true,
+                );
+                $this->vars->formconfig = $cached['data']['formconfig'];
+                $this->vars->cacheObjects[] = $cached['index'];
+            }
+        );
 
-        PbDebugbar::addMessage($this->vars->formconfig, 'formconfig');
+        Debug::add($this->vars->formconfig, 'formconfig');
+        Debug::add($this->vars->cacheObjects, 'caches', true);
 
-        PbDebugbar::startMeasure('builder_controller_response_building', 'builder crud controller - response building');
+        Debug::stop('builder_controller');
+
         return $this->renderResponse($this->buildRouteString($route, 'create'));
     }
 
@@ -169,9 +251,6 @@ class PbBuilderController extends Controller
      */
     public function store(Request $request): Redirector|RedirectResponse|Application|null
     {
-        PbDebugbar::stopMeasure('model_controller');
-        PbDebugbar::startMeasure('builder_controller', 'builder crud controller');
-
         // Validation
         if ($failed = $this->validateRequest($this->vars->validationRules, $request)) {
             return $failed;
@@ -180,8 +259,12 @@ class PbBuilderController extends Controller
         // Process
         try {
             // Add requests
-            $model = $this->processModelRequests($this->vars->validationRules, $request, $this->vars->replacers,
-                (new $this->vars->level->modelPath())->setLocale(app()->getLocale()));
+            $model = $this->processModelRequests(
+                validationRules: $this->vars->validationRules,
+                request: $request,
+                replacers: $this->vars->replacers,
+                model: resolve($this->vars->level->modelPath)->setLocale(app()->getLocale())
+            );
             // Check if module relation exists
             if ($model->hasRelation('module') && ($request->input('module') > 0) &&  $module = PbModule::find($request->input('module'))) {
                 $model->module()->associate($module);
@@ -191,7 +274,6 @@ class PbBuilderController extends Controller
                 return $this->redirectResponseCRUDFail($request, 'create', "Error saving {$this->vars->level->name}");
             }
 
-            PbDebugbar::startMeasure('builder_controller_response_building', 'builder crud controller - response building');
             return $this->redirectResponseCRUDSuccess($request, 'create');
         } catch (Exception $e) {
             return $this->redirectResponseCRUDFail($request, 'create', $e->getMessage());
@@ -206,6 +288,7 @@ class PbBuilderController extends Controller
      * @param bool $multiple
      * @param string $route
      * @return Application|RedirectResponse|Redirector|InertiaResponse|JsonResponse
+     * @throws ReflectionException|InvalidArgumentException
      */
     public function show(
         int $id,
@@ -214,22 +297,68 @@ class PbBuilderController extends Controller
         string $route = 'level'
     ): Application|RedirectResponse|Redirector|InertiaResponse|JsonResponse {
 
-        PbDebugbar::stopMeasure('model_controller');
-        PbDebugbar::startMeasure('builder_controller', 'builder crud controller');
+        Debug::start('builder_controller', 'builder crud controller');
 
-        $currentModel = $this->vars->level->modelPath::find($id);
+        if (!$element) {
+            Debug::measure(
+                'builder crud controller - model find',
+                function() use (&$element, $id) {
+                    $cached = PbCache::run(
+                        closure: fn() => $this->vars->level->modelPath::find($id),
+                        package: $this->vars->helper->package,
+                        class: __CLASS__,
+                        function: 'show',
+                        model: $this->vars->level->name,
+                        modelFunction: 'find',
+                        modelId: $id,
+                        byRoles: true,
+                    );
+                    $element = $cached['data'];
+                    $this->vars->cacheObjects[] = $cached['index'];
+                }
+            );
 
-        if (!$model = $this->buildModelsArray($element, $multiple, $id)) {
-            return $this->redirectResponseCRUDFail(request(), 'show', "Error finding {$this->vars->level->name}");
+            if (!$element) {
+                return $this->redirectResponseCRUDFail(request(), 'show', "Error finding {$this->vars->level->name}");
+            }
         }
-        if ($this->isUnreadableModel($currentModel)) {
+
+        Debug::start('permissions_check', 'permissions check');
+        if ($this->isUnreadableModel($element)) {
             return $this->redirectResponseCRUDFail(request(), 'show', "This {$this->vars->level->name} cannot be shown");
         }
-        if (!$currentModel->isViewableBy(Auth::user()->id)) {
+        if (!$element->isViewableBy(Auth::user()->id)) {
             return $this->redirectResponseCRUDFail(request(), 'show', "You don't have permission to view this {$this->vars->level->name}");
         }
+        Debug::stop('permissions_check');
 
-        PbDebugbar::startMeasure('builder_controller_response_building', 'builder crud controller - response building');
+        Debug::measure(
+            'builder crud controller - model data build',
+            function() use (&$model, $element, $multiple, $id) {
+                $cached = PbCache::run(
+                    closure: fn() => $this->buildModelsArray($element, $multiple, $id),
+                    package: $this->vars->helper->package,
+                    class: __CLASS__,
+                    function: 'show',
+                    model: $this->vars->level->name,
+                    modelFunction: 'buildModelsArray',
+                    modelId: $id,
+                    byRoles: true,
+                );
+                $model = $cached['data'];
+                $this->vars->cacheObjects[] = $cached['index'];
+            }
+        );
+
+        Debug::add($model, 'data');
+        Debug::add($this->vars->cacheObjects, 'caches', true);
+
+        if (!$model) {
+            return $this->redirectResponseCRUDFail(request(), 'show', "Error finding {$this->vars->level->name}");
+        }
+
+        Debug::stop('builder_controller');
+
         return $this->renderResponse($this->buildRouteString($route, 'show'), $model);
     }
 
@@ -240,37 +369,84 @@ class PbBuilderController extends Controller
      * @param null $element
      * @param bool $multiple
      * @param string $route
-     * @return InertiaResponse|JsonResponse
+     * @return RedirectResponse|InertiaResponse|JsonResponse
+     * @throws ReflectionException|InvalidArgumentException
      */
     public function edit(
         int $id,
         $element = null,
         bool $multiple = false,
         string $route = 'level'
-    ): InertiaResponse|JsonResponse {
+    ): RedirectResponse|InertiaResponse|JsonResponse {
 
-        PbDebugbar::stopMeasure('model_controller');
-        PbDebugbar::startMeasure('builder_controller', 'builder crud controller');
+        Debug::start('builder_controller', 'builder crud controller');
 
-        PbDebugbar::measure('builder crud controller - model config load', function() {
+        Debug::measure('builder crud controller - model config load', function() {
             $this->vars->formconfig = $this->vars->level->modelPath::getCrudConfig(true)['formconfig'];
         });
 
-        PbDebugbar::addMessage($this->vars->formconfig, 'formconfig');
+        Debug::add($this->vars->formconfig, 'formconfig');
 
-        $currentModel = $this->vars->level->modelPath::find($id);
+        if (!$element) {
+            Debug::measure(
+                'builder crud controller - model find',
+                function() use (&$element, $id) {
+                    $cached = PbCache::run(
+                        closure: fn() => $this->vars->level->modelPath::find($id),
+                        package: $this->vars->helper->package,
+                        class: __CLASS__,
+                        function: 'edit',
+                        model: $this->vars->level->name,
+                        modelFunction: 'find',
+                        modelId: $id,
+                        byRoles: true,
+                    );
+                    $element = $cached['data'];
+                    $this->vars->cacheObjects[] = $cached['index'];
+                }
+            );
 
-        if (!$model = $this->buildModelsArray($element, $multiple, $id)) {
-            return $this->redirectResponseCRUDFail(request(), 'edit', "Error finding {$this->vars->level->name}");
+            if (!$element) {
+                return $this->redirectResponseCRUDFail(request(), 'edit', "Error finding {$this->vars->level->name}");
+            }
         }
-        if ($this->isUnreadableModel($currentModel)) {
+
+        Debug::start('permissions_check', 'permissions check');
+        if ($this->isUnreadableModel($element)) {
             return $this->redirectResponseCRUDFail(request(), 'edit', "This {$this->vars->level->name} cannot be modified");
         }
-        if (!$currentModel->isEditableBy(Auth::user()->id)) {
+        if (!$element->isEditableBy(Auth::user()->id)) {
             return $this->redirectResponseCRUDFail(request(), 'edit', "You don't have permission to edit this {$this->vars->level->name}");
         }
+        Debug::stop('permissions_check');
 
-        PbDebugbar::startMeasure('builder_controller_response_building', 'builder crud controller - response building');
+        Debug::measure(
+            'builder crud controller - model data build',
+            function() use (&$model, $element, $multiple, $id) {
+                $cached = PbCache::run(
+                    closure: fn() => $this->buildModelsArray($element, $multiple, $id),
+                    package: $this->vars->helper->package,
+                    class: __CLASS__,
+                    function: 'edit',
+                    model: $this->vars->level->name,
+                    modelFunction: 'buildModelsArray',
+                    modelId: $id,
+                    byRoles: true,
+                );
+                $model = $cached['data'];
+                $this->vars->cacheObjects[] = $cached['index'];
+            }
+        );
+
+        Debug::add($model, 'data');
+        Debug::add($this->vars->cacheObjects, 'caches', true);
+
+        if (!$model) {
+            return $this->redirectResponseCRUDFail(request(), 'edit', "Error finding {$this->vars->level->name}");
+        }
+
+        Debug::stop('builder_controller');
+
         return $this->renderResponse($this->buildRouteString($route, 'edit'), $model);
     }
 
@@ -283,8 +459,8 @@ class PbBuilderController extends Controller
      */
     public function update(Request $request, int $id): Redirector|RedirectResponse|Application|null
     {
-        PbDebugbar::stopMeasure('model_controller');
-        PbDebugbar::startMeasure('builder_controller', 'builder crud controller');
+        Debug::stop('model_controller');
+        Debug::start('builder_controller', 'builder crud controller');
 
         // Validation
         if ($failed = $this->validateRequest($this->vars->validationRules, $request)) {
@@ -305,7 +481,11 @@ class PbBuilderController extends Controller
             }
             $model->setLocale(app()->getLocale());
             // Build requests
-            $requests = $this->processModelRequests($this->vars->validationRules, $request, $this->vars->replacers);
+            $requests = $this->processModelRequests(
+                validationRules: $this->vars->validationRules,
+                request: $request,
+                replacers: $this->vars->replacers,
+            );
             // Check if module relation exists
             if ($model->hasRelation('module') && ($request->input('module') > 0) &&  $module = PbModule::find($request->input('module'))) {
                 $model->module()->associate($module);
@@ -315,7 +495,6 @@ class PbBuilderController extends Controller
                 return $this->redirectResponseCRUDFail($request, 'update', "Error updating {$this->vars->level->name}");
             }
 
-            PbDebugbar::startMeasure('builder_controller_response_building', 'builder crud controller - response building');
             return $this->redirectResponseCRUDSuccess($request, 'update');
         } catch (Exception $e) {
             return $this->redirectResponseCRUDFail($request, 'update', $e->getMessage());
@@ -331,8 +510,8 @@ class PbBuilderController extends Controller
      */
     public function destroy(Request $request, int $id): Redirector|RedirectResponse|Application
     {
-        PbDebugbar::stopMeasure('model_controller');
-        PbDebugbar::startMeasure('builder_controller', 'builder crud controller');
+        Debug::stop('model_controller');
+        Debug::start('builder_controller', 'builder crud controller');
 
         if (!$model = $this->vars->level->modelPath::find($id)) {
             return $this->redirectResponseCRUDFail($request, 'delete', "Error finding {$this->vars->level->name}");
@@ -350,7 +529,6 @@ class PbBuilderController extends Controller
                 return $this->redirectResponseCRUDFail($request, 'delete', "Error deleting {$this->vars->level->name}");
             }
 
-            PbDebugbar::startMeasure('builder_controller_response_building', 'builder crud controller - response building');
             return $this->redirectResponseCRUDSuccess($request, 'delete');
         } catch (Exception $e) {
             return $this->redirectResponseCRUDFail($request, 'delete', $e->getMessage());
@@ -366,8 +544,8 @@ class PbBuilderController extends Controller
      */
     public function sort(Request $request, int $id): Redirector|RedirectResponse|Application|null
     {
-        PbDebugbar::stopMeasure('model_controller');
-        PbDebugbar::startMeasure('builder_controller', 'builder crud controller');
+        Debug::stop('model_controller');
+        Debug::start('builder_controller', 'builder crud controller');
 
         // Validation
         if ($failed = $this->validateRequest(['sortlist' => ['required']], $request)) {
@@ -398,7 +576,6 @@ class PbBuilderController extends Controller
                 $n++;
             }
 
-            PbDebugbar::startMeasure('builder_controller_response_building', 'builder crud controller - response building');
             return $this->redirectResponseCRUDSuccess($request, 'sort');
         } catch (Exception $e) {
             return $this->redirectResponseCRUDFail($request,
@@ -415,10 +592,10 @@ class PbBuilderController extends Controller
      */
     public function enable(Request $request, int $id): Redirector|RedirectResponse|Application|null
     {
-        PbDebugbar::stopMeasure('model_controller');
-        PbDebugbar::startMeasure('builder_controller', 'builder crud controller');
+        Debug::stop('model_controller');
+        Debug::start('builder_controller', 'builder crud controller');
 
-        if (isset($this->vars->level->modelPath::$enableable) && (new $this->vars->level->modelPath)->isEditableBy(Auth::user()->id)) {
+        if (isset($this->vars->level->modelPath::$enableable) && resolve($this->vars->level->modelPath)->isEditableBy(Auth::user()->id)) {
             $model = $this->vars->level->modelPath::find($id);
             if ($this->isUnmodifiableModel($model)) {
                 return $this->redirectResponseCRUDFail($request, 'enable', "This {$this->vars->level->name} cannot be modified");
@@ -428,7 +605,6 @@ class PbBuilderController extends Controller
             }
             try {
                 if ($model->enable()) {
-                    PbDebugbar::startMeasure('builder_controller_response_building', 'builder crud controller - response building');
                     return $this->redirectResponseCRUDSuccess($request, 'enable');
                 }
                 return $this->redirectResponseCRUDFail($request, 'enable',
@@ -452,10 +628,10 @@ class PbBuilderController extends Controller
      */
     public function disable(Request $request, int $id): Redirector|RedirectResponse|Application|null
     {
-        PbDebugbar::stopMeasure('model_controller');
-        PbDebugbar::startMeasure('builder_controller', 'builder crud controller');
+        Debug::stop('model_controller');
+        Debug::start('builder_controller', 'builder crud controller');
 
-        if (isset($this->vars->level->modelPath::$enableable) && (new $this->vars->level->modelPath)->isEditableBy(Auth::user()->id)) {
+        if (isset($this->vars->level->modelPath::$enableable) && resolve($this->vars->level->modelPath)->isEditableBy(Auth::user()->id)) {
             $model = $this->vars->level->modelPath::find($id);
             if ($this->isUnmodifiableModel($model)) {
                 return $this->redirectResponseCRUDFail($request, 'disable', "This {$this->vars->level->name} cannot be modified");
@@ -465,7 +641,6 @@ class PbBuilderController extends Controller
             }
             try {
                 if ($model->disable()) {
-                    PbDebugbar::startMeasure('builder_controller_response_building', 'builder crud controller - response building');
                     return $this->redirectResponseCRUDSuccess($request, 'disable');
                 }
                 return $this->redirectResponseCRUDFail($request, 'disable',
@@ -515,9 +690,19 @@ class PbBuilderController extends Controller
                 $arrayElements[($plural ? $this->vars->level->prefixNames : $this->vars->level->prefixName)] = $element;
             }
         } else {
-            $arrayElements[
-            ($plural ? $this->vars->level->prefixNames : $this->vars->level->prefixName)] =
-                ($id ? $this->vars->level->modelPath::find($id) : $this->buildPaginatedAndOrderedModel(null, $page, $perpage, $orderby, $field, $order));
+            $arrayElements[($plural ?
+                $this->vars->level->prefixNames :
+                $this->vars->level->prefixName
+            )] = ($id ?
+                $this->vars->level->modelPath::find($id) :
+                $this->buildPaginatedAndOrderedModel(
+                    page: $page,
+                    perpage: $perpage,
+                    orderby: $orderby,
+                    field: $field,
+                    order: $order,
+                )
+            );
         }
 
         return $arrayElements;
@@ -542,12 +727,12 @@ class PbBuilderController extends Controller
             ...['defaults' => $this->getDefaults()],
             ...['listing' => $this->vars->listing],
             ...['formconfig' => $this->vars->formconfig],
-            ...['pagination' => $this->vars->pagination ?? ['location' => 'none']],
-            ...['heading' => $this->vars->heading ?? ['location' => 'none']],
+            ...['pagination' => (isset($this->vars->pagination) && $this->vars->pagination) ? $this->vars->pagination : ['location' => 'none']],
+            ...['heading' => (isset($this->vars->heading) && $this->vars->heading) ? $this->vars->heading : ['location' => 'none']],
             ...['orderby' => $this->vars->orderby ?? []],
         ];
         Inertia::share('shared', $shared);
-        PbDebugbar::addMessage($shared, 'shared');
+        Debug::add($shared, 'shared');
     }
 
     /**
@@ -593,7 +778,12 @@ class PbBuilderController extends Controller
      * @param null $model
      * @return array|object
      */
-    protected function processModelRequests(array $validationRules, Request $request, array $replacers, $model = null): array|object
+    protected function processModelRequests(
+        array $validationRules,
+        Request $request,
+        array $replacers,
+        $model = null
+    ): array|object
     {
         $keys = [];
         foreach ($validationRules as $vrKey => $vr) {
@@ -637,15 +827,16 @@ class PbBuilderController extends Controller
     {
         // If not API
         if (!isApi($this->vars->request)) {
+            Debug::start('builder_controller_response_building', 'builder crud controller - response building');
 
-            PbDebugbar::measure('builder crud controller - share building', function() {
+            Debug::measure('builder crud controller - share building', function() {
                 $this->shareVars();
             });
 
             Inertia::setRootView($this->vars->inertiaRoot);
 
-            PbDebugbar::stopMeasure('builder_controller');
-            PbDebugbar::stopMeasure('builder_controller_response_building');
+            Debug::stop('builder_controller');
+            Debug::stop('builder_controller_response_building');
 
             return Inertia::render($view, $elements);
         }
@@ -785,9 +976,11 @@ class PbBuilderController extends Controller
      */
     public function isUndeletableModel($model): bool
     {
-        foreach($model->undeletableModels as $key => $value) {
-            if (in_array($model->{$key}, $value)) {
-                return true;
+        if (isset($model->undeletableModels)) {
+            foreach($model->undeletableModels as $key => $value) {
+                if (in_array($model->{$key}, $value)) {
+                    return true;
+                }
             }
         }
         return false;
@@ -801,9 +994,11 @@ class PbBuilderController extends Controller
      */
     public function isUnmodifiableModel($model): bool
     {
-        foreach($model->unmodifiableModels as $key => $value) {
-            if (in_array($model->{$key}, $value)) {
-                return true;
+        if (isset($model->unmodifiableModels)) {
+            foreach($model->unmodifiableModels as $key => $value) {
+                if (in_array($model->{$key}, $value)) {
+                    return true;
+                }
             }
         }
         return false;
@@ -817,9 +1012,11 @@ class PbBuilderController extends Controller
      */
     public function isUnreadableModel($model): bool
     {
-        foreach($model->unreadableModels as $key => $value) {
-            if (in_array($model->{$key}, $value)) {
-                return true;
+        if (isset($model->unreadableModels)) {
+            foreach($model->unreadableModels as $key => $value) {
+                if (in_array($model->{$key}, $value)) {
+                    return true;
+                }
             }
         }
         return false;
@@ -833,9 +1030,11 @@ class PbBuilderController extends Controller
      */
     public function isUnconfigurableModel($model): bool
     {
-        foreach($model->unconfigurableModels as $key => $value) {
-            if (in_array($model->{$key}, $value)) {
-                return true;
+        if (isset($model->unconfigurableModels)) {
+            foreach($model->unconfigurableModels as $key => $value) {
+                if (in_array($model->{$key}, $value)) {
+                    return true;
+                }
             }
         }
         return false;

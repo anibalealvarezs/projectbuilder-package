@@ -3,6 +3,7 @@
 namespace Anibalealvarezs\Projectbuilder\Providers;
 
 use Anibalealvarezs\Projectbuilder\Facades\PbUtilitiesFacade;
+use Anibalealvarezs\Projectbuilder\Facades\PbDebugbarFacade as Debug;
 use Anibalealvarezs\Projectbuilder\Overrides\Classes\PbDebugbar;
 use Anibalealvarezs\Projectbuilder\Utilities\PbUtilities;
 use Anibalealvarezs\Projectbuilder\Models\PbConfig;
@@ -51,7 +52,7 @@ class PbAppServiceProvider extends ServiceProvider
                         }
                     }
                     $locale = getDefaultCountryFromCurrentLocale();
-                    PbDebugbar::addMessage($locale, 'locale');
+                    Debug::add($locale, 'locale');
                     return $locale;
                 },
                 'teams' => function () {
@@ -70,6 +71,9 @@ class PbAppServiceProvider extends ServiceProvider
     {
         $this->app->bind('PbUtilities', function () {
             return new PbUtilities();
+        });
+        $this->app->bind('PbDebugbar', function () {
+            return new PbDebugbar();
         });
         $this->app->singleton(PbUtilities::class, static fn() => new PbUtilities());
         $this->app->singleton(PbUtilitiesFacade::class, static fn() => new PbUtilitiesFacade());

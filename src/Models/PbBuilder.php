@@ -31,7 +31,8 @@ class PbBuilder extends Model
         'pagination' => "array",
         'heading' => "array",
         'orderable' => "bool",
-    ])] public static function getCrudConfig(bool $includeForm = false): array
+    ])]
+    public static function getCrudConfig(bool $includeForm = false): array
     {
         return [
             'default' => [],

@@ -2,7 +2,7 @@
 
 namespace Anibalealvarezs\Projectbuilder\Middleware;
 
-use Anibalealvarezs\Projectbuilder\Overrides\Classes\PbDebugbar;
+use Anibalealvarezs\Projectbuilder\Facades\PbDebugbarFacade as Debug;
 use Closure;
 use Illuminate\Http\Request;
 
@@ -17,7 +17,7 @@ class PbIsDebugModeEnabledMiddleware
      */
     public function handle($request, Closure $next)
     {
-        PbDebugbar::toggleStatus();
+        Debug::toggleStatus();
         return $next($request);
     }
 }

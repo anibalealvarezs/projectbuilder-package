@@ -7,6 +7,8 @@ use Anibalealvarezs\Projectbuilder\Models\PbCurrentUser;
 use Anibalealvarezs\Projectbuilder\Models\PbModule;
 use Anibalealvarezs\Projectbuilder\Models\PbRole;
 
+use Anibalealvarezs\Projectbuilder\Facades\PbDebugbarFacade as Debug;
+use Anibalealvarezs\Projectbuilder\Utilities\PbCache;
 use App\Http\Requests;
 
 use Illuminate\Contracts\Foundation\Application;
@@ -20,6 +22,8 @@ use DB;
 
 use Inertia\Response as InertiaResponse;
 
+use Psr\SimpleCache\InvalidArgumentException;
+use ReflectionException;
 use Session;
 
 class PbPermissionController extends PbBuilderController
@@ -55,6 +59,7 @@ class PbPermissionController extends PbBuilderController
      * @param bool $multiple
      * @param string $route
      * @return InertiaResponse|JsonResponse|RedirectResponse
+     * @throws ReflectionException|InvalidArgumentException
      */
     public function index(
         int $page = 1,
@@ -64,35 +69,77 @@ class PbPermissionController extends PbBuilderController
         string $order = 'asc',
         $element = null,
         bool $multiple = false,
-        string $route = 'level'
-    ): InertiaResponse|JsonResponse|RedirectResponse {
+        string $route = 'level'): InertiaResponse|JsonResponse|RedirectResponse
+    {
+        Debug::start('custom_controller', $this->vars->level->names.' crud controller');
 
-        $me = app(PbCurrentUser::class);
-        $toExclude = ['crud super-admin'];
-        if (!$me->hasRole('super-admin')) {
-            $toExclude = [
-                ...$toExclude,
-                ...[
-                    'admin roles permissions',
-                    'manage app',
-                    'crud super-admin',
-                    'config builder',
-                    'developer options',
-                    'read loggers',
-                    'delete loggers',
-                    'config loggers',
-                    'api access',
-                ]
-            ];
-            if (!$me->hasRole('admin')) {
-                $toExclude = [
-                    ...$toExclude,
-                    ...['login', 'create users', 'update users', 'delete users']
-                ];
+        Debug::measure(
+            $this->vars->level->names.' crud controller - model config load',
+            function() use ($page, $perpage, $orderby, $field, $order) {
+                $cached = PbCache::run(
+                    closure: fn() => $this->vars->level->modelPath::getCrudConfig(true),
+                    package: $this->vars->helper->package,
+                    class: __CLASS__,
+                    model: $this->vars->level->names,
+                    modelFunction: 'getCrudConfig',
+                    pagination: ['page' => $page, 'perpage' => $perpage, 'orderby' => $orderby, 'field' => $field, 'order' => $order],
+                    byRoles: true,
+                );
+                $this->vars->config = $cached['data'];
+                $this->vars->cacheObjects[] = $cached['index'];
             }
-        }
+        );
 
-        $this->vars->config = $this->vars->level->modelPath::getCrudConfig(true);
+        Debug::measure(
+            $this->vars->level->names.' crud controller - model list build',
+            function() use (&$model, $page, $perpage, $orderby, $field, $order) {
+                $cached = PbCache::run(
+                    closure: function() use ($order, $field, $orderby, $perpage, $page) {
+                        $me = app(PbCurrentUser::class);
+                        $toExclude = ['crud super-admin'];
+                        if (!$me->hasRole('super-admin')) {
+                            $toExclude = [
+                                ...$toExclude,
+                                ...[
+                                    'admin roles permissions',
+                                    'manage app',
+                                    'crud super-admin',
+                                    'config builder',
+                                    'developer options',
+                                    'read loggers',
+                                    'delete loggers',
+                                    'config loggers',
+                                    'api access',
+                                ]
+                            ];
+                            if (!$me->hasRole('admin')) {
+                                $toExclude = [
+                                    ...$toExclude,
+                                    ...['login', 'create users', 'update users', 'delete users']
+                                ];
+                            }
+                        }
+                        return $this->buildPaginatedAndOrderedModel(
+                            query: $this->vars->level->modelPath::whereNotIn('name', $toExclude)->withPublicRelations(),
+                            page: $page,
+                            perpage: $perpage,
+                            orderby: $orderby,
+                            field: $field,
+                            order: $order,
+                        );
+                    },
+                    package: $this->vars->helper->package,
+                    class: __CLASS__,
+                    model: $this->vars->level->names,
+                    modelFunction: 'getList',
+                    byRoles: true,
+                );
+                $model = $cached['data'];
+                $this->vars->cacheObjects[] = $cached['index'];
+            }
+        );
+
+        Debug::stop('custom_controller');
 
         return parent::index(
             $page,
@@ -100,14 +147,7 @@ class PbPermissionController extends PbBuilderController
             $orderby,
             $field,
             $order,
-            $this->buildPaginatedAndOrderedModel(
-                $this->vars->level->modelPath::whereNotIn('name', $toExclude)->withPublicRelations(),
-                $page,
-                $perpage,
-                $orderby,
-                $field,
-                $order
-            )
+            $model
         );
     }
 
@@ -129,9 +169,14 @@ class PbPermissionController extends PbBuilderController
         // Process
         try {
             // Build model
-            $model = (new $this->vars->level->modelPath())->setLocale(app()->getLocale());
+            $model = resolve($this->vars->level->modelPath)->setLocale(app()->getLocale());
             // Add requests
-            $model = $this->processModelRequests($this->vars->validationRules, $request, $this->vars->replacers, $model);
+            $model = $this->processModelRequests(
+                validationRules: $this->vars->validationRules,
+                request: $request,
+                replacers: $this->vars->replacers,
+                model: $model
+            );
             // Add additional fields values
             $model->guard_name = 'admin';
             // Check if module relation exists
@@ -165,6 +210,7 @@ class PbPermissionController extends PbBuilderController
      * @param bool $multiple
      * @param string $route
      * @return Application|RedirectResponse|Redirector|InertiaResponse|JsonResponse
+     * @throws ReflectionException|InvalidArgumentException
      */
     public function show(
         int $id,
@@ -183,16 +229,39 @@ class PbPermissionController extends PbBuilderController
      * @param null $element
      * @param bool $multiple
      * @param string $route
-     * @return InertiaResponse|JsonResponse
+     * @return RedirectResponse|InertiaResponse|JsonResponse
+     * @throws ReflectionException|InvalidArgumentException|InvalidArgumentException
      */
     public function edit(
         int $id,
         $element = null,
         bool $multiple = false,
         string $route = 'level'
-    ): InertiaResponse|JsonResponse {
+    ): RedirectResponse|InertiaResponse|JsonResponse {
 
-        return parent::edit($id, $this->vars->level->modelPath::withPublicRelations()->findOrFail($id));
+        Debug::measure(
+            $this->vars->level->names.' crud controller - model find',
+            function() use (&$model, $id) {
+                $cached = PbCache::run(
+                    closure: fn() => $this->vars->level->modelPath::withPublicRelations()->find($id),
+                    package: $this->vars->helper->package,
+                    class: __CLASS__,
+                    function: 'edit',
+                    model: $this->vars->level->name,
+                    modelFunction: 'find',
+                    modelId: $id,
+                    byRoles: true,
+                );
+                $model = $cached['data'];
+                $this->vars->cacheObjects[] = $cached['index'];
+            }
+        );
+
+        if (!$model) {
+            return $this->redirectResponseCRUDFail(request(), 'edit', "Error finding {$this->vars->level->name}");
+        }
+
+        return parent::edit($id, $model);
     }
 
     /**
@@ -224,7 +293,11 @@ class PbPermissionController extends PbBuilderController
             // Push Unmodifiable Permissions
             $model = $this->pushUnmodifiablePermissions($model);
             // Build requests
-            $requests = $this->processModelRequests($this->vars->validationRules, $request, $this->vars->replacers);
+            $requests = $this->processModelRequests(
+                validationRules: $this->vars->validationRules,
+                request: $request,
+                replacers: $this->vars->replacers,
+            );
             // Check if module relation exists
             if ($model->hasRelation('module') && ($request->input('module') > 0) &&  $module = PbModule::find($request->input('module'))) {
                 $model->module()->associate($module);

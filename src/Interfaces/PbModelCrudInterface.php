@@ -14,4 +14,11 @@ interface PbModelCrudInterface
      * @return bool|PbUser|PbCurrentUser
      */
     public function getAuthorizedUser($id): bool|PbUser|PbCurrentUser;
+
+    /**
+     * Scope a query to only include popular users.
+     *
+     * @return array
+     */
+    public static function getCrudConfig(): array;
 }

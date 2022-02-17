@@ -31,6 +31,7 @@ class PbConfigSeeder extends Seeder
             ['configkey' => '_DISABLE_LOGIN_', 'configvalue' => false, 'name' => json_encode(['en' => 'Disable login form', 'es' => 'Deshabilitar formulario de ingreso']), 'description' => json_encode(['en' => 'Disable the login form', 'es' => 'Deshabilitar el formulario de ingreso']), 'module_id' => $moduleConfig->id],
             ['configkey' => '_DISABLE_REGISTER_', 'configvalue' => false, 'name' => json_encode(['en' => 'Disable registration form', 'es' => 'Deshabilitar formulario de registro']), 'description' => json_encode(['en' => 'Disable the registration form', 'es' => 'Deshabilitar el formulario de registro']), 'module_id' => $moduleConfig->id],
             ['configkey' => '_DEFAULT_TABLE_SIZE_', 'configvalue' => false, 'name' => json_encode(['en' => 'Default table size', 'es' => 'Tamaño de la tabla por defecto']), 'description' => json_encode(['en' => 'Number of rows to be shown in tables per page', 'es' => 'Número de registros a mostrar en las tablas por defecto']), 'module_id' => $moduleConfig->id],
+            ['configkey' => '_CACHE_ENABLED_', 'configvalue' => false, 'name' => json_encode(['en' => 'Enable Cache', 'es' => 'Habilitar Caché']), 'description' => json_encode(['en' => 'Enable queries caching to increase performance', 'es' => 'Habilitar el caché de consultas para mejorar el rendimiento']), 'module_id' => $moduleConfig->id],
         ], ['configkey'], ['configvalue', 'name', 'description', 'module_id']);
     }
 }

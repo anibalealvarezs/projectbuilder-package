@@ -50,7 +50,8 @@ function migrationsKeywords(): array
  * @param $model
  * @return array
  */
-#[Pure] function getApiRoutesNames($model): array
+#[Pure]
+function getApiRoutesNames($model): array
 {
     $route = [];
     foreach (getRoutesNames() as $method) {
@@ -75,7 +76,8 @@ function getRoutesNames(): array
  * @param string $code
  * @return array
  */
-#[ArrayShape(['code' => "string", 'country' => "string"])] function getDefaultCountry(string $code): array
+#[ArrayShape(['code' => "string", 'country' => "string"])]
+function getDefaultCountry(string $code): array
 {
     if (file_exists(base_path('/node_modules/flag-icons/country.json'))) {
         $data = json_decode(file_get_contents(base_path('/node_modules/flag-icons/country.json')), true);
@@ -89,7 +91,7 @@ function getRoutesNames(): array
             }
         }
     }
-    $default = ($countries['gb'] ?? ($countries['es'] ) ?? ['1x1' => "" , '4x3' => ""]);
+    $default = ($countries['gb'] ?? $countries['es'] ?? ['1x1' => "" , '4x3' => ""]);
     return [
         'code' => $code,
         'country' => match ($code) {
@@ -109,7 +111,8 @@ function getRoutesNames(): array
  *
  * @return array
  */
-#[ArrayShape(['code' => "string", 'country' => "string"])] function getDefaultCountryFromCurrentLocale(): array
+#[ArrayShape(['code' => "string", 'country' => "string"])]
+function getDefaultCountryFromCurrentLocale(): array
 {
     return getDefaultCountry(app()->getLocale());
 }
@@ -120,7 +123,8 @@ function getRoutesNames(): array
  * @param $value
  * @return array
  */
-#[ArrayShape(['web' => "string[]", 'api' => "string[]", 'auth' => "string[]", 'debug' => "string[]"])] function getDefaultGroupsMiddlewares($value): array
+#[ArrayShape(['web' => "string[]", 'api' => "string[]", 'auth' => "string[]", 'debug' => "string[]"])]
+function getDefaultGroupsMiddlewares($value): array
 {
     return match($value) {
         'web' => ['web', 'set_config_data', 'check_https', 'single_session', 'set_locale'],
@@ -148,7 +152,8 @@ function isApi(Request $request): bool
  * @param $var
  * @return string
  */
-#[NoReturn] function prettyDie($var): string
+#[NoReturn]
+function prettyDie($var): string
 {
     header('Content-Type: application/json; charset=utf-8');
     die(json_encode(
@@ -207,7 +212,8 @@ function getMigrationFileName($filename, $offset): string
     'create' => "\string[][]",
     'update' => "\string[][]",
     'delete' => "\string[][]"
-])] function methodsByPermission(): array
+])]
+function methodsByPermission(): array
 {
     return [
         'read' => [],
@@ -285,4 +291,29 @@ function getConfigValue($key): mixed
     }
 
     return PbConfig::findByKey($key)->configvalue;
+}
+
+/**
+ * Scope a query to only include popular users.
+ *
+ * @param $class
+ * @return string
+ * @throws ReflectionException
+ */
+function getClassName($class): string
+{
+    return (new ReflectionClass($class))->getShortName();
+}
+
+/**
+ * Scope a query to only include popular users.
+ *
+ * @param $class
+ * @param $function
+ * @return string
+ * @throws ReflectionException
+ */
+function getFunctionName($class, $function): string
+{
+    return (new ReflectionClass($class))->getMethod($function)->getName();
 }

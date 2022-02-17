@@ -267,9 +267,17 @@ trait PbControllerTrait
      * @param array $defaultOrder
      * @return LengthAwarePaginator
      */
-    public function paginateAndOrder(Builder $query, int $page = 1, int $perpage = 0, string $orderby = null, string $field = 'id', string $order = 'asc', array $defaultOrder = []): LengthAwarePaginator
+    public function paginateAndOrder(
+        Builder $query,
+        int $page = 1,
+        int $perpage = 0,
+        string $orderby = null,
+        string $field = 'id',
+        string $order = 'asc',
+        array $defaultOrder = []
+    ): LengthAwarePaginator
     {
-        $config = ($this->vars->config ?? $this->vars->level->modelPath::getCrudConfig(true));
+        $config = (isset($this->vars->config) && $this->vars->config) ? $this->vars->config : $this->vars->level->modelPath::getCrudConfig(true);
         if (!$perpage && isset($config['pagination']['per_page']) && $config['pagination']['per_page']) {
             $perpage = $config['pagination']['per_page'];
         }
@@ -295,10 +303,26 @@ trait PbControllerTrait
      * @param array $defaultOrder
      * @return LengthAwarePaginator|Collection
      */
-    public function buildPaginatedAndOrderedModel(Builder $query = null, int $page = 1, int $perpage = 0, string $orderby = null, string $field = 'id', string $order = 'asc', array $defaultOrder = []): LengthAwarePaginator|Collection
+    public function buildPaginatedAndOrderedModel(
+        Builder $query = null,
+        int $page = 1,
+        int $perpage = 0,
+        string $orderby = null,
+        string $field = 'id',
+        string $order = 'asc',
+        array $defaultOrder = []
+    ): LengthAwarePaginator|Collection
     {
         if (!isset($this->vars->level->modelPath::$sortable) || !$this->vars->level->modelPath::$sortable) {
-            return $this->paginateAndOrder($query ?: $this->vars->level->modelPath::withPublicRelations(), $page, $perpage, $orderby, $field, $order, $defaultOrder);
+            return $this->paginateAndOrder(
+                query: $query ?: $this->vars->level->modelPath::withPublicRelations(),
+                page: $page,
+                perpage: $perpage,
+                orderby: $orderby,
+                field: $field,
+                order: $order,
+                defaultOrder: $defaultOrder
+            );
         } else {
             return $query->get();
         }
