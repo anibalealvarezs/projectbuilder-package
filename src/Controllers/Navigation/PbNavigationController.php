@@ -82,13 +82,13 @@ class PbNavigationController extends PbBuilderController
                 $cached = PbCache::run(
                     closure: fn() =>  $this->vars->level->modelPath::withPublicRelations()->orderedByDefault()->get(),
                     package: $this->vars->helper->package,
-                    class: __CLASS__,
+                    class: 'model_controller',
                     model: $this->vars->level->names,
                     modelFunction: 'getList',
                     byRoles: true,
                 );
                 $model = $cached['data'];
-                $this->vars->cacheObjects[] = $cached['index'];
+                $this->vars->cacheObjects[$cached['tags']][] = $cached['keys'];
             }
         );
 

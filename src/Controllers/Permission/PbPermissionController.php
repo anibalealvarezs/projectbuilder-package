@@ -79,14 +79,14 @@ class PbPermissionController extends PbBuilderController
                 $cached = PbCache::run(
                     closure: fn() => $this->vars->level->modelPath::getCrudConfig(true),
                     package: $this->vars->helper->package,
-                    class: __CLASS__,
+                    class: 'model_controller',
                     model: $this->vars->level->names,
                     modelFunction: 'getCrudConfig',
                     pagination: ['page' => $page, 'perpage' => $perpage, 'orderby' => $orderby, 'field' => $field, 'order' => $order],
                     byRoles: true,
                 );
                 $this->vars->config = $cached['data'];
-                $this->vars->cacheObjects[] = $cached['index'];
+                $this->vars->cacheObjects[$cached['tags']][] = $cached['keys'];
             }
         );
 
@@ -129,13 +129,13 @@ class PbPermissionController extends PbBuilderController
                         );
                     },
                     package: $this->vars->helper->package,
-                    class: __CLASS__,
+                    class: 'model_controller',
                     model: $this->vars->level->names,
                     modelFunction: 'getList',
                     byRoles: true,
                 );
                 $model = $cached['data'];
-                $this->vars->cacheObjects[] = $cached['index'];
+                $this->vars->cacheObjects[$cached['tags']][] = $cached['keys'];
             }
         );
 
@@ -156,6 +156,7 @@ class PbPermissionController extends PbBuilderController
      *
      * @param Request $request
      * @return Application|Redirector|RedirectResponse|null
+     * @throws ReflectionException
      */
     public function store(Request $request): Redirector|RedirectResponse|Application|null
     {
@@ -187,6 +188,18 @@ class PbPermissionController extends PbBuilderController
             if (!$model->save()) {
                 return $this->redirectResponseCRUDFail($request, 'create', "Error saving {$this->vars->level->name}");
             }
+
+            PbCache::clear(
+                package: $this->vars->helper->package,
+                class: 'model_controller',
+                model: $this->vars->level->names,
+            );
+            PbCache::clear(
+                package: $this->vars->helper->package,
+                class: 'BuilderController',
+                model: $this->vars->level->names,
+            );
+
             // Add roles
             $adminRoles = PbRole::whereIn('name', ['super-admin', 'admin'])->get()->modelKeys();
             $model->syncRoles(
@@ -245,15 +258,15 @@ class PbPermissionController extends PbBuilderController
                 $cached = PbCache::run(
                     closure: fn() => $this->vars->level->modelPath::withPublicRelations()->find($id),
                     package: $this->vars->helper->package,
-                    class: __CLASS__,
+                    class: 'model_controller',
                     function: 'edit',
                     model: $this->vars->level->name,
-                    modelFunction: 'find',
                     modelId: $id,
+                    modelFunction: 'find',
                     byRoles: true,
                 );
                 $model = $cached['data'];
-                $this->vars->cacheObjects[] = $cached['index'];
+                $this->vars->cacheObjects[$cached['tags']][] = $cached['keys'];
             }
         );
 
@@ -306,6 +319,9 @@ class PbPermissionController extends PbBuilderController
             if (!$model->update($requests)) {
                 return $this->redirectResponseCRUDFail($request, 'update', "Error updating {$this->vars->level->name}");
             }
+
+            PbCache::clearAll();
+
             // Update roles
             if (in_array($model->name, ['crud super-admin'])) {
                 $superAdminRoles = PbRole::whereIn('name', ['super-admin'])->get()->modelKeys();
@@ -377,6 +393,8 @@ class PbPermissionController extends PbBuilderController
             if (!$model->delete()) {
                 return $this->redirectResponseCRUDFail($request, 'delete', "Error deleting {$this->vars->level->name}");
             }
+
+            PbCache::clearAll();
 
             return $this->redirectResponseCRUDSuccess($request, 'delete');
         } catch (Exception $e) {

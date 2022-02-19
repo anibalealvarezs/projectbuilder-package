@@ -88,14 +88,14 @@ class PbUserController extends PbBuilderController
                 $cached = PbCache::run(
                     closure: fn() => $this->vars->level->modelPath::getCrudConfig(true),
                     package: $this->vars->helper->package,
-                    class: __CLASS__,
+                    class: 'model_controller',
                     model: $this->vars->level->names,
                     modelFunction: 'getCrudConfig',
                     pagination: ['page' => $page, 'perpage' => $perpage, 'orderby' => $orderby, 'field' => $field, 'order' => $order],
                     byUser: true,
                 );
                 $this->vars->config = $cached['data'];
-                $this->vars->cacheObjects[] = $cached['index'];
+                $this->vars->cacheObjects[$cached['tags']][] = $cached['keys'];
             }
         );
 
@@ -113,14 +113,14 @@ class PbUserController extends PbBuilderController
                         defaultOrder: ['name' => 'asc', 'email' => 'asc']
                     ),
                     package: $this->vars->helper->package,
-                    class: __CLASS__,
+                    class: 'model_controller',
                     model: $this->vars->level->names,
                     modelFunction: 'getList',
                     pagination: ['page' => $page, 'perpage' => $perpage, 'orderby' => $orderby, 'field' => $field, 'order' => $order],
                     byUser: true,
                 );
                 $model = $cached['data'];
-                $this->vars->cacheObjects[] = $cached['index'];
+                $this->vars->cacheObjects[$cached['tags']][] = $cached['keys'];
             }
         );
 
@@ -159,6 +159,7 @@ class PbUserController extends PbBuilderController
      *
      * @param Request $request
      * @return Application|Redirector|RedirectResponse|null
+     * @throws ReflectionException
      */
     public function store(Request $request): Redirector|RedirectResponse|Application|null
     {
@@ -193,6 +194,18 @@ class PbUserController extends PbBuilderController
             if (!$model->save()) {
                 return $this->redirectResponseCRUDFail($request, 'create', "Error saving {$this->vars->level->name}");
             }
+
+            PbCache::clear(
+                package: $this->vars->helper->package,
+                class: 'model_controller',
+                model: $this->vars->level->names,
+            );
+            PbCache::clear(
+                package: $this->vars->helper->package,
+                class: 'BuilderController',
+                model: $this->vars->level->names,
+            );
+
             // Team assigning
             $model->current_team_id = $this->getDefaultTeamId($model);
             if (!$model->save()) {
@@ -252,15 +265,15 @@ class PbUserController extends PbBuilderController
                 $cached = PbCache::run(
                     closure: fn() => $this->vars->level->modelPath::withPublicRelations()->find($id),
                     package: $this->vars->helper->package,
-                    class: __CLASS__,
+                    class: 'model_controller',
                     function: 'show',
                     model: $this->vars->level->name,
-                    modelFunction: 'find',
                     modelId: $id,
+                    modelFunction: 'find',
                     byRoles: true,
                 );
                 $model = $cached['data'];
-                $this->vars->cacheObjects[] = $cached['index'];
+                $this->vars->cacheObjects[$cached['tags']][] = $cached['keys'];
             }
         );
 
@@ -295,15 +308,15 @@ class PbUserController extends PbBuilderController
                 $cached = PbCache::run(
                     closure: fn() => $this->vars->level->modelPath::withPublicRelations()->find($id),
                     package: $this->vars->helper->package,
-                    class: __CLASS__,
+                    class: 'model_controller',
                     function: 'edit',
                     model: $this->vars->level->name,
-                    modelFunction: 'find',
                     modelId: $id,
+                    modelFunction: 'find',
                     byRoles: true,
                 );
                 $model = $cached['data'];
-                $this->vars->cacheObjects[] = $cached['index'];
+                $this->vars->cacheObjects[$cached['tags']][] = $cached['keys'];
             }
         );
 
@@ -320,6 +333,7 @@ class PbUserController extends PbBuilderController
      * @param Request $request
      * @param int $id
      * @return Application|Redirector|RedirectResponse|null
+     * @throws ReflectionException
      */
     public function update(Request $request, int $id): Redirector|RedirectResponse|Application|null
     {
@@ -366,6 +380,46 @@ class PbUserController extends PbBuilderController
             if (!$model->update($requests)) {
                 return $this->redirectResponseCRUDFail($request, 'update', "Error updating {$this->vars->level->name}");
             }
+
+            PbCache::clear(
+                package: $this->vars->helper->package,
+                class: 'BuilderController',
+                model: $this->vars->level->names,
+            );
+            PbCache::clear(
+                package: $this->vars->helper->package,
+                class: 'model_controller',
+                model: $this->vars->level->names,
+            );
+            PbCache::clear(
+                package: $this->vars->helper->package,
+                class: 'BuilderController',
+                function: 'show',
+                model: $this->vars->level->name,
+                modelId: $id,
+            );
+            PbCache::clear(
+                package: $this->vars->helper->package,
+                class: 'model_controller',
+                function: 'show',
+                model: $this->vars->level->name,
+                modelId: $id,
+            );
+            PbCache::clear(
+                package: $this->vars->helper->package,
+                class: 'BuilderController',
+                function: 'edit',
+                model: $this->vars->level->name,
+                modelId: $id,
+            );
+            PbCache::clear(
+                package: $this->vars->helper->package,
+                class: 'model_controller',
+                function: 'edit',
+                model: $this->vars->level->name,
+                modelId: $id,
+            );
+
             // Sync roles
             $me = app(PbCurrentUser::class);
             if ($me->hasRole(['super-admin'])) {

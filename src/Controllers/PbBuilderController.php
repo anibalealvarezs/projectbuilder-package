@@ -3,6 +3,7 @@
 namespace Anibalealvarezs\Projectbuilder\Controllers;
 
 use Anibalealvarezs\Projectbuilder\Facades\PbDebugbarFacade as Debug;
+use Anibalealvarezs\Projectbuilder\Models\PbLogger;
 use Anibalealvarezs\Projectbuilder\Utilities\PbCache;
 use Anibalealvarezs\Projectbuilder\Utilities\PbUtilities;
 use Anibalealvarezs\Projectbuilder\Utilities\PbShares;
@@ -112,15 +113,15 @@ class PbBuilderController extends Controller
                 $cached = PbCache::run(
                     closure: fn() => (isset($this->vars->config) && $this->vars->config) ? $this->vars->config : $this->vars->level->modelPath::getCrudConfig(true),
                     package: $this->vars->helper->package,
-                    class: __CLASS__,
+                    class: 'BuilderController', // getClassName(__CLASS__)
                     model: $this->vars->level->names,
-                    modelFunction: 'getCrudConfig',
+                    modelFunction: 'getCrudConfig', // getFunctionName(__CLASS__, __FUNCTION__),
                     pagination: ['page' => $page, 'perpage' => $perpage, 'orderby' => $orderby, 'field' => $field, 'order' => $order],
                     byRoles: !($this->vars->level->names == 'users'),
                     byUser: true,
                 );
                 $config = $cached['data'];
-                $this->vars->cacheObjects[] = $cached['index'];
+                $this->vars->cacheObjects[$cached['tags']][] = $cached['keys'];
             }
         );
 
@@ -137,7 +138,7 @@ class PbBuilderController extends Controller
                 $cached = PbCache::run(
                     closure: fn() => PbShares::allowed($this->vars->allowed)['allowed'],
                     package: $this->vars->helper->package,
-                    class: __CLASS__,
+                    class: 'BuilderController',
                     model: $this->vars->level->names,
                     modelFunction: 'sharesAllowed',
                     pagination: ['page' => $page, 'perpage' => $perpage, 'orderby' => $orderby, 'field' => $field, 'order' => $order],
@@ -145,7 +146,7 @@ class PbBuilderController extends Controller
                     byUser: true,
                 );
                 $config['enabled_actions'] = $cached['data'];
-                $this->vars->cacheObjects[] = $cached['index'];
+                $this->vars->cacheObjects[$cached['tags']][] = $cached['keys'];
             }
         );
 
@@ -167,7 +168,7 @@ class PbBuilderController extends Controller
                 $cached = PbCache::run(
                     closure: fn() => self::buildListingRow($config),
                     package: $this->vars->helper->package,
-                    class: __CLASS__,
+                    class: 'BuilderController',
                     model: $this->vars->level->names,
                     modelFunction: 'sortAndPaginate',
                     pagination: ['page' => $page, 'perpage' => $perpage, 'orderby' => $orderby, 'field' => $field, 'order' => $order],
@@ -175,7 +176,7 @@ class PbBuilderController extends Controller
                     byUser: true,
                 );
                 $this->vars->listing = $cached['data'];
-                $this->vars->cacheObjects[] = $cached['index'];
+                $this->vars->cacheObjects[$cached['tags']][] = $cached['keys'];
             }
         );
 
@@ -187,7 +188,7 @@ class PbBuilderController extends Controller
                         return $this->buildModelsArray($element, $multiple, null, true, $page, $perpage, $orderby, $field, $order);
                     },
                     package: $this->vars->helper->package,
-                    class: __CLASS__,
+                    class: 'BuilderController',
                     model: $this->vars->level->names,
                     modelFunction: 'buildModelsArray',
                     pagination: ['page' => $page, 'perpage' => $perpage, 'orderby' => $orderby, 'field' => $field, 'order' => $order],
@@ -195,12 +196,11 @@ class PbBuilderController extends Controller
                     byUser: true,
                 );
                 $arrayElements = $cached['data'];
-                $this->vars->cacheObjects[] = $cached['index'];
+                $this->vars->cacheObjects[$cached['tags']][] = $cached['keys'];
             }
         );
 
         Debug::add($arrayElements, 'data');
-        Debug::add($this->vars->cacheObjects, 'caches', true);
 
         Debug::stop('builder_controller');
 
@@ -224,19 +224,18 @@ class PbBuilderController extends Controller
                 $cached = PbCache::run(
                     closure: fn() => (isset($this->vars->config) && $this->vars->config) ? $this->vars->config : $this->vars->level->modelPath::getCrudConfig(true),
                     package: $this->vars->helper->package,
-                    class: __CLASS__,
+                    class: 'BuilderController',
                     function: 'create',
                     model: $this->vars->level->names,
                     modelFunction: 'getCrudConfig',
                     byRoles: true,
                 );
                 $this->vars->formconfig = $cached['data']['formconfig'];
-                $this->vars->cacheObjects[] = $cached['index'];
+                $this->vars->cacheObjects[$cached['tags']][] = $cached['keys'];
             }
         );
 
         Debug::add($this->vars->formconfig, 'formconfig');
-        Debug::add($this->vars->cacheObjects, 'caches', true);
 
         Debug::stop('builder_controller');
 
@@ -248,6 +247,7 @@ class PbBuilderController extends Controller
      *
      * @param Request $request
      * @return Application|Redirector|RedirectResponse|null
+     * @throws ReflectionException
      */
     public function store(Request $request): Redirector|RedirectResponse|Application|null
     {
@@ -273,6 +273,17 @@ class PbBuilderController extends Controller
             if (!$model->save()) {
                 return $this->redirectResponseCRUDFail($request, 'create', "Error saving {$this->vars->level->name}");
             }
+
+            PbCache::clear(
+                package: $this->vars->helper->package,
+                class: 'BuilderController',
+                model: $this->vars->level->names,
+            );
+            PbCache::clear(
+                package: $this->vars->helper->package,
+                class: 'model_controller',
+                model: $this->vars->level->names,
+            );
 
             return $this->redirectResponseCRUDSuccess($request, 'create');
         } catch (Exception $e) {
@@ -306,15 +317,15 @@ class PbBuilderController extends Controller
                     $cached = PbCache::run(
                         closure: fn() => $this->vars->level->modelPath::find($id),
                         package: $this->vars->helper->package,
-                        class: __CLASS__,
+                        class: 'BuilderController',
                         function: 'show',
                         model: $this->vars->level->name,
-                        modelFunction: 'find',
                         modelId: $id,
+                        modelFunction: 'find',
                         byRoles: true,
                     );
                     $element = $cached['data'];
-                    $this->vars->cacheObjects[] = $cached['index'];
+                    $this->vars->cacheObjects[$cached['tags']][] = $cached['keys'];
                 }
             );
 
@@ -338,20 +349,19 @@ class PbBuilderController extends Controller
                 $cached = PbCache::run(
                     closure: fn() => $this->buildModelsArray($element, $multiple, $id),
                     package: $this->vars->helper->package,
-                    class: __CLASS__,
+                    class: 'BuilderController',
                     function: 'show',
                     model: $this->vars->level->name,
-                    modelFunction: 'buildModelsArray',
                     modelId: $id,
+                    modelFunction: 'buildModelsArray',
                     byRoles: true,
                 );
                 $model = $cached['data'];
-                $this->vars->cacheObjects[] = $cached['index'];
+                $this->vars->cacheObjects[$cached['tags']][] = $cached['keys'];
             }
         );
 
         Debug::add($model, 'data');
-        Debug::add($this->vars->cacheObjects, 'caches', true);
 
         if (!$model) {
             return $this->redirectResponseCRUDFail(request(), 'show', "Error finding {$this->vars->level->name}");
@@ -394,15 +404,15 @@ class PbBuilderController extends Controller
                     $cached = PbCache::run(
                         closure: fn() => $this->vars->level->modelPath::find($id),
                         package: $this->vars->helper->package,
-                        class: __CLASS__,
+                        class: 'BuilderController',
                         function: 'edit',
                         model: $this->vars->level->name,
-                        modelFunction: 'find',
                         modelId: $id,
+                        modelFunction: 'find',
                         byRoles: true,
                     );
                     $element = $cached['data'];
-                    $this->vars->cacheObjects[] = $cached['index'];
+                    $this->vars->cacheObjects[$cached['tags']][] = $cached['keys'];
                 }
             );
 
@@ -426,20 +436,19 @@ class PbBuilderController extends Controller
                 $cached = PbCache::run(
                     closure: fn() => $this->buildModelsArray($element, $multiple, $id),
                     package: $this->vars->helper->package,
-                    class: __CLASS__,
+                    class: 'BuilderController',
                     function: 'edit',
                     model: $this->vars->level->name,
-                    modelFunction: 'buildModelsArray',
                     modelId: $id,
+                    modelFunction: 'buildModelsArray',
                     byRoles: true,
                 );
                 $model = $cached['data'];
-                $this->vars->cacheObjects[] = $cached['index'];
+                $this->vars->cacheObjects[$cached['tags']][] = $cached['keys'];
             }
         );
 
         Debug::add($model, 'data');
-        Debug::add($this->vars->cacheObjects, 'caches', true);
 
         if (!$model) {
             return $this->redirectResponseCRUDFail(request(), 'edit', "Error finding {$this->vars->level->name}");
@@ -456,12 +465,10 @@ class PbBuilderController extends Controller
      * @param Request $request
      * @param int $id
      * @return Application|Redirector|RedirectResponse|null
+     * @throws ReflectionException
      */
     public function update(Request $request, int $id): Redirector|RedirectResponse|Application|null
     {
-        Debug::stop('model_controller');
-        Debug::start('builder_controller', 'builder crud controller');
-
         // Validation
         if ($failed = $this->validateRequest($this->vars->validationRules, $request)) {
             return $failed;
@@ -479,6 +486,7 @@ class PbBuilderController extends Controller
             if (!$model->isEditableBy(Auth::user()->id)) {
                 return $this->redirectResponseCRUDFail($request, 'update', "You don't have permission to edit this {$this->vars->level->name}");
             }
+
             $model->setLocale(app()->getLocale());
             // Build requests
             $requests = $this->processModelRequests(
@@ -495,6 +503,45 @@ class PbBuilderController extends Controller
                 return $this->redirectResponseCRUDFail($request, 'update', "Error updating {$this->vars->level->name}");
             }
 
+            PbCache::clear(
+                package: $this->vars->helper->package,
+                class: 'BuilderController',
+                model: $this->vars->level->names,
+            );
+            PbCache::clear(
+                package: $this->vars->helper->package,
+                class: 'model_controller',
+                model: $this->vars->level->names,
+            );
+            PbCache::clear(
+                package: $this->vars->helper->package,
+                class: 'BuilderController',
+                function: 'show',
+                model: $this->vars->level->name,
+                modelId: $id,
+            );
+            PbCache::clear(
+                package: $this->vars->helper->package,
+                class: 'model_controller',
+                function: 'show',
+                model: $this->vars->level->name,
+                modelId: $id,
+            );
+            PbCache::clear(
+                package: $this->vars->helper->package,
+                class: 'BuilderController',
+                function: 'edit',
+                model: $this->vars->level->name,
+                modelId: $id,
+            );
+            PbCache::clear(
+                package: $this->vars->helper->package,
+                class: 'model_controller',
+                function: 'edit',
+                model: $this->vars->level->name,
+                modelId: $id,
+            );
+
             return $this->redirectResponseCRUDSuccess($request, 'update');
         } catch (Exception $e) {
             return $this->redirectResponseCRUDFail($request, 'update', $e->getMessage());
@@ -507,12 +554,10 @@ class PbBuilderController extends Controller
      * @param Request $request
      * @param int $id
      * @return Application|Redirector|RedirectResponse
+     * @throws ReflectionException
      */
     public function destroy(Request $request, int $id): Redirector|RedirectResponse|Application
     {
-        Debug::stop('model_controller');
-        Debug::start('builder_controller', 'builder crud controller');
-
         if (!$model = $this->vars->level->modelPath::find($id)) {
             return $this->redirectResponseCRUDFail($request, 'delete', "Error finding {$this->vars->level->name}");
         }
@@ -529,6 +574,45 @@ class PbBuilderController extends Controller
                 return $this->redirectResponseCRUDFail($request, 'delete', "Error deleting {$this->vars->level->name}");
             }
 
+            PbCache::clear(
+                package: $this->vars->helper->package,
+                class: 'BuilderController',
+                model: $this->vars->level->names,
+            );
+            PbCache::clear(
+                package: $this->vars->helper->package,
+                class: 'model_controller',
+                model: $this->vars->level->names,
+            );
+            PbCache::clear(
+                package: $this->vars->helper->package,
+                class: 'BuilderController',
+                function: 'show',
+                model: $this->vars->level->name,
+                modelId: $id,
+            );
+            PbCache::clear(
+                package: $this->vars->helper->package,
+                class: 'model_controller',
+                function: 'show',
+                model: $this->vars->level->name,
+                modelId: $id,
+            );
+            PbCache::clear(
+                package: $this->vars->helper->package,
+                class: 'BuilderController',
+                function: 'edit',
+                model: $this->vars->level->name,
+                modelId: $id,
+            );
+            PbCache::clear(
+                package: $this->vars->helper->package,
+                class: 'model_controller',
+                function: 'edit',
+                model: $this->vars->level->name,
+                modelId: $id,
+            );
+
             return $this->redirectResponseCRUDSuccess($request, 'delete');
         } catch (Exception $e) {
             return $this->redirectResponseCRUDFail($request, 'delete', $e->getMessage());
@@ -544,9 +628,6 @@ class PbBuilderController extends Controller
      */
     public function sort(Request $request, int $id): Redirector|RedirectResponse|Application|null
     {
-        Debug::stop('model_controller');
-        Debug::start('builder_controller', 'builder crud controller');
-
         // Validation
         if ($failed = $this->validateRequest(['sortlist' => ['required']], $request)) {
             return $failed;
@@ -592,9 +673,6 @@ class PbBuilderController extends Controller
      */
     public function enable(Request $request, int $id): Redirector|RedirectResponse|Application|null
     {
-        Debug::stop('model_controller');
-        Debug::start('builder_controller', 'builder crud controller');
-
         if (isset($this->vars->level->modelPath::$enableable) && resolve($this->vars->level->modelPath)->isEditableBy(Auth::user()->id)) {
             $model = $this->vars->level->modelPath::find($id);
             if ($this->isUnmodifiableModel($model)) {
@@ -628,9 +706,6 @@ class PbBuilderController extends Controller
      */
     public function disable(Request $request, int $id): Redirector|RedirectResponse|Application|null
     {
-        Debug::stop('model_controller');
-        Debug::start('builder_controller', 'builder crud controller');
-
         if (isset($this->vars->level->modelPath::$enableable) && resolve($this->vars->level->modelPath)->isEditableBy(Auth::user()->id)) {
             $model = $this->vars->level->modelPath::find($id);
             if ($this->isUnmodifiableModel($model)) {
@@ -828,6 +903,7 @@ class PbBuilderController extends Controller
         // If not API
         if (!isApi($this->vars->request)) {
             Debug::start('builder_controller_response_building', 'builder crud controller - response building');
+            Debug::add($this->vars->cacheObjects, 'caches', true);
 
             Debug::measure('builder crud controller - share building', function() {
                 $this->shareVars();

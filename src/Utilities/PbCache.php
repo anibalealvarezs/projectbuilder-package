@@ -2,71 +2,13 @@
 
 namespace Anibalealvarezs\Projectbuilder\Utilities;
 
-use Anibalealvarezs\Projectbuilder\Models\PbCurrentUser;
 use Closure;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Str;
 use JetBrains\PhpStorm\ArrayShape;
-use Psr\SimpleCache\InvalidArgumentException;
 use ReflectionException;
 
 class PbCache
 {
-    /**
-     * Scope a query to only include popular users.
-     *
-     * @param string $package
-     * @param string $type
-     * @param string|null $class
-     * @param string|null $function
-     * @param string|null $model
-     * @param string|null $modelFunction
-     * @param int $modelId
-     * @param array $pagination
-     * @param bool $byRoles
-     * @param bool $byUser
-     * @return string
-     */
-    public static function buildCacheIndex(
-        string $package,
-        string $type,
-        string $class = null,
-        string $function = null,
-        string $model = null,
-        string $modelFunction = null,
-        int $modelId = 0,
-        array $pagination = [],
-        bool $byRoles = false,
-        bool $byUser = false
-    ): string
-    {
-        $index = $package . ':' . $type;
-        if ($class) {
-            $index .= ':' . $class;
-        }
-        if ($function) {
-            $index .= ':' . $function;
-        }
-        if ($model) {
-            $index .= ':model:' . $model . ':' . ($modelFunction ?? 'none') . ':' . $modelId;
-        }
-        if ($pagination) {
-            $index .=
-                ':page:' . ($pagination['page'] ?? 0) .
-                ':perpage:' . ($pagination['perpage'] ?? 0) .
-                ':orderby:' . ($pagination['orderby'] ?? 'null') .
-                ':field:' . ($pagination['field'] ?? 'null') .
-                ':order:' . ($pagination['order'] ?? 'null');
-        }
-        if ($byRoles) {
-            $index .= ':roles:' . app(PbCurrentUser::class)->roles->pluck('name')->implode('_');
-        } elseif ($byUser) {
-            $index .= ':user:' . Auth::id();
-        }
-        return $index;
-    }
-
     /**
      * Scope a query to only include popular users.
      *
@@ -83,10 +25,9 @@ class PbCache
      * @param bool $byUser
      * @param bool $toArray
      * @return array
-     * @throws InvalidArgumentException
      * @throws ReflectionException
      */
-    #[ArrayShape(['data' => "mixed", 'index' => "null|string"])]
+    #[ArrayShape(['data' => "mixed", 'keys' => "null|string", 'tags' => "null|string"])]
     public static function run(
         Closure $closure,
         string $package,
@@ -94,53 +35,94 @@ class PbCache
         string $class = null,
         string $function = 'index',
         string $model = null,
-        string $modelFunction = null,
         int $modelId = 0,
+        /***************************/
+        string $modelFunction = null,
         array $pagination = [],
         bool $byRoles = false,
         bool $byUser = false,
         bool $toArray = null
     ): array
     {
-        $index = self::buildCacheIndex(
-            package: $package,
-            type: $type,
-            class: Str::lower(getClassName($class)),
-            function: Str::lower(getFunctionName($class, $function)),
-            model: $model,
-            modelFunction: $modelFunction,
-            modelId: $modelId,
-            pagination: $pagination,
-            byRoles: $byRoles,
-            byUser: $byUser
-        );
-        $indexedCache = false;
+        $tags = andTag($package, $type, $class, $function, $model, $modelId);
+        $keys = andKey($modelFunction, $pagination, $byRoles, $byUser);
+        $stored = false;
 
         // if (false) {
-        if (getConfigValue('_CACHE_ENABLED_') && Cache::store('redis')->has($index)) {
-            $indexedCache = true;
-            $data = unserialize(Cache::store('redis')->get($index));
+        if (getConfigValue('_CACHE_ENABLED_') && Cache::store('redis')->tags($tags)->has($keys ?: 'all')) {
+            $stored = true;
+            $data = Cache::store('redis')->tags($tags)->get($keys ?: 'all');
         }
 
-        $result = $data ?? self::processClosure($closure, $index);
+        $result = $data ?? self::processClosure($closure, $tags, $keys);
 
-        return ['data' => $result && $toArray ? $result->toArray() : $result, 'index' => ($indexedCache ? $index : null)];
+        return ['data' => $result && $toArray ? $result->toArray() : $result, 'keys' => ($stored ? $keys : ""), 'tags' => ($stored ? implode(',', $tags) : "")];
     }
 
     /**
      * Scope a query to only include popular users.
      *
      * @param Closure $closure
-     * @param string $index
+     * @param array $tags
+     * @param string $keys
      * @return array|object|null
-     * @throws InvalidArgumentException
      */
-    public static function processClosure(Closure $closure, string $index): array|object|null
+    public static function processClosure(Closure $closure, array $tags, string $keys): array|object|null
     {
         $data = $closure();
         if (getConfigValue('_CACHE_ENABLED_')) {
-            Cache::store('redis')->set($index, serialize($data));
+            Cache::store('redis')->tags($tags)->set($keys ?: 'all', $data);
         }
         return $data;
+    }
+
+    /**
+     * Scope a query to only include popular users.
+     *
+     * @param string $package
+     * @param string $type
+     * @param string|null $class
+     * @param string $function
+     * @param string|null $model
+     * @param int $modelId
+     * @param string $modelFunction
+     * @param array $pagination
+     * @param bool $byRoles
+     * @param bool $byUser
+     * @return bool
+     * @throws ReflectionException
+     */
+    public static function clear(
+        string $package,
+        string $type = 'controller',
+        string $class = null,
+        string $function = 'index',
+        string $model = null,
+        int $modelId = 0,
+        /***************************/
+        string $modelFunction = "",
+        array $pagination = [],
+        bool $byRoles = false,
+        bool $byUser = false
+    ): bool
+    {
+        $tags = andTag($package, $type, $class, $function, $model, $modelId);
+        $keys = andKey($modelFunction, $pagination, $byRoles, $byUser);
+
+        if ($keys) {
+            return Cache::store('redis')->tags($tags)->forget($keys);
+        } else {
+            return Cache::store('redis')->tags($tags)->flush();
+        }
+    }
+
+    /**
+     * Scope a query to only include popular users.
+     *
+     * @return bool
+     */
+    public static function clearAll(): bool
+    {
+        return Cache::store('redis')->flush();
     }
 }

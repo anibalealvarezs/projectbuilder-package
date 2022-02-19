@@ -58,6 +58,7 @@ class PbConfigController extends PbBuilderController
      *
      * @param Request $request
      * @return Application|Redirector|RedirectResponse|null
+     * @throws ReflectionException
      */
     public function store(Request $request): Redirector|RedirectResponse|Application|null
     {
@@ -94,6 +95,7 @@ class PbConfigController extends PbBuilderController
      * @param Request $request
      * @param int $id
      * @return Application|Redirector|RedirectResponse|null
+     * @throws ReflectionException
      */
     public function update(Request $request, int $id): Redirector|RedirectResponse|Application|null
     {

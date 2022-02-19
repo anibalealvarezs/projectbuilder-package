@@ -317,3 +317,96 @@ function getFunctionName($class, $function): string
 {
     return (new ReflectionClass($class))->getMethod($function)->getName();
 }
+
+/**
+ * Scope a query to only include popular users.
+ *
+ * @param $tags
+ * @return string
+ */
+function fullTags($tags): string
+{
+    $keys = [];
+    foreach($tags as $tag) {
+        foreach($keys as $key) {
+            $keys[] = $key . '.' . $tag;
+        }
+    }
+    return $keys;
+}
+
+/**
+ * Scope a query to only include popular users.
+ *
+ * @param string $package
+ * @param string $type
+ * @param string|null $class
+ * @param string $function
+ * @param string|null $model
+ * @param int $modelId
+ * @return array
+ */
+function andTag(
+    string $package,
+    string $type = 'controller',
+    string $class = null,
+    string $function = 'index',
+    string $model = null,
+    int $modelId = 0
+): array
+{
+    $tags = ['package:' . $package, 'type:' . $type];
+    if ($class) {
+        $tags[] = 'class:' . ($class == 'model_controller' ? ucfirst($model).'Controller' : $class);
+    }
+    if ($function) {
+        $tags[] = 'method:' . $function;
+    }
+    if ($model) {
+        $tags[] = 'model:name:' . $model;
+    }
+    if ($modelId) {
+        $tags[] = 'model:id:' . $modelId;
+    }
+
+    return [implode('.', $tags)];
+}
+
+/**
+ * Scope a query to only include popular users.
+ *
+ * @param string $modelFunction
+ * @param array $pagination
+ * @param bool $byRoles
+ * @param bool $byUser
+ * @return string
+ */
+function andKey(
+    string $modelFunction = "",
+    array $pagination = [],
+    bool $byRoles = false,
+    bool $byUser = false
+): string
+{
+    $keys = [];
+    if ($modelFunction) {
+        $keys[] = 'model:function:' . $modelFunction;
+    }
+    if ($pagination) {
+        $keys[] = 'pag:page:' . ($pagination['page'] ?? 0);
+        $keys[] = 'pag:perpage:' . ($pagination['perpage'] ?? 0);
+        $keys[] = 'pag:orderby:' . ($pagination['orderby'] ?? 'null');
+        $keys[] = 'pag:field:' . ($pagination['field'] ?? 'null');
+        $keys[] = 'pag:order:' . ($pagination['order'] ?? 'null');
+    }
+    if ($byRoles) {
+        foreach (app(PbCurrentUser::class)->roles->pluck('name')->all() as $role) {
+            $keys[] = 'role:' . $role;
+        }
+    }
+    if ($byUser) {
+        $keys[] = 'user:' . Auth::id();
+    }
+
+    return implode('.', $keys);
+}
