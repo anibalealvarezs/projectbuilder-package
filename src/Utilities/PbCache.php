@@ -90,7 +90,6 @@ class PbCache
      * @param bool $byRoles
      * @param bool $byUser
      * @return bool
-     * @throws ReflectionException
      */
     public static function clear(
         string $package,

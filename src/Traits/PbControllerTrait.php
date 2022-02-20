@@ -30,6 +30,7 @@ trait PbControllerTrait
             'navigations',
             'languages',
             'locale',
+            'cache',
             'debug_status',
         ]);
     }

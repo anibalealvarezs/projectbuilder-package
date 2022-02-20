@@ -5,7 +5,9 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [1.3.7.1] - 2022-02-14
+## [1.3.7.1] - 2022-02-19
+
+### Added
 
 - Implemented cache for controllers
 - Added facades por ```PbDebugbar``` class
@@ -14,47 +16,72 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 - BREAKING CHANGES:
   - [x] [1.3.6.1]
+
+### Added
+
 - Added Middleware to store config data in session
+- Added singleton for utilities
+- Added performance flags to CRUD controllers
+- Added facades por ```PbUtilities``` class
+
+### Changed
+
 - Helpers moved from classes to functions in ```helpers.php``` file
 - ```Helpers``` folder renamed as ```Utilities```
 - ```PbHelpers``` class renamed as ```PbUtilities```
-- Added singleton for utilities
 - CRUD permitions refactored
-- Performance significantly improved
 - ```crud``` attribute is now optional for models
-- Added performance flags to CRUD controllers
-- Added facades por ```PbUtilities``` class
 - Overrides moved to ```Overrides``` folder
+
+### Fixed
+
+- Performance significantly improved
 
 ## [1.3.6.1] - 2022-02-11
 
+### Added
+
 - Added singleton for current user
+- Added option for removing previous migration files
+
+### Changed
+
 - PbLogger and PbConfig tables names updated
 - spatie/laravel-translatable minimum requirement updated
 - Schema dump updated
 - Providers installation moved to Project Builder section
+
+### Fixed
+
 - Fixed typo in Installation Command
-- Added option for removing previous migration files
 - Fixed error on saving profile data
 
 ## [1.3.6] - 2022-02-08
 
+### Added
+
 - Laravel 9.x support added.
+
+### Changed
+
 - Unnecessary packages removed from composer.json.
-- Installation updated.
-   - Ask for confirmation for installing Inertia or leave.
-   - webpack.congig.js insertions format fixed.
-   - Jetstream and Fortify no longer being asked to be ignored in composer.json.
-   - Fix: Inertia class no longer being imported on installation trait to prevent exception on fresh installations.
 - Schema's default string length moved to Project Builder's app service provider
+- Installation updated.
+    - Ask for confirmation for installing Inertia or leave.
+    - Jetstream and Fortify no longer being asked to be ignored in composer.json.
+
+### Fixed
+
+- Fix: Inertia class no longer being imported on installation trait to prevent exception on fresh installations.
+- webpack.config.js insertions format fixed.
 
 ## [1.3.5] - 2022-02-04
+
+### Added
 
 - New release after several months of work and missing changelog entries.
 
 ## [1.2.2.2] - 2021-07-18
-
-### Added
 
 ### Changed
 
@@ -63,7 +90,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Fixed
 
-- Forms fields validations
+- Form fields validations
 
 ## [1.2.2] - 2021-07-06
 
@@ -89,8 +116,6 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [1.2.1.1] - 2021-07-06
 
-### Added
-
 ### Changed
 
 - Views paths are now dynamic
@@ -98,8 +123,6 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 
 ## [1.2.1] - 2021-07-06
-
-### Added
 
 ### Changed
 
@@ -180,8 +203,6 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 - Translatable alias for Roles and Permissions
 
-### Changed
-
 ### Fixed
 
 - Seeders debugged
@@ -206,4 +227,4 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 - Menu CSS classes
 - Directly routed CRUD forms
-- projectbuilder.js helpers optimizated
+- projectbuilder.js helpers optimized

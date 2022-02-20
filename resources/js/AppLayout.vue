@@ -9,13 +9,11 @@
                     <div class="flex justify-between h-16">
                         <div class="flex">
                             <!-- Logo -->
-
                             <div class="flex-shrink-0 flex items-center">
                                 <Link :href="route('dashboard')">
                                     <jet-application-mark class="block h-9 w-auto" />
                                 </Link>
                             </div>
-
                             <!-- Navigation Links -->
                             <div class="space-x-8 sm:-my-px sm:ml-10 sm:flex">
                                 <ul class="sm:flex">
@@ -39,6 +37,36 @@
                         </div>
 
                         <div class="hidden sm:flex sm:items-center sm:ml-6">
+                            <!-- Cache Dropdown -->
+                            <div class="ml-3 relative" v-if="cache.hasOwnProperty('app') && helpers.stringToBoolean(cache.app)">
+                                <jet-dropdown align="right" width="auto">
+                                    <template #trigger>
+                                        <span class="inline-flex rounded-md">
+                                            <button type="button" class="inline-flex items-center px-4 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 bg-white hover:bg-gray-50 hover:text-gray-700 focus:outline-none focus:bg-gray-50 active:bg-gray-50 transition ease-in-out duration-150">
+                                                <span>Cache</span>
+                                            </button>
+                                        </span>
+                                    </template>
+
+                                    <template #content>
+                                        <!-- Cache Management -->
+                                        <form v-if="cache.hasOwnProperty('app') && helpers.stringToBoolean(cache.app)" @submit.prevent="cacheProcess('app')">
+                                            <jet-dropdown-link as="button">
+                                                <div class="flex items-center">
+                                                    <span>Clear App's</span>
+                                                </div>
+                                            </jet-dropdown-link>
+                                        </form>
+                                        <form v-if="cache.hasOwnProperty('laravel') && helpers.stringToBoolean(cache.laravel)" @submit.prevent="cacheProcess('laravel')">
+                                            <jet-dropdown-link as="button">
+                                                <div class="flex items-center">
+                                                    <span>Clear Laravel's</span>
+                                                </div>
+                                            </jet-dropdown-link>
+                                        </form>
+                                    </template>
+                                </jet-dropdown>
+                            </div>
                             <!-- Languages Dropdown -->
                             <div class="ml-3 relative">
                                 <jet-dropdown align="right" width="auto">
@@ -68,8 +96,8 @@
                             </div>
 
                             <!-- Teams Dropdown -->
-                            <div class="ml-3 relative">
-                                <jet-dropdown align="right" width="60" v-if="$page.props.jetstream.hasTeamFeatures && teamsEnabled">
+                            <div class="ml-3 relative" v-if="$page.props.jetstream.hasTeamFeatures && teamsEnabled">
+                                <jet-dropdown align="right" width="60">
                                     <template #trigger>
                                         <span class="inline-flex rounded-md">
                                             <button type="button" class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 bg-white hover:bg-gray-50 hover:text-gray-700 focus:outline-none focus:bg-gray-50 active:bg-gray-50 transition ease-in-out duration-150">
@@ -320,6 +348,7 @@
         data() {
             return {
                 showingNavigationDropdown: false,
+                helpers: Helpers,
             }
         },
 
@@ -365,6 +394,12 @@
                     preserveState: false
                 })
             },
+
+            cacheProcess(type) {
+                this.$inertia.post(route(type == 'laravel' ? 'clear-laravel-cache' : 'clear-cache'), {
+                    preserveState: false
+                })
+            },
         },
 
         computed: {
@@ -377,9 +412,10 @@
             let languages = computed(() => usePage().props.value.shared.languages)
             let apiData = computed(() => usePage().props.value.shared.api_data)
             const locale = computed(() => usePage().props.value.locale)
+            const cache = computed(() => usePage().props.value.shared.cache)
             const teamsEnabled = computed(() => usePage().props.value.teams)
 
-            return { navigations, apiData, locale, teamsEnabled, languages }
+            return { navigations, apiData, locale, teamsEnabled, languages, cache }
         }
     }
 </script>

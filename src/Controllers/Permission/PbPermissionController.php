@@ -132,6 +132,7 @@ class PbPermissionController extends PbBuilderController
                     class: 'model_controller',
                     model: $this->vars->level->names,
                     modelFunction: 'getList',
+                    pagination: ['page' => $page, 'perpage' => $perpage, 'orderby' => $orderby, 'field' => $field, 'order' => $order],
                     byRoles: true,
                 );
                 $model = $cached['data'];

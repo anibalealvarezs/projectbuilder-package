@@ -1,5 +1,6 @@
 <?php
 
+use Anibalealvarezs\Projectbuilder\Controllers\Config\PbCacheController;
 use Anibalealvarezs\Projectbuilder\Controllers\Config\PbLocaleController as LocaleController;
 use Anibalealvarezs\Projectbuilder\Controllers\Dashboard\PbDashboardController as DashboardController;
 use Anibalealvarezs\Projectbuilder\Facades\PbUtilitiesFacade;
@@ -29,10 +30,17 @@ Route::get(config('pbuilder.secretlogin'), fn() => Inertia::render(app(PbUtiliti
     ...getDefaultGroupsMiddlewares('debug'),
 ])->name('secretlogin');
 
-Route::get('/clear-cache', function() {
-    Artisan::call('cache:clear');
-    return "Cache is cleared";
-});
+Route::post('/clear-cache', [PbCacheController::class, 'clear'])->middleware([
+    ...getDefaultGroupsMiddlewares('web'),
+    ...getDefaultGroupsMiddlewares('auth'),
+    ...getDefaultGroupsMiddlewares('debug'),
+])->name('clear-cache');
+
+Route::post('/clear-laravel-cache', [PbCacheController::class, 'clearLaravel'])->middleware([
+    ...getDefaultGroupsMiddlewares('web'),
+    ...getDefaultGroupsMiddlewares('auth'),
+    ...getDefaultGroupsMiddlewares('debug'),
+])->name('clear-laravel-cache');
 
 Route::get('root', function () {
     return welcomeRoute();

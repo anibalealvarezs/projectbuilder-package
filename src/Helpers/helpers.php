@@ -321,23 +321,6 @@ function getFunctionName($class, $function): string
 /**
  * Scope a query to only include popular users.
  *
- * @param $tags
- * @return string
- */
-function fullTags($tags): string
-{
-    $keys = [];
-    foreach($tags as $tag) {
-        foreach($keys as $key) {
-            $keys[] = $key . '.' . $tag;
-        }
-    }
-    return $keys;
-}
-
-/**
- * Scope a query to only include popular users.
- *
  * @param string $package
  * @param string $type
  * @param string|null $class

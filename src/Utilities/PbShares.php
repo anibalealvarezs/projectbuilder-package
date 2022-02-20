@@ -28,6 +28,7 @@ class PbShares
                 "user_permissions_and_roles" => [...$list, ...self::getUserPermissionsAndRoles()],
                 "navigations" => [...$list, ...self::getNavigations()],
                 "locale" => [...$list, ...self::getCustomLocale()],
+                "cache" => [...$list, ...self::getCacheOptions()],
                 "permissions" => [...$list, ...self::getPermissions()],
                 "permissionsall" => [...$list, ...self::getPermissionsAll()],
                 "roles" => [...$list, ...self::getRoles()],
@@ -121,6 +122,21 @@ class PbShares
         $customLocale = getCurrentLocale();
         return [
             'locale' => $customLocale ?: app()->getLocale()
+        ];
+    }
+
+    /**
+     * Transform the resource into an array.
+     *
+     * @return array
+     */
+    public static function getCacheOptions(): array
+    {
+        return [
+            'cache' => [
+                'app' => app(PbCurrentUser::class)->hasPermissionTo('clear cache'),
+                'laravel' => app(PbCurrentUser::class)->hasPermissionTo('clear laravel cache'),
+            ]
         ];
     }
 

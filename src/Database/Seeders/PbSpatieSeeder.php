@@ -39,6 +39,8 @@ class PbSpatieSeeder extends Seeder
             ['guard_name' => 'admin', 'name' => 'config builder', 'alias' => json_encode(['en' => 'Edit main config', 'es' => 'Editar configuración principal']), 'module_id' => null],
             ['guard_name' => 'admin', 'name' => 'developer options', 'alias' => json_encode(['en' => 'Developer Options', 'es' => 'Opciones de Desarrollador']), 'module_id' => null],
             ['guard_name' => 'admin', 'name' => 'api access', 'alias' => json_encode(['en' => 'API Access', 'es' => 'Acceso API']), 'module_id' => null],
+            ['guard_name' => 'admin', 'name' => 'clear cache', 'alias' => json_encode(['en' => 'Clear app\'s cache', 'es' => 'Borrar el caché de la aplicación']), 'module_id' => null],
+            ['guard_name' => 'admin', 'name' => 'clear laravel cache', 'alias' => json_encode(['en' => 'Clear Laravel\'s cache', 'es' => 'Borrar el caché de Laravel']), 'module_id' => null],
             // CRUD Logger
             ['guard_name' => 'admin', 'name' => 'config loggers', 'alias' => json_encode(['en' => 'Configure Logger', 'es' => 'Configurar Logger']), 'module_id' => null],
             ['guard_name' => 'admin', 'name' => 'create loggers', 'alias' => json_encode(['en' => 'Create Logs', 'es' => 'Crear Logs']), 'module_id' => null],
@@ -96,9 +98,10 @@ class PbSpatieSeeder extends Seeder
                 'admin roles permissions',
                 'config builder',
                 'login',
+                'clear cache',
             ]);
         Role::updateOrCreate(['guard_name' => 'admin', 'name' => 'developer'], ['guard_name' => 'admin', 'name' => 'developer', 'alias' => ['en' => 'Developer', 'es' => 'Desarrollador']])
-            ->givePermissionTo(['developer options', 'read loggers', 'delete loggers', 'config loggers']);
+            ->givePermissionTo(['developer options', 'read loggers', 'delete loggers', 'config loggers', 'clear cache']);
         Role::updateOrCreate(['guard_name' => 'admin', 'name' => 'super-admin'], ['guard_name' => 'admin', 'name' => 'super-admin', 'alias' => ['en' => 'Super Admin', 'es' => 'Superadministrador']])
             ->givePermissionTo(Permission::all());
     }

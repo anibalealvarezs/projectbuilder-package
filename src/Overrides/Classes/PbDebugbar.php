@@ -99,6 +99,8 @@ class PbDebugbar
     {
         if (self::isDebugEnabled()) {
             Debugbar::measure($label, $closure);
+        } else {
+            $closure();
         }
     }
 }
