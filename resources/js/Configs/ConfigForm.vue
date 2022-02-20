@@ -44,7 +44,7 @@ export default {
             configkey: props.data.configkey,
             configvalue: props.data.configvalue,
             description: props.data.description,
-            module: props.data.module,
+            module: props.data.module_id,
         })
         const directory = 'configs'
 

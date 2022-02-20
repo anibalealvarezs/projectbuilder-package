@@ -43,7 +43,7 @@ export default {
         const form = reactive({
             name: props.data.name,
             roles: Helpers.getModelIdsList(props.data.roles),
-            module: props.data.module,
+            module: props.data.module_id,
             alias: props.data['alias'],
         })
         const directory = 'permissions'

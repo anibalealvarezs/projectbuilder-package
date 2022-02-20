@@ -44,7 +44,7 @@ export default {
             type: props.data.type,
             parent: props.data.parent,
             destiny: props.data.destiny,
-            module: props.data.module,
+            module: props.data.module_id,
             status: props.data.status,
             permission: props.data.permission_id,
         })
