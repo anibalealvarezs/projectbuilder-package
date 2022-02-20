@@ -55,7 +55,7 @@ class PbNavigationSeeder extends Seeder
         }
 
         // Settings
-        if ($settingsParent = Navigation::updateOrCreate(['destiny' => '#navigation-settings', 'module_id' => null], ['name' => 'Settings', 'type' => 'custom', 'parent' => 0, 'permission_id' => $readConfigsPermission->id, 'position' => 2])->setLocale('en')) {
+        if ($settingsParent = Navigation::updateOrCreate(['destiny' => '#navigation-settings', 'module_id' => null], ['name' => 'Settings', 'type' => 'custom', 'parent' => 0, 'permission_id' => 0, 'position' => 2])->setLocale('en')) {
             // Spanish name update
             $settingsParent->setLocale('es');
             $settingsParent->name = 'Navegación';

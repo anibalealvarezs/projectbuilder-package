@@ -165,7 +165,10 @@ class PbNavigation extends PbBuilder implements PbModelCrudInterface
                 ],
                 'permission' => [
                     'type' => 'select',
-                    'list' => PbShares::getPermissionsAll()['permissionsall']->toArray(),
+                    'list' => [
+                        ...[['id' => 0, 'name' => '[none]']],
+                        ...PbShares::getPermissionsAll()['permissionsall']->toArray()
+                    ],
                 ],
                 'status' => [
                     'type' => 'select',

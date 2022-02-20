@@ -2,14 +2,14 @@
     <AppLayout>
         <template #header>
             <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                Logger: {{ pbconfig.name }}
+                Logger: {{ pblogger.severity }}: {{ pblogger.message }}
             </h2>
         </template>
 
         <Main>
             <slot>
                 <div class="p-12 sm:px-20 bg-white border-b border-gray-200">
-                    <h2>{{ pbconfig.id }}. {{ pbconfig.name }}</h2>
+                    <h2>{{ pblogger.id }}. {{ pblogger.message }}</h2>
                 </div>
             </slot>
         </Main>
@@ -23,7 +23,7 @@
         extends: PbShow,
         name: "ShowLogger",
         props: {
-            pbconfig: Object,
+            pblogger: Object,
         },
     }
 </script>
