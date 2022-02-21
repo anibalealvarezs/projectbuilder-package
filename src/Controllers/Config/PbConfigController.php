@@ -15,10 +15,9 @@ use Illuminate\Validation\Rule;
 
 use Auth;
 use DB;
-use Inertia\Response as InertiaResponse;
-use Psr\SimpleCache\InvalidArgumentException;
-use ReflectionException;
 use Session;
+
+use Inertia\Response as InertiaResponse;
 
 class PbConfigController extends PbBuilderController
 {
@@ -44,7 +43,7 @@ class PbConfigController extends PbBuilderController
      *
      * @param string $route
      * @return InertiaResponse|JsonResponse
-     * @throws ReflectionException|InvalidArgumentException
+     * @throws \ReflectionException
      */
     public function create(string $route = 'level'): InertiaResponse|JsonResponse
     {
@@ -58,7 +57,6 @@ class PbConfigController extends PbBuilderController
      *
      * @param Request $request
      * @return Application|Redirector|RedirectResponse|null
-     * @throws ReflectionException
      */
     public function store(Request $request): Redirector|RedirectResponse|Application|null
     {
@@ -75,7 +73,7 @@ class PbConfigController extends PbBuilderController
      * @param bool $multiple
      * @param string $route
      * @return RedirectResponse|InertiaResponse|JsonResponse
-     * @throws ReflectionException|InvalidArgumentException
+     * @throws \ReflectionException
      */
     public function edit(
         int $id,
@@ -95,7 +93,6 @@ class PbConfigController extends PbBuilderController
      * @param Request $request
      * @param int $id
      * @return Application|Redirector|RedirectResponse|null
-     * @throws ReflectionException
      */
     public function update(Request $request, int $id): Redirector|RedirectResponse|Application|null
     {

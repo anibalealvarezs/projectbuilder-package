@@ -120,7 +120,7 @@ class PbRole extends Role implements PbModelCrudInterface
         ];
 
         if ($includeForm) {
-            $config['formconfig'] = [
+            $config['form'] = [
                 'name' => [
                     'type' => 'text',
                 ],

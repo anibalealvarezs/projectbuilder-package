@@ -92,10 +92,10 @@ class PbDebugbar
     /**
      * Stops a measure
      *
-     * @param $label
+     * @param string $label
      * @param Closure $closure
      */
-    public function measure($label, Closure $closure)
+    public function measure(string $label, Closure $closure)
     {
         if (self::isDebugEnabled()) {
             Debugbar::measure($label, $closure);

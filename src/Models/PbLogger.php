@@ -141,7 +141,7 @@ class PbLogger extends PbBuilder implements PbModelCrudInterface
         ];
 
         if ($includeForm) {
-            $config['formconfig'] = [
+            $config['form'] = [
                 'name' => [
                     'type' => 'text',
                 ],

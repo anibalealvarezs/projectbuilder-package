@@ -3,7 +3,9 @@
 namespace Anibalealvarezs\Projectbuilder\Controllers\Logger;
 
 use Anibalealvarezs\Projectbuilder\Controllers\PbBuilderController;
+
 use App\Http\Requests;
+
 use Illuminate\Http\Request;
 
 class PbLoggerController extends PbBuilderController

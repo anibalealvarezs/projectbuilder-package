@@ -132,7 +132,7 @@ class PbNavigation extends PbBuilder implements PbModelCrudInterface
         $config = parent::getCrudConfig();
 
         if ($includeForm) {
-            $config['formconfig'] = [
+            $config['form'] = [
                 'name' => [
                     'type' => 'text',
                 ],

@@ -4,8 +4,6 @@ namespace Anibalealvarezs\Projectbuilder\Controllers\Navigation;
 
 use Anibalealvarezs\Projectbuilder\Controllers\PbBuilderController;
 
-use Anibalealvarezs\Projectbuilder\Facades\PbDebugbarFacade as Debug;
-use Anibalealvarezs\Projectbuilder\Utilities\PbCache;
 use App\Http\Requests;
 
 use Illuminate\Http\JsonResponse;
@@ -15,10 +13,9 @@ use Illuminate\Validation\Rule;
 
 use Auth;
 use DB;
-use Inertia\Response as InertiaResponse;
-use Psr\SimpleCache\InvalidArgumentException;
-use ReflectionException;
 use Session;
+
+use Inertia\Response as InertiaResponse;
 
 class PbNavigationController extends PbBuilderController
 {
@@ -62,7 +59,7 @@ class PbNavigationController extends PbBuilderController
      * @param bool $multiple
      * @param string $route
      * @return InertiaResponse|JsonResponse|RedirectResponse
-     * @throws ReflectionException|InvalidArgumentException
+     * @throws \ReflectionException
      */
     public function index(
         int $page = 1,
@@ -74,33 +71,25 @@ class PbNavigationController extends PbBuilderController
         bool $multiple = false,
         string $route = 'level'): InertiaResponse|JsonResponse|RedirectResponse
     {
-        Debug::start('custom_controller', $this->vars->level->names.' crud controller');
+        $this->startController(getClassName(__CLASS__));
 
-        Debug::measure(
-            $this->vars->level->names.' crud controller - model list build',
-            function() use (&$model, $page, $perpage, $orderby, $field, $order) {
-                $cached = PbCache::run(
-                    closure: fn() =>  $this->vars->level->modelPath::withPublicRelations()->orderedByDefault()->get(),
-                    package: $this->vars->helper->package,
-                    class: 'model_controller',
-                    model: $this->vars->level->names,
-                    modelFunction: 'getList',
-                    byRoles: true,
-                );
-                $model = $cached['data'];
-                $this->vars->cacheObjects[$cached['tags']][] = $cached['keys'];
-            }
-        );
+        // Set cache/methods arguments
+        $this->initArgs([
+            'class' => 'model_controller',
+            'pagination' => ['page' => $page, 'perpage' => $perpage, 'orderby' => $orderby, 'field' => $field, 'order' => $order],
+            'byRoles' => true,
+        ]);
 
-        Debug::stop('custom_controller');
+        // Get models list
+        $this->measuredRun(return: $model, name: getClassName(__CLASS__) . ' - models list build', args: [
+            'closure' => fn() => $this->vars->level->modelPath::withPublicRelations()->orderedByDefault()->get(),
+            'modelFunction' => 'getList',
+        ]);
+
+        $this->stopController(getClassName(__CLASS__));
 
         return parent::index(
-            $page,
-            $perpage,
-            $orderby,
-            $field,
-            $order,
-            $model
+            element: $model,
         );
     }
 }

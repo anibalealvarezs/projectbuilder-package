@@ -6,11 +6,12 @@ use Anibalealvarezs\Projectbuilder\Controllers\PbBuilderController;
 
 use App\Http\Requests;
 
-use Auth;
-use DB;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+
+use Auth;
+use DB;
 use Session;
 
 use Inertia\Response as InertiaResponse;

@@ -353,7 +353,7 @@ class PbUser extends User implements PbModelCrudInterface
         ];
 
         if ($includeForm) {
-            $config['formconfig'] = [
+            $config['form'] = [
                 'name' => [
                     'type' => 'text',
                 ],

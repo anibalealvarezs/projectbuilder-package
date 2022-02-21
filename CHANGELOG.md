@@ -5,12 +5,32 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [1.3.7.2] - 2022-02-21
+
+- BREAKING CHANGES:
+    - [x] [1.3.7.1]
+
+### Changed
+
+- Controllers refactored
+
 ## [1.3.7.1] - 2022-02-19
 
 ### Added
 
 - Implemented cache for controllers
 - Added facades por ```PbDebugbar``` class
+- Added ```PbCacheController```
+
+### Changed
+
+- 'Permissions' and 'Navigations' seeders updated
+
+### Fixed
+
+- Fixed errors in ```Loggers``` CRUD
+- Fixed 'module' fields in forms
+- Fixed 'settings' menu button
 
 ## [1.3.7] - 2022-02-14
 

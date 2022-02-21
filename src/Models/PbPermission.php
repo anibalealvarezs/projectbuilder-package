@@ -181,7 +181,7 @@ class PbPermission extends Permission implements PbModelCrudInterface
         ];
 
         if ($includeForm) {
-            $config['formconfig'] = [
+            $config['form'] = [
                 'name' => [
                     'type' => 'text',
                 ],

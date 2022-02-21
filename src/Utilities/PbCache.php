@@ -5,7 +5,6 @@ namespace Anibalealvarezs\Projectbuilder\Utilities;
 use Closure;
 use Illuminate\Support\Facades\Cache;
 use JetBrains\PhpStorm\ArrayShape;
-use ReflectionException;
 
 class PbCache
 {
@@ -25,7 +24,6 @@ class PbCache
      * @param bool $byUser
      * @param bool $toArray
      * @return array
-     * @throws ReflectionException
      */
     #[ArrayShape(['data' => "mixed", 'keys' => "null|string", 'tags' => "null|string"])]
     public static function run(
@@ -45,7 +43,7 @@ class PbCache
     ): array
     {
         $tags = andTag($package, $type, $class, $function, $model, $modelId);
-        $keys = andKey($modelFunction, $pagination, $byRoles, $byUser);
+        $keys = andKey($modelFunction, (!$modelId ? $pagination : []), $byRoles, $byUser);
         $stored = false;
 
         // if (false) {
@@ -57,6 +55,16 @@ class PbCache
         $result = $data ?? self::processClosure($closure, $tags, $keys);
 
         return ['data' => $result && $toArray ? $result->toArray() : $result, 'keys' => ($stored ? $keys : ""), 'tags' => ($stored ? implode(',', $tags) : "")];
+    }
+
+    /**
+     * Scope a query to only include popular users.
+     *
+     * @return array
+     */
+    public static function argsOrder(): array
+    {
+        return ['closure', 'package', 'type', 'class', 'function', 'model', 'modelId', 'modelFunction', 'pagination', 'byRoles', 'byUser', 'toArray'];
     }
 
     /**
@@ -123,5 +131,76 @@ class PbCache
     public static function clearAll(): bool
     {
         return Cache::store('redis')->flush();
+    }
+
+    /**
+     * Scope a query to only include popular users.
+     *
+     * @param string $package
+     * @param string $models
+     * @return void
+     */
+    public static function clearIndex(string $package, string $models)
+    {
+        self::clear(
+            package: $package,
+            class: 'builder_controller',
+            model: $models,
+        );
+        self::clear(
+            package: $package,
+            class: 'model_controller',
+            model: $models,
+        );
+    }
+
+    /**
+     * Scope a query to only include popular users.
+     *
+     * @param string $package
+     * @param string $models
+     * @param int $modelId
+     * @return void
+     */
+    public static function clearModel(string $package, string $models, int $modelId)
+    {
+        self::clear(
+            package: $package,
+            class: 'builder_controller',
+            model: $models,
+        );
+        self::clear(
+            package: $package,
+            class: 'model_controller',
+            model: $models,
+        );
+        self::clear(
+            package: $package,
+            class: 'builder_controller',
+            function: 'show',
+            model: $models,
+            modelId: $modelId,
+        );
+        self::clear(
+            package: $package,
+            class: 'model_controller',
+            function: 'show',
+            model: $models,
+            modelId: $modelId,
+        );
+        self::clear(
+            package: $package,
+            class: 'builder_controller',
+            function: 'edit',
+            model: $models,
+            modelId: $modelId,
+        );
+        self::clear(
+            package: $package,
+            class: 'model_controller',
+            function: 'edit',
+            model: $models,
+            modelId: $modelId,
+        );
     }
 }

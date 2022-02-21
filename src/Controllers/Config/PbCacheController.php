@@ -5,10 +5,12 @@ namespace Anibalealvarezs\Projectbuilder\Controllers\Config;
 use Anibalealvarezs\Projectbuilder\Models\PbCurrentUser;
 use Anibalealvarezs\Projectbuilder\Traits\PbControllerTrait;
 use Anibalealvarezs\Projectbuilder\Utilities\PbCache;
-use Exception;
+
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Artisan;
+
+use Exception;
 
 class PbCacheController
 {

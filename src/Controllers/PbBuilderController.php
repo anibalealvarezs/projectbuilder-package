@@ -3,17 +3,10 @@
 namespace Anibalealvarezs\Projectbuilder\Controllers;
 
 use Anibalealvarezs\Projectbuilder\Facades\PbDebugbarFacade as Debug;
-use Anibalealvarezs\Projectbuilder\Models\PbLogger;
 use Anibalealvarezs\Projectbuilder\Utilities\PbCache;
-use Anibalealvarezs\Projectbuilder\Utilities\PbUtilities;
-use Anibalealvarezs\Projectbuilder\Utilities\PbShares;
-use Anibalealvarezs\Projectbuilder\Models\PbCountry;
-use Anibalealvarezs\Projectbuilder\Models\PbCurrentUser;
-use Anibalealvarezs\Projectbuilder\Models\PbLanguage;
-use Anibalealvarezs\Projectbuilder\Models\PbModule;
 use Anibalealvarezs\Projectbuilder\Traits\PbControllerTrait;
-
 use Anibalealvarezs\Projectbuilder\Traits\PbControllerListingTrait;
+
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
 
@@ -25,12 +18,9 @@ use Illuminate\Routing\Redirector;
 
 use Auth;
 use DB;
-use Illuminate\Support\Str;
-use Psr\SimpleCache\InvalidArgumentException;
 use ReflectionException;
 use Session;
 
-use Inertia\Inertia;
 use Inertia\Response as InertiaResponse;
 
 class PbBuilderController extends Controller
@@ -69,6 +59,11 @@ class PbBuilderController extends Controller
         $this->vars->request = $request;
         $this->vars->sortable = isset($this->vars->level->modelPath::$sortable) && $this->vars->level->modelPath::$sortable;
         $this->vars->cacheObjects = [];
+        $this->vars->config = [];
+        $this->vars->runArgs = [
+            'package' => $this->vars->helper->package,
+            'model' => $this->vars->level->names,
+        ];
 
         self::$item = $this->vars->level->name;
         self::$route = $this->vars->level->names;
@@ -86,7 +81,7 @@ class PbBuilderController extends Controller
      * @param bool $multiple
      * @param string $route
      * @return InertiaResponse|JsonResponse|RedirectResponse
-     * @throws ReflectionException|InvalidArgumentException
+     * @throws ReflectionException
      */
     public function index(
         int $page = 1,
@@ -99,110 +94,43 @@ class PbBuilderController extends Controller
         string $route = 'level'
     ): InertiaResponse|JsonResponse|RedirectResponse {
 
-        Debug::start('builder_controller', 'builder crud controller');
+        $this->startController();
 
-        $this->vars->allowed = [
-            'create ' . $this->vars->level->names => 'create',
-            'update ' . $this->vars->level->names => 'update',
-            'delete ' . $this->vars->level->names => 'delete',
-        ];
+        // Set cache/methods arguments
+        $this->initArgs([
+            'class' => 'builder_controller',
+            'pagination' => $this->vars->runArgs['pagination'] ?: ['page' => $page, 'perpage' => $perpage, 'orderby' => $orderby, 'field' => $field, 'order' => $order]
+        ]);
 
-        Debug::measure(
-            'builder crud controller - model config load',
-            function() use (&$config, $page, $perpage, $orderby, $field, $order) {
-                $cached = PbCache::run(
-                    closure: fn() => (isset($this->vars->config) && $this->vars->config) ? $this->vars->config : $this->vars->level->modelPath::getCrudConfig(true),
-                    package: $this->vars->helper->package,
-                    class: 'BuilderController', // getClassName(__CLASS__)
-                    model: $this->vars->level->names,
-                    modelFunction: 'getCrudConfig', // getFunctionName(__CLASS__, __FUNCTION__),
-                    pagination: ['page' => $page, 'perpage' => $perpage, 'orderby' => $orderby, 'field' => $field, 'order' => $order],
-                    byRoles: !($this->vars->level->names == 'users'),
-                    byUser: true,
-                );
-                $config = $cached['data'];
-                $this->vars->cacheObjects[$cached['tags']][] = $cached['keys'];
-            }
-        );
-
-        if (!isset($config['fields']['actions'])) {
-            $config['fields']['actions'] = [
-                'update' => [],
-                'delete' => []
-            ];
+        // Load model config
+        if (!$this->vars->config) {
+            $this->measuredRun(return: $this->vars->config, name: getClassName(__CLASS__) . ' - model config load', args: [
+                'closure' => fn() => $this->vars->level->modelPath::getCrudConfig(true),
+                'modelFunction' => 'getCrudConfig',
+            ]);
         }
 
-        Debug::measure(
-            'builder crud controller - model config additional',
-            function() use (&$config, $page, $perpage, $orderby, $field, $order) {
-                $cached = PbCache::run(
-                    closure: fn() => PbShares::allowed($this->vars->allowed)['allowed'],
-                    package: $this->vars->helper->package,
-                    class: 'BuilderController',
-                    model: $this->vars->level->names,
-                    modelFunction: 'sharesAllowed',
-                    pagination: ['page' => $page, 'perpage' => $perpage, 'orderby' => $orderby, 'field' => $field, 'order' => $order],
-                    byRoles: !($this->vars->level->names == 'users'),
-                    byUser: true,
-                );
-                $config['enabled_actions'] = $cached['data'];
-                $this->vars->cacheObjects[$cached['tags']][] = $cached['keys'];
-            }
+        // Set additional config attributes
+        $this->setAdditionalVars();
+
+        // Sort and Paginate
+        $this->measuredRun(return: $this->vars->listing, name: getClassName(__CLASS__) . ' - sorting and pagination', args: [
+                'closure' => fn() => self::buildListingRow($this->vars->config),
+                'modelFunction' => 'sortAndPaginate',
+            ],
         );
 
-        if (!isset($config['model'])) {
-            $config['model'] = $this->vars->level->modelPath;
-        }
-        if (!isset($config['pagination']['page']) || !$config['pagination']['page']) {
-            $config['pagination']['page'] = $page;
-        }
-
-        Debug::measure(
-            'builder crud controller - sorting and pagination',
-            function() use ($config, $page, $perpage, $orderby, $field, $order) {
-                $this->vars->sortable = $this->vars->sortable && app(PbCurrentUser::class)->hasPermissionTo('update '.resolve($this->vars->level->modelPath)->getTable());
-                $this->vars->formconfig = ($config['formconfig'] ?? []);
-                $this->vars->pagination = !$this->vars->sortable ? $config['pagination'] : [];
-                $this->vars->heading = $config['heading'];
-                $this->vars->orderby = !$this->vars->sortable && $orderby ? ['field' => $field, 'order' => $order] : [];
-                $cached = PbCache::run(
-                    closure: fn() => self::buildListingRow($config),
-                    package: $this->vars->helper->package,
-                    class: 'BuilderController',
-                    model: $this->vars->level->names,
-                    modelFunction: 'sortAndPaginate',
-                    pagination: ['page' => $page, 'perpage' => $perpage, 'orderby' => $orderby, 'field' => $field, 'order' => $order],
-                    byRoles: !($this->vars->level->names == 'users'),
-                    byUser: true,
-                );
-                $this->vars->listing = $cached['data'];
-                $this->vars->cacheObjects[$cached['tags']][] = $cached['keys'];
-            }
-        );
-
-        Debug::measure(
-            'builder crud controller - model list build',
-            function() use (&$arrayElements, $order, $field, $orderby, $perpage, $page, $multiple, $element) {
-                $cached = PbCache::run(
-                    closure: function() use (&$arrayElements, $element, $multiple, $page, $perpage, $orderby, $field, $order) {
-                        return $this->buildModelsArray($element, $multiple, null, true, $page, $perpage, $orderby, $field, $order);
-                    },
-                    package: $this->vars->helper->package,
-                    class: 'BuilderController',
-                    model: $this->vars->level->names,
-                    modelFunction: 'buildModelsArray',
-                    pagination: ['page' => $page, 'perpage' => $perpage, 'orderby' => $orderby, 'field' => $field, 'order' => $order],
-                    byRoles: !($this->vars->level->names == 'users'),
-                    byUser: true,
-                );
-                $arrayElements = $cached['data'];
-                $this->vars->cacheObjects[$cached['tags']][] = $cached['keys'];
-            }
-        );
+        // Build models list
+        $this->measuredRun(return: $arrayElements, name: getClassName(__CLASS__) . ' - models list build', args: [
+            'closure' => function() use ($element, $multiple) {
+                return $this->buildModelsArray($element, $multiple, null, true);
+            },
+            'modelFunction' => 'buildModelsArray',
+        ]);
 
         Debug::add($arrayElements, 'data');
 
-        Debug::stop('builder_controller');
+        $this->stopController();
 
         return $this->renderResponse($this->buildRouteString($route, 'index'), (array) $arrayElements);
     }
@@ -212,32 +140,30 @@ class PbBuilderController extends Controller
      *
      * @param string $route
      * @return InertiaResponse|JsonResponse
-     * @throws ReflectionException|InvalidArgumentException
+     * @throws ReflectionException
      */
     public function create(string $route = 'level'): InertiaResponse|JsonResponse
     {
-        Debug::start('builder_controller', 'builder crud controller');
+        $this->startController();
 
-        Debug::measure(
-            'builder crud controller - model config load',
-            function() use (&$config) {
-                $cached = PbCache::run(
-                    closure: fn() => (isset($this->vars->config) && $this->vars->config) ? $this->vars->config : $this->vars->level->modelPath::getCrudConfig(true),
-                    package: $this->vars->helper->package,
-                    class: 'BuilderController',
-                    function: 'create',
-                    model: $this->vars->level->names,
-                    modelFunction: 'getCrudConfig',
-                    byRoles: true,
-                );
-                $this->vars->formconfig = $cached['data']['formconfig'];
-                $this->vars->cacheObjects[$cached['tags']][] = $cached['keys'];
-            }
-        );
+        // Set cache/methods arguments
+        $this->initArgs([
+            'class' => 'builder_controller',
+            'function' => 'create',
+            'byRoles' => true,
+        ]);
 
-        Debug::add($this->vars->formconfig, 'formconfig');
+        if (!$this->vars->config) {
+            // Load model config
+            $this->measuredRun(return: $this->vars->config, name: getClassName(__CLASS__) . ' - model config load', args: [
+                'closure' => fn() => $this->vars->level->modelPath::getCrudConfig(true),
+                'modelFunction' => 'getCrudConfig',
+            ]);
+        }
 
-        Debug::stop('builder_controller');
+        Debug::add($this->vars->config['form'], 'formconfig');
+
+        $this->stopController();
 
         return $this->renderResponse($this->buildRouteString($route, 'create'));
     }
@@ -247,7 +173,6 @@ class PbBuilderController extends Controller
      *
      * @param Request $request
      * @return Application|Redirector|RedirectResponse|null
-     * @throws ReflectionException
      */
     public function store(Request $request): Redirector|RedirectResponse|Application|null
     {
@@ -266,23 +191,15 @@ class PbBuilderController extends Controller
                 model: resolve($this->vars->level->modelPath)->setLocale(app()->getLocale())
             );
             // Check if module relation exists
-            if ($model->hasRelation('module') && ($request->input('module') > 0) &&  $module = PbModule::find($request->input('module'))) {
-                $model->module()->associate($module);
-            }
+            $model = $this->checkModuleRelation($model);
             // Model save
             if (!$model->save()) {
                 return $this->redirectResponseCRUDFail($request, 'create', "Error saving {$this->vars->level->name}");
             }
 
-            PbCache::clear(
+            PbCache::clearIndex(
                 package: $this->vars->helper->package,
-                class: 'BuilderController',
-                model: $this->vars->level->names,
-            );
-            PbCache::clear(
-                package: $this->vars->helper->package,
-                class: 'model_controller',
-                model: $this->vars->level->names,
+                models: $this->vars->level->names,
             );
 
             return $this->redirectResponseCRUDSuccess($request, 'create');
@@ -299,7 +216,7 @@ class PbBuilderController extends Controller
      * @param bool $multiple
      * @param string $route
      * @return Application|RedirectResponse|Redirector|InertiaResponse|JsonResponse
-     * @throws ReflectionException|InvalidArgumentException
+     * @throws ReflectionException
      */
     public function show(
         int $id,
@@ -308,66 +225,43 @@ class PbBuilderController extends Controller
         string $route = 'level'
     ): Application|RedirectResponse|Redirector|InertiaResponse|JsonResponse {
 
-        Debug::start('builder_controller', 'builder crud controller');
+        $this->startController();
+
+        // Set cache/methods arguments
+        $this->initArgs([
+            'class' => 'builder_controller',
+            'function' => 'show',
+            'byRoles' => true,
+            'model' => $this->vars->level->name,
+        ]);
 
         if (!$element) {
-            Debug::measure(
-                'builder crud controller - model find',
-                function() use (&$element, $id) {
-                    $cached = PbCache::run(
-                        closure: fn() => $this->vars->level->modelPath::find($id),
-                        package: $this->vars->helper->package,
-                        class: 'BuilderController',
-                        function: 'show',
-                        model: $this->vars->level->name,
-                        modelId: $id,
-                        modelFunction: 'find',
-                        byRoles: true,
-                    );
-                    $element = $cached['data'];
-                    $this->vars->cacheObjects[$cached['tags']][] = $cached['keys'];
-                }
-            );
-
-            if (!$element) {
-                return $this->redirectResponseCRUDFail(request(), 'show', "Error finding {$this->vars->level->name}");
-            }
+            $this->measuredRun(return: $element, name: getClassName(__CLASS__) . ' - model find', args: [
+                'closure' => fn() => $this->vars->level->modelPath::find($id),
+                'modelFunction' => 'find',
+                'modelId' => $id,
+            ]);
         }
 
-        Debug::start('permissions_check', 'permissions check');
-        if ($this->isUnreadableModel($element)) {
-            return $this->redirectResponseCRUDFail(request(), 'show', "This {$this->vars->level->name} cannot be shown");
+        if (!$element) {
+            return $this->redirectResponseCRUDFail(request(), 'show', "Error finding {$this->vars->level->name}");
         }
-        if (!$element->isViewableBy(Auth::user()->id)) {
-            return $this->redirectResponseCRUDFail(request(), 'show', "You don't have permission to view this {$this->vars->level->name}");
-        }
-        Debug::stop('permissions_check');
 
-        Debug::measure(
-            'builder crud controller - model data build',
-            function() use (&$model, $element, $multiple, $id) {
-                $cached = PbCache::run(
-                    closure: fn() => $this->buildModelsArray($element, $multiple, $id),
-                    package: $this->vars->helper->package,
-                    class: 'BuilderController',
-                    function: 'show',
-                    model: $this->vars->level->name,
-                    modelId: $id,
-                    modelFunction: 'buildModelsArray',
-                    byRoles: true,
-                );
-                $model = $cached['data'];
-                $this->vars->cacheObjects[$cached['tags']][] = $cached['keys'];
-            }
-        );
+        $this->checkPermissions($element);
 
-        Debug::add($model, 'data');
+        $this->measuredRun(return: $model, name: getClassName(__CLASS__) . ' - model data build', args: [
+            'closure' => fn() => $this->buildModelsArray($element, $multiple, $id),
+            'modelFunction' => 'buildModelsArray',
+            'modelId' => $id,
+        ]);
 
         if (!$model) {
             return $this->redirectResponseCRUDFail(request(), 'show', "Error finding {$this->vars->level->name}");
         }
 
-        Debug::stop('builder_controller');
+        Debug::add($model, 'data');
+
+        $this->stopController();
 
         return $this->renderResponse($this->buildRouteString($route, 'show'), $model);
     }
@@ -380,7 +274,7 @@ class PbBuilderController extends Controller
      * @param bool $multiple
      * @param string $route
      * @return RedirectResponse|InertiaResponse|JsonResponse
-     * @throws ReflectionException|InvalidArgumentException
+     * @throws ReflectionException
      */
     public function edit(
         int $id,
@@ -389,64 +283,46 @@ class PbBuilderController extends Controller
         string $route = 'level'
     ): RedirectResponse|InertiaResponse|JsonResponse {
 
-        Debug::start('builder_controller', 'builder crud controller');
+        $this->startController();
 
-        Debug::measure('builder crud controller - model config load', function() {
-            $this->vars->formconfig = $this->vars->level->modelPath::getCrudConfig(true)['formconfig'];
-        });
+        // Set cache/methods arguments
+        $this->initArgs([
+            'class' => 'builder_controller',
+            'function' => 'edit',
+            'byRoles' => true,
+            'model' => $this->vars->level->name,
+        ]);
 
-        Debug::add($this->vars->formconfig, 'formconfig');
+        // Load model config
+        if (!$this->vars->config) {
+            $this->measuredRun(return: $this->vars->config, name: getClassName(__CLASS__) . ' - model config load', args: [
+                'closure' => fn() => $this->vars->level->modelPath::getCrudConfig(true),
+                'modelFunction' => 'getCrudConfig',
+                'modelId' => $id,
+            ]);
+        }
+
+        Debug::add($this->vars->config['form'], 'formconfig');
 
         if (!$element) {
-            Debug::measure(
-                'builder crud controller - model find',
-                function() use (&$element, $id) {
-                    $cached = PbCache::run(
-                        closure: fn() => $this->vars->level->modelPath::find($id),
-                        package: $this->vars->helper->package,
-                        class: 'BuilderController',
-                        function: 'edit',
-                        model: $this->vars->level->name,
-                        modelId: $id,
-                        modelFunction: 'find',
-                        byRoles: true,
-                    );
-                    $element = $cached['data'];
-                    $this->vars->cacheObjects[$cached['tags']][] = $cached['keys'];
-                }
-            );
-
-            if (!$element) {
-                return $this->redirectResponseCRUDFail(request(), 'edit', "Error finding {$this->vars->level->name}");
-            }
+            $this->measuredRun(return: $element, name: getClassName(__CLASS__) . ' - model find', args: [
+                'closure' => fn() => $this->vars->level->modelPath::find($id),
+                'modelFunction' => 'find',
+                'modelId' => $id,
+            ]);
         }
 
-        Debug::start('permissions_check', 'permissions check');
-        if ($this->isUnreadableModel($element)) {
-            return $this->redirectResponseCRUDFail(request(), 'edit', "This {$this->vars->level->name} cannot be modified");
+        if (!$element) {
+            return $this->redirectResponseCRUDFail(request(), 'edit', "Error finding {$this->vars->level->name}");
         }
-        if (!$element->isEditableBy(Auth::user()->id)) {
-            return $this->redirectResponseCRUDFail(request(), 'edit', "You don't have permission to edit this {$this->vars->level->name}");
-        }
-        Debug::stop('permissions_check');
 
-        Debug::measure(
-            'builder crud controller - model data build',
-            function() use (&$model, $element, $multiple, $id) {
-                $cached = PbCache::run(
-                    closure: fn() => $this->buildModelsArray($element, $multiple, $id),
-                    package: $this->vars->helper->package,
-                    class: 'BuilderController',
-                    function: 'edit',
-                    model: $this->vars->level->name,
-                    modelId: $id,
-                    modelFunction: 'buildModelsArray',
-                    byRoles: true,
-                );
-                $model = $cached['data'];
-                $this->vars->cacheObjects[$cached['tags']][] = $cached['keys'];
-            }
-        );
+        $this->checkPermissions($element);
+
+        $this->measuredRun(return: $model, name: getClassName(__CLASS__) . ' - model data build', args: [
+            'closure' => fn() => $this->buildModelsArray($element, $multiple, $id),
+            'modelFunction' => 'buildModelsArray',
+            'modelId' => $id,
+        ]);
 
         Debug::add($model, 'data');
 
@@ -454,7 +330,7 @@ class PbBuilderController extends Controller
             return $this->redirectResponseCRUDFail(request(), 'edit', "Error finding {$this->vars->level->name}");
         }
 
-        Debug::stop('builder_controller');
+        $this->stopController();
 
         return $this->renderResponse($this->buildRouteString($route, 'edit'), $model);
     }
@@ -465,7 +341,6 @@ class PbBuilderController extends Controller
      * @param Request $request
      * @param int $id
      * @return Application|Redirector|RedirectResponse|null
-     * @throws ReflectionException
      */
     public function update(Request $request, int $id): Redirector|RedirectResponse|Application|null
     {
@@ -473,20 +348,19 @@ class PbBuilderController extends Controller
         if ($failed = $this->validateRequest($this->vars->validationRules, $request)) {
             return $failed;
         }
-
+        // Set cache/methods arguments
+        $this->initArgs([
+            'function' => 'update',
+        ]);
         // Process
         try {
             // Build model
             if (!$model = $this->vars->level->modelPath::find($id)) {
                 return $this->redirectResponseCRUDFail($request, 'update', "Error finding {$this->vars->level->name}");
             }
-            if ($this->isUnmodifiableModel($model)) {
-                return $this->redirectResponseCRUDFail($request, 'update', "This {$this->vars->level->name} cannot be modified");
-            }
-            if (!$model->isEditableBy(Auth::user()->id)) {
-                return $this->redirectResponseCRUDFail($request, 'update', "You don't have permission to edit this {$this->vars->level->name}");
-            }
-
+            // Check Permissions
+            $this->checkPermissions($model);
+            // Set Locale
             $model->setLocale(app()->getLocale());
             // Build requests
             $requests = $this->processModelRequests(
@@ -495,53 +369,18 @@ class PbBuilderController extends Controller
                 replacers: $this->vars->replacers,
             );
             // Check if module relation exists
-            if ($model->hasRelation('module') && ($request->input('module') > 0) &&  $module = PbModule::find($request->input('module'))) {
-                $model->module()->associate($module);
-            }
+            $model = $this->checkModuleRelation($model);
             // Model update
             if (!$model->update($requests)) {
                 return $this->redirectResponseCRUDFail($request, 'update', "Error updating {$this->vars->level->name}");
             }
-
-            PbCache::clear(
+            // Clear cache
+            PbCache::clearModel(
                 package: $this->vars->helper->package,
-                class: 'BuilderController',
-                model: $this->vars->level->names,
-            );
-            PbCache::clear(
-                package: $this->vars->helper->package,
-                class: 'model_controller',
-                model: $this->vars->level->names,
-            );
-            PbCache::clear(
-                package: $this->vars->helper->package,
-                class: 'BuilderController',
-                function: 'show',
-                model: $this->vars->level->name,
+                models: $this->vars->level->names,
                 modelId: $id,
             );
-            PbCache::clear(
-                package: $this->vars->helper->package,
-                class: 'model_controller',
-                function: 'show',
-                model: $this->vars->level->name,
-                modelId: $id,
-            );
-            PbCache::clear(
-                package: $this->vars->helper->package,
-                class: 'BuilderController',
-                function: 'edit',
-                model: $this->vars->level->name,
-                modelId: $id,
-            );
-            PbCache::clear(
-                package: $this->vars->helper->package,
-                class: 'model_controller',
-                function: 'edit',
-                model: $this->vars->level->name,
-                modelId: $id,
-            );
-
+            // Redirect
             return $this->redirectResponseCRUDSuccess($request, 'update');
         } catch (Exception $e) {
             return $this->redirectResponseCRUDFail($request, 'update', $e->getMessage());
@@ -554,65 +393,31 @@ class PbBuilderController extends Controller
      * @param Request $request
      * @param int $id
      * @return Application|Redirector|RedirectResponse
-     * @throws ReflectionException
      */
     public function destroy(Request $request, int $id): Redirector|RedirectResponse|Application
     {
-        if (!$model = $this->vars->level->modelPath::find($id)) {
-            return $this->redirectResponseCRUDFail($request, 'delete', "Error finding {$this->vars->level->name}");
-        }
-        if (!$model->isDeletableBy(Auth::user()->id)) {
-            return $this->redirectResponseCRUDFail($request, 'delete', "You don't have permission to edit this {$this->vars->level->name}");
-        }
-        if ($this->isUndeletableModel($model)) {
-            return $this->redirectResponseCRUDFail($request, 'delete', "This {$this->vars->level->name} cannot be deleted");
-        }
+        // Set cache/methods arguments
+        $this->initArgs([
+            'function' => 'destroy',
+        ]);
         // Process
         try {
+            if (!$model = $this->vars->level->modelPath::find($id)) {
+                return $this->redirectResponseCRUDFail($request, 'delete', "Error finding {$this->vars->level->name}");
+            }
+            // Check Permissions
+            $this->checkPermissions($model);
             // Model delete
             if (!$model->delete()) {
                 return $this->redirectResponseCRUDFail($request, 'delete', "Error deleting {$this->vars->level->name}");
             }
-
-            PbCache::clear(
+            // Clear cache
+            PbCache::clearModel(
                 package: $this->vars->helper->package,
-                class: 'BuilderController',
-                model: $this->vars->level->names,
-            );
-            PbCache::clear(
-                package: $this->vars->helper->package,
-                class: 'model_controller',
-                model: $this->vars->level->names,
-            );
-            PbCache::clear(
-                package: $this->vars->helper->package,
-                class: 'BuilderController',
-                function: 'show',
-                model: $this->vars->level->name,
+                models: $this->vars->level->names,
                 modelId: $id,
             );
-            PbCache::clear(
-                package: $this->vars->helper->package,
-                class: 'model_controller',
-                function: 'show',
-                model: $this->vars->level->name,
-                modelId: $id,
-            );
-            PbCache::clear(
-                package: $this->vars->helper->package,
-                class: 'BuilderController',
-                function: 'edit',
-                model: $this->vars->level->name,
-                modelId: $id,
-            );
-            PbCache::clear(
-                package: $this->vars->helper->package,
-                class: 'model_controller',
-                function: 'edit',
-                model: $this->vars->level->name,
-                modelId: $id,
-            );
-
+            // Redirect
             return $this->redirectResponseCRUDSuccess($request, 'delete');
         } catch (Exception $e) {
             return $this->redirectResponseCRUDFail($request, 'delete', $e->getMessage());
@@ -673,27 +478,31 @@ class PbBuilderController extends Controller
      */
     public function enable(Request $request, int $id): Redirector|RedirectResponse|Application|null
     {
-        if (isset($this->vars->level->modelPath::$enableable) && resolve($this->vars->level->modelPath)->isEditableBy(Auth::user()->id)) {
-            $model = $this->vars->level->modelPath::find($id);
-            if ($this->isUnmodifiableModel($model)) {
-                return $this->redirectResponseCRUDFail($request, 'enable', "This {$this->vars->level->name} cannot be modified");
-            }
-            if (!$model->isEditableBy(Auth::user()->id)) {
-                return $this->redirectResponseCRUDFail($request, 'enable', "You don't have permission to edit this {$this->vars->level->name}");
-            }
-            try {
-                if ($model->enable()) {
-                    return $this->redirectResponseCRUDSuccess($request, 'enable');
-                }
-                return $this->redirectResponseCRUDFail($request, 'enable',
-                    $this->vars->level->key . ' could not be enabled due to an unknown error');
-            } catch (Exception $e) {
-                return $this->redirectResponseCRUDFail($request, 'enable',
-                    $this->vars->level->key . ' could not be enabled! ' . $e->getMessage());
-            }
-        } else {
+        // Set cache/methods arguments
+        $this->initArgs([
+            'function' => 'enable',
+        ]);
+        // Is enableable?
+        if (!isset($this->vars->level->modelPath::$enableable) || !resolve($this->vars->level->modelPath)->isEditableBy(Auth::user()->id)) {
             return $this->redirectResponseCRUDFail($request, 'enable',
                 $this->vars->level->key . ' is not enableable! ');
+        }
+        // Find model
+        if (!$model = $this->vars->level->modelPath::find($id)) {
+            return $this->redirectResponseCRUDFail($request, 'enable', "Error finding {$this->vars->level->name}");
+        }
+        // Check Permissions
+        $this->checkPermissions($model);
+        // Enable
+        try {
+            if ($model->enable()) {
+                return $this->redirectResponseCRUDSuccess($request, 'enable');
+            }
+            return $this->redirectResponseCRUDFail($request, 'enable',
+                $this->vars->level->key . ' could not be enabled due to an unknown error');
+        } catch (Exception $e) {
+            return $this->redirectResponseCRUDFail($request, 'enable',
+                $this->vars->level->key . ' could not be enabled! ' . $e->getMessage());
         }
     }
 
@@ -706,413 +515,31 @@ class PbBuilderController extends Controller
      */
     public function disable(Request $request, int $id): Redirector|RedirectResponse|Application|null
     {
-        if (isset($this->vars->level->modelPath::$enableable) && resolve($this->vars->level->modelPath)->isEditableBy(Auth::user()->id)) {
-            $model = $this->vars->level->modelPath::find($id);
-            if ($this->isUnmodifiableModel($model)) {
-                return $this->redirectResponseCRUDFail($request, 'disable', "This {$this->vars->level->name} cannot be modified");
-            }
-            if (!$model->isEditableBy(Auth::user()->id)) {
-                return $this->redirectResponseCRUDFail($request, 'disable', "You don't have permission to edit this {$this->vars->level->name}");
-            }
-            try {
-                if ($model->disable()) {
-                    return $this->redirectResponseCRUDSuccess($request, 'disable');
-                }
-                return $this->redirectResponseCRUDFail($request, 'disable',
-                    $this->vars->level->key . ' could not be disabled due to an unknown error');
-            } catch (Exception $e) {
-                return $this->redirectResponseCRUDFail($request, 'disable',
-                    $this->vars->level->key . ' could not be disabled! ' . $e->getMessage());
-            }
-        } else {
+        // Set cache/methods arguments
+        $this->initArgs([
+            'function' => 'disable',
+        ]);
+        // Is disableable?
+        if (!isset($this->vars->level->modelPath::$enableable) || !resolve($this->vars->level->modelPath)->isEditableBy(Auth::user()->id)) {
             return $this->redirectResponseCRUDFail($request, 'disable',
                 $this->vars->level->key . ' is not disableable! ');
         }
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param null $element
-     * @param bool $multiple
-     * @param null $id
-     * @param bool $plural
-     * @param int $page
-     * @param int $perpage
-     * @param string|null $orderby
-     * @param string $field
-     * @param string $order
-     * @return array
-     */
-    protected function buildModelsArray(
-        $element = null,
-        bool $multiple = false,
-        $id = null,
-        bool $plural = false,
-        int $page = 1,
-        int $perpage = 0,
-        string $orderby = null,
-        string $field = 'id',
-        string $order = 'asc'
-    ): array {
-        $arrayElements = [];
-        if ($element) {
-            if ($multiple) {
-                foreach ($element as $key => $value) {
-                    $arrayElements[($value['size'] == 'multiple' ? $this->vars->{$key}->prefixNames : $this->vars->{$key}->prefixName)] = $value['object'];
-                }
-            } else {
-                $arrayElements[($plural ? $this->vars->level->prefixNames : $this->vars->level->prefixName)] = $element;
+        // Find model
+        if (!$model = $this->vars->level->modelPath::find($id)) {
+            return $this->redirectResponseCRUDFail($request, 'disable', "Error finding {$this->vars->level->name}");
+        }
+        // Check Permissions
+        $this->checkPermissions($model);
+        // Disable
+        try {
+            if ($model->disable()) {
+                return $this->redirectResponseCRUDSuccess($request, 'disable');
             }
-        } else {
-            $arrayElements[($plural ?
-                $this->vars->level->prefixNames :
-                $this->vars->level->prefixName
-            )] = ($id ?
-                $this->vars->level->modelPath::find($id) :
-                $this->buildPaginatedAndOrderedModel(
-                    page: $page,
-                    perpage: $perpage,
-                    orderby: $orderby,
-                    field: $field,
-                    order: $order,
-                )
-            );
+            return $this->redirectResponseCRUDFail($request, 'disable',
+                $this->vars->level->key . ' could not be disabled due to an unknown error');
+        } catch (Exception $e) {
+            return $this->redirectResponseCRUDFail($request, 'disable',
+                $this->vars->level->key . ' could not be disabled! ' . $e->getMessage());
         }
-
-        return $arrayElements;
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @return void
-     */
-    protected function shareVars()
-    {
-        $shared = [
-            ...$this->globalInertiaShare(),
-            ...PbShares::allowed($this->vars->allowed),
-            ...PbShares::list($this->vars->shares),
-            ...['sort' => $this->vars->sortable],
-            ...['showpos' => $this->vars->showPosition],
-            ...['showid' => $this->vars->showId],
-            ...['model' => $this->vars->viewModelName],
-            ...['required' => $this->vars->required],
-            ...['defaults' => $this->getDefaults()],
-            ...['listing' => $this->vars->listing],
-            ...['formconfig' => $this->vars->formconfig],
-            ...['pagination' => (isset($this->vars->pagination) && $this->vars->pagination) ? $this->vars->pagination : ['location' => 'none']],
-            ...['heading' => (isset($this->vars->heading) && $this->vars->heading) ? $this->vars->heading : ['location' => 'none']],
-            ...['orderby' => $this->vars->orderby ?? []],
-        ];
-        Inertia::share('shared', $shared);
-        Debug::add($shared, 'shared');
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @return void
-     */
-    protected function getDefaults()
-    {
-        $defaults = (object)[];
-        foreach ($this->vars->defaults as $key => $value) {
-            $defaults->$key = match ($key) {
-                'lang' => PbLanguage::findByCode($value),
-                'country' => PbCountry::findByCode($value),
-                default => $value,
-            };
-        }
-        return $defaults;
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @return void
-     */
-    protected function getRequired()
-    {
-        $required = [];
-        foreach ($this->vars->validationRules as $key => $value) {
-            if (in_array('required', $value)) {
-                array_push($required, $key);
-            }
-        }
-        return $required;
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param array $validationRules
-     * @param Request $request
-     * @param array $replacers
-     * @param null $model
-     * @return array|object
-     */
-    protected function processModelRequests(
-        array $validationRules,
-        Request $request,
-        array $replacers,
-        $model = null
-    ): array|object
-    {
-        $keys = [];
-        foreach ($validationRules as $vrKey => $vr) {
-            if (isset($replacers[$vrKey])) {
-                ${$replacers[$vrKey]} = $request[$vrKey];
-                array_push($keys, $replacers[$vrKey]);
-            } else {
-                ${$vrKey} = $request[$vrKey];
-                array_push($keys, $vrKey);
-            }
-        }
-
-        if (!$model) {
-            $requests = [];
-            foreach ($keys as $key) {
-                if (!in_array($key, $this->vars->modelExclude)) {
-                    $requests[$key] = ${$key};
-                }
-            }
-            return $requests;
-        }
-
-        foreach ($keys as $key) {
-            if (!in_array($key, $this->vars->modelExclude)) {
-                $model->$key = ${$key};
-            }
-        }
-
-        return $model;
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param $view
-     * @param array $elements
-     * @param bool $nullable
-     * @return JsonResponse|InertiaResponse
-     */
-    protected function renderResponse($view, array $elements = [], bool $nullable = false): JsonResponse|InertiaResponse
-    {
-        // If not API
-        if (!isApi($this->vars->request)) {
-            Debug::start('builder_controller_response_building', 'builder crud controller - response building');
-            Debug::add($this->vars->cacheObjects, 'caches', true);
-
-            Debug::measure('builder crud controller - share building', function() {
-                $this->shareVars();
-            });
-
-            Inertia::setRootView($this->vars->inertiaRoot);
-
-            Debug::stop('builder_controller');
-            Debug::stop('builder_controller_response_building');
-
-            return Inertia::render($view, $elements);
-        }
-
-        // If API
-        if ($elements || $nullable) {
-            return $this->handleJSONResponse($elements, 'Operation Successful');
-        } else {
-            return $this->handleJSONError('Operation Failed');
-        }
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param $route
-     * @param $type
-     * @return string
-     */
-    protected function buildRouteString($route, $type): string
-    {
-        return $this->vars->{$route}->viewsPath .
-            $this->buildFile(
-                $type,
-                ['singular' => $this->vars->{$route}->key, 'plural' => $this->vars->{$route}->keys]
-            );
-    }
-
-    /**
-     * Returns existing migration file if found, else uses the current timestamp.
-     *
-     * @param $key
-     * @return object
-     */
-    public function buildControllerVars($key): object
-    {
-        $object = (object)[];
-        $object->key = $key;
-        $object->keys = Str::plural($key);
-        $object->name = strtolower($key);
-        $object->names = Str::plural($object->name);
-        $object->prefixName = strtolower($this->vars->helper->prefix . $key);
-        $object->prefixNames = Str::plural($object->prefixName);
-        $object->modelPath = $this->vars->helper->vendor . "\\" . $this->vars->helper->package . "\\Models\\" . $this->vars->helper->prefix . $key;
-        $object->viewsPath = $this->vars->helper->package . "/" . $object->keys . "/";
-        $object->table = resolve($object->modelPath)->getTable();
-        return $object;
-    }
-
-    /**
-     * Returns existing migration file if found, else uses the current timestamp.
-     *
-     * @param $vars
-     * @return void
-     */
-    public function varsObject($vars)
-    {
-        if (!isset($this->vars)) {
-            $this->vars = (object)[];
-        }
-        foreach ($vars as $key => $value) {
-            $this->vars->{$key} = $value;
-        }
-    }
-
-    /**
-     * Returns existing migration file if found, else uses the current timestamp.
-     *
-     * @return void
-     */
-    public function initVars()
-    {
-        $this->vars = ($this->vars ?? (object)[]);
-        $this->vars->helper = ($this->vars->helper ?? (object)[]);
-        $this->vars->helper->class =
-            ($this->vars->helper->class ??
-                app(PbUtilities::class)->vendor . '\\' . app(PbUtilities::class)->package . '\\Utilities\\' . app(PbUtilities::class)->prefix . 'Utilities'
-            );
-        $this->vars->validationRules = ($this->vars->validationRules ?? []);
-        $this->vars->allowed = ($this->vars->allowed ?? []);
-        $this->vars->shares = ($this->vars->shares ?? []);
-        $this->vars->modelExclude = ($this->vars->modelExclude ?? []);
-        $this->vars->listing = ($this->vars->listing ?? []);
-        $this->vars->formconfig = ($this->vars->formconfig ?? []);
-        $this->vars->replacers = ($this->vars->replacers ?? []);
-        $this->vars->defaults = ($this->vars->defaults ?? (object)[]);
-        $this->vars->showPosition = ($this->vars->showPosition ?? false);
-        $this->vars->showId = ($this->vars->showId ?? true);
-        $this->vars->sortingRef = ($this->vars->sortingRef ?? "");
-    }
-
-    /**
-     * Returns existing migration file if found, else uses the current timestamp.
-     *
-     * @return void
-     */
-    public function pushRequired($array)
-    {
-        $this->vars->required = [
-            ...$this->vars->required,
-            ...$array
-        ];
-    }
-
-    /**
-     * Returns existing migration file if found, else uses the current timestamp.
-     *
-     * @return void
-     */
-    public function pushValidationRules($array)
-    {
-        $this->vars->validationRules = [
-            ...$this->vars->validationRules,
-            ...$array
-        ];
-    }
-
-    /**
-     * Returns existing migration file if found, else uses the current timestamp.
-     *
-     * @return void
-     */
-    public function arraytify($array)
-    {
-        $result = [];
-        foreach ($array as $key => $value) {
-            $result[$key] = $value->toArray();
-        }
-        return $result;
-    }
-
-    /**
-     * Returns existing migration file if found, else uses the current timestamp.
-     *
-     * @param $model
-     * @return bool
-     */
-    public function isUndeletableModel($model): bool
-    {
-        if (isset($model->undeletableModels)) {
-            foreach($model->undeletableModels as $key => $value) {
-                if (in_array($model->{$key}, $value)) {
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-
-    /**
-     * Returns existing migration file if found, else uses the current timestamp.
-     *
-     * @param $model
-     * @return bool
-     */
-    public function isUnmodifiableModel($model): bool
-    {
-        if (isset($model->unmodifiableModels)) {
-            foreach($model->unmodifiableModels as $key => $value) {
-                if (in_array($model->{$key}, $value)) {
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-
-    /**
-     * Returns existing migration file if found, else uses the current timestamp.
-     *
-     * @param $model
-     * @return bool
-     */
-    public function isUnreadableModel($model): bool
-    {
-        if (isset($model->unreadableModels)) {
-            foreach($model->unreadableModels as $key => $value) {
-                if (in_array($model->{$key}, $value)) {
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-
-    /**
-     * Returns existing migration file if found, else uses the current timestamp.
-     *
-     * @param $model
-     * @return bool
-     */
-    public function isUnconfigurableModel($model): bool
-    {
-        if (isset($model->unconfigurableModels)) {
-            foreach($model->unconfigurableModels as $key => $value) {
-                if (in_array($model->{$key}, $value)) {
-                    return true;
-                }
-            }
-        }
-        return false;
     }
 }

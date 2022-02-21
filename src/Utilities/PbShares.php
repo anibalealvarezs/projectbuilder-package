@@ -42,6 +42,25 @@ class PbShares
             };
         }
         return $list;
+
+        /* return collect($elements)->map(function($element){
+            return match ($element) {
+                "user_permissions_and_roles" => self::getUserPermissionsAndRoles(),
+                "navigations" => self::getNavigations(),
+                "locale" => self::getCustomLocale(),
+                "cache" => self::getCacheOptions(),
+                "permissions" => self::getPermissions(),
+                "permissionsall" => self::getPermissionsAll(),
+                "roles" => self::getRoles(),
+                "languages" => self::getLanguages(),
+                "countries" => self::getCountries(),
+                "me" => self::getMyData(),
+                "api_data" => self::apiData(),
+                "debug_status" => ['debug_enabled' => Debug::isDebugEnabled()],
+                "modules" => self::getModules(),
+                "modules_replace" => self::getModulesReplacingIds(),
+            };
+        })->all(); */
     }
 
     /**
@@ -53,12 +72,10 @@ class PbShares
     #[ArrayShape(['allowed' => "array"])]
     public static function allowed($elements): array
     {
-        $allowed = [];
-        foreach ($elements as $key => $value) {
-            $allowed[$value] = app(PbCurrentUser::class)->hasPermissionTo($key);
-        }
         return [
-            'allowed' => $allowed
+            'allowed' => collect($elements)->mapWithKeys(function ($value, $key) {
+                return [$value => app(PbCurrentUser::class)->hasPermissionTo($key)];
+            })->all()
         ];
     }
 

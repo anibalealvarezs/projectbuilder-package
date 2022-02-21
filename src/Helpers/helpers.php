@@ -340,7 +340,7 @@ function andTag(
 {
     $tags = ['package:' . $package, 'type:' . $type];
     if ($class) {
-        $tags[] = 'class:' . ($class == 'model_controller' ? ucfirst($model).'Controller' : $class);
+        $tags[] = 'class:' . $class;
     }
     if ($function) {
         $tags[] = 'method:' . $function;
@@ -392,4 +392,39 @@ function andKey(
     }
 
     return implode('.', $keys);
+}
+
+/**
+ * Scope a query to only include popular users.
+ *
+ * @param $items
+ * @param $keys
+ * @return array
+ */
+function sortArrayByKeys(array $items, array $keys): array
+{
+    return array_replace(array_flip($keys), $items);
+}
+
+/**
+ * Scope a query to only include popular users.
+ *
+ * @param array $array
+ * @param array $push
+ * @return void
+ */
+function merge(array &$array, array $push)
+{
+    $array = Arr::collapse([$array, $push]);
+}
+
+/**
+ * Scope a query to only include popular users.
+ *
+ * @param $t
+ * @return bool
+ */
+function is_closure($t): bool
+{
+    return $t instanceof Closure;
 }
