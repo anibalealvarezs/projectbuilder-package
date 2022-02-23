@@ -1,14 +1,17 @@
-import {TableFields as Table, Helpers} from "Pub/js/Projectbuilder/projectbuilder";
-import TrBody from "@/Pages/Projectbuilder/Tables/TrBody";
-import TrHead from "@/Pages/Projectbuilder/Tables/TrHead";
-import TrFooter from "@/Pages/Projectbuilder/Tables/TrFooter";
-import Container from "@/Pages/Projectbuilder/Tables/Container";
-import Header from "@/Pages/Projectbuilder/Tables/Header";
-import Body from "@/Pages/Projectbuilder/Tables/Body";
-import Footer from "@/Pages/Projectbuilder/Tables/Footer";
+import {TableFields} from "Pub/js/Projectbuilder/Helpers/tablefields";
+import {Helpers} from "Pub/js/Projectbuilder/Helpers/helpers";
+import TrBody from "@/Pages/Projectbuilder/Helpers/Tables/TrBody";
+import TrHead from "@/Pages/Projectbuilder/Helpers/Tables/TrHead";
+import TrFooter from "@/Pages/Projectbuilder/Helpers/Tables/TrFooter";
+import Container from "@/Pages/Projectbuilder/Helpers/Tables/Container";
+import Header from "@/Pages/Projectbuilder/Helpers/Tables/Header";
+import Body from "@/Pages/Projectbuilder/Helpers/Tables/Body";
+import Footer from "@/Pages/Projectbuilder/Helpers/Tables/Footer";
 import Sortable from "sortablejs";
+import Form from "@/Pages/Projectbuilder/Helpers/CRUD/Form"
 
 export default {
+    name: "Table",
     props: {
         allowed: Object,
         model: String,
@@ -18,6 +21,8 @@ export default {
         defaults: Object,
         required: Array,
         listing: Array,
+        elements: Object,
+        title: String,
     },
     components: {
         TrBody,
@@ -27,6 +32,7 @@ export default {
         Header,
         Body,
         Footer,
+        Form,
     },
     data() {
         return {
@@ -36,12 +42,12 @@ export default {
     },
     methods: {
         onItemClicked(value) {
-            let result = Table.onItemClicked(value, this.data, this.itemFormKey)
+            let result = TableFields.onItemClicked(value, this.data, this.itemFormKey)
             this.data = result.data
             this.itemFormKey = result.key
         },
         getRowPos(el) {
-            return Table.getRowPos(this.sort, el)
+            return TableFields.getRowPos(this.sort, el)
         },
         getTablePositions(group) {
             let sort = [];
@@ -55,7 +61,7 @@ export default {
         buildSortingOptions(that) {
             return Object.assign(
                 {},
-                Table.getSortingOptions(),
+                TableFields.getSortingOptions(),
                 {
                     onSort: function (e) {
                         let data = {
@@ -76,19 +82,19 @@ export default {
     },
     computed: {
         existsFormButton() {
-            return Table.existsFormButton(this.fields.actions.buttons)
+            return TableFields.existsFormButton(this.fields.actions.buttons)
         },
         buildHiddenId() {
-            return Table.buildHiddenId()
+            return TableFields.buildHiddenId()
         },
         buildHiddenIdTag() {
-            return Table.buildHiddenIdTag(this.data)
+            return TableFields.buildHiddenIdTag(this.data)
         },
         generateRandom() {
-            return Table.generateRandom()
+            return TableFields.generateRandom()
         },
         generateRandomTag() {
-            return Table.generateRandomTag(this.data)
+            return TableFields.generateRandomTag(this.data)
         },
     },
     mounted() {

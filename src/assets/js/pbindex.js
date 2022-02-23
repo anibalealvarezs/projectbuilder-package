@@ -1,15 +1,24 @@
 import Swal from "sweetalert2";
-import {TableFields as Table} from "Pub/js/Projectbuilder/projectbuilder"
+import {TableFields} from "Pub/js/Projectbuilder/Helpers/tablefields"
 import Button from "@/Jetstream/Button"
 import AppLayout from "@/Pages/Projectbuilder/AppLayout"
 import Main from "@/Pages/Projectbuilder/Main"
 import {usePage} from "@inertiajs/inertia-vue3";
+import Table from "@/Pages/Projectbuilder/Helpers/CRUD/Table"
+import Form from "@/Pages/Projectbuilder/Helpers/CRUD/Form"
 
 export default {
+    name: "Index",
+    props: {
+        elements: Object,
+        title: String,
+    },
     components: {
         Button,
         AppLayout,
         Main,
+        Table,
+        Form
     },
     data() {
         return {
@@ -18,12 +27,12 @@ export default {
     },
     methods: {
         loadForm() {
-            let swalConfig = Table.buildSwalLoadFormConfig({text: "Create", formitem: "role"})
+            let swalConfig = TableFields.buildSwalLoadFormConfig({text: "Create", formitem: "role"})
             swalConfig['didOpen'] = () => {
-                Table.appendToSwal(this.hiddenid)
+                TableFields.appendToSwal(this.hiddenid)
             }
             swalConfig['willClose'] = () => {
-                Table.removeFromSwal(this.hiddenid)
+                TableFields.removeFromSwal(this.hiddenid)
             }
             Swal.fire(swalConfig).then(
                 () => {
@@ -38,7 +47,7 @@ export default {
             );
         },
         getRowPos(el) {
-            return Table.getRowPos(this.sort, el)
+            return TableFields.getRowPos(this.sort, el)
         },
         getTablePositions(group) {
             let sort = [];
@@ -52,7 +61,7 @@ export default {
     },
     computed: {
         buildHiddenIdTag() {
-            this.hiddenid = Table.buildHiddenIdTag()
+            this.hiddenid = TableFields.buildHiddenIdTag()
             return this.hiddenid
         }
     },

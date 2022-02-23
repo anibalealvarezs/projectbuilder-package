@@ -1,5 +1,4 @@
-import {usePage} from "@inertiajs/inertia-vue3";
-import {Helpers} from "Pub/js/Projectbuilder/projectbuilder";
+import {Helpers} from "Pub/js/Projectbuilder/Helpers/helpers";
 
 export default {
     props: {

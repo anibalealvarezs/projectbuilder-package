@@ -6,41 +6,20 @@
             </h2>
         </template>
 
-        <Main>
-            <slot>
-                <!-- <div>
-                    {{ pbpermission }}
-                </div> -->
-                <div class="p-12 sm:px-20 bg-white border-b border-gray-200">
-                    <PermissionForm :data="setItem(pbpermission)" :defaults="defaults" :required="required" />
-                </div>
-            </slot>
-        </Main>
+        <Edit :element="pbpermission" title="Permission" />
     </AppLayout>
 </template>
 
 <script>
-    import PermissionForm from "@/Pages/Projectbuilder/Permissions/PermissionForm"
-    import {computed} from "vue"
-    import {usePage} from "@inertiajs/inertia-vue3"
-    import PbEdit from "Pub/js/Projectbuilder/pbedit"
+import edit from "Pub/js/Projectbuilder/Model/edit"
 
-    export default {
-        extends: PbEdit,
-        name: "EditPermission",
-        props: {
-            pbpermission: Object,
-        },
-        components: {
-            PermissionForm,
-        },
-        setup () {
-            const defaults = computed(() => usePage().props.value.shared.defaults)
-            const required = computed(() => usePage().props.value.shared.required)
-
-            return { defaults, required }
-        }
-    }
+export default {
+    extends: edit,
+    name: "EditPermission",
+    props: {
+        pbpermission: Object,
+    },
+}
 </script>
 
 <style scoped>

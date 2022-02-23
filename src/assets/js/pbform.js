@@ -5,11 +5,13 @@ import SimpleInput from "@/Pages/Projectbuilder/Forms/SimpleInput"
 import {usePage} from "@inertiajs/inertia-vue3";
 
 export default {
+    name: "Form",
     props: {
         data: Object,
         keyid: String,
         defaults: Object,
         required: Object,
+        title: String,
     },
     components: {
         Button,

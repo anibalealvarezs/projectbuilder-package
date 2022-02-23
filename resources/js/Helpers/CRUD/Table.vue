@@ -6,7 +6,7 @@
                     <TrHead
                         :fields="fields"
                         :allowed="allowed"
-                        :pagination="roles"
+                        :pagination="elements"
                         :model="model"
                         :plocation="plocation"
                         :hlocation="hlocation"
@@ -14,17 +14,17 @@
                 </slot>
             </Header>
             <Body :id="model+'-table-rows'">
-                <slot>
-                    <TrBody v-for="role in (roles.hasOwnProperty('data') ? roles.data : roles)" :item="role" :fields="fields" :hiddenid="buildHiddenIdTag" :allowed="allowed" :data-pos="getRowPos(role)" @clicked-edit-item="onItemClicked" />
-                </slot>
+            <slot>
+                <TrBody v-for="element in (elements.hasOwnProperty('data') ? elements.data : elements)" :item="element" :fields="fields" :hiddenid="buildHiddenIdTag" :allowed="allowed" :data-pos="getRowPos(element)" @clicked-edit-item="onItemClicked" />
+            </slot>
             </Body>
             <Footer>
                 <slot>
                     <TrFooter
-                        v-if="roles.hasOwnProperty('data') && roles.data.length > 0"
+                        v-if="elements.hasOwnProperty('data') && elements.data.length > 0"
                         :fields="fields"
                         :allowed="allowed"
-                        :pagination="roles"
+                        :pagination="elements"
                         :model="model"
                         :plocation="plocation"
                         :hlocation="hlocation"
@@ -33,32 +33,31 @@
             </Footer>
         </slot>
         <div v-if="existsFormButton" :id="buildHiddenIdTag" class="infinite-hidden">
-            <RoleForm :data="data" :keyid="generateRandomTag" :key="itemFormKey" :defaults="defaults" :required="required" />
+            <Form
+                :data="data"
+                :keyid="generateRandomTag"
+                :key="itemFormKey"
+                :defaults="defaults"
+                :required="required"
+                :title="title"
+            />
         </div>
     </Container>
 </template>
 
 <script>
-import RoleForm from "@/Pages/Projectbuilder/Roles/RoleForm"
-import { TableFields as Table } from "Pub/js/Projectbuilder/projectbuilder"
 import PbTable from "Pub/js/Projectbuilder/pbtable"
 import {computed} from "vue";
 import {usePage} from "@inertiajs/inertia-vue3";
+import {TableFields} from "Pub/js/Projectbuilder/Helpers/tablefields";
 
 export default {
     extends: PbTable,
-    name: "TableRoles",
-    props: {
-        roles: Object,
-    },
-    components: {
-        RoleForm,
-    },
     setup(props) {
-        const fields = new Table(props.showid, props.sort).buildTableFields(props.listing)
+        const fields = new TableFields(props.showid, props.sort).buildTableFields(props.listing)
         const plocation = computed(() => usePage().props.value.shared.pagination.location)
         const hlocation = computed(() => usePage().props.value.shared.heading.location)
-        const directory = 'roles'
+        const directory = 'users'
         return { fields, directory, plocation, hlocation }
     },
 }

@@ -99,7 +99,7 @@ class PbBuilderController extends Controller
         // Set cache/methods arguments
         $this->initArgs([
             'class' => 'builder_controller',
-            'pagination' => $this->vars->runArgs['pagination'] ?: ['page' => $page, 'perpage' => $perpage, 'orderby' => $orderby, 'field' => $field, 'order' => $order]
+            'pagination' => isset($this->vars->runArgs['pagination']) && $this->vars->runArgs['pagination'] ?: ['page' => $page, 'perpage' => $perpage, 'orderby' => $orderby, 'field' => $field, 'order' => $order]
         ]);
 
         // Load model config

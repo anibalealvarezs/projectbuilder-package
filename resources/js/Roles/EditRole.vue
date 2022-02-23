@@ -6,41 +6,20 @@
             </h2>
         </template>
 
-        <Main>
-            <slot>
-                <!-- <div>
-                    {{ pbrole }}
-                </div> -->
-                <div class="p-12 sm:px-20 bg-white border-b border-gray-200">
-                    <RoleForm :data="setItem(pbrole)" :defaults="defaults" :required="required" />
-                </div>
-            </slot>
-        </Main>
+        <Edit :element="pbrole" title="Role" />
     </AppLayout>
 </template>
 
 <script>
-    import RoleForm from "@/Pages/Projectbuilder/Roles/RoleForm"
-    import {computed} from "vue"
-    import {usePage} from "@inertiajs/inertia-vue3"
-    import PbEdit from "Pub/js/Projectbuilder/pbedit"
+import edit from "Pub/js/Projectbuilder/Model/edit"
 
-    export default {
-        extends: PbEdit,
-        name: "EditRole",
-        props: {
-            pbrole: Object,
-        },
-        components: {
-            RoleForm,
-        },
-        setup () {
-            const defaults = computed(() => usePage().props.value.shared.defaults)
-            const required = computed(() => usePage().props.value.shared.required)
-
-            return { defaults, required }
-        }
-    }
+export default {
+    extends: edit,
+    name: "EditRole",
+    props: {
+        pbrole: Object,
+    },
+}
 </script>
 
 <style scoped>

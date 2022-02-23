@@ -155,7 +155,7 @@
 </template>
 
 <script>
-import {Helpers} from "Pub/js/Projectbuilder/projectbuilder";
+import {Helpers} from "Pub/js/Projectbuilder/Helpers/helpers";
 import PbDropdownLink from "@/Pages/Projectbuilder/PbDropdownLink"
 import {computed} from "vue"
 import {usePage} from "@inertiajs/inertia-vue3"

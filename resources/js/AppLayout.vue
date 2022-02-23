@@ -329,7 +329,7 @@
     import JetNavLink from '@/Jetstream/NavLink'
     import NavLink from '@/Pages/Projectbuilder/Navigations/NavLink'
     import JetResponsiveNavLink from '@/Jetstream/ResponsiveNavLink'
-    import { Helpers } from "Pub/js/Projectbuilder/projectbuilder"
+    import { Helpers } from "Pub/js/Projectbuilder/Helpers/helpers"
     import {computed} from "vue"
     import {usePage, Link} from "@inertiajs/inertia-vue3"
 

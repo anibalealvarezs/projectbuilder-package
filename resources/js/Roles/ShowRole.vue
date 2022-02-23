@@ -6,26 +6,20 @@
             </h2>
         </template>
 
-        <Main>
-            <slot>
-                <div class="p-12 sm:px-20 bg-white border-b border-gray-200">
-                    <h2>{{ pbrole.id }}. {{ pbrole.name }}</h2>
-                </div>
-            </slot>
-        </Main>
+        <Show :element="pbrole" title="Role" />
     </AppLayout>
 </template>
 
 <script>
-    import PbShow from "Pub/js/Projectbuilder/pbshow"
+import show from "Pub/js/Projectbuilder/Model/show"
 
-    export default {
-        extends: PbShow,
-        name: "ShowRole",
-        props: {
-            pbrole: Object,
-        },
-    }
+export default {
+    extends: show,
+    name: "ShowRole",
+    props: {
+        pbrole: Object,
+    },
+}
 </script>
 
 <style scoped>

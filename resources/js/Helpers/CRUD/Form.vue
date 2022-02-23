@@ -30,25 +30,42 @@
 
 <script>
 import {reactive} from 'vue'
-import {usePage} from "@inertiajs/inertia-vue3"
-import {computed} from "vue"
 import PbForm from "Pub/js/Projectbuilder/pbform"
+import {Helpers} from "Pub/js/Projectbuilder/Helpers/helpers"
+import {usePage} from "@inertiajs/inertia-vue3";
+import {computed} from "vue";
 
 export default {
     extends: PbForm,
-    name: "ConfigForm",
-    setup (props) {
+    setup(props) {
         const formconfig = computed(() => usePage().props.value.shared.formconfig)
-        const form = reactive({
-            name: props.data.name,
-            configkey: props.data.configkey,
-            configvalue: props.data.configvalue,
-            description: props.data.description,
-            module: props.data.module_id,
-        })
-        const directory = 'configs'
+        const fields = usePage().props.value.shared.formconfig
+        const inputs = {}
+        for (const [index, field] of Object.entries(fields)) {
+            let key = field.hasOwnProperty('data_field') ? field.data_field : index
+            switch(field.type) {
+                case 'text':
+                case 'textarea':
+                case 'hidden':
+                    inputs[index] = props.data[key]
+                    break;
+                case 'select':
+                    inputs[index] = props.data[key] ? props.data[key].id : (props.defaults.hasOwnProperty(key) ? props.defaults[key].id : 0)
+                    break;
+                case 'select-multiple':
+                    inputs[index] = Helpers.getModelIdsList(props.data[key])
+                    break;
+                case 'password':
+                    inputs[index] = ''
+                    break;
+                default:
+                    break;
+            }
+        }
+        const form = reactive(inputs)
+        const directory = props.title.toLowerCase()
 
-        return { form, directory, formconfig }
+        return {form, directory, formconfig}
     }
 }
 </script>

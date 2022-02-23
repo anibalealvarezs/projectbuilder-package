@@ -2,30 +2,24 @@
     <AppLayout>
         <template #header>
             <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                Logger: {{ pblogger.severity }}: {{ pblogger.message }}
+                Logger: {{ pblogger.name }}
             </h2>
         </template>
 
-        <Main>
-            <slot>
-                <div class="p-12 sm:px-20 bg-white border-b border-gray-200">
-                    <h2>{{ pblogger.id }}. {{ pblogger.message }}</h2>
-                </div>
-            </slot>
-        </Main>
+        <Show :element="pblogger" title="Logger" />
     </AppLayout>
 </template>
 
 <script>
-    import PbShow from "Pub/js/Projectbuilder/pbshow"
+import show from "Pub/js/Projectbuilder/Model/show"
 
-    export default {
-        extends: PbShow,
-        name: "ShowLogger",
-        props: {
-            pblogger: Object,
-        },
-    }
+export default {
+    extends: show,
+    name: "ShowLogger",
+    props: {
+        pblogger: Object,
+    },
+}
 </script>
 
 <style scoped>

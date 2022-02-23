@@ -198,6 +198,7 @@ class PbPermission extends Permission implements PbModelCrudInterface
                         ...[['id' => 0, 'name' => '[none]']],
                         ...PbShares::getModules()['modules']->toArray()
                     ],
+                    'data_field' => 'module_id',
                 ],
             ];
         }

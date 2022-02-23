@@ -6,42 +6,20 @@
             </h2>
         </template>
 
-        <Main>
-            <slot>
-                <div class="p-12 sm:px-20 bg-white border-b border-gray-200">
-                    <UserForm
-                        :data="setItem(pbuser)"
-                        :defaults="defaults"
-                        :required="required"
-                    />
-                </div>
-            </slot>
-        </Main>
+        <Edit :element="pbuser" title="User" />
     </AppLayout>
 </template>
 
 <script>
-    import UserForm from "@/Pages/Projectbuilder/Users/UserForm"
-    import {computed} from "vue"
-    import {usePage} from "@inertiajs/inertia-vue3"
-    import PbEdit from "Pub/js/Projectbuilder/pbedit"
+import edit from "Pub/js/Projectbuilder/Model/edit"
 
-    export default {
-        extends: PbEdit,
-        name: "EditUser",
-        props: {
-            pbuser: Object,
-        },
-        components: {
-            UserForm,
-        },
-        setup () {
-            const defaults = computed(() => usePage().props.value.shared.defaults)
-            const required = computed(() => usePage().props.value.shared.required)
-
-            return { defaults, required }
-        }
-    }
+export default {
+    extends: edit,
+    name: "EditUser",
+    props: {
+        pbuser: Object,
+    },
+}
 </script>
 
 <style scoped>

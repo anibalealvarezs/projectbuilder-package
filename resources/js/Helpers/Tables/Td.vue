@@ -234,9 +234,10 @@ import Button from "@/Jetstream/Button"
 import Swal from "sweetalert2"
 import { computed } from 'vue'
 import { usePage } from '@inertiajs/inertia-vue3'
-import { TableFields as Table, Helpers } from "Pub/js/Projectbuilder/projectbuilder"
+import { TableFields } from "Pub/js/Projectbuilder/Helpers/tablefields"
+import { Helpers } from "Pub/js/Projectbuilder/Helpers/helpers"
 import PbDropdownLink from "@/Pages/Projectbuilder/PbDropdownLink"
-import Icon from "@/Pages/Projectbuilder/Icons/Icon"
+import Icon from "@/Pages/Projectbuilder/Helpers/Icons/Icon"
 
 export default {
     name: "Td",
@@ -268,7 +269,7 @@ export default {
     },
     computed: {
         fixKey() {
-            return Table.fixKey(this.index)
+            return TableFields.fixKey(this.index)
         },
         cellValue() {
             if (this.field.arrval.hasOwnProperty('key') && (this.field.size === 'single')) {
@@ -280,19 +281,19 @@ export default {
     },
     methods: {
         buildSpanClasses() {
-            return Table.buildSpanClasses(this.field.style.bold, this.field.style.centered)
+            return TableFields.buildSpanClasses(this.field.style.bold, this.field.style.centered)
         },
         buildHandlerClasses() {
-            return Table.buildHandlerClasses()
+            return TableFields.buildHandlerClasses()
         },
         buildTdClasses() {
-            return Table.buildTdClasses(this.field.style.centered)
+            return TableFields.buildTdClasses(this.field.style.centered)
         },
         isBold() {
-            return Table.isBold(this.field.style.bold)
+            return TableFields.isBold(this.field.style.bold)
         },
         isCentered() {
-            return Table.isCentered(this.field.style.centered)
+            return TableFields.isCentered(this.field.style.centered)
         },
         buildRoute(r, id) {
             return Helpers.buildRoute(r, id)
@@ -323,20 +324,20 @@ export default {
             }
         },
         loadForm(b, i) {
-            let swalConfig = Table.buildSwalLoadFormConfig(b)
+            let swalConfig = TableFields.buildSwalLoadFormConfig(b)
             swalConfig['didOpen'] = () => {
-                Table.appendToSwal(this.hiddenid)
+                TableFields.appendToSwal(this.hiddenid)
                 this.$emit('clicked-edit-item', i)
             }
             swalConfig['willClose'] = () => {
-                Table.removeFromSwal(this.hiddenid)
+                TableFields.removeFromSwal(this.hiddenid)
                 this.$emit('clicked-edit-item', {})
             }
             Swal.fire(swalConfig);
         },
         confirmAndSubmit(b, i) {
             let data = { id: i }
-            let swalConfig = Table.buildSwalConfirmAndSubmitConfig(b)
+            let swalConfig = TableFields.buildSwalConfirmAndSubmitConfig(b)
             Swal.fire(swalConfig)
                 .then((result) => {
                     if (result['isConfirmed']){
