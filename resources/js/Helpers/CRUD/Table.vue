@@ -15,7 +15,7 @@
             </Header>
             <Body :id="model+'-table-rows'">
             <slot>
-                <TrBody v-for="element in (elements.hasOwnProperty('data') ? elements.data : elements)" :item="element" :fields="fields" :hiddenid="buildHiddenIdTag" :allowed="allowed" :data-pos="getRowPos(element)" @clicked-edit-item="onItemClicked" />
+                <TrBody v-for="element in (elements.hasOwnProperty('data') ? elements.data : elements)" :item="element" :fields="fields" :hiddenid="buildHiddenIdTag" :allowed="allowed" :data-id="(sort ? element.id : 0)" :data-group="(sort ? element.parent : 0)" :data-pos="getRowPos(element)" @clicked-edit-item="onItemClicked" />
             </slot>
             </Body>
             <Footer>
@@ -57,8 +57,7 @@ export default {
         const fields = new TableFields(props.showid, props.sort).buildTableFields(props.listing)
         const plocation = computed(() => usePage().props.value.shared.pagination.location)
         const hlocation = computed(() => usePage().props.value.shared.heading.location)
-        const directory = 'users'
-        return { fields, directory, plocation, hlocation }
+        return { fields, plocation, hlocation }
     },
 }
 </script>

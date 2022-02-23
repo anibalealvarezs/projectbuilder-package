@@ -69,7 +69,7 @@ export default {
                             _method: 'PUT',
                         }
                         that.$inertia.post(
-                            Helpers.buildRoute(that.directory+'.sort', e.item.dataset.group),
+                            Helpers.buildRoute(that.model+'.sort', e.item.dataset.group),
                             data,
                             {
                                 preserveState: false,
