@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Changed
 
 - Controllers refactored
+- Components refactored
 
 ## [1.3.7.1] - 2022-02-19
 
