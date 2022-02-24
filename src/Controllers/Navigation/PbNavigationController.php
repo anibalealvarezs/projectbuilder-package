@@ -13,6 +13,7 @@ use Illuminate\Validation\Rule;
 
 use Auth;
 use DB;
+use ReflectionException;
 use Session;
 
 use Inertia\Response as InertiaResponse;
@@ -31,7 +32,6 @@ class PbNavigationController extends PbBuilderController
                 'type' => ['required', 'max:254', Rule::in(['route', 'path', 'custom'])],
                 'parent' => ['required', 'integer'],
                 'permission' => ['required', 'integer'],
-                'module' => [],
                 'status' => [],
             ],
             'replacers' => [
@@ -59,7 +59,7 @@ class PbNavigationController extends PbBuilderController
      * @param bool $multiple
      * @param string $route
      * @return InertiaResponse|JsonResponse|RedirectResponse
-     * @throws \ReflectionException
+     * @throws ReflectionException
      */
     public function index(
         int $page = 1,

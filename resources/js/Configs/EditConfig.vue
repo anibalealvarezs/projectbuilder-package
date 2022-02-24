@@ -6,7 +6,7 @@
             </h2>
         </template>
 
-        <Edit :element="pbconfig" title="Config" />
+        <Edit :element="pbconfig" title="Configs" />
     </AppLayout>
 </template>
 

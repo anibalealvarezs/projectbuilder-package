@@ -6,7 +6,7 @@
             </h2>
         </template>
 
-        <Show :element="pblogger" title="Logger" />
+        <Show :element="pblogger" title="Loggers" />
     </AppLayout>
 </template>
 

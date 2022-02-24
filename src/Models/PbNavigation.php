@@ -113,6 +113,18 @@ class PbNavigation extends PbBuilder implements PbModelCrudInterface
     /**
      * Scope a query to only include popular users.
      *
+     * @param Builder $query
+     * @param $permission
+     * @return bool
+     */
+    public function scopeRemovePermission(Builder $query, $permission): bool
+    {
+        return $query->where('permission_id', $permission->id)->update(['permission_id' => null]);
+    }
+
+    /**
+     * Scope a query to only include popular users.
+     *
      * @param $id
      * @return bool|PbUser|PbCurrentUser
      */

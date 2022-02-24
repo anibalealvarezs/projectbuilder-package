@@ -6,7 +6,7 @@
             </h2>
         </template>
 
-        <Create title="Logger" />
+        <Create title="Loggers" />
     </AppLayout>
 </template>
 

@@ -45,29 +45,6 @@ class PbCity extends PbBuilder
     /**
      * Scope a query to only include popular users.
      *
-     * @return bool
-     */
-    public function delete(): bool
-    {
-        return DB::transaction(function() {
-
-            // Remove langs relations
-            $this->langs()->detach();
-
-            // Remove cities from users
-            PbUser::where('city_id', $this->id)->update(['city_id' => null]);
-
-            // Remove cities from users
-            PbCountry::where('capital_id', $this->id)->update(['capital_id' => null]);
-
-            // delete the user
-            return parent::delete();
-        });
-    }
-
-    /**
-     * Scope a query to only include popular users.
-     *
      * @return BelongsTo
      */
     public function country(): BelongsTo

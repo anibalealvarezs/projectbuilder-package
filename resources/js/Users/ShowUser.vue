@@ -6,7 +6,7 @@
             </h2>
         </template>
 
-        <Show :element="pbuser" title="User" />
+        <Show :element="pbuser" title="Users" />
     </AppLayout>
 </template>
 

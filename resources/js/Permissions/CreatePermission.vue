@@ -6,7 +6,7 @@
             </h2>
         </template>
 
-        <Create title="Permission" />
+        <Create title="Permissions" />
     </AppLayout>
 </template>
 

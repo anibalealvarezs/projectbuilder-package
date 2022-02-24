@@ -27,7 +27,7 @@ export default {
     },
     methods: {
         loadForm() {
-            let swalConfig = TableFields.buildSwalLoadFormConfig({text: "Create", formitem: "role"})
+            let swalConfig = TableFields.buildSwalLoadFormConfig({text: "Create", formitem: this.title})
             swalConfig['didOpen'] = () => {
                 TableFields.appendToSwal(this.hiddenid)
             }

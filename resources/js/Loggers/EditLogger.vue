@@ -6,7 +6,7 @@
             </h2>
         </template>
 
-        <Edit :element="pblogger" title="Logger" />
+        <Edit :element="pblogger" title="Loggers" />
     </AppLayout>
 </template>
 

@@ -46,10 +46,11 @@
                 "Anibalealvarezs\\Projectbuilder\\Providers\\PbComposerServiceProvider",
                 "Anibalealvarezs\\Projectbuilder\\Providers\\PbConfigServiceProvider",
                 "Anibalealvarezs\\Projectbuilder\\Providers\\PbControllerServiceProvider",
+                "Anibalealvarezs\\Projectbuilder\\Providers\\PbEventServiceProvider",
                 "Anibalealvarezs\\Projectbuilder\\Providers\\PbMiddlewareServiceProvider",
                 "Anibalealvarezs\\Projectbuilder\\Providers\\PbMigrationServiceProvider",
-                "Anibalealvarezs\\Projectbuilder\\Providers\\PbViewServiceProvider",
-                "Anibalealvarezs\\Projectbuilder\\Providers\\PbSeederServiceProvider"
+                "Anibalealvarezs\\Projectbuilder\\Providers\\PbSeederServiceProvider",
+                "Anibalealvarezs\\Projectbuilder\\Providers\\PbViewServiceProvider"
             ]
         }
     },

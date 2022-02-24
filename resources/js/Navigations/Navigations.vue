@@ -6,7 +6,7 @@
             </h2>
         </template>
 
-        <Index :elements="pbnavigations" title="Navigation" />
+        <Index :elements="pbnavigations" title="Navigations" />
     </AppLayout>
 </template>
 

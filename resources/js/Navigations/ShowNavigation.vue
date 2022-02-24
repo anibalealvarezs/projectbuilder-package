@@ -6,7 +6,7 @@
             </h2>
         </template>
 
-        <Show :element="pbnavigation" title="Navigation" />
+        <Show :element="pbnavigation" title="Navigations" />
     </AppLayout>
 </template>
 

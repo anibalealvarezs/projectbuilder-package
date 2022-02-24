@@ -6,7 +6,7 @@
             </h2>
         </template>
 
-        <Index :elements="pbconfigs" title="Config" />
+        <Index :elements="pbconfigs" title="Configs" />
     </AppLayout>
 </template>
 

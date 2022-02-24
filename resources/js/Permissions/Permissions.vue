@@ -6,7 +6,7 @@
             </h2>
         </template>
 
-        <Index :elements="pbpermissions" title="Permission" />
+        <Index :elements="pbpermissions" title="Permissions" />
     </AppLayout>
 </template>
 

@@ -6,7 +6,7 @@
             </h2>
         </template>
 
-        <Edit :element="pbrole" title="Role" />
+        <Edit :element="pbrole" title="Roles" />
     </AppLayout>
 </template>
 

@@ -6,7 +6,7 @@
             </h2>
         </template>
 
-        <Edit :element="pbpermission" title="Permission" />
+        <Edit :element="pbpermission" title="Permissions" />
     </AppLayout>
 </template>
 

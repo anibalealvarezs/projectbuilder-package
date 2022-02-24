@@ -6,7 +6,7 @@
             </h2>
         </template>
 
-        <Index :elements="pbusers" title="User" />
+        <Index :elements="pbusers" title="Users" />
     </AppLayout>
 </template>
 

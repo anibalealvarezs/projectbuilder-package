@@ -51,23 +51,6 @@ class PbPermission extends Permission implements PbModelCrudInterface
     /**
      * Scope a query to only include popular users.
      *
-     * @return bool
-     */
-    public function delete(): bool
-    {
-        return DB::transaction(function() {
-
-            // Remove countries from users
-            PbNavigation::where('permission_id', $this->id)->update(['permission_id' => null]);
-
-            // delete the country
-            return parent::delete();
-        });
-    }
-
-    /**
-     * Scope a query to only include popular users.
-     *
      * @return HasMany
      */
     public function navigations(): HasMany

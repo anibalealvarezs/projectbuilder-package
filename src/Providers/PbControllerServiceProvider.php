@@ -2,7 +2,6 @@
 
 namespace Anibalealvarezs\Projectbuilder\Providers;
 
-use Anibalealvarezs\Projectbuilder\Facades\PbUtilitiesFacade;
 use Anibalealvarezs\Projectbuilder\Utilities\PbUtilities;
 use Anibalealvarezs\Projectbuilder\Models\PbModule;
 use Illuminate\Contracts\Container\BindingResolutionException;

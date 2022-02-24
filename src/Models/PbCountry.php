@@ -62,24 +62,13 @@ class PbCountry extends PbBuilder
     /**
      * Scope a query to only include popular users.
      *
+     * @param Builder $query
+     * @param $city
      * @return bool
      */
-    public function delete(): bool
+    public function scopeRemoveCapital(Builder $query, $city): bool
     {
-        return DB::transaction(function() {
-
-            // Remove langs relations
-            $this->langs()->detach();
-
-            // Delete cities
-            PbCity::where('country_id', $this->id)->delete();
-
-            // Remove countries from users
-            PbUser::where('country_id', $this->id)->update(['country_id' => null]);
-
-            // delete the country
-            return parent::delete();
-        });
+        return $query->where('capital_id', $city->id)->update(['capital_id' => null]);
     }
 
     /**

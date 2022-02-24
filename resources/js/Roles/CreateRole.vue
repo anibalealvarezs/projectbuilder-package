@@ -6,7 +6,7 @@
             </h2>
         </template>
 
-        <Create title="Role" />
+        <Create title="Roles" />
     </AppLayout>
 </template>
 

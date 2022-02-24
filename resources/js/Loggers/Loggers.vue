@@ -6,7 +6,7 @@
             </h2>
         </template>
 
-        <Index :elements="pbloggers" title="Logger" />
+        <Index :elements="pbloggers" title="Loggers" />
     </AppLayout>
 </template>
 

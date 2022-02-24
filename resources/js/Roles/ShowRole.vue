@@ -6,7 +6,7 @@
             </h2>
         </template>
 
-        <Show :element="pbrole" title="Role" />
+        <Show :element="pbrole" title="Roles" />
     </AppLayout>
 </template>
 

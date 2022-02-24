@@ -6,7 +6,7 @@
             </h2>
         </template>
 
-        <Create title="Config" />
+        <Create title="Configs" />
     </AppLayout>
 </template>
 

@@ -6,7 +6,7 @@
             </h2>
         </template>
 
-        <Edit :element="pbnavigation" title="Navigation" />
+        <Edit :element="pbnavigation" title="Navigations" />
     </AppLayout>
 </template>
 

@@ -178,7 +178,7 @@ function translateString(string $value): string|array
         return (
             isset($json->{app()->getLocale()}) && $json->{app()->getLocale()} ?
                 [app()->getLocale() => $json->{app()->getLocale()}] :
-                [config('app.locale') => ($json->{config('app.locale')} ?? '')]
+                [config('app.locale') => ($json->{config('app.locale')} ?? $json->{config('app.fallback_locale')} ?? '')]
         );
     }
     return $value;

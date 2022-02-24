@@ -6,7 +6,7 @@
             </h2>
         </template>
 
-        <Edit :element="pbuser" title="User" />
+        <Edit :element="pbuser" title="Users" />
     </AppLayout>
 </template>
 

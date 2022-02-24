@@ -6,7 +6,7 @@
             </h2>
         </template>
 
-        <Show :element="pbconfig" title="Config" />
+        <Show :element="pbconfig" title="Configs" />
     </AppLayout>
 </template>
 

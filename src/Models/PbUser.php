@@ -175,6 +175,47 @@ class PbUser extends User implements PbModelCrudInterface
         return $query;
     }
 
+    /**
+     * Scope a query to only include popular users.
+     *
+     * @param Builder $query
+     * @param $language
+     * @return bool
+     */
+    public function scopeRemoveLanguage(Builder $query, $language): bool
+    {
+        return $query->where('language_id', $language->id)->update(['language_id' => null]);
+    }
+
+    /**
+     * Scope a query to only include popular users.
+     *
+     * @param Builder $query
+     * @param $country
+     * @return bool
+     */
+    public function scopeRemoveCountry(Builder $query, $country): bool
+    {
+        return $query->where('country_id', $country->id)->update(['country_id' => null]);
+    }
+
+    /**
+     * Scope a query to only include popular users.
+     *
+     * @param Builder $query
+     * @param $city
+     * @return bool
+     */
+    public function scopeRemoveCity(Builder $query, $city): bool
+    {
+        return $query->where('city_id', $city->id)->update(['city_id' => null]);
+    }
+
+    /**
+     * Scope a query to only include popular users.
+     *
+     * @return bool
+     */
     public function getApiAttribute(): bool
     {
         return $this->hasPermissionTo('api access');
@@ -296,41 +337,9 @@ class PbUser extends User implements PbModelCrudInterface
     /**
      * Scope a query to only include popular users.
      *
-     * @return bool
-     */
-    public function delete(): bool
-    {
-        return DB::transaction(function() {
-
-            if (PbModule::exists('file') && class_exists(\Anibalealvarezs\Filemanager\Models\FmFile::class)) {
-                if ($user = self::getDefaultUser()) {
-                    try {
-                        \Anibalealvarezs\Filemanager\Models\FmFile::replaceAuthor($this->id, $user->id);
-                    } catch (Exception $e) {
-                        $module = PbModule::getByKey('file');
-                        PbLogger::create([
-                            'severity' => 3,
-                            'code' => 1,
-                            'message' => 'Author not replaced. '.$e->getMessage(),
-                            'object_type' => 'file',
-                            'user_id' => Auth::user()->id,
-                            'module_id' => $module?->id
-                        ]);
-                    }
-                }
-            }
-
-            // delete the country
-            return parent::delete();
-        });
-    }
-
-    /**
-     * Scope a query to only include popular users.
-     *
      * @return PbUser|null
      */
-    public function getDefaultUser(): self|null
+    public static function getDefaultUser(): self|null
     {
         return PbUser::first();
     }

@@ -6,7 +6,7 @@
             </h2>
         </template>
 
-        <Create title="Navigation" />
+        <Create title="Navigations" />
     </AppLayout>
 </template>
 

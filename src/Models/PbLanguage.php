@@ -43,24 +43,10 @@ class PbLanguage extends PbBuilder
      *
      * @return bool
      */
-    public function delete(): bool
-    {
-        // Remove language from users
-        $this->removeUsersLanguage();
-
-        // delete the user
-        return parent::delete();
-    }
-
-    /**
-     * Scope a query to only include popular users.
-     *
-     * @return bool
-     */
     public function scopeDisable(): bool
     {
         // Remove language from users
-        $this->removeUsersLanguage();
+        PbUser::removeLanguage($this);
 
         return $this->update(['status' => false]);
     }
@@ -73,16 +59,6 @@ class PbLanguage extends PbBuilder
     public function putCountry()
     {
         $this->country = getDefaultCountry($this->code);
-    }
-
-    /**
-     * Scope a query to only include popular users.
-     *
-     * @return bool
-     */
-    protected function removeUsersLanguage(): bool
-    {
-        return PbUser::where('language_id', $this->id)->update(['language_id' => null]);
     }
 
     /**
