@@ -14,18 +14,11 @@
 </template>
 
 <script>
-import {computed} from "vue"
-import {usePage} from "@inertiajs/inertia-vue3"
 import PbEdit from "Pub/js/Projectbuilder/pbedit"
 
 export default {
     extends: PbEdit,
-    setup () {
-        const defaults = computed(() => usePage().props.value.shared.defaults)
-        const required = computed(() => usePage().props.value.shared.required)
-
-        return { defaults, required }
-    }
+    name: "Edit",
 }
 </script>
 

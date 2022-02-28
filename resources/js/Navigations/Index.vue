@@ -2,26 +2,21 @@
     <AppLayout>
         <template #header>
             <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                Logger: {{ pblogger.name }}
+                Navigations
             </h2>
         </template>
 
-        <Show :element="pblogger" title="Loggers" />
+        <Index :elements="navigations" title="Navigations" />
     </AppLayout>
 </template>
 
 <script>
-import show from "Pub/js/Projectbuilder/Model/show"
+import index from "Pub/js/Projectbuilder/Model/index"
 
 export default {
-    extends: show,
-    name: "ShowLogger",
+    extends: index,
     props: {
-        pblogger: Object,
+        navigations: Object,
     },
 }
 </script>
-
-<style scoped>
-
-</style>

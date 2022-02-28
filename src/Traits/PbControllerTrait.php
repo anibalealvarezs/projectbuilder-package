@@ -217,16 +217,15 @@ trait PbControllerTrait
      * Remove the specified resource from storage.
      *
      * @param string $type
-     * @param array $keys
      * @return string
      */
-    protected function buildFile(string $type, array $keys): string
+    protected function buildFile(string $type): string
     {
         return match ($type) {
-            'show' => 'Show' . $keys['singular'],
-            'create' => 'Create' . $keys['singular'],
-            'edit' => 'Edit' . $keys['singular'],
-            default => $keys['plural'],
+            'show' => 'Show',
+            'create' => 'Create',
+            'edit' => 'Edit',
+            default => 'Index',
         };
     }
 
@@ -531,15 +530,15 @@ trait PbControllerTrait
         if ($element) {
             if ($multiple) {
                 foreach ($element as $key => $value) {
-                    $arrayElements[($value['size'] == 'multiple' ? $this->vars->{$key}->prefixNames : $this->vars->{$key}->prefixName)] = $value['object'];
+                    $arrayElements[($value['size'] == 'multiple' ? $this->vars->{$key}->names : $this->vars->{$key}->name)] = $value['object'];
                 }
             } else {
-                $arrayElements[($plural ? $this->vars->level->prefixNames : $this->vars->level->prefixName)] = $element;
+                $arrayElements[($plural ? $this->vars->level->names : $this->vars->level->name)] = $element;
             }
         } else {
             $arrayElements[($plural ?
-                $this->vars->level->prefixNames :
-                $this->vars->level->prefixName
+                $this->vars->level->names :
+                $this->vars->level->name
             )] = ($id ?
                 $this->vars->level->modelPath::find($id) :
                 $this->buildPaginatedAndOrderedModel()
@@ -699,11 +698,7 @@ trait PbControllerTrait
      */
     protected function buildRouteString($route, $type): string
     {
-        return $this->vars->{$route}->viewsPath .
-            $this->buildFile(
-                $type,
-                ['singular' => $this->vars->{$route}->key, 'plural' => $this->vars->{$route}->keys]
-            );
+        return $this->vars->{$route}->viewsPath . $this->buildFile($type);
     }
 
     /**

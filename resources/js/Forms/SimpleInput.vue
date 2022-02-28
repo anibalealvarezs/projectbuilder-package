@@ -15,7 +15,7 @@
             :list="formconfig[keyel].list"
             :keyel="keyel"
             :keyid="keyid"
-            @click="emitCheckboxValue"
+            @input="emitInputValue"
         />
     </div>
     <div v-if="formconfig[keyel].type === 'select'">
@@ -25,7 +25,7 @@
             :keyel="keyel"
             :keyid="keyid"
             :required="required"
-            @select="emitSelectValue"
+            @input="emitInputValue"
         />
     </div>
     <div v-if="formconfig[keyel].type === 'textarea'">
@@ -34,7 +34,7 @@
             :keyel="keyel"
             :keyid="keyid"
             :required="required"
-            @textarea="emitTextareaValue"
+            @input="emitInputValue"
         />
     </div>
     <div v-if="formconfig[keyel].type === 'hidden'">
@@ -42,13 +42,12 @@
             :value="value"
             :keyel="keyel"
             :keyid="keyid"
-            @hidden="emitHiddenValue"
+            @input="emitInputValue"
         />
     </div>
 </template>
 
 <script>
-import {computed} from "vue"
 import {usePage} from "@inertiajs/inertia-vue3"
 import Text from "@/Pages/Projectbuilder/Forms/Inputs/Text"
 import Checkbox from "@/Pages/Projectbuilder/Forms/Inputs/Checkbox"
@@ -73,34 +72,19 @@ export default {
         Text,
         Checkbox,
     },
+    data() {
+        return {
+            formconfig: usePage().props.value.shared.formconfig,
+        }
+    },
     emits: [
-        'click',
         'input',
-        'select',
-        'textarea',
     ],
     methods: {
-        emitCheckboxValue(values) {
-            this.$emit('click', values)
-        },
         emitInputValue(value) {
             this.$emit('input', value)
         },
-        emitSelectValue(value) {
-            this.$emit('select', value)
-        },
-        emitTextareaValue(value) {
-            this.$emit('textarea', value)
-        },
-        emitHiddenValue(value) {
-            this.$emit('input', value)
-        },
     },
-    setup(props) {
-        const formconfig = computed(() => usePage().props.value.shared.formconfig)
-
-        return { formconfig }
-    }
 }
 </script>
 

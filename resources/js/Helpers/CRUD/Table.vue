@@ -47,18 +47,9 @@
 
 <script>
 import PbTable from "Pub/js/Projectbuilder/pbtable"
-import {computed} from "vue";
-import {usePage} from "@inertiajs/inertia-vue3";
-import {TableFields} from "Pub/js/Projectbuilder/Helpers/tablefields";
 
 export default {
     extends: PbTable,
-    setup(props) {
-        const fields = new TableFields(props.showid, props.sort).buildTableFields(props.listing)
-        const plocation = computed(() => usePage().props.value.shared.pagination.location)
-        const hlocation = computed(() => usePage().props.value.shared.heading.location)
-        return { fields, plocation, hlocation }
-    },
 }
 </script>
 

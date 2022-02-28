@@ -13,6 +13,7 @@ import PbShow from "Pub/js/Projectbuilder/pbshow"
 
 export default {
     extends: PbShow,
+    name: "Show",
 }
 </script>
 

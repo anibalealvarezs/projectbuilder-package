@@ -232,7 +232,6 @@ import JetNavLink from '@/Jetstream/NavLink'
 import JetResponsiveNavLink from '@/Jetstream/ResponsiveNavLink'
 import Button from "@/Jetstream/Button"
 import Swal from "sweetalert2"
-import { computed } from 'vue'
 import { usePage } from '@inertiajs/inertia-vue3'
 import { TableFields } from "Pub/js/Projectbuilder/Helpers/tablefields"
 import { Helpers } from "Pub/js/Projectbuilder/Helpers/helpers"
@@ -264,7 +263,10 @@ export default {
             form: {
                 title: null,
                 body: null,
-            }
+            },
+            user: usePage().props.value.auth.user,
+            locale: usePage().props.value.locale,
+            model: usePage().props.value.shared.model,
         }
     },
     computed: {
@@ -383,12 +385,6 @@ export default {
             })
         },
     },
-    setup() {
-        const user = computed(() => usePage().props.value.auth.user)
-        const locale = computed(() => usePage().props.value.locale)
-        const model = computed(() => usePage().props.value.shared.model)
-        return { user, locale, model }
-    }
 }
 </script>
 

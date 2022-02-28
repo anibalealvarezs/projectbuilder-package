@@ -2,22 +2,25 @@
     <AppLayout>
         <template #header>
             <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                Loggers
+                Edit Config: {{ config.name }}
             </h2>
         </template>
 
-        <Index :elements="pbloggers" title="Loggers" />
+        <Edit :element="config" title="Configs" />
     </AppLayout>
 </template>
 
 <script>
-import index from "Pub/js/Projectbuilder/Model/index"
+import edit from "Pub/js/Projectbuilder/Model/edit"
 
 export default {
-    extends: index,
-    name: "Loggers",
+    extends: edit,
     props: {
-        pbloggers: Object,
+        config: Object,
     },
 }
 </script>
+
+<style scoped>
+
+</style>

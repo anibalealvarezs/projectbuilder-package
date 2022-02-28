@@ -25,45 +25,10 @@
 
 <script>
 import PbInput from "Pub/js/Projectbuilder/pbinput"
-import {computed} from "vue";
-import {usePage} from "@inertiajs/inertia-vue3";
 
 export default {
     extends: PbInput,
     name: "Checkbox",
-    emits: [
-        "click"
-    ],
-    methods: {
-        isChecked(value, el) {
-            return value.includes(el)
-        },
-        emitCheckboxValue(el) {
-            let values = []
-            this.list.forEach(el => {
-                let element = document.getElementById('checkbox-'+ this.keyel +'-' + this.keyid + '-' + el.id)
-                if (element.checked) {
-                    values.push(el.id)
-                }
-            })
-            if (this.isDebugEnabled()) {
-                console.log(
-                    "[ProjectBuilder] DEBUG" + "\n" +
-                    "Checkbox click activated" + "\n" +
-                    "Component: Input" + "\n" +
-                    "Input ID: " + el.target.value + "\n" +
-                    "Values to emit: (down)"
-                )
-                console.log(values)
-            }
-            this.$emit('click', values)
-        },
-    },
-    setup() {
-        const locale = computed(() => usePage().props.value.locale)
-
-        return {locale}
-    }
 }
 </script>
 

@@ -2,11 +2,11 @@
     <AppLayout>
         <template #header>
             <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                Edit Permission: {{ pbpermission.name }}
+                Edit User: {{ user.name }}
             </h2>
         </template>
 
-        <Edit :element="pbpermission" title="Permissions" />
+        <Edit :element="user" title="Users" />
     </AppLayout>
 </template>
 
@@ -15,9 +15,8 @@ import edit from "Pub/js/Projectbuilder/Model/edit"
 
 export default {
     extends: edit,
-    name: "EditPermission",
     props: {
-        pbpermission: Object,
+        user: Object,
     },
 }
 </script>

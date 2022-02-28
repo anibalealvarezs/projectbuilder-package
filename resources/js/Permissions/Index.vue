@@ -6,7 +6,7 @@
             </h2>
         </template>
 
-        <Index :elements="pbpermissions" title="Permissions" />
+        <Index :elements="permissions" title="Permissions" />
     </AppLayout>
 </template>
 
@@ -15,9 +15,8 @@ import index from "Pub/js/Projectbuilder/Model/index"
 
 export default {
     extends: index,
-    name: "Permissions",
     props: {
-        pbpermissions: Object,
+        permissions: Object,
     },
 }
 </script>

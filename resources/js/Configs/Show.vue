@@ -2,22 +2,25 @@
     <AppLayout>
         <template #header>
             <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                Navigations
+                Config: {{ config.name }}
             </h2>
         </template>
 
-        <Index :elements="pbnavigations" title="Navigations" />
+        <Show :element="config" title="Configs" />
     </AppLayout>
 </template>
 
 <script>
-import index from "Pub/js/Projectbuilder/Model/index"
+import show from "Pub/js/Projectbuilder/Model/show"
 
 export default {
-    extends: index,
-    name: "Navigations",
+    extends: show,
     props: {
-        pbnavigations: Object,
+        config: Object,
     },
 }
 </script>
+
+<style scoped>
+
+</style>

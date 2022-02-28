@@ -2,22 +2,25 @@
     <AppLayout>
         <template #header>
             <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                Roles
+                Edit Navigation: {{ navigation.name }}
             </h2>
         </template>
 
-        <Index :elements="pbroles" title="Roles" />
+        <Edit :element="navigation" title="Navigations" />
     </AppLayout>
 </template>
 
 <script>
-import index from "Pub/js/Projectbuilder/Model/index"
+import edit from "Pub/js/Projectbuilder/Model/edit"
 
 export default {
-    extends: index,
-    name: "Roles",
+    extends: edit,
     props: {
-        pbroles: Object,
+        navigation: Object,
     },
 }
 </script>
+
+<style scoped>
+
+</style>

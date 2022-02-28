@@ -2,23 +2,19 @@
     <AppLayout>
         <template #header>
             <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                Navigation: {{ pbnavigation.name }}
+                Create Navigation
             </h2>
         </template>
 
-        <Show :element="pbnavigation" title="Navigations" />
+        <Create title="Navigations" />
     </AppLayout>
 </template>
 
 <script>
-import show from "Pub/js/Projectbuilder/Model/show"
+import create from "Pub/js/Projectbuilder/Model/create"
 
 export default {
-    extends: show,
-    name: "ShowNavigation",
-    props: {
-        pbnavigation: Object,
-    },
+    extends: create,
 }
 </script>
 

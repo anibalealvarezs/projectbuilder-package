@@ -2,20 +2,22 @@
     <AppLayout>
         <template #header>
             <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                Create Config
+                Edit Role: {{ role.name }}
             </h2>
         </template>
 
-        <Create title="Configs" />
+        <Edit :element="role" title="Roles" />
     </AppLayout>
 </template>
 
 <script>
-import create from "Pub/js/Projectbuilder/Model/create"
+import edit from "Pub/js/Projectbuilder/Model/edit"
 
 export default {
-    extends: create,
-    name: "CreateConfig",
+    extends: edit,
+    props: {
+        role: Object,
+    },
 }
 </script>
 

@@ -2,11 +2,11 @@
     <AppLayout>
         <template #header>
             <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                Edit Navigation: {{ pbnavigation.name }}
+                Edit Logger: {{ logger.name }}
             </h2>
         </template>
 
-        <Edit :element="pbnavigation" title="Navigations" />
+        <Edit :element="logger" title="Loggers" />
     </AppLayout>
 </template>
 
@@ -15,9 +15,8 @@ import edit from "Pub/js/Projectbuilder/Model/edit"
 
 export default {
     extends: edit,
-    name: "EditNavigation",
     props: {
-        pbnavigation: Object,
+        logger: Object,
     },
 }
 </script>

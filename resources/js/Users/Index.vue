@@ -2,26 +2,21 @@
     <AppLayout>
         <template #header>
             <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                User: {{ pbuser.name }}
+                Users
             </h2>
         </template>
 
-        <Show :element="pbuser" title="Users" />
+        <Index :elements="users" title="Users" />
     </AppLayout>
 </template>
 
 <script>
-import show from "Pub/js/Projectbuilder/Model/show"
+import index from "Pub/js/Projectbuilder/Model/index"
 
 export default {
-    extends: show,
-    name: "ShowUser",
+    extends: index,
     props: {
-        pbuser: Object,
+        users: Object,
     },
 }
 </script>
-
-<style scoped>
-
-</style>

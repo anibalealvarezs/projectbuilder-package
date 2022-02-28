@@ -157,7 +157,6 @@
 <script>
 import {Helpers} from "Pub/js/Projectbuilder/Helpers/helpers";
 import PbDropdownLink from "@/Pages/Projectbuilder/PbDropdownLink"
-import {computed} from "vue"
 import {usePage} from "@inertiajs/inertia-vue3"
 import PbDropdown from '@/Pages/Projectbuilder/PbDropdown'
 import Button from "@/Jetstream/Button"
@@ -172,6 +171,7 @@ export default {
     data() {
         return {
             helpers: Helpers,
+            orderby: usePage().props.value.shared.orderby,
         }
     },
     props: {
@@ -202,10 +202,6 @@ export default {
             return Helpers.buildRoute(this.model + '.index.paginated', this.getInertiaParamsFromPagination(link))
         },
     },
-    setup() {
-        const orderby = computed(() => usePage().props.value.shared.orderby)
-        return { orderby }
-    }
 }
 </script>
 

@@ -2,11 +2,11 @@
     <AppLayout>
         <template #header>
             <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                Create Permission
+                Create Logger
             </h2>
         </template>
 
-        <Create title="Permissions" />
+        <Create title="Loggers" />
     </AppLayout>
 </template>
 
@@ -15,7 +15,6 @@ import create from "Pub/js/Projectbuilder/Model/create"
 
 export default {
     extends: create,
-    name: "CreatePermission",
 }
 </script>
 

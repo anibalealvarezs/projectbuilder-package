@@ -2,20 +2,22 @@
     <AppLayout>
         <template #header>
             <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                Create Navigation
+                Logger: {{ logger.name }}
             </h2>
         </template>
 
-        <Create title="Navigations" />
+        <Show :element="logger" title="Loggers" />
     </AppLayout>
 </template>
 
 <script>
-import create from "Pub/js/Projectbuilder/Model/create"
+import show from "Pub/js/Projectbuilder/Model/show"
 
 export default {
-    extends: create,
-    name: "CreateNavigation",
+    extends: show,
+    props: {
+        logger: Object,
+    },
 }
 </script>
 

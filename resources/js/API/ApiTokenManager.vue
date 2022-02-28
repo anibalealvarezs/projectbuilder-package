@@ -183,7 +183,7 @@
 </template>
 
 <script>
-    import {computed, defineComponent} from 'vue'
+    import {defineComponent} from 'vue'
     import JetActionMessage from '@/Jetstream/ActionMessage.vue'
     import JetActionSection from '@/Jetstream/ActionSection.vue'
     import JetButton from '@/Jetstream/Button.vue'
@@ -238,6 +238,8 @@
                 displayingToken: false,
                 managingPermissionsFor: null,
                 apiTokenBeingDeleted: null,
+
+                apiData: usePage().props.value.shared.api_data,
             }
         },
 
@@ -278,12 +280,5 @@
                 })
             },
         },
-
-        setup () {
-
-            let apiData = computed(() => usePage().props.value.shared.api_data)
-
-            return { apiData }
-        }
     })
 </script>

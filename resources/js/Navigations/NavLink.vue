@@ -25,7 +25,6 @@
 
 <script>
 import {Link, usePage} from "@inertiajs/inertia-vue3";
-import {computed} from "vue";
 
 export default {
     components: {
@@ -36,6 +35,12 @@ export default {
         nav: Object,
         level: String,
         active: Boolean,
+    },
+
+    data() {
+        return {
+            locale: usePage().props.value.locale,
+        }
     },
 
     methods: {
@@ -115,13 +120,6 @@ export default {
             return (parseInt(this.level) + 1).toString()
         },
     },
-
-    setup () {
-
-        const locale = computed(() => usePage().props.value.locale)
-
-        return { locale }
-    }
 }
 </script>
 

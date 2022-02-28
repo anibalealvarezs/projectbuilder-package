@@ -8,40 +8,17 @@
         :required="isRequired(keyel)"
         @mouseover="disableReadonly"
         @focus="disableReadonly"
-        @keyup="emitTextareaValue"
+        @keyup="emitInputValue"
     >
     </textarea>
 </template>
 
 <script>
 import PbInput from "Pub/js/Projectbuilder/pbinput"
-import {computed} from "vue";
-import {usePage} from "@inertiajs/inertia-vue3";
 
 export default {
     extends: PbInput,
     name: "Textarea",
-    emits: [
-        "textarea"
-    ],
-    methods: {
-        emitTextareaValue(el) {
-            if (this.isDebugEnabled()) {
-                console.log(
-                    "[ProjectBuilder] DEBUG" + "\n" +
-                    "Input activated" + "\n" +
-                    "Value to emit: " + el.target.value + "\n" +
-                    "Component: Input"
-                )
-            }
-            this.$emit('textarea', el.target.value)
-        },
-    },
-    setup() {
-        const locale = computed(() => usePage().props.value.locale)
-
-        return {locale}
-    }
 }
 </script>
 

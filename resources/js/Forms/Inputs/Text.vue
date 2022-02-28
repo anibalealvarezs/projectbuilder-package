@@ -16,33 +16,10 @@
 
 <script>
 import PbInput from "Pub/js/Projectbuilder/pbinput"
-import {computed} from "vue";
-import {usePage} from "@inertiajs/inertia-vue3";
 
 export default {
     extends: PbInput,
     name: "Text",
-    emits: [
-        "input"
-    ],
-    methods: {
-        emitInputValue(el) {
-            if (this.isDebugEnabled()) {
-                console.log(
-                    "[ProjectBuilder] DEBUG" + "\n" +
-                    "Input activated" + "\n" +
-                    "Value to emit: " + el.target.value + "\n" +
-                    "Component: Input"
-                )
-            }
-            this.$emit('input', el.target.value)
-        },
-    },
-    setup() {
-        const locale = computed(() => usePage().props.value.locale)
-
-        return {locale}
-    }
 }
 </script>
 

@@ -31,7 +31,6 @@
 <script>
 import { Helpers } from "Pub/js/Projectbuilder/Helpers/helpers"
 import PbDropdownLink from "@/Pages/Projectbuilder/PbDropdownLink"
-import {computed} from "vue"
 import {usePage} from "@inertiajs/inertia-vue3"
 import Icon from "@/Pages/Projectbuilder/Helpers/Icons/Icon"
 
@@ -51,6 +50,7 @@ export default {
     data() {
         return {
             helpers: Helpers,
+            orderby: usePage().props.value.shared.orderby,
         }
     },
     methods: {
@@ -75,10 +75,6 @@ export default {
             return Helpers.buildRoute(this.model + '.index.paginated', this.getInertiaParams(field, order))
         },
     },
-    setup() {
-        const orderby = computed(() => usePage().props.value.shared.orderby)
-        return { orderby }
-    }
 }
 </script>
 

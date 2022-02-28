@@ -22,7 +22,15 @@ export default {
     },
     data() {
         return {
-            hiddenid: 0
+            allowed: usePage().props.value.shared.allowed,
+            sort: usePage().props.value.shared.sort,
+            showpos: usePage().props.value.shared.showpos,
+            showid: usePage().props.value.shared.showid,
+            model: usePage().props.value.shared.model,
+            defaults: usePage().props.value.shared.defaults,
+            required: usePage().props.value.shared.required,
+            listing: usePage().props.value.shared.listing,
+            hiddenid: 0,
         }
     },
     methods: {

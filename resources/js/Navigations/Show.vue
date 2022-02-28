@@ -2,22 +2,21 @@
     <AppLayout>
         <template #header>
             <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                Edit User: {{ pbuser.name }}
+                Navigation: {{ navigation.name }}
             </h2>
         </template>
 
-        <Edit :element="pbuser" title="Users" />
+        <Show :element="navigation" title="Navigations" />
     </AppLayout>
 </template>
 
 <script>
-import edit from "Pub/js/Projectbuilder/Model/edit"
+import show from "Pub/js/Projectbuilder/Model/show"
 
 export default {
-    extends: edit,
-    name: "EditUser",
+    extends: show,
     props: {
-        pbuser: Object,
+        navigation: Object,
     },
 }
 </script>

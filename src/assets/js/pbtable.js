@@ -9,6 +9,7 @@ import Body from "@/Pages/Projectbuilder/Helpers/Tables/Body";
 import Footer from "@/Pages/Projectbuilder/Helpers/Tables/Footer";
 import Sortable from "sortablejs";
 import Form from "@/Pages/Projectbuilder/Helpers/CRUD/Form"
+import {usePage} from "@inertiajs/inertia-vue3";
 
 export default {
     name: "Table",
@@ -36,8 +37,11 @@ export default {
     },
     data() {
         return {
+            fields: new TableFields(this.showid, this.sort).buildTableFields(this.listing),
+            plocation: usePage().props.value.shared.pagination.location,
+            hlocation: usePage().props.value.shared.heading.location,
             data: {},
-            itemFormKey: 0
+            itemFormKey: 0,
         }
     },
     methods: {

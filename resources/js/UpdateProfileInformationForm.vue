@@ -135,90 +135,94 @@
 </template>
 
 <script>
-    import JetButton from '@/Jetstream/Button'
-    import JetFormSection from '@/Jetstream/FormSection'
-    import JetInput from '@/Jetstream/Input'
-    import JetInputError from '@/Jetstream/InputError'
-    import JetLabel from '@/Jetstream/Label'
-    import JetActionMessage from '@/Jetstream/ActionMessage'
-    import JetSecondaryButton from '@/Jetstream/SecondaryButton'
-    import {computed} from "vue";
-    import {usePage} from "@inertiajs/inertia-vue3";
+import JetButton from '@/Jetstream/Button'
+import JetFormSection from '@/Jetstream/FormSection'
+import JetInput from '@/Jetstream/Input'
+import JetInputError from '@/Jetstream/InputError'
+import JetLabel from '@/Jetstream/Label'
+import JetActionMessage from '@/Jetstream/ActionMessage'
+import JetSecondaryButton from '@/Jetstream/SecondaryButton'
+import {usePage} from "@inertiajs/inertia-vue3";
 
-    export default {
-        components: {
-            JetActionMessage,
-            JetButton,
-            JetFormSection,
-            JetInput,
-            JetInputError,
-            JetLabel,
-            JetSecondaryButton
-        },
+export default {
+    components: {
+        JetActionMessage,
+        JetButton,
+        JetFormSection,
+        JetInput,
+        JetInputError,
+        JetLabel,
+        JetSecondaryButton
+    },
 
-        props: [
-            'user',
-            'roles',
-        ],
+    props: [
+        'user',
+        'roles',
+    ],
 
-        data() {
-            return {
-                form: this.$inertia.form({
-                    _method: 'PUT',
-                    name: this.user.name,
-                    email: this.user.email,
-                    photo: null,
-                    language: this.user.language_id,
-                    country: this.user.country_id,
-                }),
+    data() {
+        return {
+            form: this.$inertia.form({
+                _method: 'PUT',
+                name: this.user.name,
+                email: this.user.email,
+                photo: null,
+                language: this.user.language_id,
+                country: this.user.country_id,
+            }),
 
-                photoPreview: null,
+            photoPreview: null,
 
-                rolesList: this.roles.map(role => (typeof role.alias === 'object' ? (role.alias[this.locale.code] ? role.alias[this.locale.code] : '[no translation] ['+this.locale.code+']') : role.alias)).join(' | '),
-            }
-        },
+            locale: usePage().props.value.locale,
+            languages: usePage().props.value.shared.languages,
+            countries: usePage().props.value.shared.countries,
 
-        methods: {
-            updateProfileInformation() {
-                if (this.$refs.photo) {
-                    this.form.photo = this.$refs.photo.files[0]
-                }
-
-                this.form.post(route('user-profile-information.update'), {
-                    errorBag: 'updateProfileInformation',
-                    preserveScroll: true
-                });
-            },
-
-            selectNewPhoto() {
-                this.$refs.photo.click();
-            },
-
-            updatePhotoPreview() {
-                const reader = new FileReader();
-
-                reader.onload = (e) => {
-                    this.photoPreview = e.target.result;
-                };
-
-                reader.readAsDataURL(this.$refs.photo.files[0]);
-            },
-
-            deletePhoto() {
-                this.$inertia.delete(route('current-user-photo.destroy'), {
-                    preserveScroll: true,
-                    onSuccess: () => (this.photoPreview = null),
-                });
-            },
-        },
-
-        setup () {
-
-            const locale = computed(() => usePage().props.value.locale)
-            const languages = computed(() => usePage().props.value.shared.languages)
-            const countries = computed(() => usePage().props.value.shared.countries)
-
-            return { languages, countries, locale }
+            rolesList: this.roles.map(
+                role => (
+                    typeof role.alias === 'object' ?
+                        (
+                            role.alias[usePage().props.value.locale.code] ?
+                                role.alias[usePage().props.value.locale.code] :
+                                '[no translation] ['+usePage().props.value.locale.code+']'
+                        ) :
+                        role.alias
+                )
+            ).join(' | '),
         }
-    }
+    },
+
+    methods: {
+        updateProfileInformation() {
+            if (this.$refs.photo) {
+                this.form.photo = this.$refs.photo.files[0]
+            }
+
+            this.form.post(route('user-profile-information.update'), {
+                errorBag: 'updateProfileInformation',
+                preserveScroll: true
+            });
+        },
+
+        selectNewPhoto() {
+            this.$refs.photo.click();
+        },
+
+        updatePhotoPreview() {
+            const reader = new FileReader();
+
+            reader.onload = (e) => {
+                this.photoPreview = e.target.result;
+            };
+
+            reader.readAsDataURL(this.$refs.photo.files[0]);
+        },
+
+        deletePhoto() {
+            this.$inertia.delete(route('current-user-photo.destroy'), {
+                preserveScroll: true,
+                onSuccess: () => (this.photoPreview = null),
+            });
+        },
+    },
+}
 </script>

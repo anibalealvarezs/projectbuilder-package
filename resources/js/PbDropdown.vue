@@ -50,23 +50,6 @@ export default defineComponent({
         },
     },
 
-    setup() {
-        let open = ref(false)
-
-        const closeOnEscape = (e) => {
-            if (open.value && e.keyCode === 27) {
-                open.value = false
-            }
-        }
-
-        onMounted(() => document.addEventListener('keydown', closeOnEscape))
-        onUnmounted(() => document.removeEventListener('keydown', closeOnEscape))
-
-        return {
-            open,
-        }
-    },
-
     computed: {
         widthClass() {
             return {
@@ -83,6 +66,23 @@ export default defineComponent({
                 return 'origin-top'
             }
         },
-    }
+    },
+
+    setup() {
+        let open = ref(false)
+
+        const closeOnEscape = (e) => {
+            if (open.value && e.keyCode === 27) {
+                open.value = false
+            }
+        }
+
+        onMounted(() => document.addEventListener('keydown', closeOnEscape))
+        onUnmounted(() => document.removeEventListener('keydown', closeOnEscape))
+
+        return {
+            open,
+        }
+    },
 })
 </script>

@@ -2,22 +2,21 @@
     <AppLayout>
         <template #header>
             <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                Edit Logger: {{ pblogger.name }}
+                Permission: {{ permission.name }}
             </h2>
         </template>
 
-        <Edit :element="pblogger" title="Loggers" />
+        <Show :element="permission" title="Permissions" />
     </AppLayout>
 </template>
 
 <script>
-import edit from "Pub/js/Projectbuilder/Model/edit"
+import show from "Pub/js/Projectbuilder/Model/show"
 
 export default {
-    extends: edit,
-    name: "EditLogger",
+    extends: show,
     props: {
-        pblogger: Object,
+        permission: Object,
     },
 }
 </script>

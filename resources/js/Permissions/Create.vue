@@ -2,22 +2,22 @@
     <AppLayout>
         <template #header>
             <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                Configs
+                Create Permission
             </h2>
         </template>
 
-        <Index :elements="pbconfigs" title="Configs" />
+        <Create title="Permissions" />
     </AppLayout>
 </template>
 
 <script>
-import index from "Pub/js/Projectbuilder/Model/index"
+import create from "Pub/js/Projectbuilder/Model/create"
 
 export default {
-    extends: index,
-    name: "Configs",
-    props: {
-        pbconfigs: Object,
-    },
+    extends: create,
 }
 </script>
+
+<style scoped>
+
+</style>

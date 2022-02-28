@@ -2,11 +2,11 @@
     <AppLayout>
         <template #header>
             <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                Role: {{ pbrole.name }}
+                Role: {{ role.name }}
             </h2>
         </template>
 
-        <Show :element="pbrole" title="Roles" />
+        <Show :element="role" title="Roles" />
     </AppLayout>
 </template>
 
@@ -15,9 +15,8 @@ import show from "Pub/js/Projectbuilder/Model/show"
 
 export default {
     extends: show,
-    name: "ShowRole",
     props: {
-        pbrole: Object,
+        role: Object,
     },
 }
 </script>

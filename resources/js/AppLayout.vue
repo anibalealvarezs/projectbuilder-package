@@ -330,7 +330,6 @@
     import NavLink from '@/Pages/Projectbuilder/Navigations/NavLink'
     import JetResponsiveNavLink from '@/Jetstream/ResponsiveNavLink'
     import { Helpers } from "Pub/js/Projectbuilder/Helpers/helpers"
-    import {computed} from "vue"
     import {usePage, Link} from "@inertiajs/inertia-vue3"
 
     export default {
@@ -349,6 +348,12 @@
             return {
                 showingNavigationDropdown: false,
                 helpers: Helpers,
+                apiData: usePage().props.value.shared.api_data,
+                navigations: usePage().props.value.shared.navigations.firstlevel,
+                languages: usePage().props.value.shared.languages,
+                cache: usePage().props.value.shared.cache,
+                locale: usePage().props.value.locale,
+                teamsEnabled: usePage().props.value.teams,
             }
         },
 
@@ -401,22 +406,6 @@
                 })
             },
         },
-
-        computed: {
-            /* */
-        },
-
-        setup () {
-
-            let navigations = computed(() => usePage().props.value.shared.navigations.firstlevel)
-            let languages = computed(() => usePage().props.value.shared.languages)
-            let apiData = computed(() => usePage().props.value.shared.api_data)
-            const locale = computed(() => usePage().props.value.locale)
-            const cache = computed(() => usePage().props.value.shared.cache)
-            const teamsEnabled = computed(() => usePage().props.value.teams)
-
-            return { navigations, apiData, locale, teamsEnabled, languages, cache }
-        }
     }
 </script>
 

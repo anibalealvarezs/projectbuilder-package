@@ -2,26 +2,21 @@
     <AppLayout>
         <template #header>
             <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                Config: {{ pbconfig.name }}
+                Roles
             </h2>
         </template>
 
-        <Show :element="pbconfig" title="Configs" />
+        <Index :elements="roles" title="Roles" />
     </AppLayout>
 </template>
 
 <script>
-import show from "Pub/js/Projectbuilder/Model/show"
+import index from "Pub/js/Projectbuilder/Model/index"
 
 export default {
-    extends: show,
-    name: "ShowConfig",
+    extends: index,
     props: {
-        pbconfig: Object,
+        roles: Object,
     },
 }
 </script>
-
-<style scoped>
-
-</style>

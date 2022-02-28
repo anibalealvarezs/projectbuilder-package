@@ -35,23 +35,10 @@
 </template>
 
 <script>
-import {computed} from "vue"
-import {usePage} from "@inertiajs/inertia-vue3"
 import PbIndex from "Pub/js/Projectbuilder/pbindex"
 
 export default {
     extends: PbIndex,
-    setup() {
-        const allowed = computed(() => usePage().props.value.shared.allowed)
-        const sort = computed(() => usePage().props.value.shared.sort)
-        const showpos = computed(() => usePage().props.value.shared.showpos)
-        const showid = computed(() => usePage().props.value.shared.showid)
-        const model = computed(() => usePage().props.value.shared.model)
-        const defaults = computed(() => usePage().props.value.shared.defaults)
-        const required = computed(() => usePage().props.value.shared.required)
-        const listing = computed(() => usePage().props.value.shared.listing)
-
-        return {allowed, sort, model, showpos, showid, defaults, required, listing}
-    }
+    name: "Index",
 }
 </script>

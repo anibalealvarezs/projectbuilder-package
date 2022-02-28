@@ -14,18 +14,11 @@
 </template>
 
 <script>
-import {computed} from "vue"
-import {usePage} from "@inertiajs/inertia-vue3"
 import PbCreate from "Pub/js/Projectbuilder/pbcreate"
 
 export default {
     extends: PbCreate,
-    setup () {
-        const defaults = computed(() => usePage().props.value.shared.defaults)
-        const required = computed(() => usePage().props.value.shared.required)
-
-        return { defaults, required }
-    }
+    name: "Create",
 }
 </script>
 
