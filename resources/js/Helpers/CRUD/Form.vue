@@ -12,6 +12,7 @@
                     :keyel="key"
                     :keyid="keyid"
                     :required="required"
+                    :url="form.hasOwnProperty('url') ? form.url : ''"
                     @input="updateValue($event, key)"
                 />
             </div>

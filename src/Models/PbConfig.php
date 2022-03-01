@@ -130,17 +130,6 @@ class PbConfig extends PbBuilder implements PbModelCrudInterface
             ];
         }
 
-        $config['relations'] = ['module'];
-
-        $config['pagination'] = [
-            'per_page' => 20,
-            'location' => 'both',
-        ];
-
-        $config['heading'] = [
-            'location' => 'both',
-        ];
-
         $config['fields'] = [
             'name' => [],
             'configkey' => [
@@ -158,8 +147,19 @@ class PbConfig extends PbBuilder implements PbModelCrudInterface
             ],
         ];
 
+        $config['relations'] = ['module'];
+
         $config['custom_order'] = [
             'configkey', 'name', 'configvalue', 'description', 'module'
+        ];
+
+        $config['pagination'] = [
+            'per_page' => 20,
+            'location' => 'both',
+        ];
+
+        $config['heading'] = [
+            'location' => 'both',
         ];
 
         return $config;

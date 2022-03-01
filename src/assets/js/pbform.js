@@ -68,6 +68,7 @@ export default {
                         inputs[index] = ''
                         break;
                     default:
+                        inputs[index] = null
                         break;
                 }
             }
@@ -93,4 +94,19 @@ export default {
             }
         }
     },
+    /* setup (props) {
+        const locale = computed(() => usePage().props.value.locale)
+        const formconfig = computed(() => usePage().props.value.shared.formconfig)
+        const form = reactive({
+            name: props.data.name,
+            description: props.data.description,
+            file: null,
+            alt: ((props.data.alt === Object(props.data.alt) && locale && props.data.alt.hasOwnProperty(locale)) ? props.data.alt[locale] : props.data.alt),
+            url: props.data.url,
+            module: (props.data.module ? props.data.module : 'filemanager'),
+            permission: (props.data.permission ? props.data.permission : (props.defaults.hasOwnProperty('permission') ? props.defaults.permission : 'public')),
+        })
+        const directory = 'files'
+        return { form, directory, locale, formconfig }
+    }, */
 }

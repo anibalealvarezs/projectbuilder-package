@@ -25,7 +25,6 @@
         extends: PbIndex,
         components: {
             Welcome,
-            PbIndex,
         },
     }
 </script>
