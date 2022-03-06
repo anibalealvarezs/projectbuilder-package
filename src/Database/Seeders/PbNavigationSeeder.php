@@ -24,11 +24,13 @@ class PbNavigationSeeder extends Seeder
         $readConfigsPermission = PbPermission::where('name', 'read configs')->first();
         $readNavigationsPermission = PbPermission::where('name', 'read navigations')->first();
         $readLoggersPermission = PbPermission::where('name', 'read loggers')->first();
+        $readFilemanagerPermission = PbPermission::where('name', 'read files')->first();
         $moduleUser = PbModule::where('modulekey', 'user')->first();
         $moduleConfig = PbModule::where('modulekey', 'config')->first();
         $moduleNavigation = PbModule::where('modulekey', 'navigation')->first();
         $moduleRole = PbModule::where('modulekey', 'role')->first();
         $modulePermission = PbModule::where('modulekey', 'permission')->first();
+        $moduleFilemanager = PbModule::where('modulekey', 'file')->first();
 
         Navigation::query()->delete();
 
@@ -66,6 +68,14 @@ class PbNavigationSeeder extends Seeder
                 ['destiny' => 'configs.index', 'module_id' => $moduleConfig->id, 'name' => json_encode(['en' => 'Config', 'es' => 'Configuración']), 'type' => 'route', 'parent' => $settingsParent->id, 'permission_id' => $readConfigsPermission->id, 'position' => 0],
                 ['destiny' => 'navigations.index', 'module_id' => $moduleNavigation->id, 'name' => json_encode(['en' => 'Navigation', 'es' => 'Navegación']), 'type' => 'route', 'parent' => $settingsParent->id, 'permission_id' => $readNavigationsPermission->id, 'position' => 1],
             ], ['destiny', 'module_id'], ['name', 'type', 'parent', 'permission_id', 'position']);
+        }
+
+        // Files
+        if ($filesParent = Navigation::updateOrCreate(['destiny' => 'files.index', 'module_id' => $moduleFilemanager->id], ['name' => 'Files List', 'type' => 'route', 'parent' => 0, 'permission_id' => $readFilemanagerPermission->id, 'position' => 0])) {
+            // Spanish name update
+            $filesParent->setLocale('es');
+            $filesParent->name = 'Lista de Archivos';
+            $filesParent->save();
         }
     }
 }

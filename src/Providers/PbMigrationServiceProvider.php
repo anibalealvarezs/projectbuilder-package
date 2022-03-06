@@ -2,6 +2,7 @@
 
 namespace Anibalealvarezs\Projectbuilder\Providers;
 
+use Illuminate\Support\Arr;
 use Illuminate\Support\ServiceProvider;
 
 class PbMigrationServiceProvider extends ServiceProvider

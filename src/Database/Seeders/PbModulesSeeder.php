@@ -21,6 +21,7 @@ class PbModulesSeeder extends Seeder
             ['modulekey' => 'permission', 'name' => json_encode(['en' => 'Permissions', 'es' => 'Permisos']), 'status' => 1],
             ['modulekey' => 'role', 'name' => json_encode(['en' => 'Roles', 'es' => 'Roles']), 'status' => 1],
             ['modulekey' => 'logger', 'name' => json_encode(['en' => 'Logger', 'es' => 'Logger']), 'status' => 1],
+            ['modulekey' => 'file', 'name' => json_encode(['en' => 'Files Manager', 'es' => 'Administrador de Archivos']), 'status' => 1],
         ], ['modulekey'], ['name', 'status']);
     }
 }

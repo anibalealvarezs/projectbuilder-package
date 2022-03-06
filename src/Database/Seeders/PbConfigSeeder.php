@@ -16,6 +16,7 @@ class PbConfigSeeder extends Seeder
     public function run()
     {
         $moduleConfig = PbModule::where('modulekey', 'config')->first();
+        $moduleFile = PbModule::where('modulekey', 'file')->first();
         // Default Config
         Config::upsert([
             ['configkey' => '_APP_NAME_', 'configvalue' => 'Builder', 'name' => json_encode(['en' => 'App Name', 'es' => 'Nombre de la Aplicación']), 'description' => json_encode(['en' => 'App Description', 'es' => 'Nombre de la Aplicación']), 'module_id' => $moduleConfig->id],
@@ -32,6 +33,7 @@ class PbConfigSeeder extends Seeder
             ['configkey' => '_DISABLE_REGISTER_', 'configvalue' => false, 'name' => json_encode(['en' => 'Disable registration form', 'es' => 'Deshabilitar formulario de registro']), 'description' => json_encode(['en' => 'Disable the registration form', 'es' => 'Deshabilitar el formulario de registro']), 'module_id' => $moduleConfig->id],
             ['configkey' => '_DEFAULT_TABLE_SIZE_', 'configvalue' => false, 'name' => json_encode(['en' => 'Default table size', 'es' => 'Tamaño de la tabla por defecto']), 'description' => json_encode(['en' => 'Number of rows to be shown in tables per page', 'es' => 'Número de registros a mostrar en las tablas por defecto']), 'module_id' => $moduleConfig->id],
             ['configkey' => '_CACHE_ENABLED_', 'configvalue' => false, 'name' => json_encode(['en' => 'Enable Cache', 'es' => 'Habilitar Caché']), 'description' => json_encode(['en' => 'Enable queries caching to increase performance', 'es' => 'Habilitar el caché de consultas para mejorar el rendimiento']), 'module_id' => $moduleConfig->id],
+            ['configkey' => '_HASH_FILE_NAME_', 'configvalue' => '0', 'name' => json_encode(['en' => 'File Name Hashing', 'es' => 'Hashear Nombres de Archivos']), 'description' => json_encode(['en' => 'Force file names hashing (recommended for higher security)', 'es' => 'Forzar hasheo de nombres (recomendado para mayor seguridad)']), 'module_id' => $moduleFile->id],
         ], ['configkey'], ['configvalue', 'name', 'description', 'module_id']);
     }
 }

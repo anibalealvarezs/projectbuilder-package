@@ -25,6 +25,7 @@ class PbSpatieSeeder extends Seeder
         $moduleNavigation = PbModule::whereModulekey('navigation')->first();
         $moduleRole = PbModule::whereModulekey('role')->first();
         $modulePermission = PbModule::whereModulekey('permission')->first();
+        $moduleFile = PbModule::where('modulekey', 'file')->first();
 
         Permission::query()->delete();
         Role::query()->delete();
@@ -76,12 +77,18 @@ class PbSpatieSeeder extends Seeder
             ['guard_name' => 'admin', 'name' => 'create roles', 'alias' => json_encode(['en' => 'Create Roles', 'es' => 'Crear Roles']), 'module_id' => $moduleRole->id],
             ['guard_name' => 'admin', 'name' => 'read roles', 'alias' => json_encode(['en' => 'Read Roles', 'es' => 'Leer Roles']), 'module_id' => $moduleRole->id],
             ['guard_name' => 'admin', 'name' => 'update roles', 'alias' => json_encode(['en' => 'Update Roles', 'es' => 'Actualizar Roles']), 'module_id' => $moduleRole->id],
-            ['guard_name' => 'admin', 'name' => 'delete roles', 'alias' => json_encode(['en' => 'Delete Roles', 'es' => 'Borrar Roles']), 'module_id' => $moduleRole->id]
+            ['guard_name' => 'admin', 'name' => 'delete roles', 'alias' => json_encode(['en' => 'Delete Roles', 'es' => 'Borrar Roles']), 'module_id' => $moduleRole->id],
+            // CRUD Files
+            ['guard_name' => 'admin', 'name' => 'config files', 'alias' => json_encode(['en' => 'Configure Files', 'es' => 'Configurar Archivos']), 'module_id' => $moduleFile->id],
+            ['guard_name' => 'admin', 'name' => 'create files', 'alias' => json_encode(['en' => 'Create Files', 'es' => 'Crear Archivos']), 'module_id' => $moduleFile->id],
+            ['guard_name' => 'admin', 'name' => 'read files', 'alias' => json_encode(['en' => 'Read Files', 'es' => 'Leer Archivos']), 'module_id' => $moduleFile->id],
+            ['guard_name' => 'admin', 'name' => 'update files', 'alias' => json_encode(['en' => 'Update Files', 'es' => 'Actualizar Archivos']), 'module_id' => $moduleFile->id],
+            ['guard_name' => 'admin', 'name' => 'delete files', 'alias' => json_encode(['en' => 'Delete Files', 'es' => 'Borrar Archivos']), 'module_id' => $moduleFile->id],
         ], ['guard_name', 'name'], ['alias', 'module_id']);
 
         // updateOrCreate roles and assign updateOrCreated permissions
         Role::updateOrCreate(['guard_name' => 'admin', 'name' => 'user'], ['guard_name' => 'admin', 'name' => 'user', 'alias' => ['en' => 'User', 'es' => 'Usuario']])
-            ->givePermissionTo(['login']);
+            ->givePermissionTo(['login', 'create files', 'read files', 'update files', 'delete files', 'config files']);
         Role::updateOrCreate(['guard_name' => 'admin', 'name' => 'api-user'], ['guard_name' => 'admin', 'name' => 'api-user', 'alias' => ['en' => 'API User', 'es' => 'Usuario API']])
             ->givePermissionTo(['api access']);
         Role::updateOrCreate(['guard_name' => 'admin', 'name' => 'admin'], ['guard_name' => 'admin', 'name' => 'admin', 'alias' => ['en' => 'Admin', 'es' => 'Administrador']])
@@ -99,9 +106,14 @@ class PbSpatieSeeder extends Seeder
                 'config builder',
                 'login',
                 'clear cache',
+                'config files',
+                'create files',
+                'read files',
+                'update files',
+                'delete files',
             ]);
         Role::updateOrCreate(['guard_name' => 'admin', 'name' => 'developer'], ['guard_name' => 'admin', 'name' => 'developer', 'alias' => ['en' => 'Developer', 'es' => 'Desarrollador']])
-            ->givePermissionTo(['developer options', 'read loggers', 'delete loggers', 'config loggers', 'clear cache']);
+            ->givePermissionTo(['developer options', 'read loggers', 'delete loggers', 'config loggers', 'clear cache', 'create files', 'read files', 'update files', 'delete files', 'config files']);
         Role::updateOrCreate(['guard_name' => 'admin', 'name' => 'super-admin'], ['guard_name' => 'admin', 'name' => 'super-admin', 'alias' => ['en' => 'Super Admin', 'es' => 'Superadministrador']])
             ->givePermissionTo(Permission::all());
     }

@@ -2,6 +2,7 @@
 
 namespace Anibalealvarezs\Projectbuilder\Observers;
 
+use Anibalealvarezs\Projectbuilder\Models\PbFile;
 use Anibalealvarezs\Projectbuilder\Models\PbLogger;
 use Anibalealvarezs\Projectbuilder\Models\PbModule;
 use Anibalealvarezs\Projectbuilder\Models\PbUser;
@@ -38,9 +39,9 @@ class PbUserObserver
      */
     public function deleted(PbUser $user)
     {
-        if (PbModule::exists('file') && class_exists(\Anibalealvarezs\Filemanager\Models\FmFile::class) && $default = PbUser::getDefaultUser()) {
+        if ($default = PbUser::getDefaultUser()) {
             try {
-                \Anibalealvarezs\Filemanager\Models\FmFile::replaceAuthor($user->id, $default->id);
+                PbFile::replaceAuthor($user->id, $default->id);
             } catch (Exception $e) {
                 PbLogger::create([
                     'severity' => 3,

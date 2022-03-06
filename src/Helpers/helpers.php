@@ -428,3 +428,26 @@ function is_closure($t): bool
 {
     return $t instanceof Closure;
 }
+
+/**
+ * Returns existing migration file if found, else uses the current timestamp.
+ *
+ * @param $name
+ * @return mixed
+ */
+function renameFile($name): string
+{
+    $noMime = explode('.', $name);
+    $mime = array_pop($noMime);
+    if (count($noMime) > 0) {
+        $aName = explode('-', implode('.', $noMime));
+        if (is_numeric(end($aName))) {
+            $aName[count($aName) - 1] = end($aName) + 1;
+        } else {
+            $aName[count($aName)] = '1';
+        }
+        return implode('-', $aName) . '.' . $mime;
+    } else {
+        return $name;
+    }
+}

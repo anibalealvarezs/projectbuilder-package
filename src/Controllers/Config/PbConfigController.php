@@ -15,6 +15,7 @@ use Illuminate\Validation\Rule;
 
 use Auth;
 use DB;
+use ReflectionException;
 use Session;
 
 use Inertia\Response as InertiaResponse;
@@ -43,7 +44,7 @@ class PbConfigController extends PbBuilderController
      *
      * @param string $route
      * @return InertiaResponse|JsonResponse
-     * @throws \ReflectionException
+     * @throws ReflectionException
      */
     public function create(string $route = 'level'): InertiaResponse|JsonResponse
     {
@@ -73,7 +74,7 @@ class PbConfigController extends PbBuilderController
      * @param bool $multiple
      * @param string $route
      * @return RedirectResponse|InertiaResponse|JsonResponse
-     * @throws \ReflectionException
+     * @throws ReflectionException
      */
     public function edit(
         int $id,

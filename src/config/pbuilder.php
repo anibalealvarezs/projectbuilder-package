@@ -55,7 +55,7 @@ return [
     |
     */
 
-    'modulekeys' => ['user', 'config', 'navigation', 'permission', 'role', 'logger'],
+    'modulekeys' => ['user', 'config', 'navigation', 'permission', 'role', 'logger', 'file'],
 
     /*
     |--------------------------------------------------------------------------

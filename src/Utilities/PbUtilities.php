@@ -5,6 +5,9 @@ namespace Anibalealvarezs\Projectbuilder\Utilities;
 use Anibalealvarezs\Projectbuilder\Models\PbModule;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
+use Symfony\Component\HttpFoundation\File\File;
 
 class PbUtilities
 {
@@ -131,5 +134,89 @@ class PbUtilities
                 });
             }
         );
+    }
+
+    /**
+     * Returns existing migration file if found, else uses the current timestamp.
+     *
+     * @param string $dir
+     * @param string $name
+     * @param string $extension
+     * @param string $hashName
+     * @param string $allowed
+     * @return string
+     */
+    public static function checkName(string $dir, string $name = "", string $extension = "", string $hashName = "", string $allowed = ""): string
+    {
+        $explodedName = explode('.', $name);
+        $explodedName = array_filter($explodedName);
+        if (count($explodedName) > 1 && end($explodedName) === $extension) {
+            array_pop($explodedName);
+        } elseif (empty($explodedName)) {
+            if ($hashName) {
+                $explodedName = [$hashName];
+            } else {
+                $explodedName = [Hash::make(date('Y_m_d_His'))];
+            }
+        }
+        $name = Str::slug(implode("-", $explodedName)).'.'.$extension;
+        while (Storage::disk('public')->exists($dir . DIRECTORY_SEPARATOR . $name) && $allowed !== $name) {
+            $name = self::checkName($dir, renameFile($name));
+        }
+        return $name;
+    }
+
+    /**
+     * Returns existing migration file if found, else uses the current timestamp.
+     *
+     * @param $name
+     * @return mixed
+     */
+    public static function getFileExtension($name): string
+    {
+        $explodedName = explode('.', $name);
+        return end($explodedName);
+    }
+
+    /**
+     * Returns existing migration file if found, else uses the current timestamp.
+     *
+     * @param $file
+     * @param $dir
+     * @param $name
+     * @return File
+     */
+    public static function saveFile($file, $dir, $name): File
+    {
+        return $file->move(Storage::disk('public')->path($dir), $name);
+    }
+
+    /**
+     * Returns existing migration file if found, else uses the current timestamp.
+     *
+     * @param $dir
+     * @param $name
+     * @param $newName
+     * @return mixed
+     */
+    public static function updateFile($dir, $name, $newName): bool
+    {
+        return Storage::disk('public')->move($dir . DIRECTORY_SEPARATOR . $name, $dir . DIRECTORY_SEPARATOR . $newName);
+    }
+
+    /**
+     * Returns existing migration file if found, else uses the current timestamp.
+     *
+     * @param $dir
+     * @param $name
+     * @return mixed
+     */
+    public static function deleteFile($dir, $name): bool
+    {
+        if (Storage::disk('public')->exists($dir . DIRECTORY_SEPARATOR . $name)) {
+            return Storage::disk('public')->delete($dir . DIRECTORY_SEPARATOR . $name);
+        }
+
+        return true;
     }
 }
