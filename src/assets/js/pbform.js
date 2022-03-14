@@ -67,8 +67,10 @@ export default {
                     case 'password':
                         inputs[index] = ''
                         break;
-                    default:
+                    case 'file':
                         inputs[index] = null
+                        break;
+                    default:
                         break;
                 }
             }

@@ -45,6 +45,16 @@
             @input="emitInputValue"
         />
     </div>
+    <div v-if="formconfig[keyel].type === 'file'">
+        <File
+            :value="value"
+            :keyel="keyel"
+            :keyid="keyid"
+            :url="url"
+            :required="required"
+            @input="emitInputValue"
+        />
+    </div>
 </template>
 
 <script>
@@ -54,6 +64,7 @@ import Checkbox from "@/Pages/Projectbuilder/Forms/Inputs/Checkbox"
 import Select from "@/Pages/Projectbuilder/Forms/Inputs/Select"
 import Textarea from "@/Pages/Projectbuilder/Forms/Inputs/Textarea"
 import Hidden from "@/Pages/Projectbuilder/Forms/Inputs/Hidden"
+import File from "@/Pages/Projectbuilder/Forms/Inputs/File"
 
 export default {
     name: "Input",
@@ -71,6 +82,7 @@ export default {
         Select,
         Text,
         Checkbox,
+        File,
     },
     data() {
         return {

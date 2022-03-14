@@ -62,5 +62,16 @@ export default {
             }
             this.$emit('input', el.target.value)
         },
+        emitFileValue(el) {
+            if (this.isDebugEnabled()) {
+                console.log(
+                    "[ProjectBuilder] DEBUG" + "\n" +
+                    "Input activated" + "\n" +
+                    "Value to emit: " + el.target.value + "\n" +
+                    "Component: Input"
+                )
+            }
+            this.$emit('input', el)
+        },
     },
 }
