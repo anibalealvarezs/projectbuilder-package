@@ -5,6 +5,22 @@
 
 This Laravel package is a simple and easy way to create a new project with a new Laravel application, based in the default Jestream + Inertia engine.
 
+<img src="https://anibalalvarez.com/project-builder/Configs.png" alt="Configs">
+
+<details>
+  <summary>Click for more screenshots</summary>
+  <img src="https://anibalalvarez.com/project-builder/Users.png" alt="Users">
+  <img src="https://anibalalvarez.com/project-builder/Users-actions.png" alt="Users Actions">
+  <img src="https://anibalalvarez.com/project-builder/Users-form.png" alt="Users Form">
+  <img src="https://anibalalvarez.com/project-builder/Roles.png" alt="Roles">
+  <img src="https://anibalalvarez.com/project-builder/Permissions.png" alt="Permissions">
+  <img src="https://anibalalvarez.com/project-builder/Permissions-form.png" alt="Permissions Form">
+  <img src="https://anibalalvarez.com/project-builder/Configs.png" alt="Configs">
+  <img src="https://anibalalvarez.com/project-builder/Navigations.png" alt="Navigations">
+  <img src="https://anibalalvarez.com/project-builder/Files.png" alt="Files">
+  <img src="https://anibalalvarez.com/project-builder/Files-form.png" alt="Files Form">
+</details>
+
 ***
 
 ## Requirements
