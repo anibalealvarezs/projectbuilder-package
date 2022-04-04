@@ -44,7 +44,11 @@ class PbControllerServiceProvider extends ServiceProvider
         if (Schema::hasTable('modules')) {
             $models = PbModule::whereIn('modulekey', app(PbUtilities::class)->modulekeys)->pluck('modulekey');
             foreach ($models as $model) {
-                $this->app->make($this->namespace.'\\'.ucfirst($model).'\\'.$this->prefix.ucfirst($model).$this->suffix);
+                if (class_exists($this->namespace.'\\'.ucfirst($model).'\\'.$this->prefix.ucfirst($model).$this->suffix)) {
+                    $this->app->make($this->namespace.'\\'.ucfirst($model).'\\'.$this->prefix.ucfirst($model).$this->suffix);
+                } elseif (class_exists('App\\Http\\Controllers\\'.ucfirst($model).$this->suffix)) {
+                    $this->app->make('App\\Http\\Controllers\\'.ucfirst($model).$this->suffix);
+                }
             }
         }
     }

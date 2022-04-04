@@ -55,8 +55,13 @@ class PbUtilities
             $names = PbModule::whereIn('modulekey', $this->modulekeys)->pluck('modulekey');
 
             foreach ($names as $name) {
-                $modelClass = $this->vendor . '\\' . $this->package . '\\Models\\' . $this->prefix . ucfirst($name);
-                $controllerClass = $this->vendor . '\\' . $this->package . '\\Controllers\\' . ucfirst($name) . '\\' . $this->prefix . ucfirst($name) . 'Controller';
+                if (class_exists($this->vendor . '\\' . $this->package . '\\Models\\' . $this->prefix . ucfirst($name))) {
+                    $modelClass = $this->vendor . '\\' . $this->package . '\\Models\\' . $this->prefix . ucfirst($name);
+                    $controllerClass = $this->vendor . '\\' . $this->package . '\\Controllers\\' . ucfirst($name) . '\\' . $this->prefix . ucfirst($name) . 'Controller';
+                } elseif (class_exists('App\\Models\\' . ucfirst($name))) {
+                    $modelClass = 'App\\Models\\' . ucfirst($name);
+                    $controllerClass = 'App\\Http\\Controllers\\' . ucfirst($name) . 'Controller';
+                }
                 switch ($type) {
                     case 'web':
                         Route::resource($name . 's', $controllerClass)->middleware([

@@ -716,8 +716,8 @@ trait PbControllerTrait
         $object->names = Str::plural($object->name);
         $object->prefixName = strtolower($this->vars->helper->prefix . $key);
         $object->prefixNames = Str::plural($object->prefixName);
-        $object->modelPath = $this->vars->helper->vendor . "\\" . $this->vars->helper->package . "\\Models\\" . $this->vars->helper->prefix . $key;
-        $object->viewsPath = $this->vars->helper->package . "/" . $object->keys . "/";
+        $object->modelPath = $this->vars->modelPath ?? $this->vars->helper->vendor . "\\" . $this->vars->helper->package . "\\Models\\" . $this->vars->helper->prefix . $key;
+        $object->viewsPath = ($this->vars->viewsPath ?? $this->vars->helper->package . "/" . $object->keys) . "/";
         $object->table = resolve($object->modelPath)->getTable();
         return $object;
     }
