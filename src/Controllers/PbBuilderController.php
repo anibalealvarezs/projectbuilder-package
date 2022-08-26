@@ -172,9 +172,9 @@ class PbBuilderController extends Controller
      * Store a newly created resource in storage.
      *
      * @param Request $request
-     * @return Application|Redirector|RedirectResponse|null
+     * @return Redirector|RedirectResponse|JsonResponse|Application|null
      */
-    public function store(Request $request): Redirector|RedirectResponse|Application|null
+    public function store(Request $request): Redirector|RedirectResponse|JsonResponse|Application|null
     {
         // Validation
         if ($failed = $this->validateRequest($this->vars->validationRules, $request)) {
@@ -340,9 +340,9 @@ class PbBuilderController extends Controller
      *
      * @param Request $request
      * @param int $id
-     * @return Application|Redirector|RedirectResponse|null
+     * @return Application|Redirector|RedirectResponse|JsonResponse|null
      */
-    public function update(Request $request, int $id): Redirector|RedirectResponse|Application|null
+    public function update(Request $request, int $id): Redirector|RedirectResponse|JsonResponse|Application|null
     {
         // Validation
         if ($failed = $this->validateRequest($this->vars->validationRules, $request)) {
@@ -392,9 +392,9 @@ class PbBuilderController extends Controller
      *
      * @param Request $request
      * @param int $id
-     * @return Application|Redirector|RedirectResponse
+     * @return Application|Redirector|JsonResponse|RedirectResponse
      */
-    public function destroy(Request $request, int $id): Redirector|RedirectResponse|Application
+    public function destroy(Request $request, int $id): Redirector|RedirectResponse|JsonResponse|Application
     {
         // Set cache/methods arguments
         $this->initArgs([

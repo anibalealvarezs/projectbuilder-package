@@ -18,9 +18,9 @@ class PbLocaleController extends Controller
      * Remove the specified resource from storage.
      *
      * @param Request $request
-     * @return RedirectResponse
+     * @return RedirectResponse|JsonResponse
      */
-    public function update(Request $request): RedirectResponse
+    public function update(Request $request): RedirectResponse|JsonResponse
     {
         if (!$language = PbLanguage::findByCode($request->input('locale'))) {
             return $this->redirectResponse(

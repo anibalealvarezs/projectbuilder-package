@@ -40,9 +40,9 @@ class PbFileController extends PbBuilderController
      * Store a newly created resource in storage.
      *
      * @param Request $request
-     * @return Application|Redirector|RedirectResponse|null
+     * @return Application|Redirector|RedirectResponse|JsonResponse|null
      */
-    public function store(Request $request): Redirector|RedirectResponse|Application|null
+    public function store(Request $request): Redirector|RedirectResponse|Application|JsonResponse|null
     {
         $this->pushValidationRules([
             'file' => ['required', 'file', 'mimes:jpeg,png,jpg,gif,svg,pdf', 'max:8192'],
@@ -108,9 +108,9 @@ class PbFileController extends PbBuilderController
      *
      * @param Request $request
      * @param int $id
-     * @return Application|Redirector|RedirectResponse|null
+     * @return Application|Redirector|RedirectResponse|JsonResponse|null
      */
-    public function update(Request $request, int $id): Redirector|RedirectResponse|Application|null
+    public function update(Request $request, int $id): Redirector|RedirectResponse|Application|JsonResponse|null
     {
         // Validation
         if ($failed = $this->validateRequest($this->vars->validationRules, $request)) {
@@ -178,9 +178,9 @@ class PbFileController extends PbBuilderController
      *
      * @param Request $request
      * @param int $id
-     * @return Application|Redirector|RedirectResponse
+     * @return Application|Redirector|RedirectResponse|JsonResponse
      */
-    public function destroy(Request $request, int $id): Redirector|RedirectResponse|Application
+    public function destroy(Request $request, int $id): Redirector|RedirectResponse|Application|JsonResponse
     {
         // Set cache/methods arguments
         $this->initArgs([

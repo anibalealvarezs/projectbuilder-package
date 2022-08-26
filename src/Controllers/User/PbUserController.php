@@ -134,9 +134,9 @@ class PbUserController extends PbBuilderController
      * Store a newly created resource in storage.
      *
      * @param Request $request
-     * @return Application|Redirector|RedirectResponse|null
+     * @return Application|Redirector|RedirectResponse|JsonResponse|null
      */
-    public function store(Request $request): Redirector|RedirectResponse|Application|null
+    public function store(Request $request): Redirector|RedirectResponse|JsonResponse|Application|null
     {
         $this->pushValidationRules([
             'password' => ['required'],
@@ -301,9 +301,9 @@ class PbUserController extends PbBuilderController
      *
      * @param Request $request
      * @param int $id
-     * @return Application|Redirector|RedirectResponse|null
+     * @return Application|Redirector|JsonResponse|RedirectResponse|null
      */
-    public function update(Request $request, int $id): Redirector|RedirectResponse|Application|null
+    public function update(Request $request, int $id): Redirector|RedirectResponse|JsonResponse|Application|null
     {
         $this->pushValidationRules([
             'email' => ['required', 'max:50', 'email', Rule::unique($this->vars->level->table)->ignore($id)],

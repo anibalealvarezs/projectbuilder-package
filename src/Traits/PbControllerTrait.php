@@ -71,9 +71,9 @@ trait PbControllerTrait
      *
      * @param array $validationRules
      * @param Request $request
-     * @return Application|Redirector|RedirectResponse|null
+     * @return Redirector|RedirectResponse|Application|JsonResponse|null
      */
-    protected function validateRequest(array $validationRules, Request $request): Redirector|RedirectResponse|Application|null
+    protected function validateRequest(array $validationRules, Request $request): Redirector|RedirectResponse|JsonResponse|Application|null
     {
         $validator = Validator::make($request->all(), $validationRules);
 
@@ -99,7 +99,7 @@ trait PbControllerTrait
      * @param string $destiny
      * @param string $flashStyle
      * @param bool $withInput
-     * @return RedirectResponse|Application|Redirector
+     * @return RedirectResponse|Application|Redirector|JsonResponse
      */
     protected function redirectResponse(
         Request $request,
@@ -108,9 +108,13 @@ trait PbControllerTrait
         string $destiny = "",
         string $flashStyle = 'danger',
         bool $withInput = true
-    ): RedirectResponse|Application|Redirector {
-        $request->session()->flash('flash.banner', $flashMessage);
-        $request->session()->flash('flash.bannerStyle', $flashStyle);
+    ): RedirectResponse|Application|Redirector|JsonResponse {
+        if (!isApi($request)) {
+            $request->session()->flash('flash.banner', $flashMessage);
+            $request->session()->flash('flash.bannerStyle', $flashStyle);
+        } else {
+            return $this->handleJSONError($flashMessage);
+        }
 
         $redirect = redirect();
 
@@ -139,20 +143,24 @@ trait PbControllerTrait
      *
      * @param Request $request
      * @param string $process
-     * @return RedirectResponse|Application|Redirector
+     * @return RedirectResponse|Application|Redirector|JsonResponse
      */
     protected function redirectResponseCRUDSuccess(
         Request $request,
         string $process
-    ): Redirector|Application|RedirectResponse {
-        return $this->redirectResponse(
-            $request,
-            $this->buildCRUDResponseMessage($process, 'success'),
-            'route',
-            $this->vars->level->names . '.index',
-            'success',
-            false
-        );
+    ): Redirector|Application|RedirectResponse|JsonResponse {
+        if (!isApi($request)) {
+            return $this->redirectResponse(
+                $request,
+                $this->buildCRUDResponseMessage($process, 'success'),
+                'route',
+                $this->vars->level->names . '.index',
+                'success',
+                false
+            );
+        } else {
+            return $this->handleJSONResponse([], $this->buildCRUDResponseMessage($process, 'success'));
+        }
     }
 
     /**
@@ -161,17 +169,21 @@ trait PbControllerTrait
      * @param Request $request
      * @param string $process
      * @param string $error
-     * @return RedirectResponse|Application|Redirector
+     * @return RedirectResponse|Application|Redirector|JsonResponse
      */
     protected function redirectResponseCRUDFail(
         Request $request,
         string $process,
         string $error
-    ): Redirector|Application|RedirectResponse {
-        return $this->redirectResponse(
-            $request,
-            $this->buildCRUDResponseMessage($process, 'fail', $error)
-        );
+    ): Redirector|Application|RedirectResponse|JsonResponse {
+        if (!isApi($request)) {
+            return $this->redirectResponse(
+                $request,
+                $this->buildCRUDResponseMessage($process, 'fail', $error)
+            );
+        } else {
+            return $this->handleJSONError($this->buildCRUDResponseMessage($process, 'fail', $error));
+        }
     }
 
     /**
