@@ -64,7 +64,7 @@ class PbUtilities
                 }
                 switch ($type) {
                     case 'web':
-                        Route::resource($name . 's', $controllerClass)->middleware([
+                        Route::resource(Str::plural($name), $controllerClass)->middleware([
                             ...getDefaultGroupsMiddlewares('web'),
                             ...getDefaultGroupsMiddlewares('auth'),
                             ...getDefaultGroupsMiddlewares('debug'),
@@ -75,7 +75,7 @@ class PbUtilities
                                     ...getDefaultGroupsMiddlewares('web'),
                                     ...getDefaultGroupsMiddlewares('auth'),
                                     ...getDefaultGroupsMiddlewares('debug'),
-                                    'role_or_permission:update '. $name . 's'
+                                    'role_or_permission:update '. Str::plural($name)
                                 ]
                             ],
                             fn() => $this->buildAdditionalCrudRoutes($name, $modelClass, $controllerClass, false, true)
@@ -84,7 +84,7 @@ class PbUtilities
                     default:
                         Route::prefix('api')->group(
                             function() use ($name, $modelClass, $controllerClass) {
-                                Route::resource($name . 's', $controllerClass)->middleware([
+                                Route::resource(Str::plural($name), $controllerClass)->middleware([
                                     ...getDefaultGroupsMiddlewares('api'),
                                     ...getDefaultGroupsMiddlewares('auth'),
                                 ])->names(getApiRoutesNames($name));
@@ -94,7 +94,7 @@ class PbUtilities
                                         'middleware' => [
                                             ...getDefaultGroupsMiddlewares('api'),
                                             ...getDefaultGroupsMiddlewares('auth'),
-                                            'role_or_permission:update '. $name . 's'
+                                            'role_or_permission:update '. Str::plural($name)
                                         ]
                                     ],
                                     fn() => $this->buildAdditionalCrudRoutes($name, $modelClass, $controllerClass, true)
@@ -119,7 +119,7 @@ class PbUtilities
      */
     protected function buildAdditionalCrudRoutes($name, $modelClass, $controllerClass, bool $api = false, bool $sortable = false)
     {
-        Route::prefix($name . 's')->group(
+        Route::prefix(Str::plural($name))->group(
             function() use ($name, $modelClass, $controllerClass, $api, $sortable) {
                 Route::get('page/{page?}/{perpage?}/{orderby?}/{field?}/{order?}', [$controllerClass, 'index'])->where([
                     'page' => '[0-9]+',
@@ -127,14 +127,14 @@ class PbUtilities
                     'orderby' => 'order',
                     'field' => '[a-zA-Z0-9_]+',
                     'order' => 'asc|desc',
-                ])->name(($api ? 'api.' : '').$name . 's.index.paginated');
+                ])->name(($api ? 'api.' : '').Str::plural($name) . '.index.paginated');
                 Route::prefix('{navigation}')->group(function () use ($name, $modelClass, $controllerClass, $api, $sortable) {
                     if (isset($modelClass::$sortable) && $sortable) {
-                        Route::match(array('PUT', 'PATCH'), 'sort', [$controllerClass, 'sort'])->name(($api ? 'api.': '') . $name . 's.sort');
+                        Route::match(array('PUT', 'PATCH'), 'sort', [$controllerClass, 'sort'])->name(($api ? 'api.': '') . Str::plural($name) . '.sort');
                     }
                     if (isset($modelClass::$enableable)) {
-                        Route::match(array('PUT', 'PATCH'), 'enable', [$controllerClass, 'enable'])->name(($api ? 'api.': '') . $name . 's.enable');
-                        Route::match(array('PUT', 'PATCH'), 'disable', [$controllerClass, 'disable'])->name(($api ? 'api.': '') . $name . 's.disable');
+                        Route::match(array('PUT', 'PATCH'), 'enable', [$controllerClass, 'enable'])->name(($api ? 'api.': '') . Str::plural($name) . '.enable');
+                        Route::match(array('PUT', 'PATCH'), 'disable', [$controllerClass, 'disable'])->name(($api ? 'api.': '') . Str::plural($name) . '.disable');
                     }
                 });
             }
